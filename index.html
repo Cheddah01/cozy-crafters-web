@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cozy Crafters SMP</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --pink: #FFAAD4;
+    --pink-deep: #E8689E;
+    --cream: #FFF5EB;
+    --cream-warm: #FBE8D3;
+    --ink: #2A1A20;
+    --ink-soft: #4A3540;
+    --gold: #E8B563;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ============================================
+     BACKGROUND MEDIA LAYER
+     Swap the <video> src below, or replace the
+     <video> tag entirely with an <img> for a gif.
+     ============================================ */
+  .bg-media {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-media video,
+  .bg-media img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+  }
+
+  /* Warm tint overlay so the video reads as cozy
+     and text stays legible no matter what plays */
+  .bg-tint {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(42, 26, 32, 0.35) 0%, rgba(42, 26, 32, 0.75) 70%, rgba(42, 26, 32, 0.92) 100%),
+      linear-gradient(180deg, rgba(255, 170, 212, 0.08) 0%, rgba(232, 181, 99, 0.06) 100%);
+    pointer-events: none;
+  }
+
+  /* Subtle grain for hand-crafted texture */
+  .bg-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* ============================================
+     CONTENT LAYER
+     ============================================ */
+  .stage {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 2rem 3rem;
+  }
+
+  /* TOP NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0;
+    animation: fadeDown 1.2s ease 0.3s forwards;
+  }
+
+  .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+  }
+
+  .brand-mark .star {
+    color: var(--pink);
+    font-size: 1.2rem;
+    display: inline-block;
+    animation: gentleSpin 12s linear infinite;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .nav-links a {
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 1px;
+    background: var(--pink);
+    transition: width 0.4s ease;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+    color: var(--pink);
+  }
+
+  .nav-links a:hover::after {
+    width: 100%;
+  }
+
+  /* HERO CENTER */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--pink);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .eyebrow::before,
+  .eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--pink);
+    opacity: 0.6;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    max-width: 14ch;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.9s forwards;
+  }
+
+  h1 .accent {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--pink);
+    font-variation-settings: 'opsz' 144;
+  }
+
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--cream);
+    opacity: 0;
+    max-width: 42ch;
+    line-height: 1.5;
+    animation: fadeUp 1s ease 1.2s forwards;
+    animation-fill-mode: forwards;
+  }
+
+  .tagline.show {
+    opacity: 0.85;
+  }
+
+  /* CTA */
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+  }
+
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 1.1rem 2.2rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .btn-primary {
+    background: var(--pink);
+    color: var(--ink);
+    border-radius: 2px;
+    box-shadow: 0 4px 24px rgba(255, 170, 212, 0.3);
+  }
+
+  .btn-primary:hover {
+    background: var(--cream);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(255, 245, 235, 0.4);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(255, 245, 235, 0.4);
+    border-radius: 2px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+  }
+
+  /* BOTTOM BAR */
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.8s forwards;
+  }
+
+  .stat-block {
+    display: flex;
+    gap: 3rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--pink);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0.6;
+  }
+
+  .scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--pink), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* CORNER ORNAMENTS */
+  .ornament {
+    position: fixed;
+    z-index: 5;
+    pointer-events: none;
+    color: var(--pink);
+    opacity: 0.4;
+    font-size: 1.5rem;
+    animation: gentleFloat 6s ease-in-out infinite;
+  }
+
+  .ornament.tl { top: 6rem; left: 2rem; }
+  .ornament.tr { top: 6rem; right: 2rem; animation-delay: 1.5s; }
+  .ornament.bl { bottom: 6rem; left: 2rem; animation-delay: 3s; }
+  .ornament.br { bottom: 6rem; right: 2rem; animation-delay: 4.5s; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes gentleSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-8px); opacity: 0.7; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* Tagline opacity fix */
+  .tagline {
+    opacity: 0;
+  }
+  @keyframes fadeUpTag {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 0.85; transform: translateY(0); }
+  }
+  .tagline {
+    animation: fadeUpTag 1s ease 1.2s forwards;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .stage { padding: 1.5rem; }
+    .nav-links { display: none; }
+    .ornament { display: none; }
+    .bottom { flex-direction: column; gap: 2rem; align-items: flex-start; }
+    .stat-block { gap: 1.5rem; }
+    .scroll-hint { align-self: center; }
+    .cta-row { flex-direction: column; width: 100%; max-width: 280px; }
+    .btn { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     BACKGROUND MEDIA
+     To use a different VIDEO: change the src below.
+     To use a GIF instead: replace the <video> tag with:
+     <img src="your-file.gif" alt="" />
+     ============================================ -->
+<div class="bg-media">
+  <video autoplay muted loop playsinline>
+    <source src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" type="video/mp4" />
+  </video>
+</div>
+
+<div class="bg-tint"></div>
+<div class="bg-grain"></div>
+
+<!-- Decorative corner sparkles -->
+<div class="ornament tl">✦</div>
+<div class="ornament tr">✦</div>
+<div class="ornament bl">✦</div>
+<div class="ornament br">✦</div>
+
+<div class="stage">
+
+  <nav>
+    <div class="brand-mark">
+      <span class="star">✦</span>
+      <span>Cozy Crafters</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Members</a></li>
+      <li><a href="#">Chronicles</a></li>
+      <li><a href="#">Join</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">Season Two · Now Live</div>
+    <h1>A small world,<br /><span class="accent">warmly built.</span></h1>
+    <p class="tagline">A close-knit Minecraft survival server where the chests are full, the neighbors are loud, and somebody's always building something they probably shouldn't.</p>
+    <div class="cta-row">
+      <a href="#" class="btn btn-primary">Join the Server →</a>
+      <a href="#" class="btn btn-secondary">Read the Chronicles</a>
+    </div>
+  </section>
+
+  <div class="bottom">
+    <div class="stat-block">
+      <div class="stat">
+        <div class="stat-num">1+ yr</div>
+        <div class="stat-label">Running Strong</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">S2</div>
+        <div class="stat-label">Current Season</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1.21</div>
+        <div class="stat-label">Paper Edition</div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>Explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
