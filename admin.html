@@ -10,6 +10,108 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
 
 <link rel="stylesheet" href="styles.css" />
+
+<style>
+  /* Login gate styles */
+  .login-gate {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .login-card {
+    background: rgba(255, 244, 220, 0.04);
+    border: 1px solid rgba(244, 201, 93, 0.15);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+  }
+
+  .login-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .login-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+  }
+
+  .login-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    color: var(--cream);
+    opacity: 0.6;
+    margin-bottom: 1.8rem;
+  }
+
+  .login-card .field {
+    margin-bottom: 1rem;
+  }
+
+  .login-card input[type="password"] {
+    width: 100%;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    color: var(--cream);
+    background: rgba(43, 31, 21, 0.8);
+    border: 2px solid rgba(244, 201, 93, 0.2);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    transition: all 0.25s ease;
+    outline: none;
+    text-align: center;
+  }
+
+  .login-card input[type="password"]::placeholder {
+    color: var(--cream);
+    opacity: 0.35;
+  }
+
+  .login-card input[type="password"]:focus {
+    border-color: var(--sun);
+    background: rgba(43, 31, 21, 1);
+    box-shadow: 0 0 0 4px rgba(244, 201, 93, 0.15);
+  }
+
+  .login-error {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    color: #E89A6E;
+    min-height: 1.2em;
+    margin-bottom: 0.8rem;
+  }
+
+  .login-btn {
+    width: 100%;
+  }
+
+  .logout-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    color: var(--cream);
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    transition: opacity 0.2s;
+  }
+
+  .logout-btn:hover {
+    opacity: 1;
+  }
+</style>
 </head>
 <body>
 
@@ -19,142 +121,168 @@
 
 <div class="admin-shell">
 
-  <!-- Header / breadcrumbs -->
-  <header class="admin-header">
-    <div class="crumbs">
-      <a href="index.html">🌿 Cozy Crafters</a>
-      <span class="sep">/</span>
-      <span>Admin Panel</span>
+  <!-- ============================================
+       LOGIN GATE
+       ============================================ -->
+  <div class="login-gate" id="loginGate">
+    <div class="login-card">
+      <div class="login-icon">🔒</div>
+      <h2 class="login-title">Admin Panel</h2>
+      <p class="login-sub">Enter the admin password to continue.</p>
+      <div class="field">
+        <input type="password" id="loginPassword" placeholder="Password" />
+      </div>
+      <p class="login-error" id="loginError"></p>
+      <button class="btn btn-primary login-btn" id="loginBtn" type="button">Log In →</button>
     </div>
-    <span class="status-pill saved" id="statusPill">
-      <span class="status-dot"></span>
-      <span id="statusText">All saved</span>
-    </span>
-  </header>
-
-  <!-- Title -->
-  <h1 class="admin-title">Background <span class="accent">Studio</span></h1>
-  <p class="admin-subtitle">Pick what plays behind the splash screen. Upload a video or gif, paste a link, or grab one of the presets. Hit save and the homepage updates instantly.</p>
-
-  <!-- Two-column layout -->
-  <div class="admin-grid">
-
-    <!-- LEFT: Editor -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🎬</span>
-        <h2 class="card-title">Choose your media</h2>
-      </div>
-
-      <!-- Tabs -->
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="video" type="button">Video (MP4)</button>
-        <button class="tab" data-tab="gif" type="button">GIF / Image</button>
-        <button class="tab" data-tab="presets" type="button">Presets</button>
-      </div>
-
-      <!-- VIDEO TAB -->
-      <div class="tab-panel active" data-panel="video">
-        <p class="card-helper">Paste a direct link to an MP4 file. Looped video gives the smoothest cozy vibe — try clips around 10–30 seconds.</p>
-
-        <div class="field">
-          <label class="field-label" for="videoUrl">Video URL</label>
-          <input type="url" id="videoUrl" placeholder="https://example.com/cozy-clip.mp4" />
-          <p class="field-hint">Must be a direct .mp4 link. YouTube/TikTok URLs won't work — download the clip first.</p>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="videoFile">Or upload a file</label>
-          <input type="file" id="videoFile" accept="video/mp4,video/webm" />
-          <p class="field-hint">Files load as a temporary preview. For permanent use, host the file somewhere and paste the URL above.</p>
-        </div>
-      </div>
-
-      <!-- GIF TAB -->
-      <div class="tab-panel" data-panel="gif">
-        <p class="card-helper">GIFs and looping images work too. Great for pixel-art scenes or hand-made loops.</p>
-
-        <div class="field">
-          <label class="field-label" for="gifUrl">GIF or image URL</label>
-          <input type="url" id="gifUrl" placeholder="https://example.com/cozy-scene.gif" />
-          <p class="field-hint">Direct .gif, .png, .jpg, or .webp link.</p>
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="gifFile">Or upload a file</label>
-          <input type="file" id="gifFile" accept="image/*" />
-        </div>
-      </div>
-
-      <!-- PRESETS TAB -->
-      <div class="tab-panel" data-panel="presets">
-        <p class="card-helper">A handful of cozy starters. Click one to load it into the preview.</p>
-
-        <div class="preset-grid" id="presetGrid">
-          <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4">
-            <video autoplay muted loop playsinline>
-              <source src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" type="video/mp4" />
-            </video>
-            <div class="preset-label">Foggy Forest</div>
-          </div>
-
-          <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4">
-            <video autoplay muted loop playsinline>
-              <source src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4" type="video/mp4" />
-            </video>
-            <div class="preset-label">River Through Trees</div>
-          </div>
-
-          <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4">
-            <video autoplay muted loop playsinline>
-              <source src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4" type="video/mp4" />
-            </video>
-            <div class="preset-label">Crackling Hearth</div>
-          </div>
-
-          <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4">
-            <video autoplay muted loop playsinline>
-              <source src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4" type="video/mp4" />
-            </video>
-            <div class="preset-label">Falling Snow</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action row -->
-      <div class="action-row">
-        <button class="btn btn-primary" id="saveBtn" type="button">💾 Save Background</button>
-        <button class="btn btn-secondary" id="previewBtn" type="button">👁 Open Splash Page</button>
-        <button class="btn btn-danger" id="resetBtn" type="button">Reset to Default</button>
-      </div>
-    </div>
-
-    <!-- RIGHT: Preview -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">✨</span>
-        <h2 class="card-title">Live preview</h2>
-      </div>
-      <p class="card-helper">This is roughly how the splash screen will look with your background. The same warm overlay sits on top to keep text readable.</p>
-
-      <div class="preview-frame" id="previewFrame">
-        <div class="preview-empty" id="previewEmpty">
-          <div class="empty-icon">🎬</div>
-          <div>Pick or paste media to preview</div>
-        </div>
-        <div class="preview-overlay"></div>
-        <div class="preview-text">
-          <div class="pt-eyebrow">Season Two · Now Live</div>
-          <div class="pt-title">A small world,<br /><span class="pt-accent">warmly built.</span></div>
-        </div>
-      </div>
-
-      <p class="field-hint" style="margin-top: 1rem;">
-        💡 Tip: dark, low-contrast clips work best. Anything too bright or busy fights the text on top.
-      </p>
-    </div>
-
   </div>
+
+  <!-- ============================================
+       ADMIN CONTENT (hidden until authenticated)
+       ============================================ -->
+  <div id="adminContent" style="display: none;">
+
+    <!-- Header / breadcrumbs -->
+    <header class="admin-header">
+      <div class="crumbs">
+        <a href="index.html">🌿 Cozy Crafters</a>
+        <span class="sep">/</span>
+        <span>Admin Panel</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.8rem;">
+        <span class="status-pill saved" id="statusPill">
+          <span class="status-dot"></span>
+          <span id="statusText">All saved</span>
+        </span>
+        <button class="logout-btn" id="logoutBtn">Log out</button>
+      </div>
+    </header>
+
+    <!-- Title -->
+    <h1 class="admin-title">Background <span class="accent">Studio</span></h1>
+    <p class="admin-subtitle">Pick what plays behind the splash screen. Upload a video or gif, paste a link, or grab one of the presets. Hit save and the homepage updates instantly.</p>
+
+    <!-- Two-column layout -->
+    <div class="admin-grid">
+
+      <!-- LEFT: Editor -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🎬</span>
+          <h2 class="card-title">Choose your media</h2>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="video" type="button">Video (MP4)</button>
+          <button class="tab" data-tab="gif" type="button">GIF / Image</button>
+          <button class="tab" data-tab="presets" type="button">Presets</button>
+        </div>
+
+        <!-- VIDEO TAB -->
+        <div class="tab-panel active" data-panel="video">
+          <p class="card-helper">Paste a direct link to an MP4 file. Looped video gives the smoothest cozy vibe — try clips around 10–30 seconds.</p>
+
+          <div class="field">
+            <label class="field-label" for="videoUrl">Video URL</label>
+            <input type="url" id="videoUrl" placeholder="https://example.com/cozy-clip.mp4" />
+            <p class="field-hint">Must be a direct .mp4 link. YouTube/TikTok URLs won't work — download the clip first.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="videoFile">Or upload a file</label>
+            <input type="file" id="videoFile" accept="video/mp4,video/webm" />
+            <p class="field-hint">Files load as a temporary preview. For permanent use, host the file somewhere and paste the URL above.</p>
+          </div>
+        </div>
+
+        <!-- GIF TAB -->
+        <div class="tab-panel" data-panel="gif">
+          <p class="card-helper">GIFs and looping images work too. Great for pixel-art scenes or hand-made loops.</p>
+
+          <div class="field">
+            <label class="field-label" for="gifUrl">GIF or image URL</label>
+            <input type="url" id="gifUrl" placeholder="https://example.com/cozy-scene.gif" />
+            <p class="field-hint">Direct .gif, .png, .jpg, or .webp link.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="gifFile">Or upload a file</label>
+            <input type="file" id="gifFile" accept="image/*" />
+          </div>
+        </div>
+
+        <!-- PRESETS TAB -->
+        <div class="tab-panel" data-panel="presets">
+          <p class="card-helper">A handful of cozy starters. Click one to load it into the preview.</p>
+
+          <div class="preset-grid" id="presetGrid">
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4">
+              <video autoplay muted loop playsinline>
+                <source src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" type="video/mp4" />
+              </video>
+              <div class="preset-label">Foggy Forest</div>
+            </div>
+
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4">
+              <video autoplay muted loop playsinline>
+                <source src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4" type="video/mp4" />
+              </video>
+              <div class="preset-label">River Through Trees</div>
+            </div>
+
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4">
+              <video autoplay muted loop playsinline>
+                <source src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4" type="video/mp4" />
+              </video>
+              <div class="preset-label">Crackling Hearth</div>
+            </div>
+
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4">
+              <video autoplay muted loop playsinline>
+                <source src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4" type="video/mp4" />
+              </video>
+              <div class="preset-label">Falling Snow</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action row -->
+        <div class="action-row">
+          <button class="btn btn-primary" id="saveBtn" type="button">💾 Save Background</button>
+          <button class="btn btn-secondary" id="previewBtn" type="button">👁 Open Splash Page</button>
+          <button class="btn btn-danger" id="resetBtn" type="button">Reset to Default</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Preview -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">✨</span>
+          <h2 class="card-title">Live preview</h2>
+        </div>
+        <p class="card-helper">This is roughly how the splash screen will look with your background. The same warm overlay sits on top to keep text readable.</p>
+
+        <div class="preview-frame" id="previewFrame">
+          <div class="preview-empty" id="previewEmpty">
+            <div class="empty-icon">🎬</div>
+            <div>Pick or paste media to preview</div>
+          </div>
+          <div class="preview-overlay"></div>
+          <div class="preview-text">
+            <div class="pt-eyebrow">Season Two · Now Live</div>
+            <div class="pt-title">A small world,<br /><span class="pt-accent">warmly built.</span></div>
+          </div>
+        </div>
+
+        <p class="field-hint" style="margin-top: 1rem;">
+          💡 Tip: dark, low-contrast clips work best. Anything too bright or busy fights the text on top.
+        </p>
+      </div>
+
+    </div>
+  </div> <!-- /adminContent -->
+
 </div>
 
 <!-- Toast -->
@@ -165,225 +293,299 @@
 
 <script>
   // ============================================
-  // CONFIG — update these to match your setup
+  // CONFIG
   // ============================================
   const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
-  const AUTH_TOKEN = 'CHANGE_ME_TO_A_SECRET'; // set this to the same secret you saved in Cloudflare
+
+  // Token stored in sessionStorage (cleared when browser tab closes)
+  let AUTH_TOKEN = sessionStorage.getItem('ccAdminToken') || '';
 
   // ============================================
-  // Admin panel logic
+  // Login
   // ============================================
+  const loginGate = document.getElementById('loginGate');
+  const adminContent = document.getElementById('adminContent');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
 
-  const previewFrame = document.getElementById('previewFrame');
-  const previewEmpty = document.getElementById('previewEmpty');
-  const statusPill = document.getElementById('statusPill');
-  const statusText = document.getElementById('statusText');
-  const toast = document.getElementById('toast');
-  const toastText = document.getElementById('toastText');
-
-  let pending = null;
-
-  // -----------------------------
-  // Tabs
-  // -----------------------------
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelector(`.tab-panel[data-panel="${target}"]`).classList.add('active');
-    });
-  });
-
-  // -----------------------------
-  // Preview rendering
-  // -----------------------------
-  function renderPreview(type, src) {
-    if (!src) return;
-    pending = { type, src };
-    previewEmpty.style.display = 'none';
-
-    const oldMedia = previewFrame.querySelector('video, img');
-    if (oldMedia) oldMedia.remove();
-
-    let media;
-    if (type === 'gif' || type === 'image') {
-      media = document.createElement('img');
-      media.src = src;
-      media.alt = '';
-    } else {
-      media = document.createElement('video');
-      media.autoplay = true;
-      media.muted = true;
-      media.loop = true;
-      media.playsInline = true;
-      const source = document.createElement('source');
-      source.src = src;
-      source.type = 'video/mp4';
-      media.appendChild(source);
-    }
-    previewFrame.insertBefore(media, previewFrame.firstChild);
-    markUnsaved();
-  }
-
-  function markUnsaved() {
-    statusPill.classList.remove('saved');
-    statusPill.classList.add('unsaved');
-    statusText.textContent = 'Unsaved changes';
-  }
-
-  function markSaved() {
-    statusPill.classList.remove('unsaved');
-    statusPill.classList.add('saved');
-    statusText.textContent = 'All saved';
-  }
-
-  function showToast(msg) {
-    toastText.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2400);
-  }
-
-  // -----------------------------
-  // Inputs
-  // -----------------------------
-  document.getElementById('videoUrl').addEventListener('input', e => {
-    const val = e.target.value.trim();
-    if (val) renderPreview('video', val);
-  });
-
-  document.getElementById('gifUrl').addEventListener('input', e => {
-    const val = e.target.value.trim();
-    if (val) renderPreview('gif', val);
-  });
-
-  document.getElementById('videoFile').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      renderPreview('video', url);
-    }
-  });
-
-  document.getElementById('gifFile').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      renderPreview('gif', url);
-    }
-  });
-
-  // -----------------------------
-  // Presets
-  // -----------------------------
-  document.querySelectorAll('.preset-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      renderPreview(card.dataset.type, card.dataset.src);
-    });
-  });
-
-  // -----------------------------
-  // Action buttons (now saves to API)
-  // -----------------------------
-  document.getElementById('saveBtn').addEventListener('click', async () => {
-    if (!pending) {
-      showToast('Pick a background first!');
-      return;
-    }
-    if (pending.src.startsWith('blob:')) {
-      showToast('Host the file somewhere first — blob URLs are temporary.');
-      return;
-    }
-
+  async function verifyToken(token) {
     try {
-      const res = await fetch(`${API_BASE}/api/settings/background`, {
+      const res = await fetch(`${API_BASE}/api/settings/__auth_test`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${AUTH_TOKEN}`,
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ value: pending }),
+        body: JSON.stringify({ value: 'ok' }),
       });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
+  }
 
-      if (!res.ok) {
-        const err = await res.json();
-        showToast(`Error: ${err.error || 'Save failed'}`);
+  async function handleLogin() {
+    const token = loginPassword.value.trim();
+    if (!token) {
+      loginError.textContent = 'Enter a password.';
+      return;
+    }
+
+    loginBtn.textContent = 'Checking...';
+    loginBtn.disabled = true;
+    loginError.textContent = '';
+
+    const valid = await verifyToken(token);
+
+    if (valid) {
+      AUTH_TOKEN = token;
+      sessionStorage.setItem('ccAdminToken', token);
+      loginGate.style.display = 'none';
+      adminContent.style.display = 'block';
+      initAdmin();
+    } else {
+      loginError.textContent = 'Wrong password.';
+    }
+
+    loginBtn.textContent = 'Log In →';
+    loginBtn.disabled = false;
+  }
+
+  loginBtn.addEventListener('click', handleLogin);
+  loginPassword.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+
+  // Auto-login if session token still valid
+  if (AUTH_TOKEN) {
+    (async () => {
+      const valid = await verifyToken(AUTH_TOKEN);
+      if (valid) {
+        loginGate.style.display = 'none';
+        adminContent.style.display = 'block';
+        initAdmin();
+      } else {
+        sessionStorage.removeItem('ccAdminToken');
+        AUTH_TOKEN = '';
+      }
+    })();
+  }
+
+  // ============================================
+  // Admin panel (runs after successful login)
+  // ============================================
+  function initAdmin() {
+
+    const previewFrame = document.getElementById('previewFrame');
+    const previewEmpty = document.getElementById('previewEmpty');
+    const statusPill = document.getElementById('statusPill');
+    const statusText = document.getElementById('statusText');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    let pending = null;
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('ccAdminToken');
+      AUTH_TOKEN = '';
+      location.reload();
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.tab-panel[data-panel="${target}"]`).classList.add('active');
+      });
+    });
+
+    // Preview rendering
+    function renderPreview(type, src) {
+      if (!src) return;
+      pending = { type, src };
+      previewEmpty.style.display = 'none';
+
+      const oldMedia = previewFrame.querySelector('video, img');
+      if (oldMedia) oldMedia.remove();
+
+      let media;
+      if (type === 'gif' || type === 'image') {
+        media = document.createElement('img');
+        media.src = src;
+        media.alt = '';
+      } else {
+        media = document.createElement('video');
+        media.autoplay = true;
+        media.muted = true;
+        media.loop = true;
+        media.playsInline = true;
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = 'video/mp4';
+        media.appendChild(source);
+      }
+      previewFrame.insertBefore(media, previewFrame.firstChild);
+      markUnsaved();
+    }
+
+    function markUnsaved() {
+      statusPill.classList.remove('saved');
+      statusPill.classList.add('unsaved');
+      statusText.textContent = 'Unsaved changes';
+    }
+
+    function markSaved() {
+      statusPill.classList.remove('unsaved');
+      statusPill.classList.add('saved');
+      statusText.textContent = 'All saved';
+    }
+
+    function showToast(msg) {
+      toastText.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // Inputs
+    document.getElementById('videoUrl').addEventListener('input', e => {
+      const val = e.target.value.trim();
+      if (val) renderPreview('video', val);
+    });
+
+    document.getElementById('gifUrl').addEventListener('input', e => {
+      const val = e.target.value.trim();
+      if (val) renderPreview('gif', val);
+    });
+
+    document.getElementById('videoFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        renderPreview('video', url);
+      }
+    });
+
+    document.getElementById('gifFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        renderPreview('gif', url);
+      }
+    });
+
+    // Presets
+    document.querySelectorAll('.preset-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        renderPreview(card.dataset.type, card.dataset.src);
+      });
+    });
+
+    // Save
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      if (!pending) {
+        showToast('Pick a background first!');
+        return;
+      }
+      if (pending.src.startsWith('blob:')) {
+        showToast('Host the file somewhere first — blob URLs are temporary.');
         return;
       }
 
-      markSaved();
-      showToast('Saved! Splash page updated.');
-    } catch (e) {
-      showToast('Failed to save — check your connection.');
-      console.error(e);
-    }
-  });
-
-  document.getElementById('previewBtn').addEventListener('click', () => {
-    window.open('index.html', '_blank');
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', async () => {
-    if (!confirm('Reset background to the default forest video?')) return;
-
-    const defaultBg = {
-      type: 'video',
-      src: 'https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4'
-    };
-
-    try {
-      await fetch(`${API_BASE}/api/settings/background`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${AUTH_TOKEN}`,
-        },
-        body: JSON.stringify({ value: defaultBg }),
-      });
-    } catch (e) {
-      console.warn('Failed to reset via API:', e);
-    }
-
-    pending = null;
-    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('videoUrl').value = '';
-    document.getElementById('gifUrl').value = '';
-    const oldMedia = previewFrame.querySelector('video, img');
-    if (oldMedia) oldMedia.remove();
-    previewEmpty.style.display = 'flex';
-    markSaved();
-    showToast('Reset to default.');
-  });
-
-  // -----------------------------
-  // Load existing config from API
-  // -----------------------------
-  (async function initFromAPI() {
-    try {
-      const res = await fetch(`${API_BASE}/api/settings/background`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const cfg = data.value;
-      if (cfg && cfg.src) {
-        renderPreview(cfg.type, cfg.src);
-        if (cfg.type === 'gif' || cfg.type === 'image') {
-          document.getElementById('gifUrl').value = cfg.src;
-          document.querySelector('.tab[data-tab="gif"]').click();
-        } else if (!cfg.src.startsWith('blob:')) {
-          document.getElementById('videoUrl').value = cfg.src;
-        }
-        document.querySelectorAll('.preset-card').forEach(c => {
-          if (c.dataset.src === cfg.src) c.classList.add('selected');
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/background`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: pending }),
         });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(`Error: ${err.error || 'Save failed'}`);
+          return;
+        }
+
         markSaved();
+        showToast('Saved! Splash page updated.');
+      } catch (e) {
+        showToast('Failed to save — check your connection.');
+        console.error(e);
       }
-    } catch (e) {
-      console.warn('Failed to load config from API:', e);
-    }
-  })();
+    });
+
+    // Open splash
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      window.open('index.html', '_blank');
+    });
+
+    // Reset
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+      if (!confirm('Reset background to the default forest video?')) return;
+
+      const defaultBg = {
+        type: 'video',
+        src: 'https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4'
+      };
+
+      try {
+        await fetch(`${API_BASE}/api/settings/background`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: defaultBg }),
+        });
+      } catch (e) {
+        console.warn('Failed to reset via API:', e);
+      }
+
+      pending = null;
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('videoUrl').value = '';
+      document.getElementById('gifUrl').value = '';
+      const oldMedia = previewFrame.querySelector('video, img');
+      if (oldMedia) oldMedia.remove();
+      previewEmpty.style.display = 'flex';
+      markSaved();
+      showToast('Reset to default.');
+    });
+
+    // Load existing config from API
+    (async function initFromAPI() {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/background`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const cfg = data.value;
+        if (cfg && cfg.src) {
+          renderPreview(cfg.type, cfg.src);
+          if (cfg.type === 'gif' || cfg.type === 'image') {
+            document.getElementById('gifUrl').value = cfg.src;
+            document.querySelector('.tab[data-tab="gif"]').click();
+          } else if (!cfg.src.startsWith('blob:')) {
+            document.getElementById('videoUrl').value = cfg.src;
+          }
+          document.querySelectorAll('.preset-card').forEach(c => {
+            if (c.dataset.src === cfg.src) c.classList.add('selected');
+          });
+          markSaved();
+        }
+      } catch (e) {
+        console.warn('Failed to load config from API:', e);
+      }
+    })();
+
+  } // end initAdmin
 </script>
 
 </body>
