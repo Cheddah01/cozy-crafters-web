@@ -165,10 +165,15 @@
 
 <script>
   // ============================================
+  // CONFIG — update these to match your setup
+  // ============================================
+  const API_BASE = 'https://cozy-crafters-api.YOUR_SUBDOMAIN.workers.dev';
+  const AUTH_TOKEN = 'CHANGE_ME_TO_A_SECRET'; // must match the token in your Worker
+
+  // ============================================
   // Admin panel logic
   // ============================================
 
-  const STORAGE_KEY = 'ccBackground';
   const previewFrame = document.getElementById('previewFrame');
   const previewEmpty = document.getElementById('previewEmpty');
   const statusPill = document.getElementById('statusPill');
@@ -176,7 +181,6 @@
   const toast = document.getElementById('toast');
   const toastText = document.getElementById('toastText');
 
-  // Current pending config (not yet saved)
   let pending = null;
 
   // -----------------------------
@@ -200,7 +204,6 @@
     pending = { type, src };
     previewEmpty.style.display = 'none';
 
-    // Remove existing media
     const oldMedia = previewFrame.querySelector('video, img');
     if (oldMedia) oldMedia.remove();
 
@@ -283,30 +286,67 @@
   });
 
   // -----------------------------
-  // Action buttons
+  // Action buttons (now saves to API)
   // -----------------------------
-  document.getElementById('saveBtn').addEventListener('click', () => {
+  document.getElementById('saveBtn').addEventListener('click', async () => {
     if (!pending) {
       showToast('Pick a background first!');
       return;
     }
-    // Note: blob: URLs from file uploads only work in this browser session.
     if (pending.src.startsWith('blob:')) {
-      showToast('Saved (preview only — host the file for permanent use)');
-    } else {
-      showToast('Saved! Splash page updated.');
+      showToast('Host the file somewhere first — blob URLs are temporary.');
+      return;
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
-    markSaved();
+
+    try {
+      const res = await fetch(`${API_BASE}/api/settings/background`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${AUTH_TOKEN}`,
+        },
+        body: JSON.stringify({ value: pending }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        showToast(`Error: ${err.error || 'Save failed'}`);
+        return;
+      }
+
+      markSaved();
+      showToast('Saved! Splash page updated.');
+    } catch (e) {
+      showToast('Failed to save — check your connection.');
+      console.error(e);
+    }
   });
 
   document.getElementById('previewBtn').addEventListener('click', () => {
     window.open('index.html', '_blank');
   });
 
-  document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('resetBtn').addEventListener('click', async () => {
     if (!confirm('Reset background to the default forest video?')) return;
-    localStorage.removeItem(STORAGE_KEY);
+
+    const defaultBg = {
+      type: 'video',
+      src: 'https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4'
+    };
+
+    try {
+      await fetch(`${API_BASE}/api/settings/background`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${AUTH_TOKEN}`,
+        },
+        body: JSON.stringify({ value: defaultBg }),
+      });
+    } catch (e) {
+      console.warn('Failed to reset via API:', e);
+    }
+
     pending = null;
     document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
     document.getElementById('videoUrl').value = '';
@@ -319,30 +359,29 @@
   });
 
   // -----------------------------
-  // Load existing config on page load
+  // Load existing config from API
   // -----------------------------
-  (function initFromStorage() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
+  (async function initFromAPI() {
     try {
-      const cfg = JSON.parse(saved);
+      const res = await fetch(`${API_BASE}/api/settings/background`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const cfg = data.value;
       if (cfg && cfg.src) {
         renderPreview(cfg.type, cfg.src);
-        // Pre-fill the right input
         if (cfg.type === 'gif' || cfg.type === 'image') {
           document.getElementById('gifUrl').value = cfg.src;
           document.querySelector('.tab[data-tab="gif"]').click();
         } else if (!cfg.src.startsWith('blob:')) {
           document.getElementById('videoUrl').value = cfg.src;
         }
-        // Mark a preset as selected if it matches
         document.querySelectorAll('.preset-card').forEach(c => {
           if (c.dataset.src === cfg.src) c.classList.add('selected');
         });
         markSaved();
       }
     } catch (e) {
-      console.warn('Failed to load saved config:', e);
+      console.warn('Failed to load config from API:', e);
     }
   })();
 </script>

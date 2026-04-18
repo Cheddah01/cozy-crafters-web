@@ -224,12 +224,18 @@
   </footer>
 
   <script>
-    // Load background media saved by the admin panel.
-    (function loadBackground() {
-      const saved = localStorage.getItem('ccBackground');
-      if (!saved) return;
+    // ============================================
+    // CONFIG — update this to your Worker URL
+    // ============================================
+    const API_BASE = 'https://cozy-crafters-api.YOUR_SUBDOMAIN.workers.dev';
+
+    // Load background from the API (falls back to default video)
+    (async function loadBackground() {
       try {
-        const cfg = JSON.parse(saved);
+        const res = await fetch(`${API_BASE}/api/settings/background`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const cfg = data.value;
         const container = document.getElementById('bgMedia');
         if (!cfg || !cfg.src) return;
         if (cfg.type === 'gif' || cfg.type === 'image') {
@@ -241,7 +247,7 @@
             </video>`;
         }
       } catch (e) {
-        console.warn('Failed to load background config:', e);
+        console.warn('Failed to load background from API:', e);
       }
     })();
 
