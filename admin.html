@@ -111,6 +111,88 @@
   .logout-btn:hover {
     opacity: 1;
   }
+
+  /* Upload status indicator */
+  .upload-status {
+    margin-top: 0.6rem;
+    min-height: 0;
+    transition: all 0.3s ease;
+  }
+
+  .upload-status:empty {
+    display: none;
+  }
+
+  .upload-bar {
+    background: rgba(43, 31, 21, 0.8);
+    border: 1px solid rgba(244, 201, 93, 0.15);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .upload-bar .upload-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(244, 201, 93, 0.2);
+    border-top-color: var(--sun);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .upload-bar .upload-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cream);
+    opacity: 0.8;
+    flex: 1;
+  }
+
+  .upload-bar .upload-size {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    color: var(--cream);
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+
+  .upload-bar.done {
+    border-color: rgba(107, 142, 78, 0.4);
+    background: rgba(107, 142, 78, 0.08);
+  }
+
+  .upload-bar.done .upload-label {
+    color: #A8C77E;
+  }
+
+  .upload-bar.error {
+    border-color: rgba(232, 154, 110, 0.4);
+    background: rgba(232, 154, 110, 0.08);
+  }
+
+  .upload-bar.error .upload-label {
+    color: #E89A6E;
+  }
+
+  .upload-check {
+    color: #A8C77E;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .upload-x {
+    color: #E89A6E;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
@@ -193,6 +275,7 @@
             <label class="field-label" for="videoFile">Or upload a file</label>
             <input type="file" id="videoFile" accept="video/mp4,video/webm" />
             <p class="field-hint">File will be uploaded to cloud storage permanently. Max 50MB.</p>
+            <div class="upload-status" id="videoUploadStatus"></div>
           </div>
         </div>
 
@@ -209,6 +292,7 @@
           <div class="field">
             <label class="field-label" for="gifFile">Or upload a file</label>
             <input type="file" id="gifFile" accept="image/*" />
+            <div class="upload-status" id="gifUploadStatus"></div>
           </div>
         </div>
 
@@ -463,8 +547,22 @@
     });
 
     // File upload helper — uploads to R2 via the Worker
-    async function uploadFile(file, type) {
-      showToast('Uploading...');
+    function formatSize(bytes) {
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    async function uploadFile(file, type, statusElId) {
+      const statusEl = document.getElementById(statusElId);
+
+      // Show uploading state
+      statusEl.innerHTML = `
+        <div class="upload-bar">
+          <div class="upload-spinner"></div>
+          <span class="upload-label">Uploading ${file.name}...</span>
+          <span class="upload-size">${formatSize(file.size)}</span>
+        </div>`;
+
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -477,27 +575,46 @@
 
         if (!res.ok) {
           const err = await res.json();
-          showToast(`Upload failed: ${err.error || 'unknown error'}`);
+          statusEl.innerHTML = `
+            <div class="upload-bar error">
+              <span class="upload-x">✕</span>
+              <span class="upload-label">Failed: ${err.error || 'unknown error'}</span>
+            </div>`;
           return;
         }
 
         const data = await res.json();
-        showToast('Uploaded! Preview updated.');
+
+        statusEl.innerHTML = `
+          <div class="upload-bar done">
+            <span class="upload-check">✓</span>
+            <span class="upload-label">Uploaded — preview updated</span>
+            <span class="upload-size">${formatSize(file.size)}</span>
+          </div>`;
+
         renderPreview(type, data.url);
+
+        // Fade out after a few seconds
+        setTimeout(() => { statusEl.innerHTML = ''; }, 5000);
+
       } catch (e) {
-        showToast('Upload failed — check your connection.');
+        statusEl.innerHTML = `
+          <div class="upload-bar error">
+            <span class="upload-x">✕</span>
+            <span class="upload-label">Upload failed — check connection</span>
+          </div>`;
         console.error(e);
       }
     }
 
     document.getElementById('videoFile').addEventListener('change', e => {
       const file = e.target.files[0];
-      if (file) uploadFile(file, 'video');
+      if (file) uploadFile(file, 'video', 'videoUploadStatus');
     });
 
     document.getElementById('gifFile').addEventListener('change', e => {
       const file = e.target.files[0];
-      if (file) uploadFile(file, 'gif');
+      if (file) uploadFile(file, 'gif', 'gifUploadStatus');
     });
 
     // Presets
