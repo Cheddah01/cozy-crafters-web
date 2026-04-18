@@ -192,7 +192,7 @@
           <div class="field">
             <label class="field-label" for="videoFile">Or upload a file</label>
             <input type="file" id="videoFile" accept="video/mp4,video/webm" />
-            <p class="field-hint">Files load as a temporary preview. For permanent use, host the file somewhere and paste the URL above.</p>
+            <p class="field-hint">File will be uploaded to cloud storage permanently. Max 50MB.</p>
           </div>
         </div>
 
@@ -462,20 +462,42 @@
       if (val) renderPreview('gif', val);
     });
 
+    // File upload helper — uploads to R2 via the Worker
+    async function uploadFile(file, type) {
+      showToast('Uploading...');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(`Upload failed: ${err.error || 'unknown error'}`);
+          return;
+        }
+
+        const data = await res.json();
+        showToast('Uploaded! Preview updated.');
+        renderPreview(type, data.url);
+      } catch (e) {
+        showToast('Upload failed — check your connection.');
+        console.error(e);
+      }
+    }
+
     document.getElementById('videoFile').addEventListener('change', e => {
       const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        renderPreview('video', url);
-      }
+      if (file) uploadFile(file, 'video');
     });
 
     document.getElementById('gifFile').addEventListener('change', e => {
       const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        renderPreview('gif', url);
-      }
+      if (file) uploadFile(file, 'gif');
     });
 
     // Presets
@@ -491,10 +513,6 @@
     document.getElementById('saveBtn').addEventListener('click', async () => {
       if (!pending) {
         showToast('Pick a background first!');
-        return;
-      }
-      if (pending.src.startsWith('blob:')) {
-        showToast('Host the file somewhere first — blob URLs are temporary.');
         return;
       }
 
