@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logging in... · Cozy Crafters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #2B1F15;
+      color: #FFF4DC;
+      font-family: 'Nunito', sans-serif;
+    }
+    .card {
+      text-align: center;
+      padding: 3rem;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(244,201,93,0.15);
+      border-top-color: #F4C95D;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    h2 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+    p { opacity: 0.6; font-size: 0.95rem; }
+    .error { color: #E89A6E; opacity: 1; margin-top: 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" id="spinner"></div>
+    <h2 id="title">Logging you in...</h2>
+    <p id="message">Hang tight, this only takes a second.</p>
+  </div>
+
+  <script>
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+
+    if (params.get('token')) {
+      localStorage.setItem('ccAuthToken', params.get('token'));
+      // Redirect to the page they came from, or home
+      const returnTo = localStorage.getItem('ccAuthReturn') || 'index.html';
+      localStorage.removeItem('ccAuthReturn');
+      window.location.replace(returnTo);
+    } else if (params.get('error')) {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('title').textContent = 'Login failed';
+      document.getElementById('message').innerHTML = `Something went wrong. <a href="index.html" style="color:#F4C95D;">Go back to the site</a>`;
+    } else {
+      // No token or error, just redirect home
+      window.location.replace('index.html');
+    }
+  </script>
+</body>
+</html>

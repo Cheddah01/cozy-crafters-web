@@ -6,15 +6,11 @@
 const CC_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 const CC_AUTH_KEY = 'ccAuthToken';
 
-// Check URL for auth callback
+// Check URL for auth callback (legacy fallback)
 (function handleAuthCallback() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('auth') === 'success' && params.get('token')) {
     localStorage.setItem(CC_AUTH_KEY, params.get('token'));
-    // Clean URL
-    window.history.replaceState({}, '', window.location.pathname);
-  } else if (params.get('auth') === 'error') {
-    console.warn('Auth error:', params.get('reason'));
     window.history.replaceState({}, '', window.location.pathname);
   }
 })();
@@ -51,6 +47,7 @@ function ccLogout() {
 
 // Login redirect
 function ccLogin() {
+  localStorage.setItem('ccAuthReturn', window.location.pathname + window.location.search);
   window.location.href = `${CC_API}/auth/discord`;
 }
 
