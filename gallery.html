@@ -227,6 +227,23 @@
     .lb-title { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; color: var(--cream); margin-bottom: 0.3rem; }
     .lb-caption { font-family: 'Nunito', sans-serif; font-size: 0.85rem; color: var(--cream); opacity: 0.6; line-height: 1.5; }
     .lb-tags-row { margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.4; }
+
+    .lb-external-link {
+      display: inline-block; margin-top: 0.5rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: #8BB8E8; text-decoration: none;
+      padding: 0.35rem 0.7rem; border-radius: 8px;
+      background: rgba(139, 184, 232, 0.08); border: 1px solid rgba(139, 184, 232, 0.15);
+      transition: all 0.2s;
+    }
+    .lb-external-link:hover { background: rgba(139, 184, 232, 0.15); border-color: rgba(139, 184, 232, 0.3); }
+
+    .gallery-link-badge {
+      position: absolute; top: 0.5rem; left: 0.5rem;
+      font-size: 0.7rem; font-weight: 600; font-family: 'Fredoka', sans-serif;
+      background: rgba(0,0,0,0.6); color: #8BB8E8;
+      padding: 0.15rem 0.4rem; border-radius: 5px; backdrop-filter: blur(4px);
+    }
     .lb-dots { display: flex; gap: 0.4rem; margin-top: 0.6rem; }
     .lb-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.2s; }
     .lb-dot.active { background: var(--sun); }
@@ -409,6 +426,14 @@
         </div>
         <input type="file" class="hidden-file" id="cpFileInput" accept="image/png,image/jpeg,image/gif,image/webp" multiple />
       </div>
+      <div class="cp-field">
+        <label class="cp-label">External link (optional)</label>
+        <div style="display:flex;gap:0.4rem;">
+          <input type="text" class="cp-input" id="cpExternalUrl" placeholder="YouTube, Imgur, or image URL" style="flex:1;" />
+          <button class="cp-tag-btn" id="cpAddUrlBtn" type="button" style="padding:0.5rem 0.8rem;font-size:0.8rem;opacity:1;border-color:rgba(244,201,93,0.3);">+ Add</button>
+        </div>
+        <p style="font-family:Nunito,sans-serif;font-size:0.72rem;color:var(--cream);opacity:0.3;margin-top:0.3rem;">Paste a YouTube link, Imgur URL, or direct image URL. Shows as a clickable link on the post.</p>
+      </div>
       <div class="cp-actions">
         <button class="cp-submit" id="cpSubmit">Post to Gallery</button>
         <button class="cp-cancel" id="cpCancel">Cancel</button>
@@ -581,9 +606,24 @@
       if (addBtn) addBtn.addEventListener('click', (e) => { e.stopPropagation(); cpFileInput.click(); });
     }
 
+    // External URL add button
+    document.getElementById('cpAddUrlBtn').addEventListener('click', () => {
+      const input = document.getElementById('cpExternalUrl');
+      const url = input.value.trim();
+      if (!url) return;
+      // If it looks like a direct image URL, add it to the images array
+      if (/\.(png|jpg|jpeg|gif|webp)(\?|$)/i.test(url)) {
+        uploadedImageUrls.push(url);
+        input.value = '';
+        renderImageThumbs();
+      }
+      // Otherwise it stays in the external URL field for the post
+    });
+
     // Submit
     document.getElementById('cpSubmit').addEventListener('click', async () => {
-      if (uploadedImageUrls.length === 0) { document.getElementById('cpStatus').textContent = 'Add at least one image.'; return; }
+      const externalUrl = document.getElementById('cpExternalUrl').value.trim();
+      if (uploadedImageUrls.length === 0 && !externalUrl) { document.getElementById('cpStatus').textContent = 'Add an image or external link.'; return; }
 
       const btn = document.getElementById('cpSubmit');
       const status = document.getElementById('cpStatus');
@@ -599,6 +639,7 @@
             caption: document.getElementById('cpCaption').value.trim() || null,
             tags: [...selectedTags],
             images: uploadedImageUrls,
+            external_url: externalUrl || null,
           }),
         });
 
@@ -606,6 +647,7 @@
           status.textContent = 'Posted!';
           document.getElementById('cpTitle').value = '';
           document.getElementById('cpCaption').value = '';
+          document.getElementById('cpExternalUrl').value = '';
           uploadedImageUrls = [];
           selectedTags.clear();
           document.querySelectorAll('.cp-tag-btn').forEach(b => b.classList.remove('active'));
@@ -659,11 +701,16 @@
         const imgCount = post.images?.length || 0;
         const canDelete = user && (user.sub === post.user_id || user.role === 'admin');
         const multiBadge = imgCount > 1 ? `<div class="gallery-multi-badge">🖼 ${imgCount}</div>` : '';
+        const linkBadge = post.external_url ? `<div class="gallery-link-badge">🔗</div>` : '';
         const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${post.id}" onclick="event.stopPropagation()">Delete</button>` : '';
+        const thumbSrc = firstImg || '';
+        const noImgStyle = !thumbSrc ? 'style="background:linear-gradient(135deg,#2F4423,#3d2b1f);display:flex;align-items:center;justify-content:center;"' : '';
+        const imgTag = thumbSrc ? `<img src="${thumbSrc}" alt="${post.title || ''}" loading="lazy" />` : `<span style="font-size:2.5rem;opacity:0.3;">🔗</span>`;
 
-        return `<div class="gallery-item" data-idx="${i}">
-          <img src="${firstImg}" alt="${post.title || ''}" loading="lazy" />
+        return `<div class="gallery-item" data-idx="${i}" ${noImgStyle}>
+          ${imgTag}
           ${multiBadge}
+          ${linkBadge}
           <div class="gallery-overlay">
             ${post.title ? `<div class="gallery-overlay-title">${post.title}</div>` : ''}
             <div class="gallery-overlay-info">
@@ -735,6 +782,7 @@
         </div>
         ${lbPost.title ? `<div class="lb-title">${lbPost.title}</div>` : ''}
         ${lbPost.caption ? `<div class="lb-caption">${lbPost.caption}</div>` : ''}
+        ${lbPost.external_url ? `<a href="${lbPost.external_url}" target="_blank" rel="noopener" class="lb-external-link" onclick="event.stopPropagation();">🔗 ${formatExternalUrl(lbPost.external_url)}</a>` : ''}
         ${tagsHtml ? `<div class="lb-tags-row">${tagsHtml}</div>` : ''}
         ${images.length > 1 ? `<div class="lb-dots">${images.map((_, i) => `<div class="lb-dot${i === lbIdx ? ' active' : ''}"></div>`).join('')}</div>` : ''}
       `;
@@ -837,6 +885,19 @@
 
     function escapeHtml(str) {
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function formatExternalUrl(url) {
+      try {
+        const u = new URL(url);
+        const host = u.hostname.replace('www.', '');
+        if (host.includes('youtube.com') || host.includes('youtu.be')) return 'Watch on YouTube';
+        if (host.includes('imgur.com')) return 'View on Imgur';
+        if (host.includes('reddit.com')) return 'View on Reddit';
+        if (host.includes('twitch.tv')) return 'Watch on Twitch';
+        if (host.includes('tiktok.com')) return 'View on TikTok';
+        return host;
+      } catch (e) { return url; }
     }
 
     function fmtTimeAgo(dateStr) {
