@@ -157,6 +157,13 @@
       display: flex; align-items: center; gap: 0.3rem;
     }
 
+    .gallery-comment-badge {
+      position: absolute; bottom: 0.5rem; right: 0.5rem; font-family: 'Fredoka', sans-serif;
+      font-size: 0.7rem; font-weight: 600; background: rgba(0,0,0,0.6); color: #fff;
+      padding: 0.2rem 0.5rem; border-radius: 6px; backdrop-filter: blur(4px);
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+
     .gallery-overlay {
       position: absolute; inset: 0;
       background: linear-gradient(0deg, rgba(43,31,21,0.9) 0%, rgba(43,31,21,0.3) 40%, transparent 60%);
@@ -709,6 +716,7 @@
         const imgCount = post.images?.length || 0;
         const canDelete = user && (user.sub === post.user_id || user.role === 'admin');
         const multiBadge = imgCount > 1 ? `<div class="gallery-multi-badge">🖼 ${imgCount}</div>` : '';
+        const commentBadge = post.comment_count > 0 ? `<div class="gallery-comment-badge">💬 ${post.comment_count}</div>` : '';
         const linkBadge = post.external_url ? `<div class="gallery-link-badge">🔗</div>` : '';
         const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${post.id}" onclick="event.stopPropagation()">Delete</button>` : '';
         const thumbSrc = firstImg || post.external_url || '';
@@ -718,6 +726,7 @@
         return `<div class="gallery-item" data-idx="${i}" ${noImgStyle}>
           ${imgTag}
           ${multiBadge}
+          ${commentBadge}
           ${linkBadge}
           <div class="gallery-overlay">
             ${post.title ? `<div class="gallery-overlay-title">${post.title}</div>` : ''}
