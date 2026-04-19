@@ -103,11 +103,11 @@
     .gallery-item:hover { transform: scale(1.02); z-index: 2; }
     .gallery-item:hover .gallery-overlay { opacity: 1; }
 
-    .gallery-item img {
+    .gallery-item > img {
       width: 100%; height: 100%; object-fit: cover; display: block;
       transition: transform 0.4s ease;
     }
-    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item:hover > img { transform: scale(1.05); }
 
     .gallery-overlay {
       position: absolute; inset: 0;
@@ -121,8 +121,9 @@
     }
 
     .gallery-overlay-avatar {
-      width: 24px; height: 24px; border-radius: 50%;
+      width: 24px !important; height: 24px !important; border-radius: 50% !important;
       border: 1.5px solid rgba(244,201,93,0.3); flex-shrink: 0;
+      object-fit: cover;
     }
 
     .gallery-overlay-user {
