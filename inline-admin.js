@@ -787,11 +787,12 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
           if (editingChangeIdx === i) {
             // Inline edit mode
-            const editTagsHtml = tags.map(tg => {
+            console.log('Edit mode tags:', tags.length, tags);
+            const editTagsHtml = tags.length > 0 ? tags.map(tg => {
               const a = c.tag === tg.id;
               const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `background:rgba(43,31,21,0.6);border:1px solid ${tg.color}55;color:${tg.color};`;
               return `<button type="button" class="sp-tag sp-edit-ctag" data-tag="${tg.id}" style="${s};font-size:0.68rem;padding:0.25rem 0.5rem;">${tg.name}</button>`;
-            }).join('');
+            }).join('') : '<span style="font-family:Nunito;font-size:0.75rem;color:#FFF4DC;opacity:0.3;">No tags available</span>';
 
             return `<div class="sp-change" style="border-color:rgba(244,201,93,0.3);background:rgba(244,201,93,0.04);" data-idx="${i}">
               <div style="width:100%;">
