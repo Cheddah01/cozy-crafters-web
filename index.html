@@ -89,6 +89,13 @@
           <div class="stat-label" id="splashStat3Label">Paper Edition</div>
         </div>
       </div>
+
+      <div class="server-ip" id="serverIp" onclick="copyIP()">
+        <span class="ip-label">Server IP</span>
+        <span class="ip-value" id="ipValue">play.cozycrafters.net</span>
+        <span class="ip-copied" id="ipCopied">Copied!</span>
+      </div>
+
       <a href="#discord" class="scroll-hint">
         <span>Explore</span>
         <div class="scroll-line"></div>
@@ -289,6 +296,16 @@
 
     // Nav background on scroll
     const nav = document.getElementById('mainNav');
+
+    // Copy server IP
+    function copyIP() {
+      const ip = document.getElementById('ipValue').textContent;
+      navigator.clipboard.writeText(ip).then(() => {
+        const el = document.getElementById('serverIp');
+        el.classList.add('copied');
+        setTimeout(() => el.classList.remove('copied'), 2000);
+      });
+    }
     const heroSection = document.getElementById('hero');
     const navObserver = new IntersectionObserver(
       ([entry]) => {
