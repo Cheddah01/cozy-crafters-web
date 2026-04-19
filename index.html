@@ -69,7 +69,9 @@
       <h1><span id="splashHeadline1">A small world,</span><br /><span class="accent" id="splashHeadline2">warmly built.</span></h1>
       <p class="tagline" id="splashTagline">A close-knit Minecraft survival server where the chests are full, the neighbors are loud, and somebody's always building something they probably shouldn't.</p>
       <div class="cta-row">
-        <a href="#discord" class="btn btn-primary" id="splashBtnPrimary">Join the Server →</a>
+        <button class="btn btn-primary" id="copyIpBtn" onclick="copyIP()">
+          <span id="copyIpText">Join the Server →</span>
+        </button>
         <a href="changelog.html" class="btn btn-secondary" id="splashBtnSecondary">What's New</a>
       </div>
     </div>
@@ -88,12 +90,6 @@
           <div class="stat-num" id="splashStat3Num">1.21</div>
           <div class="stat-label" id="splashStat3Label">Paper Edition</div>
         </div>
-      </div>
-
-      <div class="server-ip" id="serverIp" onclick="copyIP()">
-        <span class="ip-label">Server IP</span>
-        <span class="ip-value" id="ipValue">play.cozycrafters.net</span>
-        <span class="ip-copied" id="ipCopied">Copied!</span>
       </div>
 
       <a href="#discord" class="scroll-hint">
@@ -299,11 +295,18 @@
 
     // Copy server IP
     function copyIP() {
-      const ip = document.getElementById('ipValue').textContent;
+      const ip = 'play.cozycrafters.net';
+      const btn = document.getElementById('copyIpBtn');
+      const text = document.getElementById('copyIpText');
       navigator.clipboard.writeText(ip).then(() => {
-        const el = document.getElementById('serverIp');
-        el.classList.add('copied');
-        setTimeout(() => el.classList.remove('copied'), 2000);
+        text.textContent = 'Copied! — play.cozycrafters.net';
+        btn.style.background = '#A8C77E';
+        btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
+        setTimeout(() => {
+          text.textContent = 'Join the Server →';
+          btn.style.background = '';
+          btn.style.boxShadow = '';
+        }, 2500);
       });
     }
     const heroSection = document.getElementById('hero');
