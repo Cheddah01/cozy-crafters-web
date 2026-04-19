@@ -792,6 +792,29 @@ h1 .accent {
   transform-origin: bottom center;
 }
 
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.footer-links a {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cream);
+  opacity: 0.5;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+  color: var(--sun);
+}
+
 .footer-note {
   font-family: 'Nunito', sans-serif;
   font-size: 0.85rem;
