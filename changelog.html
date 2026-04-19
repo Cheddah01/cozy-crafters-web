@@ -494,26 +494,20 @@
       loadReactions(entryIds);
 
       // Inject share buttons into each entry header
-      feed.querySelectorAll('.changelog-entry').forEach(el => {
-        const header = el.querySelector('.entry-header');
-        if (!header) return;
-        const entryId = el.dataset.entryId;
-        const btn = document.createElement('button');
-        btn.className = 'share-btn';
-        btn.textContent = '🔗 Share';
-        btn.title = 'Copy link';
-        btn.addEventListener('click', (e) => {
+      feed.querySelectorAll('.share-link').forEach(link => {
+        link.addEventListener('click', (e) => {
           e.stopPropagation();
           e.preventDefault();
+          const entryId = link.dataset.id;
           const url = window.location.origin + '/changelog.html#' + entryId;
           navigator.clipboard.writeText(url).then(() => {
-            btn.textContent = '✓ Copied!';
-            btn.classList.add('copied');
+            link.textContent = '✓ Link copied!';
+            link.style.color = '#A8C77E';
+            link.style.opacity = '1';
             history.replaceState(null, '', '#' + entryId);
-            setTimeout(() => { btn.textContent = '🔗 Share'; btn.classList.remove('copied'); }, 2000);
+            setTimeout(() => { link.textContent = '🔗 Copy link'; link.style.color = '#F4C95D'; link.style.opacity = '0.5'; }, 2000);
           });
         });
-        header.appendChild(btn);
       });
 
       // Deep-link: scroll to entry if URL has a hash
@@ -571,6 +565,7 @@
               ${versionHtml}
             </div>
             <div class="entry-tags">${tagsHtml}</div>
+            <a href="#${entry.id}" class="share-link" data-id="${entry.id}" style="display:inline-block;font-family:Fredoka,sans-serif;font-size:0.75rem;font-weight:600;color:#F4C95D;opacity:0.5;text-decoration:none;margin-top:0.3rem;">🔗 Copy link</a>
           </div>
           ${changeCountHtml}
           ${bodyHtml}
