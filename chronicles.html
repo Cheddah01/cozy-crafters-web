@@ -304,14 +304,68 @@
     @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
     @media (max-width: 768px) {
-      .masthead { padding: 7rem 1.5rem 1.5rem; }
-      .section-nav { padding: 0.6rem 1rem; top: 50px; }
-      .chronicles-content { padding: 2rem 1rem 2rem; }
-      .featured-hero { min-height: 300px; }
-      .featured-hero-text { padding: 1.5rem; }
-      .articles-grid { grid-template-columns: 1fr; }
-      .classifieds-grid { grid-template-columns: 1fr; }
-      .article-expanded-inner { padding: 5rem 1.5rem 3rem; }
+      .masthead { padding: 7rem 1rem 1.2rem; }
+      .masthead-sub { font-size: 0.7rem; letter-spacing: 0.2em; }
+      .masthead-title { font-size: clamp(2.2rem, 9vw, 3.5rem); padding-left: 0.3em; }
+      .masthead-slogan { font-size: 0.82rem; }
+      .masthead-date { font-size: 0.7rem; }
+
+      .section-nav { padding: 0.6rem 0.8rem; top: 50px; gap: 0.3rem; }
+      .section-chip { font-size: 0.72rem; padding: 0.35rem 0.7rem; }
+
+      .chronicles-content { padding: 1.5rem 0.8rem 2rem; }
+
+      /* Featured hero */
+      .featured-hero { min-height: 250px; border-radius: 14px; }
+      .featured-hero-text { padding: 1.2rem; }
+      .featured-hero-badge { font-size: 0.65rem; padding: 0.2rem 0.5rem; }
+      .featured-hero-section { font-size: 0.65rem; }
+      .featured-hero h2 { font-size: clamp(1.4rem, 5vw, 2rem); }
+      .featured-hero-subtitle { font-size: 0.88rem; }
+      .featured-hero-meta { font-size: 0.72rem; }
+
+      /* Articles */
+      .articles-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .articles-section-header { margin-bottom: 1rem; }
+      .articles-section-title { font-size: 1.3rem; }
+      .article-card-body { padding: 1rem; }
+      .article-card-section { font-size: 0.62rem; }
+      .article-card-title { font-size: 1.05rem; }
+      .article-card-preview { font-size: 0.78rem; }
+      .article-card-meta { font-size: 0.68rem; }
+
+      /* Classifieds */
+      .classifieds-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+      .classifieds-title { font-size: 1.2rem; }
+      .classified-item { padding: 0.8rem; }
+      .classified-item .cl-title { font-size: 0.75rem; }
+      .classified-item .cl-text { font-size: 0.75rem; }
+
+      /* Corrections */
+      .corrections-title { font-size: 0.78rem; }
+      .correction-item { font-size: 0.8rem; padding-left: 0.8rem; }
+
+      /* Expanded article */
+      .article-expanded-inner { padding: 4.5rem 1.2rem 3rem; }
+      .article-close { top: 1rem; right: 1rem; font-size: 0.85rem; padding: 0.4rem 0.7rem; }
+      .ae-section { font-size: 0.72rem; }
+      .ae-title { font-size: clamp(1.6rem, 5vw, 2.2rem); }
+      .ae-subtitle { font-size: 0.95rem; }
+      .ae-meta { font-size: 0.78rem; }
+      .ae-body { font-size: 0.95rem; }
+      .ae-body h3 { font-size: 1.2rem; }
+      .ae-editors-note { font-size: 0.82rem; padding: 0.8rem 1rem; }
+      .ae-pull-quote p { font-size: 1.15rem; }
+      .ae-pull-quote { padding: 1rem 1.2rem; margin: 1.5rem 0; }
+    }
+
+    @media (max-width: 420px) {
+      .masthead { padding: 6.5rem 0.8rem 1rem; }
+      .chronicles-content { padding: 1.2rem 0.5rem 2rem; }
+      .featured-hero { min-height: 200px; border-radius: 10px; }
+      .featured-hero-text { padding: 1rem; }
+      .article-card { border-radius: 10px; }
+      .article-expanded-inner { padding: 4rem 1rem 2rem; }
     }
   </style>
 </head>
