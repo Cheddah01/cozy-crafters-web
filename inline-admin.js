@@ -498,7 +498,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
             </div>
             <div class="im-field">
               <label class="im-label">Description (optional)</label>
-              <input type="text" id="imClChangeDesc" placeholder="New top-tier rank with exclusive perks" />
+              <textarea id="imClChangeDesc" rows="3" placeholder="New top-tier rank with exclusive perks and cosmetic rewards for dedicated players"></textarea>
             </div>
             <div class="im-field">
               <label class="im-label">Change tag</label>
