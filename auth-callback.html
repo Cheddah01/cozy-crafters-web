@@ -54,16 +54,16 @@
     if (params.get('token')) {
       localStorage.setItem('ccAuthToken', params.get('token'));
       // Redirect to the page they came from, or home
-      const returnTo = localStorage.getItem('ccAuthReturn') || 'index.html';
+      const returnTo = localStorage.getItem('ccAuthReturn') || '/';
       localStorage.removeItem('ccAuthReturn');
       window.location.replace(returnTo);
     } else if (params.get('error')) {
       document.getElementById('spinner').style.display = 'none';
       document.getElementById('title').textContent = 'Login failed';
-      document.getElementById('message').innerHTML = `Something went wrong. <a href="index.html" style="color:#F4C95D;">Go back to the site</a>`;
+      document.getElementById('message').innerHTML = `Something went wrong. <a href="/" style="color:#F4C95D;">Go back to the site</a>`;
     } else {
       // No token or error, just redirect home
-      window.location.replace('index.html');
+      window.location.replace('/');
     }
   </script>
 </body>
