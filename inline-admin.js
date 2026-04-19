@@ -644,8 +644,14 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           <div class="im-tags" id="imChrSections">${secHtml}</div>
         </div>
         <div class="im-field">
-          <label class="im-label">Featured Image URL</label>
-          <input type="text" id="imChrImage" value="${escape(article?.image || '')}" placeholder="https://..." />
+          <label class="im-label">Featured Image</label>
+          <div style="display:flex;gap:0.5rem;align-items:end;">
+            <input type="text" id="imChrImage" value="${escape(article?.image || '')}" placeholder="URL or upload" style="flex:1;" />
+            <input type="file" id="imChrImageFile" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;" />
+            <button class="im-btn im-btn-cancel" id="imChrImageUploadBtn" style="font-size:0.8rem;padding:0.5rem 0.8rem;white-space:nowrap;">📷 Upload</button>
+          </div>
+          <div id="imChrImageStatus" style="margin-top:0.4rem;"></div>
+          <div id="imChrImagePreview" style="margin-top:0.4rem;"></div>
         </div>
         <div class="im-field">
           <label class="im-label">Body</label>
@@ -732,6 +738,63 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       // Featured toggle
       overlay.querySelector('.im-feat-btn')?.addEventListener('click', function() {
         this.classList.toggle('active');
+      });
+
+      // Image upload
+      const imChrUploadBtn = overlay.querySelector('#imChrImageUploadBtn');
+      const imChrFileInput = overlay.querySelector('#imChrImageFile');
+      const imChrImageInput = overlay.querySelector('#imChrImage');
+
+      function renderImChrPreview(url) {
+        const preview = overlay.querySelector('#imChrImagePreview');
+        if (!url) { preview.innerHTML = ''; return; }
+        preview.innerHTML = `<div style="position:relative;display:inline-block;">
+          <img src="${url}" style="max-width:180px;max-height:100px;border-radius:8px;border:1px solid rgba(244,201,93,0.15);" />
+          <button type="button" style="position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;" id="imChrImgClear">✕</button>
+        </div>`;
+        overlay.querySelector('#imChrImgClear')?.addEventListener('click', () => {
+          imChrImageInput.value = '';
+          preview.innerHTML = '';
+        });
+      }
+
+      // Show preview if editing existing image
+      if (article?.image) renderImChrPreview(article.image);
+
+      imChrImageInput.addEventListener('input', () => renderImChrPreview(imChrImageInput.value.trim()));
+
+      imChrUploadBtn.addEventListener('click', () => imChrFileInput.click());
+      imChrFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const status = overlay.querySelector('#imChrImageStatus');
+        status.textContent = 'Uploading...';
+        status.style.cssText = 'font-family:Nunito,sans-serif;font-size:0.78rem;color:#F4C95D;';
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const token = localStorage.getItem('ccAuthToken');
+          const res = await fetch(`${INLINE_API}/api/gallery/upload`, {
+            method: 'POST',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            imChrImageInput.value = data.url;
+            renderImChrPreview(data.url);
+            status.textContent = 'Uploaded!';
+            status.style.color = '#A8C77E';
+            setTimeout(() => { status.textContent = ''; }, 2500);
+          } else {
+            status.textContent = data.error || 'Upload failed';
+            status.style.color = '#E89A6E';
+          }
+        } catch (err) {
+          status.textContent = 'Upload failed';
+          status.style.color = '#E89A6E';
+        }
+        e.target.value = '';
       });
     }
 
