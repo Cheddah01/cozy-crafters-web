@@ -322,6 +322,159 @@
     text-align: right;
     flex-shrink: 0;
   }
+
+  /* Changelog admin */
+  textarea {
+    width: 100%;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    color: var(--cream);
+    background: rgba(43, 31, 21, 0.8);
+    border: 2px solid rgba(244, 201, 93, 0.2);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    transition: all 0.25s ease;
+    outline: none;
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  textarea::placeholder {
+    color: var(--cream);
+    opacity: 0.35;
+  }
+
+  textarea:focus {
+    border-color: var(--sun);
+    background: rgba(43, 31, 21, 1);
+    box-shadow: 0 0 0 4px rgba(244, 201, 93, 0.15);
+  }
+
+  .filter-chip.cl-tag-btn {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .filter-chip.cl-tag-btn.active {
+    background: var(--sun);
+    color: var(--ink);
+    border-color: var(--sun);
+    opacity: 1;
+  }
+
+  .cl-entry-item {
+    padding: 1rem;
+    background: rgba(255, 244, 220, 0.03);
+    border: 1px solid rgba(244, 201, 93, 0.08);
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s ease;
+  }
+
+  .cl-entry-item:hover {
+    border-color: rgba(244, 201, 93, 0.18);
+  }
+
+  .cl-entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .cl-entry-name {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--cream);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cl-entry-ver {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--sun);
+    background: rgba(244, 201, 93, 0.12);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  .cl-entry-date {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    color: var(--cream);
+    opacity: 0.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .cl-entry-tags {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .cl-entry-tags span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(244, 201, 93, 0.1);
+    color: var(--sun);
+    border: 1px solid rgba(244, 201, 93, 0.2);
+  }
+
+  .cl-entry-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .cl-entry-actions button {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cl-btn-edit {
+    background: rgba(244, 201, 93, 0.12);
+    color: var(--sun);
+  }
+
+  .cl-btn-edit:hover {
+    background: rgba(244, 201, 93, 0.25);
+  }
+
+  .cl-btn-delete {
+    background: rgba(232, 154, 110, 0.1);
+    color: #E89A6E;
+  }
+
+  .cl-btn-delete:hover {
+    background: rgba(232, 154, 110, 0.2);
+  }
+
+  .changelog-admin-empty {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--cream);
+    opacity: 0.4;
+  }
 </style>
 </head>
 <body>
@@ -627,6 +780,91 @@
           <div class="action-row" style="margin-top: 1.5rem;">
             <button class="btn btn-primary" id="saveTextBtn" type="button">💾 Save Text</button>
             <button class="btn btn-danger" id="resetTextBtn" type="button">Reset to Defaults</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================
+         CHANGELOG EDITOR
+         ============================================ -->
+    <div style="margin-top: 2.5rem;">
+      <h1 class="admin-title">Patch <span class="accent">Notes</span></h1>
+      <p class="admin-subtitle">Create and manage changelog entries. Each entry shows on the public changelog page with a timeline, tags, and optional images.</p>
+
+      <div class="admin-grid">
+
+        <!-- LEFT: New entry form -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📝</span>
+            <h2 class="card-title" id="clFormTitle">New entry</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="clTitle">Title</label>
+            <input type="text" id="clTitle" placeholder="Economy Rebalance & Bug Fixes" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="clVersion">Version / label</label>
+              <input type="text" id="clVersion" placeholder="v2.4.1" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="clDate">Date</label>
+              <input type="text" id="clDate" placeholder="2026-04-18" />
+              <p class="field-hint">YYYY-MM-DD format.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tags</label>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="clTagPicker">
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="new-feature">New Feature</button>
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="bug-fix">Bug Fix</button>
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="balance">Balance</button>
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="qol">Quality of Life</button>
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="removal">Removal</button>
+              <button type="button" class="filter-chip cl-tag-btn" data-tag="event">Event</button>
+            </div>
+            <p class="field-hint">Click to toggle. Multiple allowed.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="clBody">Body</label>
+            <textarea id="clBody" rows="8" placeholder="Use - for bullet points&#10;&#10;- Added new rank: Netherite&#10;- Fixed duplication glitch with hoppers&#10;- Balanced diamond ore spawn rates&#10;&#10;Regular paragraphs work too."></textarea>
+            <p class="field-hint">Lines starting with - become bullet points. Everything else becomes paragraphs.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="clImage">Image URL (optional)</label>
+            <input type="text" id="clImage" placeholder="https://example.com/screenshot.png" />
+            <p class="field-hint">Screenshot or visual to include with this entry.</p>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary" id="clAddBtn" type="button">+ Add Entry</button>
+            <button class="btn btn-secondary" id="clCancelEdit" type="button" style="display:none;">Cancel Edit</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Existing entries -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📋</span>
+            <h2 class="card-title">Entries</h2>
+          </div>
+          <p class="card-helper">All changelog entries. Click edit to modify, or delete to remove. Don't forget to save after making changes.</p>
+
+          <div id="clEntryList">
+            <div class="changelog-admin-empty">Loading...</div>
+          </div>
+
+          <div class="action-row" style="margin-top: 1.5rem;">
+            <button class="btn btn-primary" id="clSaveBtn" type="button">💾 Save All Changes</button>
+            <button class="btn btn-secondary" id="clPreviewBtn" type="button">👁 Open Changelog</button>
           </div>
         </div>
 
@@ -1194,6 +1432,201 @@
         setTextValues(data.value);
       } catch (e) {
         // No saved text yet, that's fine
+      }
+    })();
+
+    // ============================================
+    // Changelog editor
+    // ============================================
+    let clEntries = [];
+    let clEditingIndex = null;
+
+    const clTitle = document.getElementById('clTitle');
+    const clVersion = document.getElementById('clVersion');
+    const clDate = document.getElementById('clDate');
+    const clBody = document.getElementById('clBody');
+    const clImage = document.getElementById('clImage');
+    const clAddBtn = document.getElementById('clAddBtn');
+    const clCancelEdit = document.getElementById('clCancelEdit');
+    const clFormTitle = document.getElementById('clFormTitle');
+    const clEntryList = document.getElementById('clEntryList');
+
+    // Set default date to today
+    clDate.value = new Date().toISOString().split('T')[0];
+
+    // Tag picker
+    const clSelectedTags = new Set();
+    document.querySelectorAll('.cl-tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+        if (clSelectedTags.has(tag)) {
+          clSelectedTags.delete(tag);
+          btn.classList.remove('active');
+        } else {
+          clSelectedTags.add(tag);
+          btn.classList.add('active');
+        }
+      });
+    });
+
+    function clearClForm() {
+      clTitle.value = '';
+      clVersion.value = '';
+      clDate.value = new Date().toISOString().split('T')[0];
+      clBody.value = '';
+      clImage.value = '';
+      clSelectedTags.clear();
+      document.querySelectorAll('.cl-tag-btn').forEach(b => b.classList.remove('active'));
+      clEditingIndex = null;
+      clAddBtn.textContent = '+ Add Entry';
+      clFormTitle.textContent = 'New entry';
+      clCancelEdit.style.display = 'none';
+    }
+
+    function renderClEntries() {
+      if (clEntries.length === 0) {
+        clEntryList.innerHTML = '<div class="changelog-admin-empty">No entries yet. Add one on the left.</div>';
+        return;
+      }
+
+      // Sort by date descending
+      const sorted = [...clEntries].map((e, i) => ({ ...e, _idx: i }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      clEntryList.innerHTML = sorted.map(entry => {
+        const tagsHtml = (entry.tags || []).map(t =>
+          `<span>${t.replace('-', ' ')}</span>`
+        ).join('');
+
+        return `
+          <div class="cl-entry-item">
+            <div class="cl-entry-top">
+              <span class="cl-entry-name">${entry.title}</span>
+              ${entry.version ? `<span class="cl-entry-ver">${entry.version}</span>` : ''}
+            </div>
+            <div class="cl-entry-date">${entry.date}</div>
+            ${tagsHtml ? `<div class="cl-entry-tags">${tagsHtml}</div>` : ''}
+            <div class="cl-entry-actions">
+              <button class="cl-btn-edit" data-idx="${entry._idx}">Edit</button>
+              <button class="cl-btn-delete" data-idx="${entry._idx}">Delete</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Edit buttons
+      clEntryList.querySelectorAll('.cl-btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          const entry = clEntries[idx];
+          clTitle.value = entry.title || '';
+          clVersion.value = entry.version || '';
+          clDate.value = entry.date || '';
+          clBody.value = entry.body || '';
+          clImage.value = entry.image || '';
+          clSelectedTags.clear();
+          document.querySelectorAll('.cl-tag-btn').forEach(b => b.classList.remove('active'));
+          (entry.tags || []).forEach(t => {
+            clSelectedTags.add(t);
+            const b = document.querySelector(`.cl-tag-btn[data-tag="${t}"]`);
+            if (b) b.classList.add('active');
+          });
+          clEditingIndex = idx;
+          clAddBtn.textContent = 'Update Entry';
+          clFormTitle.textContent = 'Editing entry';
+          clCancelEdit.style.display = '';
+          clTitle.focus();
+        });
+      });
+
+      // Delete buttons
+      clEntryList.querySelectorAll('.cl-btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          if (!confirm(`Delete "${clEntries[idx].title}"?`)) return;
+          clEntries.splice(idx, 1);
+          renderClEntries();
+          markUnsaved();
+          if (clEditingIndex === idx) clearClForm();
+        });
+      });
+    }
+
+    // Add / update entry
+    clAddBtn.addEventListener('click', () => {
+      const title = clTitle.value.trim();
+      const date = clDate.value.trim();
+
+      if (!title) { showToast('Give it a title.'); return; }
+      if (!date) { showToast('Set a date.'); return; }
+
+      const entry = {
+        title,
+        version: clVersion.value.trim() || null,
+        date,
+        tags: [...clSelectedTags],
+        body: clBody.value,
+        image: clImage.value.trim() || null,
+        id: clEditingIndex !== null ? clEntries[clEditingIndex].id : `cl-${Date.now()}`,
+      };
+
+      if (clEditingIndex !== null) {
+        clEntries[clEditingIndex] = entry;
+        showToast('Entry updated!');
+      } else {
+        clEntries.push(entry);
+        showToast('Entry added!');
+      }
+
+      clearClForm();
+      renderClEntries();
+      markUnsaved();
+    });
+
+    clCancelEdit.addEventListener('click', clearClForm);
+
+    // Save all changelog entries
+    document.getElementById('clSaveBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/changelog`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: clEntries }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(`Error: ${err.error || 'Save failed'}`);
+          return;
+        }
+
+        markSaved();
+        showToast('Changelog saved!');
+      } catch (e) {
+        showToast('Failed to save — check your connection.');
+        console.error(e);
+      }
+    });
+
+    document.getElementById('clPreviewBtn').addEventListener('click', () => {
+      window.open('changelog.html', '_blank');
+    });
+
+    // Load changelog on init
+    (async function loadChangelog() {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/changelog`);
+        if (!res.ok) {
+          renderClEntries();
+          return;
+        }
+        const data = await res.json();
+        clEntries = data.value || [];
+        renderClEntries();
+      } catch (e) {
+        renderClEntries();
       }
     })();
 
