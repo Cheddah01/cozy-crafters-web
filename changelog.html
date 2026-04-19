@@ -10,351 +10,134 @@
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    body {
-      overflow-x: hidden;
-    }
+    body { overflow-x: hidden; }
 
-    /* Page header */
     .page-header {
-      position: relative;
-      z-index: 10;
-      padding: 8rem 3rem 4rem;
-      text-align: center;
+      position: relative; z-index: 10;
+      padding: 8rem 3rem 4rem; text-align: center;
       background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 60%);
       border-bottom: 1px solid rgba(244, 201, 93, 0.1);
     }
-
-    .page-header .section-eyebrow {
-      margin-bottom: 1rem;
-    }
-
+    .page-header .section-eyebrow { margin-bottom: 1rem; }
     .page-header h1 {
-      font-family: 'Fredoka', sans-serif;
-      font-weight: 700;
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      color: var(--cream);
-      line-height: 1.1;
-      margin-bottom: 1rem;
-      opacity: 1;
-      animation: none;
+      font-family: 'Fredoka', sans-serif; font-weight: 700;
+      font-size: clamp(2.5rem, 6vw, 4rem); color: var(--cream);
+      line-height: 1.1; margin-bottom: 1rem; opacity: 1; animation: none;
     }
-
-    .page-header h1 .accent {
-      transform: none;
-    }
-
+    .page-header h1 .accent { transform: none; }
     .page-header p {
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.05rem;
-      color: var(--cream);
-      opacity: 0.6;
-      max-width: 500px;
-      margin: 0 auto;
-      line-height: 1.6;
+      font-family: 'Nunito', sans-serif; font-size: 1.05rem;
+      color: var(--cream); opacity: 0.6; max-width: 500px;
+      margin: 0 auto; line-height: 1.6;
     }
 
-    /* Filter bar */
     .filter-bar {
-      position: relative;
-      z-index: 10;
-      background: var(--bark-deep);
+      position: sticky; top: 56px; z-index: 10;
+      background: rgba(61, 43, 31, 0.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(244, 201, 93, 0.08);
-      padding: 1rem 3rem;
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      position: sticky;
-      top: 56px;
-      backdrop-filter: blur(12px);
+      padding: 1rem 3rem; display: flex; justify-content: center;
+      gap: 0.5rem; flex-wrap: wrap;
     }
-
     .filter-chip {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 0.45rem 1rem;
-      border-radius: 999px;
+      font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
+      padding: 0.45rem 1rem; border-radius: 999px;
       border: 1px solid rgba(244, 201, 93, 0.15);
-      background: rgba(255, 244, 220, 0.04);
-      color: var(--cream);
-      opacity: 0.6;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background: rgba(255, 244, 220, 0.04); color: var(--cream);
+      opacity: 0.6; cursor: pointer; transition: all 0.2s ease;
     }
+    .filter-chip:hover { opacity: 0.9; border-color: rgba(244, 201, 93, 0.3); }
+    .filter-chip.active { background: var(--sun); color: var(--ink); border-color: var(--sun); opacity: 1; }
 
-    .filter-chip:hover {
-      opacity: 0.9;
-      border-color: rgba(244, 201, 93, 0.3);
-    }
-
-    .filter-chip.active {
-      background: var(--sun);
-      color: var(--ink);
-      border-color: var(--sun);
-      opacity: 1;
-    }
-
-    /* Timeline */
     .changelog-feed {
-      position: relative;
-      z-index: 10;
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 3rem 2rem 6rem;
+      position: relative; z-index: 10; max-width: 780px;
+      margin: 0 auto; padding: 3rem 2rem 6rem;
     }
-
-    /* Timeline line */
     .changelog-feed::before {
-      content: '';
-      position: absolute;
-      left: 28px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(180deg, var(--sun) 0%, rgba(244, 201, 93, 0.1) 100%);
-    }
-
-    /* Date group */
-    .date-group {
-      margin-bottom: 0;
+      content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(180deg, var(--sun) 0%, rgba(244, 201, 93, 0.1) 100%);
     }
 
     .date-marker {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      padding-top: 2rem;
+      position: relative; display: flex; align-items: center;
+      gap: 1rem; margin-bottom: 1.5rem; padding-top: 2rem;
     }
-
     .date-marker .date-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--sun);
-      box-shadow: 0 0 12px rgba(244, 201, 93, 0.4);
-      flex-shrink: 0;
-      position: relative;
-      left: 22px;
-      z-index: 2;
+      width: 14px; height: 14px; border-radius: 50%; background: var(--sun);
+      box-shadow: 0 0 12px rgba(244, 201, 93, 0.4); flex-shrink: 0;
+      position: relative; left: 22px; z-index: 2;
     }
-
     .date-marker .date-text {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--sun);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding-left: 1rem;
+      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+      color: var(--sun); letter-spacing: 0.1em; text-transform: uppercase; padding-left: 1rem;
     }
 
-    /* Entry card */
     .changelog-entry {
-      position: relative;
-      margin-left: 56px;
-      margin-bottom: 1.5rem;
-      background: rgba(255, 244, 220, 0.03);
-      border: 1px solid rgba(244, 201, 93, 0.08);
-      border-radius: 16px;
-      padding: 1.8rem;
-      transition: all 0.3s ease;
-      opacity: 0;
-      transform: translateY(20px);
+      position: relative; margin-left: 56px; margin-bottom: 1.5rem;
+      background: rgba(255, 244, 220, 0.03); border: 1px solid rgba(244, 201, 93, 0.08);
+      border-radius: 16px; padding: 1.8rem; transition: all 0.3s ease;
+      opacity: 0; transform: translateY(20px);
     }
-
-    .changelog-entry.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .changelog-entry:hover {
-      background: rgba(255, 244, 220, 0.05);
-      border-color: rgba(244, 201, 93, 0.15);
-    }
-
-    /* Connector dot on the timeline */
+    .changelog-entry.revealed { opacity: 1; transform: translateY(0); }
+    .changelog-entry:hover { background: rgba(255, 244, 220, 0.05); border-color: rgba(244, 201, 93, 0.15); }
     .changelog-entry::before {
-      content: '';
-      position: absolute;
-      left: -34px;
-      top: 2rem;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(244, 201, 93, 0.3);
-      border: 2px solid var(--bark-deep);
+      content: ''; position: absolute; left: -34px; top: 2rem;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(244, 201, 93, 0.3); border: 2px solid var(--bark-deep);
+    }
+    .changelog-entry.pinned { border-color: rgba(244, 201, 93, 0.2); background: rgba(244, 201, 93, 0.04); }
+    .changelog-entry.pinned::before { background: var(--sun); box-shadow: 0 0 8px rgba(244, 201, 93, 0.3); }
+
+    .entry-pin-badge {
+      font-family: 'Fredoka', sans-serif; font-size: 0.7rem; font-weight: 600;
+      color: var(--sun); text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;
     }
 
-    .entry-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.8rem;
-      flex-wrap: wrap;
-    }
-
-    .entry-title {
-      font-family: 'Fredoka', sans-serif;
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: var(--cream);
-      line-height: 1.2;
-    }
-
+    .entry-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+    .entry-title { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--cream); line-height: 1.2; }
     .entry-version {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--sun);
-      background: rgba(244, 201, 93, 0.12);
-      border: 1px solid rgba(244, 201, 93, 0.25);
-      padding: 0.25rem 0.7rem;
-      border-radius: 999px;
-      white-space: nowrap;
-      flex-shrink: 0;
+      font-family: 'Fredoka', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: var(--sun); background: rgba(244, 201, 93, 0.12);
+      border: 1px solid rgba(244, 201, 93, 0.25); padding: 0.25rem 0.7rem;
+      border-radius: 999px; white-space: nowrap; flex-shrink: 0;
     }
-
-    .entry-tags {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-
+    .entry-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .entry-tag {
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-    }
-
-    .entry-tag.new-feature {
-      background: rgba(107, 142, 78, 0.2);
-      color: #A8C77E;
-      border: 1px solid rgba(107, 142, 78, 0.3);
-    }
-
-    .entry-tag.bug-fix {
-      background: rgba(232, 154, 110, 0.15);
-      color: #E89A6E;
-      border: 1px solid rgba(232, 154, 110, 0.3);
-    }
-
-    .entry-tag.balance {
-      background: rgba(88, 101, 242, 0.15);
-      color: #8B9CF7;
-      border: 1px solid rgba(88, 101, 242, 0.3);
-    }
-
-    .entry-tag.qol {
-      background: rgba(244, 201, 93, 0.12);
-      color: var(--sun);
-      border: 1px solid rgba(244, 201, 93, 0.25);
-    }
-
-    .entry-tag.removal {
-      background: rgba(220, 80, 80, 0.15);
-      color: #E87070;
-      border: 1px solid rgba(220, 80, 80, 0.3);
-    }
-
-    .entry-tag.event {
-      background: rgba(180, 120, 220, 0.15);
-      color: #C9A0E8;
-      border: 1px solid rgba(180, 120, 220, 0.3);
+      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.2rem 0.6rem; border-radius: 6px;
     }
 
     .entry-body {
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      color: var(--cream);
-      opacity: 0.8;
+      font-family: 'Nunito', sans-serif; font-size: 0.95rem;
+      line-height: 1.7; color: var(--cream); opacity: 0.8;
     }
-
-    .entry-body ul {
-      list-style: none;
-      padding: 0;
-      margin: 0.5rem 0;
+    .entry-body h3 {
+      font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 1.05rem;
+      color: var(--sun); margin: 1.2rem 0 0.5rem; line-height: 1.3;
     }
+    .entry-body h3:first-child { margin-top: 0; }
+    .entry-body ul { list-style: none; padding: 0; margin: 0.5rem 0; }
+    .entry-body ul li { position: relative; padding-left: 1.2rem; margin-bottom: 0.35rem; }
+    .entry-body ul li::before { content: '›'; position: absolute; left: 0; color: var(--sun); font-weight: 700; }
+    .entry-body p { margin-bottom: 0.5rem; }
+    .entry-body p:last-child { margin-bottom: 0; }
+    .entry-body strong { color: var(--cream); font-weight: 700; }
+    .entry-body em { font-style: italic; opacity: 0.9; }
+    .entry-image { margin-top: 1.2rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(244, 201, 93, 0.1); }
+    .entry-image img { width: 100%; display: block; }
 
-    .entry-body ul li {
-      position: relative;
-      padding-left: 1.2rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .entry-body ul li::before {
-      content: '›';
-      position: absolute;
-      left: 0;
-      color: var(--sun);
-      font-weight: 700;
-    }
-
-    .entry-body p {
-      margin-bottom: 0.5rem;
-    }
-
-    .entry-body p:last-child {
-      margin-bottom: 0;
-    }
-
-    .entry-image {
-      margin-top: 1.2rem;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(244, 201, 93, 0.1);
-    }
-
-    .entry-image img {
-      width: 100%;
-      display: block;
-    }
-
-    /* Loading state */
-    .changelog-loading {
-      text-align: center;
-      padding: 4rem 2rem;
-      font-family: 'Fredoka', sans-serif;
-      color: var(--cream);
-      opacity: 0.5;
-    }
-
+    .changelog-loading { text-align: center; padding: 4rem 2rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5; }
     .changelog-loading .load-spinner {
-      width: 28px;
-      height: 28px;
-      border: 3px solid rgba(244, 201, 93, 0.15);
-      border-top-color: var(--sun);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 1rem;
+      width: 28px; height: 28px; border: 3px solid rgba(244, 201, 93, 0.15);
+      border-top-color: var(--sun); border-radius: 50%;
+      animation: spin 0.7s linear infinite; margin: 0 auto 1rem;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Empty state */
-    .changelog-empty {
-      text-align: center;
-      padding: 5rem 2rem;
-      font-family: 'Fredoka', sans-serif;
-      color: var(--cream);
-      opacity: 0.4;
-    }
+    .changelog-empty { text-align: center; padding: 5rem 2rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4; }
+    .changelog-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
 
-    .changelog-empty .empty-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    /* Mobile */
     @media (max-width: 768px) {
       .page-header { padding: 7rem 1.5rem 3rem; }
       .filter-bar { padding: 0.8rem 1rem; top: 50px; }
@@ -372,12 +155,8 @@
   <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
   <div class="bg-grain"></div>
 
-  <!-- NAV -->
   <nav id="mainNav" class="scrolled">
-    <a href="index.html" class="brand-mark">
-      <span class="leaf">🌿</span>
-      <span>Cozy Crafters</span>
-    </a>
+    <a href="index.html" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="changelog.html">Changelog</a></li>
@@ -386,9 +165,7 @@
       <li><a href="chronicles.html">Chronicles</a></li>
       <li><a href="index.html#discord">Discord</a></li>
     </ul>
-    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </nav>
 
   <div class="mobile-menu" id="mobileMenu">
@@ -402,25 +179,16 @@
     </ul>
   </div>
 
-  <!-- Page header -->
   <header class="page-header">
     <div class="section-eyebrow">✦ What's New</div>
     <h1>Change<span class="accent">log</span></h1>
     <p>Every tweak, fix, feature, and questionable decision — documented for posterity.</p>
   </header>
 
-  <!-- Filter bar -->
   <div class="filter-bar" id="filterBar">
-    <button class="filter-chip active" data-filter="all">All</button>
-    <button class="filter-chip" data-filter="new-feature">New Feature</button>
-    <button class="filter-chip" data-filter="bug-fix">Bug Fix</button>
-    <button class="filter-chip" data-filter="balance">Balance</button>
-    <button class="filter-chip" data-filter="qol">Quality of Life</button>
-    <button class="filter-chip" data-filter="removal">Removal</button>
-    <button class="filter-chip" data-filter="event">Event</button>
+    <!-- Populated dynamically from custom tags -->
   </div>
 
-  <!-- Changelog feed -->
   <div class="changelog-feed" id="changelogFeed">
     <div class="changelog-loading" id="changelogLoading">
       <div class="load-spinner"></div>
@@ -428,12 +196,9 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="leaf">🌿</span> Cozy Crafters SMP
-      </div>
+      <div class="footer-brand"><span class="leaf">🌿</span> Cozy Crafters SMP</div>
       <div class="footer-links">
         <a href="index.html">Home</a>
         <a href="changelog.html">Changelog</a>
@@ -452,130 +217,140 @@
     // Hamburger
     const hamburger = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      mobileMenu.classList.toggle('open');
-    });
-    mobileMenu.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        mobileMenu.classList.remove('open');
-      });
-    });
+    hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+    mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
 
-    // Tag rendering
-    const TAG_MAP = {
-      'new-feature': 'New Feature',
-      'bug-fix': 'Bug Fix',
-      'balance': 'Balance',
-      'qol': 'Quality of Life',
-      'removal': 'Removal',
-      'event': 'Event',
-    };
+    // Default tags (fallback)
+    const DEFAULT_TAGS = [
+      { id: 'new-feature', name: 'New Feature', color: '#A8C77E' },
+      { id: 'bug-fix', name: 'Bug Fix', color: '#E89A6E' },
+      { id: 'balance', name: 'Balance', color: '#8B9CF7' },
+      { id: 'qol', name: 'Quality of Life', color: '#F4C95D' },
+      { id: 'removal', name: 'Removal', color: '#E87070' },
+      { id: 'event', name: 'Event', color: '#C9A0E8' },
+    ];
 
-    // Simple markdown-ish parsing for entry body
+    let tags = [...DEFAULT_TAGS];
+    let allEntries = [];
+    let activeFilter = 'all';
+
+    function getTag(id) { return tags.find(t => t.id === id); }
+
+    // Parse body with ## headers, - bullets, **bold**, *italic*
     function parseBody(text) {
       if (!text) return '';
-      // Convert lines starting with - into list items
       const lines = text.split('\n');
       let html = '';
       let inList = false;
 
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+
+        if (trimmed.startsWith('## ')) {
+          if (inList) { html += '</ul>'; inList = false; }
+          html += `<h3>${formatInline(trimmed.substring(3))}</h3>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
           if (!inList) { html += '<ul>'; inList = true; }
-          html += `<li>${trimmed.substring(2)}</li>`;
+          html += `<li>${formatInline(trimmed.substring(2))}</li>`;
         } else {
           if (inList) { html += '</ul>'; inList = false; }
           if (trimmed === '') continue;
-          html += `<p>${trimmed}</p>`;
+          html += `<p>${formatInline(trimmed)}</p>`;
         }
       }
       if (inList) html += '</ul>';
       return html;
     }
 
-    // Format date nicely
+    // Bold and italic
+    function formatInline(text) {
+      return text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    }
+
     function formatDate(dateStr) {
       const d = new Date(dateStr);
       return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    // Group entries by date
     function groupByDate(entries) {
       const groups = {};
       for (const entry of entries) {
-        const key = entry.date;
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(entry);
+        if (!groups[entry.date]) groups[entry.date] = [];
+        groups[entry.date].push(entry);
       }
       return groups;
     }
 
-    // Render the feed
-    let allEntries = [];
-    let activeFilter = 'all';
+    // Build filter bar from tags
+    function renderFilterBar() {
+      const bar = document.getElementById('filterBar');
+      let html = '<button class="filter-chip active" data-filter="all">All</button>';
+      for (const tag of tags) {
+        html += `<button class="filter-chip" data-filter="${tag.id}" style="--tag-color:${tag.color};">${tag.name}</button>`;
+      }
+      bar.innerHTML = html;
+
+      bar.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          bar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          activeFilter = chip.dataset.filter;
+          renderFeed(allEntries);
+        });
+      });
+    }
 
     function renderFeed(entries) {
       const feed = document.getElementById('changelogFeed');
 
-      const filtered = activeFilter === 'all'
-        ? entries
-        : entries.filter(e => e.tags && e.tags.includes(activeFilter));
+      // Only show published entries
+      let visible = entries.filter(e => e.status !== 'draft');
 
-      if (filtered.length === 0) {
-        feed.innerHTML = `
-          <div class="changelog-empty">
-            <div class="empty-icon">📋</div>
-            <div>${activeFilter === 'all' ? 'No patch notes yet. Check back soon.' : 'No entries with that tag.'}</div>
-          </div>`;
+      // Filter by tag
+      if (activeFilter !== 'all') {
+        visible = visible.filter(e => e.tags && e.tags.includes(activeFilter));
+      }
+
+      if (visible.length === 0) {
+        feed.innerHTML = `<div class="changelog-empty"><div class="empty-icon">📋</div><div>${activeFilter === 'all' ? 'No patch notes yet. Check back soon.' : 'No entries with that tag.'}</div></div>`;
         return;
       }
 
-      const groups = groupByDate(filtered);
-      const sortedDates = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a));
+      // Sort: pinned first, then by date
+      visible.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.date) - new Date(a.date);
+      });
+
+      // Separate pinned from regular
+      const pinned = visible.filter(e => e.pinned);
+      const regular = visible.filter(e => !e.pinned);
 
       let html = '';
+
+      // Render pinned entries
+      if (pinned.length > 0) {
+        html += '<div class="date-group"><div class="date-marker"><div class="date-dot"></div><div class="date-text">📌 Pinned</div></div>';
+        for (const entry of pinned) html += renderEntry(entry, true);
+        html += '</div>';
+      }
+
+      // Render regular entries grouped by date
+      const groups = groupByDate(regular);
+      const sortedDates = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a));
+
       for (const date of sortedDates) {
-        html += `
-          <div class="date-group">
-            <div class="date-marker">
-              <div class="date-dot"></div>
-              <div class="date-text">${formatDate(date)}</div>
-            </div>`;
-
-        for (const entry of groups[date]) {
-          const tagsHtml = (entry.tags || []).map(tag =>
-            `<span class="entry-tag ${tag}">${TAG_MAP[tag] || tag}</span>`
-          ).join('');
-
-          const versionHtml = entry.version
-            ? `<span class="entry-version">${entry.version}</span>`
-            : '';
-
-          const imageHtml = entry.image
-            ? `<div class="entry-image"><img src="${entry.image}" alt="" loading="lazy" /></div>`
-            : '';
-
-          html += `
-            <div class="changelog-entry" data-tags="${(entry.tags || []).join(',')}">
-              <div class="entry-header">
-                <span class="entry-title">${entry.title}</span>
-                ${versionHtml}
-              </div>
-              <div class="entry-tags">${tagsHtml}</div>
-              <div class="entry-body">${parseBody(entry.body)}</div>
-              ${imageHtml}
-            </div>`;
-        }
-
+        html += `<div class="date-group"><div class="date-marker"><div class="date-dot"></div><div class="date-text">${formatDate(date)}</div></div>`;
+        for (const entry of groups[date]) html += renderEntry(entry, false);
         html += '</div>';
       }
 
       feed.innerHTML = html;
 
-      // Scroll reveal entries
+      // Scroll reveal
       const entryEls = feed.querySelectorAll('.changelog-entry');
       const obs = new IntersectionObserver((entries) => {
         entries.forEach((e, i) => {
@@ -588,33 +363,52 @@
       entryEls.forEach(el => obs.observe(el));
     }
 
-    // Filter chips
-    document.querySelectorAll('.filter-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        activeFilter = chip.dataset.filter;
-        renderFeed(allEntries);
-      });
-    });
+    function renderEntry(entry, isPinned) {
+      const tagsHtml = (entry.tags || []).map(tId => {
+        const t = getTag(tId);
+        if (!t) return '';
+        return `<span class="entry-tag" style="background:${t.color}22; color:${t.color}; border:1px solid ${t.color}55;">${t.name}</span>`;
+      }).join('');
 
-    // Load from API
-    (async function loadChangelog() {
+      const versionHtml = entry.version ? `<span class="entry-version">${entry.version}</span>` : '';
+      const imageHtml = entry.image ? `<div class="entry-image"><img src="${entry.image}" alt="" loading="lazy" /></div>` : '';
+      const pinBadge = isPinned ? '<div class="entry-pin-badge">📌 Pinned</div>' : '';
+
+      return `
+        <div class="changelog-entry${isPinned ? ' pinned' : ''}">
+          ${pinBadge}
+          <div class="entry-header">
+            <span class="entry-title">${entry.title}</span>
+            ${versionHtml}
+          </div>
+          <div class="entry-tags">${tagsHtml}</div>
+          <div class="entry-body">${parseBody(entry.body)}</div>
+          ${imageHtml}
+        </div>`;
+    }
+
+    // Load everything
+    (async function load() {
       try {
-        const res = await fetch(`${API_BASE}/api/settings/changelog`);
-        if (!res.ok) {
-          document.getElementById('changelogLoading').style.display = 'none';
-          renderFeed([]);
-          return;
+        const [tagsRes, entriesRes] = await Promise.all([
+          fetch(`${API_BASE}/api/settings/changelogTags`),
+          fetch(`${API_BASE}/api/settings/changelog`),
+        ]);
+
+        if (tagsRes.ok) {
+          const data = await tagsRes.json();
+          if (data.value && data.value.length > 0) tags = data.value;
         }
-        const data = await res.json();
-        allEntries = data.value || [];
-        document.getElementById('changelogLoading').style.display = 'none';
-        renderFeed(allEntries);
-      } catch (e) {
-        document.getElementById('changelogLoading').style.display = 'none';
-        renderFeed([]);
-      }
+
+        if (entriesRes.ok) {
+          const data = await entriesRes.json();
+          allEntries = data.value || [];
+        }
+      } catch (e) {}
+
+      document.getElementById('changelogLoading').style.display = 'none';
+      renderFilterBar();
+      renderFeed(allEntries);
     })();
   </script>
 </body>
