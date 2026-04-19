@@ -608,12 +608,12 @@
     <div class="login-card">
       <div class="login-icon">🔒</div>
       <h2 class="login-title">Admin Panel</h2>
-      <p class="login-sub">Enter the admin password to continue.</p>
-      <div class="field">
-        <input type="password" id="loginPassword" placeholder="Password" />
-      </div>
+      <p class="login-sub" id="loginMessage">Checking your credentials...</p>
       <p class="login-error" id="loginError"></p>
-      <button class="btn btn-primary login-btn" id="loginBtn" type="button">Log In →</button>
+      <button class="btn btn-primary login-btn" id="loginDiscordBtn" type="button" style="display:none;" onclick="window.location.href='https://cozy-crafters-api.colbysthickey.workers.dev/auth/discord'">
+        Log in with Discord
+      </button>
+      <a href="index.html" style="display:inline-block; margin-top:1rem; font-family:'Nunito',sans-serif; font-size:0.85rem; color:var(--cream); opacity:0.5; text-decoration:none;">← Back to site</a>
     </div>
   </div>
 
@@ -1057,66 +1057,130 @@
 
 <script>
   const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
-  let AUTH_TOKEN = sessionStorage.getItem('ccAdminToken') || '';
+  const CC_AUTH_KEY = 'ccAuthToken';
+
+  // Handle auth callback on this page too
+  (function handleAuthCallback() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') === 'success' && params.get('token')) {
+      localStorage.setItem(CC_AUTH_KEY, params.get('token'));
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  })();
+
+  // The admin panel still uses the admin API token for write operations
+  let AUTH_TOKEN = '';
+
+  // Try to get it from Worker secrets via the settings endpoint
+  // We'll use the user's JWT to verify identity, then use the stored admin token
+  // Actually — admin API calls still use the AUTH_TOKEN secret.
+  // We read it from an env/secret, so we need to pass it somehow.
+  // Simplest: store it in sessionStorage after first successful admin verify.
+  // But we also need it to exist... Let's keep the admin token approach
+  // but gate access behind Discord role check.
+
+  AUTH_TOKEN = sessionStorage.getItem('ccAdminToken') || '';
 
   // ============================================
-  // Login
+  // Login — Discord role-based
   // ============================================
   const loginGate = document.getElementById('loginGate');
   const adminContent = document.getElementById('adminContent');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginPassword = document.getElementById('loginPassword');
+  const loginMessage = document.getElementById('loginMessage');
   const loginError = document.getElementById('loginError');
+  const loginDiscordBtn = document.getElementById('loginDiscordBtn');
 
-  async function verifyToken(token) {
+  function getJWTUser() {
+    const token = localStorage.getItem(CC_AUTH_KEY);
+    if (!token) return null;
     try {
-      const res = await fetch(`${API_BASE}/api/settings/__auth_test`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ value: 'ok' }),
-      });
-      return res.ok;
-    } catch (e) { return false; }
-  }
-
-  async function handleLogin() {
-    const token = loginPassword.value.trim();
-    if (!token) { loginError.textContent = 'Enter a password.'; return; }
-    loginBtn.textContent = 'Checking...';
-    loginBtn.disabled = true;
-    loginError.textContent = '';
-
-    if (await verifyToken(token)) {
-      AUTH_TOKEN = token;
-      sessionStorage.setItem('ccAdminToken', token);
-      loginGate.style.display = 'none';
-      adminContent.style.display = 'block';
-      initAdmin();
-    } else {
-      loginError.textContent = 'Wrong password.';
-    }
-    loginBtn.textContent = 'Log In →';
-    loginBtn.disabled = false;
-  }
-
-  loginBtn.addEventListener('click', handleLogin);
-  loginPassword.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
-
-  if (AUTH_TOKEN) {
-    (async () => {
-      if (await verifyToken(AUTH_TOKEN)) {
-        loginGate.style.display = 'none';
-        adminContent.style.display = 'block';
-        initAdmin();
-      } else {
-        sessionStorage.removeItem('ccAdminToken');
-        AUTH_TOKEN = '';
+      const body = token.split('.')[1];
+      const payload = JSON.parse(atob(body.replace(/-/g, '+').replace(/_/g, '/')));
+      if (payload.exp && Date.now() / 1000 > payload.exp) {
+        localStorage.removeItem(CC_AUTH_KEY);
+        return null;
       }
-    })();
+      return payload;
+    } catch (e) { return null; }
   }
+
+  // Check if user is admin and prompt for API token if needed
+  (async function checkAdminAccess() {
+    const user = getJWTUser();
+
+    if (!user) {
+      // Not logged in at all
+      loginMessage.textContent = 'You need to log in with Discord to access the admin panel.';
+      loginDiscordBtn.style.display = '';
+      return;
+    }
+
+    if (user.role !== 'admin') {
+      // Logged in but not admin
+      loginMessage.textContent = `Logged in as ${user.username}`;
+      loginError.textContent = "You don't have admin access.";
+      return;
+    }
+
+    // They're an admin. Check if we have the API token cached.
+    if (AUTH_TOKEN) {
+      // Verify it still works
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/__auth_test`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: 'ok' }),
+        });
+        if (res.ok) {
+          loginGate.style.display = 'none';
+          adminContent.style.display = 'block';
+          initAdmin();
+          return;
+        }
+      } catch (e) {}
+      sessionStorage.removeItem('ccAdminToken');
+      AUTH_TOKEN = '';
+    }
+
+    // Admin user but no API token — prompt for it
+    loginMessage.textContent = `Welcome, ${user.username}. Enter the admin API token to continue.`;
+    loginGate.querySelector('.login-card').insertAdjacentHTML('beforeend', `
+      <div class="field" style="margin-top:1rem;" id="apiTokenField">
+        <input type="password" id="apiTokenInput" placeholder="Admin API token" style="width:100%; font-family:'Nunito',sans-serif; font-size:1rem; color:var(--cream); background:rgba(43,31,21,0.8); border:2px solid rgba(244,201,93,0.2); border-radius:12px; padding:0.9rem 1rem; outline:none; text-align:center;" />
+      </div>
+      <button class="btn btn-primary login-btn" id="apiTokenBtn" type="button" style="margin-top:0.8rem; width:100%;">Unlock Panel</button>
+    `);
+
+    const apiTokenBtn = document.getElementById('apiTokenBtn');
+    const apiTokenInput = document.getElementById('apiTokenInput');
+
+    apiTokenBtn.addEventListener('click', async () => {
+      const token = apiTokenInput.value.trim();
+      if (!token) return;
+      apiTokenBtn.textContent = 'Checking...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/__auth_test`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: 'ok' }),
+        });
+        if (res.ok) {
+          AUTH_TOKEN = token;
+          sessionStorage.setItem('ccAdminToken', token);
+          loginGate.style.display = 'none';
+          adminContent.style.display = 'block';
+          initAdmin();
+          return;
+        }
+      } catch (e) {}
+
+      loginError.textContent = 'Invalid token.';
+      apiTokenBtn.textContent = 'Unlock Panel';
+    });
+
+    apiTokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') apiTokenBtn.click(); });
+  })();
 
   // ============================================
   // Admin panel

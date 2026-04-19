@@ -76,9 +76,13 @@ function ccRenderAuthNav() {
   }
 
   if (user) {
+    const adminBtn = user.role === 'admin'
+      ? `<a href="admin.html" style="font-family:'Fredoka',sans-serif; font-size:0.75rem; font-weight:600; background:rgba(244,201,93,0.15); border:1px solid rgba(244,201,93,0.3); color:#F4C95D; padding:0.3rem 0.7rem; border-radius:8px; text-decoration:none; transition:all 0.2s;" onmouseover="this.style.background='rgba(244,201,93,0.25)'" onmouseout="this.style.background='rgba(244,201,93,0.15)'">⚙ Admin</a>`
+      : '';
     authEl.innerHTML = `
       <img src="${user.avatar}" alt="" style="width:30px; height:30px; border-radius:50%; border:2px solid rgba(244,201,93,0.3);" />
       <span style="font-family:'Fredoka',sans-serif; font-size:0.88rem; font-weight:600; color:#FFF4DC;">${user.username}</span>
+      ${adminBtn}
       <button onclick="ccLogout()" style="font-family:'Fredoka',sans-serif; font-size:0.75rem; font-weight:600; background:none; border:1px solid rgba(255,244,220,0.2); color:#FFF4DC; opacity:0.5; padding:0.3rem 0.6rem; border-radius:8px; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">Log out</button>
     `;
   } else {
@@ -101,10 +105,14 @@ function ccRenderAuthNav() {
       mobileMenu.querySelector('ul').after(mobileAuth);
     }
     if (user) {
+      const mAdminBtn = user.role === 'admin'
+        ? `<a href="admin.html" style="font-family:'Fredoka',sans-serif; font-size:0.9rem; font-weight:600; background:rgba(244,201,93,0.15); border:1px solid rgba(244,201,93,0.3); color:#F4C95D; padding:0.5rem 1.2rem; border-radius:10px; text-decoration:none; display:inline-block;">⚙ Admin Panel</a>`
+        : '';
       mobileAuth.innerHTML = `
         <div style="display:flex; flex-direction:column; align-items:center; gap:0.8rem;">
           <img src="${user.avatar}" alt="" style="width:48px; height:48px; border-radius:50%; border:2px solid rgba(244,201,93,0.3);" />
           <span style="font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:600; color:#FFF4DC;">${user.username}</span>
+          ${mAdminBtn}
           <button onclick="ccLogout()" style="font-family:'Fredoka',sans-serif; font-size:0.85rem; font-weight:600; background:none; border:1px solid rgba(255,244,220,0.2); color:#FFF4DC; padding:0.4rem 1rem; border-radius:8px; cursor:pointer;">Log out</button>
         </div>`;
     } else {
