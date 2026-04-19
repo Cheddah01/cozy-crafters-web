@@ -405,7 +405,6 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
     }
 
     async function openChangelogModal(entryId, tags, token) {
-      // Load current entries
       let entries = [];
       try {
         const res = await fetch(`${INLINE_API}/api/settings/changelog`);
@@ -415,6 +414,8 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       const entry = entryId ? entries.find(e => e.id === entryId) : null;
       const isEdit = !!entry;
       const selectedTags = new Set(entry?.tags || []);
+      let modalChanges = [...(entry?.changes || [])];
+      let modalChangeTag = '';
 
       const tagsHtml = tags.map(t => {
         const active = selectedTags.has(t.id) ? 'active' : '';
@@ -424,10 +425,50 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         return `<button type="button" class="im-tag-btn ${active}" data-tag="${t.id}" style="${style}">${t.name}</button>`;
       }).join('');
 
-      const overlay = createModal(isEdit ? 'Edit Entry' : 'New Changelog Entry', `
+      function renderModalChanges(container) {
+        if (modalChanges.length === 0) {
+          container.innerHTML = '<div style="font-family:Nunito,sans-serif;font-size:0.82rem;color:#FFF4DC;opacity:0.35;padding:0.5rem 0;">No changes added yet.</div>';
+          return;
+        }
+        container.innerHTML = modalChanges.map((c, i) => {
+          const t = c.tag ? tags.find(x => x.id === c.tag) : null;
+          const tagChip = t ? `<span style="font-family:Nunito,sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0.15rem 0.45rem;border-radius:4px;background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;flex-shrink:0;margin-top:0.1rem;">${t.name}</span>` : '';
+          return `<div style="display:flex;align-items:flex-start;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid rgba(244,201,93,0.06);">
+            ${tagChip}
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:Fredoka,sans-serif;font-size:0.85rem;font-weight:600;color:#FFF4DC;">${c.title}</div>
+              ${c.description ? `<div style="font-family:Nunito,sans-serif;font-size:0.78rem;color:#FFF4DC;opacity:0.5;">${c.description}</div>` : ''}
+            </div>
+            <button class="im-change-del" data-idx="${i}" style="background:none;border:none;color:#E89A6E;opacity:0.5;cursor:pointer;font-size:0.9rem;">✕</button>
+          </div>`;
+        }).join('');
+
+        container.querySelectorAll('.im-change-del').forEach(btn => {
+          btn.addEventListener('click', () => {
+            modalChanges.splice(parseInt(btn.dataset.idx), 1);
+            renderModalChanges(container);
+          });
+        });
+      }
+
+      function renderModalChangeTagPicker(container) {
+        container.innerHTML = tags.map(t => {
+          const a = modalChangeTag === t.id ? 'active' : '';
+          const s = a ? `background:${t.color};color:#1a1209;border-color:${t.color};` : `border-color:${t.color}55;color:${t.color};`;
+          return `<button type="button" class="im-tag-btn im-ctag-btn ${a}" data-tag="${t.id}" style="${s}">${t.name}</button>`;
+        }).join('');
+        container.querySelectorAll('.im-ctag-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            modalChangeTag = modalChangeTag === btn.dataset.tag ? '' : btn.dataset.tag;
+            renderModalChangeTagPicker(container);
+          });
+        });
+      }
+
+      const overlay = createModal(isEdit ? 'Edit Patch Note' : 'New Patch Note', `
         <div class="im-field">
-          <label class="im-label">Title</label>
-          <input type="text" id="imClTitle" value="${escape(entry?.title || '')}" placeholder="Economy Rebalance & Bug Fixes" />
+          <label class="im-label">Patch Title</label>
+          <input type="text" id="imClTitle" value="${escape(entry?.title || '')}" placeholder="Season 2 Economy Rebalance" />
         </div>
         <div class="im-row">
           <div class="im-field">
@@ -436,21 +477,35 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           </div>
           <div class="im-field">
             <label class="im-label">Date</label>
-            <input type="text" id="imClDate" value="${entry?.date || new Date().toISOString().split('T')[0]}" placeholder="2026-04-18" />
+            <input type="text" id="imClDate" value="${entry?.date || new Date().toISOString().split('T')[0]}" />
           </div>
         </div>
         <div class="im-field">
-          <label class="im-label">Tags</label>
+          <label class="im-label">Patch Tags</label>
           <div class="im-tags" id="imClTags">${tagsHtml}</div>
-        </div>
-        <div class="im-field">
-          <label class="im-label">Body</label>
-          <textarea id="imClBody" rows="8" placeholder="## Changes&#10;&#10;- Added this&#10;- Fixed that">${entry?.body || ''}</textarea>
-          <div class="im-hint">## for headers, - for bullets, **bold**, *italic*</div>
         </div>
         <div class="im-field">
           <label class="im-label">Image URL (optional)</label>
           <input type="text" id="imClImage" value="${escape(entry?.image || '')}" placeholder="https://..." />
+        </div>
+        <div style="border-top:1px solid rgba(244,201,93,0.1);margin-top:0.5rem;padding-top:1rem;">
+          <label class="im-label" style="margin-bottom:0.6rem;display:block;">Changes</label>
+          <div id="imClChangesList"></div>
+          <div style="background:rgba(255,244,220,0.03);border:1px dashed rgba(244,201,93,0.12);border-radius:10px;padding:0.8rem;margin-top:0.6rem;">
+            <div class="im-field">
+              <label class="im-label">Change title</label>
+              <input type="text" id="imClChangeTitle" placeholder="Netherite Rank Added" />
+            </div>
+            <div class="im-field">
+              <label class="im-label">Description (optional)</label>
+              <input type="text" id="imClChangeDesc" placeholder="New top-tier rank with exclusive perks" />
+            </div>
+            <div class="im-field">
+              <label class="im-label">Change tag</label>
+              <div class="im-tags" id="imClChangeTagPicker"></div>
+            </div>
+            <button class="im-btn im-btn-cancel" id="imClAddChangeBtn" style="font-size:0.82rem;padding:0.5rem 0.9rem;">+ Add Change</button>
+          </div>
         </div>
       `, [
         { label: isEdit ? 'Save Changes' : 'Publish', class: 'im-btn-save', action: 'save' },
@@ -461,16 +516,17 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           const title = document.getElementById('imClTitle').value.trim();
           const date = document.getElementById('imClDate').value.trim();
           if (!title || !date) { showInlineToast('Title and date required.'); return 'keep'; }
+          if (modalChanges.length === 0) { showInlineToast('Add at least one change.'); return 'keep'; }
 
           const activeTags = new Set();
-          document.querySelectorAll('#imClTags .im-tag-btn.active').forEach(b => activeTags.add(b.dataset.tag));
+          overlay.querySelectorAll('#imClTags .im-tag-btn.active').forEach(b => activeTags.add(b.dataset.tag));
 
           const newEntry = {
             title,
             version: document.getElementById('imClVersion').value.trim() || null,
             date,
             tags: [...activeTags],
-            body: document.getElementById('imClBody').value,
+            changes: [...modalChanges],
             image: document.getElementById('imClImage').value.trim() || null,
             status: 'published',
             pinned: entry?.pinned || false,
@@ -503,6 +559,28 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
               : `border-color:${t.color}55; color:${t.color};`;
           }
         });
+      });
+
+      // Render changes list and tag picker
+      const changesContainer = overlay.querySelector('#imClChangesList');
+      const changeTagContainer = overlay.querySelector('#imClChangeTagPicker');
+      renderModalChanges(changesContainer);
+      renderModalChangeTagPicker(changeTagContainer);
+
+      // Add change button
+      overlay.querySelector('#imClAddChangeBtn').addEventListener('click', () => {
+        const changeTitle = overlay.querySelector('#imClChangeTitle').value.trim();
+        if (!changeTitle) { showInlineToast('Give the change a title.'); return; }
+        modalChanges.push({
+          title: changeTitle,
+          description: overlay.querySelector('#imClChangeDesc').value.trim() || null,
+          tag: modalChangeTag || null,
+        });
+        overlay.querySelector('#imClChangeTitle').value = '';
+        overlay.querySelector('#imClChangeDesc').value = '';
+        modalChangeTag = '';
+        renderModalChanges(changesContainer);
+        renderModalChangeTagPicker(changeTagContainer);
       });
     }
 
