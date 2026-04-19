@@ -82,6 +82,12 @@
         </button>
         <a href="changelog.html" class="btn btn-secondary" id="splashBtnSecondary">What's New</a>
       </div>
+
+      <div class="server-status" id="serverStatus">
+        <div class="status-indicator" id="statusDot"></div>
+        <span class="status-text" id="statusText">Checking server...</span>
+      </div>
+      <div class="player-heads" id="playerHeads"></div>
     </div>
 
     <div class="bottom">
@@ -318,6 +324,56 @@
         }, 2500);
       });
     }
+
+    // Live server status
+    async function fetchServerStatus() {
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      const headsEl = document.getElementById('playerHeads');
+      const serverIp = window._serverIp || 'play.cozycrafters.net';
+
+      try {
+        const res = await fetch(`https://api.mcstatus.io/v2/status/java/${serverIp}`);
+        const data = await res.json();
+
+        if (data.online) {
+          dot.className = 'status-indicator online';
+          const count = data.players?.online || 0;
+          const max = data.players?.max || 20;
+
+          if (count === 0) {
+            text.innerHTML = `<span class="status-count">Online</span> · No players right now`;
+          } else {
+            text.innerHTML = `<span class="status-count">${count}/${max}</span> player${count !== 1 ? 's' : ''} online`;
+          }
+
+          // Show player heads
+          const players = data.players?.list || [];
+          if (players.length > 0) {
+            headsEl.innerHTML = players.slice(0, 20).map(p => {
+              const uuid = p.uuid?.replace(/-/g, '') || '';
+              const headUrl = uuid ? `https://mc-heads.net/avatar/${uuid}/28` : '';
+              return headUrl ? `<img class="player-head" src="${headUrl}" alt="${p.name_clean || p.name_raw || ''}" title="${p.name_clean || p.name_raw || ''}" />` : '';
+            }).join('');
+          } else {
+            headsEl.innerHTML = '';
+          }
+        } else {
+          dot.className = 'status-indicator offline';
+          text.innerHTML = 'Server is offline';
+          headsEl.innerHTML = '';
+        }
+      } catch (e) {
+        dot.className = 'status-indicator';
+        text.innerHTML = 'Could not reach server';
+        headsEl.innerHTML = '';
+      }
+    }
+
+    // Fetch on load, then every 60 seconds
+    fetchServerStatus();
+    setInterval(fetchServerStatus, 60000);
+
     const heroSection = document.getElementById('hero');
     const navObserver = new IntersectionObserver(
       ([entry]) => {
