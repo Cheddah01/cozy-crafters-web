@@ -548,10 +548,18 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         .sp-img-preview { margin-top: 0.4rem; }
         .sp-img-preview img { max-width: 160px; max-height: 90px; border-radius: 8px; border: 1px solid rgba(244,201,93,0.1); }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
           .cl-sidepanel { width: 100%; right: -100%; }
-          .cl-quickbar { padding: 0.5rem 1rem; flex-wrap: wrap; }
-          .cl-quickbar input { flex: 1; min-width: 0; }
+          .cl-sidepanel.open { right: 0; }
+          .cl-panel-body { padding: 1rem; }
+          .cl-panel-header { padding: 1rem; }
+          .cl-panel-footer { padding: 0.8rem 1rem; }
+          .sp-row { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+          .sp-input { font-size: 0.85rem; padding: 0.5rem 0.65rem; }
+
+          .cl-quickbar { padding: 0.5rem 0.8rem; flex-wrap: wrap; gap: 0.4rem; }
+          .cl-quickbar input { flex: 1; min-width: 0; font-size: 0.82rem; padding: 0.45rem 0.7rem; }
+          .cl-quickbar-btn { font-size: 0.8rem; padding: 0.45rem 0.9rem; }
         }
       `;
       document.head.appendChild(panelStyle);
