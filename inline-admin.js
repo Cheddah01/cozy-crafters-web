@@ -923,7 +923,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       document.querySelectorAll('.changelog-entry').forEach(el => {
         el.style.cursor = 'pointer';
         el.addEventListener('click', (e) => {
-          if (e.target.closest('.reaction-btn')) return;
+          if (e.target.closest('.reaction-btn') || e.target.closest('.share-btn') || e.target.closest('.entry-footer')) return;
           const entryId = el.dataset.entryId;
           const entry = entries.find(x => x.id === entryId);
           if (entry) openPanel(entry, false);
