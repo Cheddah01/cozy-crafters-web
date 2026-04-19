@@ -8,232 +8,228 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-
   <style>
     body { overflow-x: hidden; }
 
     .page-header {
-      position: relative; z-index: 10;
-      padding: 8rem 3rem 3rem; text-align: center;
+      position: relative; z-index: 10; padding: 8rem 3rem 3rem; text-align: center;
       background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 60%);
       border-bottom: 1px solid rgba(244,201,93,0.1);
     }
     .page-header .section-eyebrow { margin-bottom: 1rem; }
-    .page-header h1 {
-      font-family: 'Fredoka', sans-serif; font-weight: 700;
-      font-size: clamp(2.5rem, 6vw, 4rem); color: var(--cream);
-      line-height: 1.1; margin-bottom: 1rem; opacity: 1; animation: none;
-    }
+    .page-header h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(2.5rem, 6vw, 4rem); color: var(--cream); line-height: 1.1; margin-bottom: 1rem; opacity: 1; animation: none; }
     .page-header h1 .accent { transform: none; }
-    .page-header p {
-      font-family: 'Nunito', sans-serif; font-size: 1.05rem;
-      color: var(--cream); opacity: 0.6; max-width: 480px;
-      margin: 0 auto; line-height: 1.6;
-    }
+    .page-header p { font-family: 'Nunito', sans-serif; font-size: 1.05rem; color: var(--cream); opacity: 0.6; max-width: 480px; margin: 0 auto; line-height: 1.6; }
 
-    /* Upload bar */
-    .upload-bar {
+    /* Create post bar */
+    .create-bar {
       position: relative; z-index: 10;
       background: rgba(61,43,31,0.95); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(244,201,93,0.08);
-      padding: 1rem 3rem; display: flex; justify-content: center;
-      align-items: center; gap: 1rem;
+      padding: 1rem 3rem; display: flex; justify-content: center; align-items: center; gap: 1rem;
       position: sticky; top: 56px;
     }
+    .create-bar-login { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: var(--cream); opacity: 0.5; }
+    .create-toggle-btn {
+      font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600;
+      background: var(--sun); color: var(--ink); border: none; padding: 0.6rem 1.4rem;
+      border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 var(--sun-deep);
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .create-toggle-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--sun-deep); }
 
-    .upload-bar-login {
-      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
-      color: var(--cream); opacity: 0.5;
+    /* Expanding creator panel */
+    .create-panel {
+      position: relative; z-index: 10; max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--ink); border-bottom: 1px solid rgba(244,201,93,0.08);
     }
+    .create-panel.open { max-height: 800px; }
+    .create-panel-inner {
+      max-width: 700px; margin: 0 auto; padding: 2rem;
+    }
+    .create-panel h3 {
+      font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.3rem;
+      color: var(--cream); margin-bottom: 1.2rem;
+    }
+    .cp-field { margin-bottom: 1rem; }
+    .cp-label { display: block; font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--sun); margin-bottom: 0.35rem; letter-spacing: 0.04em; }
+    .cp-input {
+      width: 100%; font-family: 'Nunito', sans-serif; font-size: 0.92rem; color: var(--cream);
+      background: rgba(43,31,21,0.8); border: 1.5px solid rgba(244,201,93,0.15);
+      border-radius: 10px; padding: 0.7rem 0.9rem; outline: none; transition: all 0.2s;
+    }
+    .cp-input:focus { border-color: var(--sun); box-shadow: 0 0 0 3px rgba(244,201,93,0.1); }
+    .cp-input::placeholder { color: var(--cream); opacity: 0.3; }
+    textarea.cp-input { resize: vertical; min-height: 60px; line-height: 1.5; }
 
-    .upload-form {
-      display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
-      justify-content: center;
+    /* Tags */
+    .cp-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .cp-tag-btn {
+      font-family: 'Fredoka', sans-serif; font-size: 0.78rem; font-weight: 600;
+      padding: 0.35rem 0.8rem; border-radius: 999px; border: 1px solid rgba(244,201,93,0.2);
+      background: rgba(43,31,21,0.6); color: var(--cream); opacity: 0.6;
+      cursor: pointer; transition: all 0.2s;
     }
+    .cp-tag-btn:hover { opacity: 0.85; }
+    .cp-tag-btn.active { background: var(--sun); color: var(--ink); border-color: var(--sun); opacity: 1; }
 
-    .upload-form input[type="text"] {
-      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
-      color: var(--cream); background: rgba(43,31,21,0.8);
-      border: 1.5px solid rgba(244,201,93,0.15); border-radius: 10px;
-      padding: 0.6rem 0.9rem; outline: none; width: 240px;
-      transition: all 0.2s;
+    /* Image upload area */
+    .cp-images-area {
+      border: 2px dashed rgba(244,201,93,0.15); border-radius: 14px;
+      padding: 1.2rem; margin-top: 0.3rem; text-align: center;
+      transition: border-color 0.2s; min-height: 100px;
+      display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; justify-content: center;
     }
-    .upload-form input[type="text"]:focus {
-      border-color: var(--sun); box-shadow: 0 0 0 3px rgba(244,201,93,0.1);
-    }
-    .upload-form input[type="text"]::placeholder { color: var(--cream); opacity: 0.3; }
+    .cp-images-area.has-images { justify-content: flex-start; }
+    .cp-images-area.dragover { border-color: var(--sun); background: rgba(244,201,93,0.03); }
 
-    .upload-file-btn {
-      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
-      background: var(--sun); color: var(--ink); border: none;
-      padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer;
-      box-shadow: 0 2px 0 var(--sun-deep); transition: all 0.2s;
-      display: inline-flex; align-items: center; gap: 0.4rem;
+    .cp-img-thumb {
+      width: 100px; height: 100px; border-radius: 10px; overflow: hidden;
+      position: relative; flex-shrink: 0;
     }
-    .upload-file-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--sun-deep); }
+    .cp-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .cp-img-thumb .cp-img-remove {
+      position: absolute; top: 4px; right: 4px; width: 22px; height: 22px;
+      background: rgba(0,0,0,0.7); border: none; color: #fff; font-size: 0.75rem;
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .cp-img-thumb .cp-img-remove:hover { background: rgba(232,154,110,0.9); }
+    .cp-img-uploading { font-family: 'Nunito', sans-serif; font-size: 0.78rem; color: var(--sun); }
 
-    .upload-status-msg {
-      font-family: 'Nunito', sans-serif; font-size: 0.82rem;
-      color: var(--sun); font-weight: 600;
+    .cp-drop-hint {
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: var(--cream); opacity: 0.35;
     }
+    .cp-drop-hint span { display: block; font-size: 1.8rem; margin-bottom: 0.3rem; }
+
+    .cp-add-img-btn {
+      width: 100px; height: 100px; border-radius: 10px; border: 2px dashed rgba(244,201,93,0.2);
+      background: transparent; color: var(--sun); font-size: 1.8rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+    }
+    .cp-add-img-btn:hover { border-color: var(--sun); background: rgba(244,201,93,0.05); }
+
+    .cp-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; align-items: center; }
+    .cp-submit {
+      font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 600;
+      background: var(--sun); color: var(--ink); border: none; padding: 0.75rem 1.6rem;
+      border-radius: 12px; cursor: pointer; box-shadow: 0 3px 0 var(--sun-deep); transition: all 0.2s;
+    }
+    .cp-submit:hover { transform: translateY(-1px); }
+    .cp-submit:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .cp-cancel {
+      font-family: 'Fredoka', sans-serif; font-size: 0.88rem; font-weight: 600;
+      background: none; border: 1px solid rgba(255,244,220,0.15); color: var(--cream);
+      padding: 0.7rem 1.2rem; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    }
+    .cp-cancel:hover { border-color: rgba(255,244,220,0.3); }
+    .cp-status { font-family: 'Nunito', sans-serif; font-size: 0.82rem; color: var(--sun); font-weight: 600; margin-left: auto; }
 
     input[type="file"].hidden-file { display: none; }
 
     /* Gallery grid */
-    .gallery-content {
-      position: relative; z-index: 10;
-      max-width: 1100px; margin: 0 auto;
-      padding: 2rem 2rem 6rem;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-    }
+    .gallery-content { position: relative; z-index: 10; max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 6rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
 
     .gallery-item {
-      position: relative; aspect-ratio: 1;
-      border-radius: 12px; overflow: hidden;
-      cursor: pointer; transition: all 0.3s ease;
-      opacity: 0; transform: scale(0.95);
+      position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+      cursor: pointer; transition: all 0.3s ease; opacity: 0; transform: scale(0.95);
       background: var(--ink);
     }
     .gallery-item.revealed { opacity: 1; transform: scale(1); }
     .gallery-item:hover { transform: scale(1.02); z-index: 2; }
     .gallery-item:hover .gallery-overlay { opacity: 1; }
-
-    .gallery-item > img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform 0.4s ease;
-    }
+    .gallery-item > img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
     .gallery-item:hover > img { transform: scale(1.05); }
+
+    .gallery-multi-badge {
+      position: absolute; top: 0.5rem; right: 0.5rem; font-family: 'Fredoka', sans-serif;
+      font-size: 0.7rem; font-weight: 600; background: rgba(0,0,0,0.6); color: #fff;
+      padding: 0.2rem 0.5rem; border-radius: 6px; backdrop-filter: blur(4px);
+      display: flex; align-items: center; gap: 0.3rem;
+    }
 
     .gallery-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(0deg, rgba(43,31,21,0.85) 0%, transparent 50%);
-      opacity: 0; transition: opacity 0.3s; display: flex;
-      align-items: flex-end; padding: 0.8rem;
+      background: linear-gradient(0deg, rgba(43,31,21,0.9) 0%, rgba(43,31,21,0.3) 40%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 0.8rem;
     }
-
-    .gallery-overlay-info {
-      display: flex; align-items: center; gap: 0.5rem; width: 100%;
-    }
-
-    .gallery-overlay-avatar {
-      width: 24px !important; height: 24px !important; border-radius: 50% !important;
-      border: 1.5px solid rgba(244,201,93,0.3); flex-shrink: 0;
-      object-fit: cover;
-    }
-
-    .gallery-overlay-user {
-      font-family: 'Fredoka', sans-serif; font-size: 0.78rem;
-      font-weight: 600; color: var(--cream); flex: 1; min-width: 0;
+    .gallery-overlay-title {
+      font-family: 'Fredoka', sans-serif; font-size: 0.88rem; font-weight: 600;
+      color: var(--cream); line-height: 1.2; margin-bottom: 0.3rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
+    .gallery-overlay-info { display: flex; align-items: center; gap: 0.5rem; }
+    .gallery-overlay-avatar { width: 20px !important; height: 20px !important; border-radius: 50% !important; border: 1.5px solid rgba(244,201,93,0.3); flex-shrink: 0; object-fit: cover; }
+    .gallery-overlay-user { font-family: 'Nunito', sans-serif; font-size: 0.72rem; color: var(--cream); opacity: 0.7; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .gallery-overlay-delete {
-      background: rgba(232,154,110,0.2); border: 1px solid rgba(232,154,110,0.4);
-      color: #E89A6E; font-size: 0.75rem; font-weight: 600;
-      font-family: 'Fredoka', sans-serif;
-      padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer;
-      transition: all 0.15s; flex-shrink: 0;
+      background: rgba(232,154,110,0.3); border: none; color: #E89A6E;
+      font-size: 0.7rem; font-weight: 600; font-family: 'Fredoka', sans-serif;
+      padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer; transition: all 0.15s; flex-shrink: 0;
     }
-    .gallery-overlay-delete:hover { background: rgba(232,154,110,0.4); }
+    .gallery-overlay-delete:hover { background: rgba(232,154,110,0.5); }
 
     /* Lightbox */
-    .lightbox {
-      position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
-      display: none; align-items: center; justify-content: center;
-      flex-direction: column; padding: 2rem;
-    }
+    .lightbox { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.94); backdrop-filter: blur(16px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
     .lightbox.open { display: flex; }
-
-    .lightbox-close {
-      position: absolute; top: 1.5rem; right: 2rem;
-      font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-      color: #fff; padding: 0.5rem 1rem; border-radius: 10px;
-      cursor: pointer; transition: all 0.2s;
-    }
+    .lightbox-close { position: absolute; top: 1.5rem; right: 2rem; font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; z-index: 2; }
     .lightbox-close:hover { background: rgba(255,255,255,0.2); }
 
-    .lightbox-img {
-      max-width: 90vw; max-height: 75vh; border-radius: 14px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    .lightbox-carousel { position: relative; display: flex; align-items: center; gap: 1rem; max-width: 90vw; }
+    .lightbox-img { max-width: 85vw; max-height: 70vh; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .lb-arrow {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; font-size: 1.4rem; width: 44px; height: 44px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0;
     }
+    .lb-arrow:hover { background: rgba(255,255,255,0.2); }
+    .lb-arrow:disabled { opacity: 0.2; cursor: default; }
 
-    .lightbox-info {
-      margin-top: 1.2rem; display: flex; align-items: center;
-      gap: 0.7rem; max-width: 600px;
+    .lightbox-info { margin-top: 1.2rem; text-align: center; max-width: 600px; }
+    .lb-title { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--cream); margin-bottom: 0.3rem; }
+    .lb-caption { font-family: 'Nunito', sans-serif; font-size: 0.9rem; color: var(--cream); opacity: 0.6; line-height: 1.4; margin-bottom: 0.5rem; }
+    .lb-meta { display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
+    .lb-avatar { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(244,201,93,0.3); }
+    .lb-user { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--cream); }
+    .lb-date { font-family: 'Nunito', sans-serif; font-size: 0.75rem; color: var(--cream); opacity: 0.3; }
+    .lb-dots { display: flex; gap: 0.4rem; justify-content: center; margin-top: 0.8rem; }
+    .lb-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.2s; }
+    .lb-dot.active { background: var(--sun); }
+
+    /* Tag filter bar */
+    .tag-filter { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+    .tag-filter-chip {
+      font-family: 'Fredoka', sans-serif; font-size: 0.8rem; font-weight: 600;
+      padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid rgba(244,201,93,0.15);
+      background: rgba(255,244,220,0.04); color: var(--cream); opacity: 0.6;
+      cursor: pointer; transition: all 0.2s;
     }
+    .tag-filter-chip:hover { opacity: 0.9; }
+    .tag-filter-chip.active { background: var(--sun); color: var(--ink); border-color: var(--sun); opacity: 1; }
 
-    .lightbox-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 2px solid rgba(244,201,93,0.3);
-    }
-
-    .lightbox-meta { flex: 1; }
-
-    .lightbox-user {
-      font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
-      font-weight: 600; color: var(--cream);
-    }
-
-    .lightbox-caption {
-      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
-      color: var(--cream); opacity: 0.6; line-height: 1.4;
-      margin-top: 0.15rem;
-    }
-
-    .lightbox-date {
-      font-family: 'Nunito', sans-serif; font-size: 0.75rem;
-      color: var(--cream); opacity: 0.3;
-    }
-
-    /* Load more */
-    .load-more-row {
-      text-align: center; margin-top: 2rem;
-    }
-
-    /* States */
-    .gallery-empty {
-      text-align: center; padding: 5rem 2rem; grid-column: 1 / -1;
-      font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4;
-    }
+    .load-more-row { text-align: center; margin-top: 2rem; }
+    .gallery-empty { text-align: center; padding: 5rem 2rem; grid-column: 1/-1; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4; }
     .gallery-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
-
-    .gallery-loading {
-      text-align: center; padding: 4rem; grid-column: 1 / -1;
-      font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5;
-    }
-    .gallery-loading .load-spinner {
-      width: 28px; height: 28px; border: 3px solid rgba(244,201,93,0.15);
-      border-top-color: var(--sun); border-radius: 50%;
-      animation: spin 0.7s linear infinite; margin: 0 auto 1rem;
-    }
+    .gallery-loading { text-align: center; padding: 4rem; grid-column: 1/-1; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5; }
+    .gallery-loading .load-spinner { width: 28px; height: 28px; border: 3px solid rgba(244,201,93,0.15); border-top-color: var(--sun); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 1rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 900px) {
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    @media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) {
       .page-header { padding: 7rem 1.5rem 2.5rem; }
-      .upload-bar { padding: 0.8rem 1rem; top: 50px; flex-direction: column; }
-      .upload-form { width: 100%; }
-      .upload-form input[type="text"] { flex: 1; width: auto; }
+      .create-bar { padding: 0.8rem 1rem; top: 50px; }
+      .create-panel-inner { padding: 1.5rem; }
       .gallery-content { padding: 1.5rem 1rem 4rem; }
       .gallery-grid { gap: 0.5rem; }
       .gallery-item { border-radius: 8px; }
-    }
-    @media (max-width: 480px) {
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .lb-arrow { display: none; }
     }
   </style>
 </head>
 <body>
-
   <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
   <div class="bg-grain"></div>
 
@@ -264,24 +260,62 @@
     <p>Builds, landscapes, cursed screenshots, and everything in between. All captured by the community.</p>
   </header>
 
-  <div class="upload-bar" id="uploadBar"></div>
+  <div class="create-bar" id="createBar"></div>
+
+  <div class="create-panel" id="createPanel">
+    <div class="create-panel-inner">
+      <h3>📸 Share a Screenshot</h3>
+      <div class="cp-field">
+        <label class="cp-label">Title</label>
+        <input type="text" class="cp-input" id="cpTitle" placeholder="My mega base at sunset" />
+      </div>
+      <div class="cp-field">
+        <label class="cp-label">Caption (optional)</label>
+        <textarea class="cp-input" id="cpCaption" rows="2" placeholder="Took me 3 weeks to build. Worth it."></textarea>
+      </div>
+      <div class="cp-field">
+        <label class="cp-label">Tags</label>
+        <div class="cp-tags" id="cpTags">
+          <button type="button" class="cp-tag-btn" data-tag="builds">🏗️ Builds</button>
+          <button type="button" class="cp-tag-btn" data-tag="landscape">🌄 Landscape</button>
+          <button type="button" class="cp-tag-btn" data-tag="cursed">😈 Cursed</button>
+          <button type="button" class="cp-tag-btn" data-tag="redstone">⚡ Redstone</button>
+          <button type="button" class="cp-tag-btn" data-tag="pvp">⚔️ PvP</button>
+          <button type="button" class="cp-tag-btn" data-tag="cozy">🏡 Cozy</button>
+        </div>
+      </div>
+      <div class="cp-field">
+        <label class="cp-label">Images</label>
+        <div class="cp-images-area" id="cpImagesArea">
+          <div class="cp-drop-hint" id="cpDropHint"><span>📷</span>Click or drag images here</div>
+        </div>
+        <input type="file" class="hidden-file" id="cpFileInput" accept="image/png,image/jpeg,image/gif,image/webp" multiple />
+      </div>
+      <div class="cp-actions">
+        <button class="cp-submit" id="cpSubmit">Post to Gallery</button>
+        <button class="cp-cancel" id="cpCancel">Cancel</button>
+        <span class="cp-status" id="cpStatus"></span>
+      </div>
+    </div>
+  </div>
 
   <div class="gallery-content">
+    <div class="tag-filter" id="tagFilter"></div>
     <div class="gallery-grid" id="galleryGrid">
-      <div class="gallery-loading" id="galleryLoading">
-        <div class="load-spinner"></div>
-        Loading screenshots...
-      </div>
+      <div class="gallery-loading" id="galleryLoading"><div class="load-spinner"></div>Loading screenshots...</div>
     </div>
     <div class="load-more-row" id="loadMoreRow" style="display:none;">
       <button class="btn btn-secondary" id="loadMoreBtn">Load More</button>
     </div>
   </div>
 
-  <!-- Lightbox -->
   <div class="lightbox" id="lightbox">
     <button class="lightbox-close" id="lightboxClose">✕ Close</button>
-    <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+    <div class="lightbox-carousel">
+      <button class="lb-arrow" id="lbPrev">‹</button>
+      <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+      <button class="lb-arrow" id="lbNext">›</button>
+    </div>
     <div class="lightbox-info" id="lightboxInfo"></div>
   </div>
 
@@ -301,9 +335,21 @@
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
     const PAGE_SIZE = 30;
-    let allImages = [];
+    const GALLERY_TAGS = [
+      { id: 'builds', label: '🏗️ Builds' },
+      { id: 'landscape', label: '🌄 Landscape' },
+      { id: 'cursed', label: '😈 Cursed' },
+      { id: 'redstone', label: '⚡ Redstone' },
+      { id: 'pvp', label: '⚔️ PvP' },
+      { id: 'cozy', label: '🏡 Cozy' },
+    ];
+
+    let allPosts = [];
     let total = 0;
     let offset = 0;
+    let activeTag = '';
+    let uploadedImageUrls = [];
+    let selectedTags = new Set();
 
     // Hamburger
     const hamburger = document.getElementById('hamburgerBtn');
@@ -311,206 +357,287 @@
     hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
     mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
 
-    function getAuthHeader() {
-      const token = localStorage.getItem('ccAuthToken');
-      return token ? { 'Authorization': `Bearer ${token}` } : {};
+    function getAuthHeader() { const t = localStorage.getItem('ccAuthToken'); return t ? { 'Authorization': `Bearer ${t}` } : {}; }
+    function fmtDate(d) { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+    function getUser() { return typeof ccGetUser === 'function' ? ccGetUser() : null; }
+
+    // ============================================
+    // Create bar
+    // ============================================
+    function renderCreateBar() {
+      const bar = document.getElementById('createBar');
+      const user = getUser();
+      if (!user) { bar.innerHTML = '<span class="create-bar-login">Log in with Discord to share screenshots</span>'; return; }
+      bar.innerHTML = '<button class="create-toggle-btn" id="createToggle">📸 Share a Screenshot</button>';
+      document.getElementById('createToggle').addEventListener('click', toggleCreatePanel);
     }
 
-    function fmtDate(d) {
-      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    function toggleCreatePanel() {
+      document.getElementById('createPanel').classList.toggle('open');
     }
 
-    // Upload bar
-    function renderUploadBar() {
-      const bar = document.getElementById('uploadBar');
-      const user = typeof ccGetUser === 'function' ? ccGetUser() : null;
-
-      if (!user) {
-        bar.innerHTML = '<span class="upload-bar-login">Log in with Discord to share your screenshots</span>';
-        return;
-      }
-
-      bar.innerHTML = `
-        <div class="upload-form">
-          <input type="text" id="galCaption" placeholder="Add a caption..." />
-          <input type="file" id="galFileInput" class="hidden-file" accept="image/png,image/jpeg,image/gif,image/webp" />
-          <button class="upload-file-btn" id="galUploadBtn">📷 Upload Screenshot</button>
-          <span class="upload-status-msg" id="galStatus"></span>
-        </div>
-      `;
-
-      document.getElementById('galUploadBtn').addEventListener('click', () => {
-        document.getElementById('galFileInput').click();
+    // Tag picker in creator
+    document.querySelectorAll('.cp-tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+        btn.classList.toggle('active');
+        selectedTags.has(tag) ? selectedTags.delete(tag) : selectedTags.add(tag);
       });
+    });
 
-      document.getElementById('galFileInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // Image upload area
+    const cpImagesArea = document.getElementById('cpImagesArea');
+    const cpFileInput = document.getElementById('cpFileInput');
 
-        const status = document.getElementById('galStatus');
-        const btn = document.getElementById('galUploadBtn');
-        btn.disabled = true;
-        status.textContent = 'Uploading...';
+    cpImagesArea.addEventListener('click', (e) => {
+      if (e.target.closest('.cp-img-remove') || e.target.closest('.cp-add-img-btn')) return;
+      if (uploadedImageUrls.length === 0) cpFileInput.click();
+    });
 
-        try {
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('caption', document.getElementById('galCaption').value.trim());
+    cpImagesArea.addEventListener('dragover', (e) => { e.preventDefault(); cpImagesArea.classList.add('dragover'); });
+    cpImagesArea.addEventListener('dragleave', () => cpImagesArea.classList.remove('dragover'));
+    cpImagesArea.addEventListener('drop', (e) => {
+      e.preventDefault(); cpImagesArea.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+    });
 
-          const res = await fetch(`${API_BASE}/api/gallery`, {
-            method: 'POST',
-            headers: getAuthHeader(),
-            body: formData,
-          });
+    cpFileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFiles(e.target.files); });
 
-          const data = await res.json();
-          if (!res.ok) {
-            status.textContent = data.error || 'Upload failed';
-            btn.disabled = false;
-            return;
-          }
+    async function handleFiles(files) {
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        if (uploadedImageUrls.length >= 10) { break; }
+        await uploadOneImage(file);
+      }
+      cpFileInput.value = '';
+    }
 
-          status.textContent = 'Uploaded!';
-          document.getElementById('galCaption').value = '';
-          document.getElementById('galFileInput').value = '';
-
-          // Reload gallery
-          offset = 0;
-          allImages = [];
-          await loadGallery();
-
-          setTimeout(() => { status.textContent = ''; btn.disabled = false; }, 2000);
-        } catch (e) {
-          status.textContent = 'Upload failed';
-          btn.disabled = false;
+    async function uploadOneImage(file) {
+      renderImageThumbs('uploading');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(`${API_BASE}/api/gallery/upload`, { method: 'POST', headers: getAuthHeader(), body: formData });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          uploadedImageUrls.push(data.url);
         }
-      });
+      } catch (e) {}
+      renderImageThumbs();
     }
 
-    // Render gallery
-    function renderGallery() {
-      const grid = document.getElementById('galleryGrid');
-      const user = typeof ccGetUser === 'function' ? ccGetUser() : null;
-
-      if (allImages.length === 0) {
-        grid.innerHTML = '<div class="gallery-empty"><div class="empty-icon">📷</div><div>No screenshots yet. Be the first to share one.</div></div>';
+    function renderImageThumbs(status) {
+      const hint = document.getElementById('cpDropHint');
+      if (uploadedImageUrls.length === 0 && status !== 'uploading') {
+        cpImagesArea.innerHTML = '<div class="cp-drop-hint" id="cpDropHint"><span>📷</span>Click or drag images here</div>';
+        cpImagesArea.classList.remove('has-images');
         return;
       }
 
-      grid.innerHTML = allImages.map((img, i) => {
-        const canDelete = user && (user.sub === img.user_id || user.role === 'admin');
-        const deleteBtn = canDelete
-          ? `<button class="gallery-overlay-delete" data-id="${img.id}" onclick="event.stopPropagation()">Delete</button>`
-          : '';
+      cpImagesArea.classList.add('has-images');
+      let html = uploadedImageUrls.map((url, i) =>
+        `<div class="cp-img-thumb"><img src="${url}" alt="" /><button class="cp-img-remove" data-idx="${i}">✕</button></div>`
+      ).join('');
 
-        return `
-          <div class="gallery-item" data-idx="${i}" style="animation-delay:${i * 0.03}s">
-            <img src="${img.image_url}" alt="${img.caption || ''}" loading="lazy" />
-            <div class="gallery-overlay">
-              <div class="gallery-overlay-info">
-                <img class="gallery-overlay-avatar" src="${img.avatar || ''}" alt="" />
-                <span class="gallery-overlay-user">${img.username || 'Unknown'}</span>
-                ${deleteBtn}
-              </div>
-            </div>
-          </div>`;
-      }).join('');
+      if (status === 'uploading') html += '<div class="cp-img-uploading">Uploading...</div>';
+      if (uploadedImageUrls.length < 10 && status !== 'uploading') {
+        html += '<button class="cp-add-img-btn" id="cpAddMoreBtn">+</button>';
+      }
 
-      // Click to open lightbox
-      grid.querySelectorAll('.gallery-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const idx = parseInt(item.dataset.idx);
-          openLightbox(allImages[idx]);
+      cpImagesArea.innerHTML = html;
+
+      cpImagesArea.querySelectorAll('.cp-img-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          uploadedImageUrls.splice(parseInt(btn.dataset.idx), 1);
+          renderImageThumbs();
         });
       });
 
-      // Delete buttons
+      const addBtn = document.getElementById('cpAddMoreBtn');
+      if (addBtn) addBtn.addEventListener('click', (e) => { e.stopPropagation(); cpFileInput.click(); });
+    }
+
+    // Submit
+    document.getElementById('cpSubmit').addEventListener('click', async () => {
+      if (uploadedImageUrls.length === 0) { document.getElementById('cpStatus').textContent = 'Add at least one image.'; return; }
+
+      const btn = document.getElementById('cpSubmit');
+      const status = document.getElementById('cpStatus');
+      btn.disabled = true;
+      status.textContent = 'Posting...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/gallery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify({
+            title: document.getElementById('cpTitle').value.trim() || null,
+            caption: document.getElementById('cpCaption').value.trim() || null,
+            tags: [...selectedTags],
+            images: uploadedImageUrls,
+          }),
+        });
+
+        if (res.ok) {
+          status.textContent = 'Posted!';
+          document.getElementById('cpTitle').value = '';
+          document.getElementById('cpCaption').value = '';
+          uploadedImageUrls = [];
+          selectedTags.clear();
+          document.querySelectorAll('.cp-tag-btn').forEach(b => b.classList.remove('active'));
+          renderImageThumbs();
+          document.getElementById('createPanel').classList.remove('open');
+          offset = 0; allPosts = [];
+          await loadGallery();
+          setTimeout(() => { status.textContent = ''; btn.disabled = false; }, 1500);
+        } else {
+          const err = await res.json();
+          status.textContent = err.error || 'Failed';
+          btn.disabled = false;
+        }
+      } catch (e) { status.textContent = 'Failed'; btn.disabled = false; }
+    });
+
+    document.getElementById('cpCancel').addEventListener('click', () => {
+      document.getElementById('createPanel').classList.remove('open');
+    });
+
+    // ============================================
+    // Tag filter
+    // ============================================
+    function renderTagFilter() {
+      const el = document.getElementById('tagFilter');
+      let html = `<button class="tag-filter-chip${!activeTag ? ' active' : ''}" data-tag="">All</button>`;
+      for (const t of GALLERY_TAGS) {
+        html += `<button class="tag-filter-chip${activeTag === t.id ? ' active' : ''}" data-tag="${t.id}">${t.label}</button>`;
+      }
+      el.innerHTML = html;
+      el.querySelectorAll('.tag-filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => { activeTag = chip.dataset.tag; offset = 0; allPosts = []; renderTagFilter(); loadGallery(); });
+      });
+    }
+
+    // ============================================
+    // Gallery grid
+    // ============================================
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const user = getUser();
+
+      if (allPosts.length === 0) {
+        grid.innerHTML = '<div class="gallery-empty"><div class="empty-icon">📷</div><div>No screenshots yet. Be the first to share one.</div></div>';
+        document.getElementById('loadMoreRow').style.display = 'none';
+        return;
+      }
+
+      grid.innerHTML = allPosts.map((post, i) => {
+        const firstImg = post.images?.[0]?.image_url || '';
+        const imgCount = post.images?.length || 0;
+        const canDelete = user && (user.sub === post.user_id || user.role === 'admin');
+        const multiBadge = imgCount > 1 ? `<div class="gallery-multi-badge">🖼 ${imgCount}</div>` : '';
+        const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${post.id}" onclick="event.stopPropagation()">Delete</button>` : '';
+
+        return `<div class="gallery-item" data-idx="${i}">
+          <img src="${firstImg}" alt="${post.title || ''}" loading="lazy" />
+          ${multiBadge}
+          <div class="gallery-overlay">
+            ${post.title ? `<div class="gallery-overlay-title">${post.title}</div>` : ''}
+            <div class="gallery-overlay-info">
+              <img class="gallery-overlay-avatar" src="${post.avatar || ''}" alt="" />
+              <span class="gallery-overlay-user">${post.username || 'Unknown'}</span>
+              ${deleteBtn}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Click to lightbox
+      grid.querySelectorAll('.gallery-item').forEach(item => {
+        item.addEventListener('click', () => openLightbox(allPosts[parseInt(item.dataset.idx)]));
+      });
+
+      // Delete
       grid.querySelectorAll('.gallery-overlay-delete').forEach(btn => {
         btn.addEventListener('click', async () => {
-          const id = btn.dataset.id;
-          if (!confirm('Delete this screenshot?')) return;
-
-          try {
-            await fetch(`${API_BASE}/api/gallery/${id}`, {
-              method: 'DELETE',
-              headers: getAuthHeader(),
-            });
-            allImages = allImages.filter(img => img.id !== id);
-            renderGallery();
-          } catch (e) {}
+          if (!confirm('Delete this post?')) return;
+          try { await fetch(`${API_BASE}/api/gallery/${btn.dataset.id}`, { method: 'DELETE', headers: getAuthHeader() }); } catch (e) {}
+          allPosts = allPosts.filter(p => p.id !== btn.dataset.id);
+          renderGallery();
         });
       });
 
       // Scroll reveal
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add('revealed'), i * 40);
-            obs.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.1 });
+      const obs = new IntersectionObserver((entries) => { entries.forEach((e, i) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('revealed'), i * 40); obs.unobserve(e.target); } }); }, { threshold: 0.1 });
       grid.querySelectorAll('.gallery-item').forEach(el => obs.observe(el));
 
-      // Load more button
-      const loadMoreRow = document.getElementById('loadMoreRow');
-      loadMoreRow.style.display = allImages.length < total ? '' : 'none';
+      document.getElementById('loadMoreRow').style.display = allPosts.length < total ? '' : 'none';
     }
 
-    // Lightbox
-    function openLightbox(img) {
-      const lb = document.getElementById('lightbox');
-      document.getElementById('lightboxImg').src = img.image_url;
-      document.getElementById('lightboxInfo').innerHTML = `
-        <img class="lightbox-avatar" src="${img.avatar || ''}" alt="" />
-        <div class="lightbox-meta">
-          <div class="lightbox-user">${img.username || 'Unknown'}</div>
-          ${img.caption ? `<div class="lightbox-caption">${img.caption}</div>` : ''}
-        </div>
-        <div class="lightbox-date">${fmtDate(img.created_at)}</div>
-      `;
-      lb.classList.add('open');
+    // ============================================
+    // Lightbox with carousel
+    // ============================================
+    let lbPost = null;
+    let lbIdx = 0;
+
+    function openLightbox(post) {
+      lbPost = post;
+      lbIdx = 0;
+      renderLightbox();
+      document.getElementById('lightbox').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
-    document.getElementById('lightboxClose').addEventListener('click', () => {
-      document.getElementById('lightbox').classList.remove('open');
-      document.body.style.overflow = '';
-    });
+    function renderLightbox() {
+      if (!lbPost) return;
+      const images = lbPost.images || [];
+      const img = images[lbIdx];
+      if (!img) return;
 
-    document.getElementById('lightbox').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('lightbox')) {
-        document.getElementById('lightbox').classList.remove('open');
-        document.body.style.overflow = '';
-      }
-    });
+      document.getElementById('lightboxImg').src = img.image_url;
+      document.getElementById('lbPrev').disabled = lbIdx === 0;
+      document.getElementById('lbNext').disabled = lbIdx >= images.length - 1;
 
+      const tags = lbPost.tags ? JSON.parse(lbPost.tags) : [];
+      const tagsHtml = tags.map(t => { const g = GALLERY_TAGS.find(x => x.id === t); return g ? g.label : t; }).join('  ');
+
+      document.getElementById('lightboxInfo').innerHTML = `
+        ${lbPost.title ? `<div class="lb-title">${lbPost.title}</div>` : ''}
+        ${lbPost.caption ? `<div class="lb-caption">${lbPost.caption}</div>` : ''}
+        <div class="lb-meta">
+          <img class="lb-avatar" src="${lbPost.avatar || ''}" alt="" />
+          <span class="lb-user">${lbPost.username || 'Unknown'}</span>
+          <span class="lb-date">${fmtDate(lbPost.created_at)}</span>
+        </div>
+        ${tagsHtml ? `<div style="margin-top:0.5rem;font-size:0.8rem;opacity:0.4;">${tagsHtml}</div>` : ''}
+        ${images.length > 1 ? `<div class="lb-dots">${images.map((_, i) => `<div class="lb-dot${i === lbIdx ? ' active' : ''}"></div>`).join('')}</div>` : ''}
+      `;
+    }
+
+    document.getElementById('lbPrev').addEventListener('click', () => { if (lbIdx > 0) { lbIdx--; renderLightbox(); } });
+    document.getElementById('lbNext').addEventListener('click', () => { if (lbPost && lbIdx < (lbPost.images?.length || 1) - 1) { lbIdx++; renderLightbox(); } });
+    document.getElementById('lightboxClose').addEventListener('click', () => { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; });
+    document.getElementById('lightbox').addEventListener('click', (e) => { if (e.target === document.getElementById('lightbox')) { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; } });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.getElementById('lightbox').classList.remove('open');
-        document.body.style.overflow = '';
-      }
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'Escape') { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+      if (e.key === 'ArrowLeft') { document.getElementById('lbPrev').click(); }
+      if (e.key === 'ArrowRight') { document.getElementById('lbNext').click(); }
     });
 
-    // Load more
-    document.getElementById('loadMoreBtn').addEventListener('click', async () => {
-      offset += PAGE_SIZE;
-      await loadGallery(true);
-    });
+    // ============================================
+    // Load
+    // ============================================
+    document.getElementById('loadMoreBtn').addEventListener('click', async () => { offset += PAGE_SIZE; await loadGallery(true); });
 
-    // Load gallery
     async function loadGallery(append) {
       try {
-        const res = await fetch(`${API_BASE}/api/gallery?limit=${PAGE_SIZE}&offset=${offset}`, {
-          headers: getAuthHeader(),
-        });
+        let url = `${API_BASE}/api/gallery?limit=${PAGE_SIZE}&offset=${offset}`;
+        if (activeTag) url += `&tag=${activeTag}`;
+        const res = await fetch(url, { headers: getAuthHeader() });
         if (res.ok) {
           const data = await res.json();
-          if (append) {
-            allImages = [...allImages, ...data.images];
-          } else {
-            allImages = data.images;
-          }
+          allPosts = append ? [...allPosts, ...data.posts] : data.posts;
           total = data.total;
         }
       } catch (e) {}
@@ -519,10 +646,9 @@
     }
 
     // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      renderUploadBar();
-      loadGallery();
-    });
+    renderCreateBar();
+    renderTagFilter();
+    loadGallery();
   </script>
 </body>
 </html>
