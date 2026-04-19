@@ -485,8 +485,14 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           <div class="im-tags" id="imClTags">${tagsHtml}</div>
         </div>
         <div class="im-field">
-          <label class="im-label">Image URL (optional)</label>
-          <input type="text" id="imClImage" value="${escape(entry?.image || '')}" placeholder="https://..." />
+          <label class="im-label">Image</label>
+          <div style="display:flex;gap:0.5rem;align-items:end;">
+            <input type="text" id="imClImage" value="${escape(entry?.image || '')}" placeholder="URL or upload" style="flex:1;" />
+            <input type="file" id="imClImageFile" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;" />
+            <button class="im-btn im-btn-cancel" id="imClImageUploadBtn" style="font-size:0.8rem;padding:0.5rem 0.8rem;white-space:nowrap;">📷 Upload</button>
+          </div>
+          <div id="imClImageStatus" style="margin-top:0.4rem;"></div>
+          <div id="imClImagePreview" style="margin-top:0.4rem;"></div>
         </div>
         <div style="border-top:1px solid rgba(244,201,93,0.1);margin-top:0.5rem;padding-top:1rem;">
           <label class="im-label" style="margin-bottom:0.6rem;display:block;">Changes</label>
@@ -581,6 +587,59 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         modalChangeTag = '';
         renderModalChanges(changesContainer);
         renderModalChangeTagPicker(changeTagContainer);
+      });
+
+      // Image upload
+      const imClUploadBtn = overlay.querySelector('#imClImageUploadBtn');
+      const imClFileInput = overlay.querySelector('#imClImageFile');
+      const imClImageInput = overlay.querySelector('#imClImage');
+
+      function renderImClPreview(url) {
+        const preview = overlay.querySelector('#imClImagePreview');
+        if (!url) { preview.innerHTML = ''; return; }
+        preview.innerHTML = `<div style="position:relative;display:inline-block;">
+          <img src="${url}" style="max-width:180px;max-height:100px;border-radius:8px;border:1px solid rgba(244,201,93,0.15);" />
+          <button type="button" style="position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;" id="imClImgClear">✕</button>
+        </div>`;
+        overlay.querySelector('#imClImgClear')?.addEventListener('click', () => {
+          imClImageInput.value = '';
+          preview.innerHTML = '';
+        });
+      }
+
+      if (entry?.image) renderImClPreview(entry.image);
+      imClImageInput.addEventListener('input', () => renderImClPreview(imClImageInput.value.trim()));
+
+      imClUploadBtn.addEventListener('click', () => imClFileInput.click());
+      imClFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const status = overlay.querySelector('#imClImageStatus');
+        status.textContent = 'Uploading...';
+        status.style.cssText = 'font-family:Nunito,sans-serif;font-size:0.78rem;color:#F4C95D;';
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const tk = localStorage.getItem('ccAuthToken');
+          const res = await fetch(`${INLINE_API}/api/gallery/upload`, {
+            method: 'POST',
+            headers: tk ? { 'Authorization': `Bearer ${tk}` } : {},
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            imClImageInput.value = data.url;
+            renderImClPreview(data.url);
+            status.textContent = '';
+          } else {
+            status.textContent = data.error || 'Failed';
+            status.style.color = '#E89A6E';
+          }
+        } catch (err) {
+          status.textContent = 'Upload failed';
+          status.style.color = '#E89A6E';
+        }
+        e.target.value = '';
       });
     }
 
