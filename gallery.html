@@ -206,6 +206,50 @@
     .lb-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.2s; }
     .lb-dot.active { background: var(--sun); }
 
+    /* Comments */
+    .lb-comments {
+      width: 100%; max-width: 600px; margin-top: 1rem;
+    }
+    .lb-comments-list { max-height: 200px; overflow-y: auto; margin-bottom: 0.6rem; scrollbar-width: thin; scrollbar-color: rgba(244,201,93,0.15) transparent; }
+    .lb-comments-list::-webkit-scrollbar { width: 4px; }
+    .lb-comments-list::-webkit-scrollbar-thumb { background: rgba(244,201,93,0.15); border-radius: 2px; }
+    .lb-comment {
+      display: flex; gap: 0.5rem; align-items: flex-start;
+      padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .lb-comment:last-child { border-bottom: none; }
+    .lb-comment-avatar { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(244,201,93,0.2); }
+    .lb-comment-body { flex: 1; min-width: 0; }
+    .lb-comment-user { font-family: 'Fredoka', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--sun); }
+    .lb-comment-text { font-family: 'Nunito', sans-serif; font-size: 0.82rem; color: var(--cream); opacity: 0.75; line-height: 1.4; word-break: break-word; }
+    .lb-comment-time { font-family: 'Nunito', sans-serif; font-size: 0.65rem; color: var(--cream); opacity: 0.25; margin-top: 0.1rem; }
+    .lb-comment-del {
+      background: none; border: none; color: #E89A6E; opacity: 0.3; cursor: pointer;
+      font-size: 0.7rem; flex-shrink: 0; transition: opacity 0.15s;
+    }
+    .lb-comment-del:hover { opacity: 1; }
+    .lb-comment-form {
+      display: flex; gap: 0.4rem; align-items: center;
+    }
+    .lb-comment-input {
+      flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.85rem;
+      color: var(--cream); background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+      padding: 0.5rem 0.7rem; outline: none; transition: border-color 0.2s;
+    }
+    .lb-comment-input:focus { border-color: rgba(244,201,93,0.3); }
+    .lb-comment-input::placeholder { color: var(--cream); opacity: 0.25; }
+    .lb-comment-send {
+      font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
+      background: var(--sun); color: var(--ink); border: none;
+      padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .lb-comment-send:hover { transform: translateY(-1px); }
+    .lb-comment-send:disabled { opacity: 0.4; cursor: default; transform: none; }
+    .lb-no-comments { font-family: 'Nunito', sans-serif; font-size: 0.8rem; color: var(--cream); opacity: 0.25; text-align: center; padding: 0.5rem 0; }
+    .lb-comment-login { font-family: 'Nunito', sans-serif; font-size: 0.78rem; color: var(--cream); opacity: 0.3; text-align: center; padding: 0.3rem 0; }
+
     /* Tag filter bar */
     .tag-filter { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
     .tag-filter-chip {
@@ -368,6 +412,7 @@
       <button class="lb-arrow" id="lbNext">›</button>
     </div>
     <div class="lightbox-info" id="lightboxInfo"></div>
+    <div class="lb-comments" id="lbComments"></div>
   </div>
 
   <footer class="site-footer">
@@ -635,6 +680,7 @@
       lbPost = post;
       lbIdx = 0;
       renderLightbox();
+      loadComments(post.id);
       document.getElementById('lightbox').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -663,6 +709,107 @@
         ${tagsHtml ? `<div style="margin-top:0.5rem;font-size:0.8rem;opacity:0.4;">${tagsHtml}</div>` : ''}
         ${images.length > 1 ? `<div class="lb-dots">${images.map((_, i) => `<div class="lb-dot${i === lbIdx ? ' active' : ''}"></div>`).join('')}</div>` : ''}
       `;
+    }
+
+    // Comments
+    async function loadComments(postId) {
+      const container = document.getElementById('lbComments');
+      const user = getUser();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/gallery/${postId}/comments`);
+        const data = await res.json();
+        const comments = data.comments || [];
+
+        let html = '';
+
+        // Comment list
+        if (comments.length > 0) {
+          html += '<div class="lb-comments-list">';
+          html += comments.map(c => {
+            const canDel = user && (user.sub === c.user_id || user.role === 'admin');
+            const delBtn = canDel ? `<button class="lb-comment-del" data-cid="${c.id}">✕</button>` : '';
+            const timeAgo = fmtTimeAgo(c.created_at);
+            return `<div class="lb-comment">
+              <img class="lb-comment-avatar" src="${c.avatar || ''}" alt="" />
+              <div class="lb-comment-body">
+                <span class="lb-comment-user">${c.username || 'Unknown'}</span>
+                <div class="lb-comment-text">${escapeHtml(c.body)}</div>
+                <div class="lb-comment-time">${timeAgo}</div>
+              </div>
+              ${delBtn}
+            </div>`;
+          }).join('');
+          html += '</div>';
+        } else {
+          html += '<div class="lb-no-comments">No comments yet</div>';
+        }
+
+        // Comment form
+        if (user) {
+          html += `<div class="lb-comment-form">
+            <input class="lb-comment-input" id="lbCommentInput" placeholder="Add a comment..." maxlength="500" />
+            <button class="lb-comment-send" id="lbCommentSend">Post</button>
+          </div>`;
+        } else {
+          html += '<div class="lb-comment-login">Log in to comment</div>';
+        }
+
+        container.innerHTML = html;
+
+        // Post comment
+        const sendBtn = container.querySelector('#lbCommentSend');
+        const input = container.querySelector('#lbCommentInput');
+        if (sendBtn && input) {
+          const submitComment = async () => {
+            const text = input.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            try {
+              await fetch(`${API_BASE}/api/gallery/${postId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                body: JSON.stringify({ body: text }),
+              });
+              input.value = '';
+              loadComments(postId);
+            } catch (e) {}
+            sendBtn.disabled = false;
+          };
+          sendBtn.addEventListener('click', submitComment);
+          input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } });
+        }
+
+        // Delete comments
+        container.querySelectorAll('.lb-comment-del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            try {
+              await fetch(`${API_BASE}/api/gallery/comments/${btn.dataset.cid}`, {
+                method: 'DELETE', headers: getAuthHeader(),
+              });
+              loadComments(postId);
+            } catch (e) {}
+          });
+        });
+
+      } catch (e) {
+        container.innerHTML = '';
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function fmtTimeAgo(dateStr) {
+      const now = new Date();
+      const d = new Date(dateStr + 'Z');
+      const diff = Math.floor((now - d) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+      return fmtDate(dateStr);
     }
 
     document.getElementById('lbPrev').addEventListener('click', () => { if (lbIdx > 0) { lbIdx--; renderLightbox(); } });
