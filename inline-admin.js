@@ -780,8 +780,8 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
             // Inline edit mode
             const editTagsHtml = tags.map(tg => {
               const a = c.tag === tg.id;
-              const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `border-color:${tg.color}55;color:${tg.color};border:1px solid ${tg.color}55;background:transparent;`;
-              return `<button type="button" class="sp-tag sp-edit-ctag" data-tag="${tg.id}" style="${s};font-size:0.65rem;padding:0.2rem 0.45rem;">${tg.name}</button>`;
+              const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `background:rgba(43,31,21,0.6);border:1px solid ${tg.color}55;color:${tg.color};`;
+              return `<button type="button" class="sp-tag sp-edit-ctag" data-tag="${tg.id}" style="${s};font-size:0.68rem;padding:0.25rem 0.5rem;">${tg.name}</button>`;
             }).join('');
 
             return `<div class="sp-change" style="border-color:rgba(244,201,93,0.3);background:rgba(244,201,93,0.04);" data-idx="${i}">
@@ -792,7 +792,10 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
                 <div class="sp-field" style="margin-bottom:0.5rem;">
                   <textarea class="sp-input sp-edit-desc" rows="2" placeholder="Description (optional)">${c.description || ''}</textarea>
                 </div>
-                <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.5rem;">${editTagsHtml}</div>
+                <div style="margin-bottom:0.5rem;">
+                  <span style="font-family:Fredoka,sans-serif;font-size:0.7rem;font-weight:600;color:#F4C95D;display:block;margin-bottom:0.25rem;">Tag</span>
+                  <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">${editTagsHtml}</div>
+                </div>
                 <div style="display:flex;gap:0.4rem;">
                   <button class="sp-add-btn sp-edit-done" style="padding:0.35rem 0.7rem;font-size:0.78rem;">✓ Done</button>
                   <button class="sp-add-btn sp-edit-cancel" style="padding:0.35rem 0.7rem;font-size:0.78rem;">Cancel</button>
