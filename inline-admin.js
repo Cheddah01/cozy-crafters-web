@@ -787,7 +787,6 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
           if (editingChangeIdx === i) {
             // Inline edit mode
-            console.log('Edit mode tags:', tags.length, tags);
             const editTagsHtml = tags.length > 0 ? tags.map(tg => {
               const a = c.tag === tg.id;
               const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `background:rgba(43,31,21,0.6);border:1px solid ${tg.color}55;color:${tg.color};`;
