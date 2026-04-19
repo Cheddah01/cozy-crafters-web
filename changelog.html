@@ -177,7 +177,7 @@
     .entry-body p:last-child { margin-bottom: 0; }
     .entry-body strong { color: var(--cream); font-weight: 700; }
     .entry-body em { font-style: italic; opacity: 0.9; }
-    .entry-image { margin: 0 1.8rem 1.2rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(244, 201, 93, 0.1); }
+    .entry-image { margin: 0 1.8rem 0.6rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(244, 201, 93, 0.1); }
     .entry-image img { width: 100%; display: block; }
 
     /* Reactions */
@@ -615,9 +615,9 @@
             <div class="entry-tags">${tagsHtml}</div>
             <a href="#${entry.id}" class="share-link" data-id="${entry.id}" style="display:inline-block;font-family:Fredoka,sans-serif;font-size:0.75rem;font-weight:600;color:#F4C95D;opacity:0.5;text-decoration:none;margin-top:0.3rem;">🔗 Copy link</a>
           </div>
+          ${imageHtml}
           ${changeCountHtml}
           ${bodyHtml}
-          ${imageHtml}
           <div class="reaction-bar" data-reactions-for="${entry.id}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
         </div>`;
     }
