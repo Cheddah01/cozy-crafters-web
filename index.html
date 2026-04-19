@@ -162,6 +162,33 @@
   </section>
 
   <!-- ============================================
+       SUPPORT
+       ============================================ -->
+  <section class="content-section" id="support">
+    <div class="section-inner">
+      <div class="section-eyebrow">✦ Support the Server</div>
+      <h2 class="section-headline">Keep the <span class="accent">Lights On</span></h2>
+      <p class="section-subhead">Cozy Crafters is entirely community-funded. Donations go directly to hosting costs — nothing more, nothing less. Completely optional, always appreciated.</p>
+
+      <div class="donation-card" id="donationCard">
+        <div class="donation-bar-wrap">
+          <div class="donation-bar-label">
+            <span class="donation-amounts"><span class="donation-current" id="donCurrent">$0</span> / <span class="donation-goal" id="donGoal">$25</span></span>
+            <span class="donation-bar-tag">Monthly goal</span>
+          </div>
+          <div class="donation-bar-track">
+            <div class="donation-bar-fill" id="donBar" style="width: 0%;"></div>
+          </div>
+        </div>
+        <div class="donation-info">
+          <p class="donation-desc">Covers server hosting, domain, and backups. Every dollar helps keep the world running.</p>
+          <a href="#" class="btn btn-primary donation-btn" id="donateBtn" target="_blank" rel="noopener">💛 Donate via PayPal</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
        FOOTER
        ============================================ -->
   <footer class="site-footer">
@@ -286,6 +313,15 @@
         if (t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
         if (t.discordUrl) document.getElementById('splashDiscordBtn').href = t.discordUrl;
         if (t.serverIp) window._serverIp = t.serverIp;
+
+        // Donation bar
+        if (t.paypalUrl) document.getElementById('donateBtn').href = t.paypalUrl;
+        const goal = parseFloat(t.donationGoal) || 25;
+        const current = parseFloat(t.donationCurrent) || 0;
+        document.getElementById('donGoal').textContent = '$' + goal;
+        document.getElementById('donCurrent').textContent = '$' + current;
+        const pct = Math.min(100, Math.round((current / goal) * 100));
+        setTimeout(() => { document.getElementById('donBar').style.width = pct + '%'; }, 500);
       } catch (e) {
         // No custom text saved, defaults show
       }

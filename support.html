@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support · Cozy Crafters SMP</title>
+  <meta property="og:title" content="Support Cozy Crafters SMP" />
+  <meta property="og:description" content="Help keep the server running. Every dollar goes directly to hosting costs." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cozycrafters.net/support.html" />
+  <meta property="og:image" content="https://cozycrafters.net/og-image.png" />
+  <meta name="theme-color" content="#2F4423" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .support-page {
+      position: relative; z-index: 10;
+      max-width: 640px; margin: 0 auto;
+      padding: 9rem 2rem 6rem; text-align: center;
+    }
+
+    .support-heart { font-size: 3rem; margin-bottom: 1rem; }
+
+    .support-title {
+      font-family: 'Fredoka', sans-serif; font-weight: 700;
+      font-size: clamp(2rem, 6vw, 3.2rem); color: var(--cream);
+      line-height: 1.1; margin-bottom: 0.8rem;
+    }
+    .support-title .accent { color: var(--sun); }
+
+    .support-subtitle {
+      font-family: 'Nunito', sans-serif; font-size: 1.05rem;
+      color: var(--cream); opacity: 0.6; line-height: 1.6;
+      margin-bottom: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto;
+    }
+
+    .support-card {
+      background: rgba(255, 244, 220, 0.03);
+      border: 1px solid rgba(244, 201, 93, 0.12);
+      border-radius: 20px; padding: 2rem; text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .support-bar-label {
+      display: flex; justify-content: space-between;
+      align-items: baseline; margin-bottom: 0.6rem;
+    }
+
+    .support-amounts {
+      font-family: 'Fredoka', sans-serif; font-size: 1.6rem;
+      font-weight: 700; color: var(--cream);
+    }
+    .support-amounts .cur { color: #A8C77E; }
+    .support-amounts .goal { opacity: 0.35; }
+
+    .support-bar-tag {
+      font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 600;
+      color: var(--cream); opacity: 0.35;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+
+    .support-bar-track {
+      width: 100%; height: 14px;
+      background: rgba(255, 244, 220, 0.06);
+      border-radius: 999px; overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .support-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6B8E4E, #A8C77E);
+      border-radius: 999px;
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 16px rgba(168, 199, 126, 0.3);
+    }
+
+    .support-pct {
+      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+      color: #A8C77E; text-align: center; margin-top: -1rem; margin-bottom: 1.5rem;
+    }
+
+    .support-donate-btn {
+      display: block; width: 100%; text-align: center;
+      font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 700;
+      background: var(--sun); color: var(--ink); border: none;
+      padding: 1rem 2rem; border-radius: 14px; cursor: pointer;
+      box-shadow: 0 4px 0 var(--sun-deep); transition: all 0.2s;
+      text-decoration: none;
+    }
+    .support-donate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--sun-deep); }
+
+    .support-details {
+      margin-top: 2.5rem;
+    }
+
+    .support-details h3 {
+      font-family: 'Fredoka', sans-serif; font-weight: 700;
+      font-size: 1.2rem; color: var(--cream); margin-bottom: 1rem;
+    }
+
+    .cost-list {
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+
+    .cost-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 244, 220, 0.03);
+      border: 1px solid rgba(244, 201, 93, 0.06);
+      border-radius: 10px;
+    }
+
+    .cost-name {
+      font-family: 'Nunito', sans-serif; font-size: 0.9rem;
+      color: var(--cream); opacity: 0.7;
+    }
+
+    .cost-amount {
+      font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+      font-weight: 600; color: var(--sun);
+    }
+
+    .support-note {
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem;
+      color: var(--cream); opacity: 0.35; line-height: 1.6;
+      margin-top: 2rem; font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .support-page { padding: 7.5rem 1.2rem 4rem; }
+      .support-card { padding: 1.4rem; }
+      .support-amounts { font-size: 1.3rem; }
+      .support-donate-btn { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
+  <div class="bg-grain"></div>
+
+  <nav id="mainNav" class="scrolled">
+    <a href="index.html" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="chronicles.html">Chronicles</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="index.html#discord">Discord</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="chronicles.html">Chronicles</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="index.html#discord">Discord</a></li>
+    </ul>
+  </div>
+
+  <div class="support-page">
+    <div class="support-heart">💛</div>
+    <h1 class="support-title">Support <span class="accent">Cozy Crafters</span></h1>
+    <p class="support-subtitle">The server runs entirely on community support. Donations are completely optional and go directly toward keeping the world online.</p>
+
+    <div class="support-card">
+      <div class="support-bar-label">
+        <span class="support-amounts"><span class="cur" id="spCurrent">$0</span> / <span class="goal" id="spGoal">$25</span></span>
+        <span class="support-bar-tag">This month</span>
+      </div>
+      <div class="support-bar-track">
+        <div class="support-bar-fill" id="spBar" style="width: 0%;"></div>
+      </div>
+      <div class="support-pct" id="spPct">0% funded</div>
+
+      <a href="#" class="support-donate-btn" id="spDonateBtn" target="_blank" rel="noopener">💛 Donate via PayPal</a>
+    </div>
+
+    <div class="support-details">
+      <h3>Where does it go?</h3>
+      <div class="cost-list">
+        <div class="cost-item">
+          <span class="cost-name">Server hosting (RawPower)</span>
+          <span class="cost-amount">Monthly</span>
+        </div>
+        <div class="cost-item">
+          <span class="cost-name">Domain (cozycrafters.net)</span>
+          <span class="cost-amount">Yearly</span>
+        </div>
+        <div class="cost-item">
+          <span class="cost-name">Backups & storage</span>
+          <span class="cost-amount">Included</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="support-note">No perks, no pay-to-win, no pressure. Just keeping the lights on. Thank you for being part of the community.</p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand"><span class="leaf">🌿</span> Cozy Crafters SMP</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a><a href="changelog.html">Changelog</a>
+        <a href="gallery.html">Gallery</a><a href="chronicles.html">Chronicles</a>
+      </div>
+      <p class="footer-note">A small world, warmly built. Paper 1.21 · Season Two</p>
+      <p class="footer-copy">Made with questionable decisions and too much caffeine.</p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+    mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
+
+    // Load donation data
+    (async function loadDonation() {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/splashText`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const t = data.value;
+        if (!t) return;
+
+        if (t.paypalUrl) document.getElementById('spDonateBtn').href = t.paypalUrl;
+
+        const goal = parseFloat(t.donationGoal) || 25;
+        const current = parseFloat(t.donationCurrent) || 0;
+        const pct = Math.min(100, Math.round((current / goal) * 100));
+
+        document.getElementById('spGoal').textContent = '$' + goal;
+        document.getElementById('spCurrent').textContent = '$' + current;
+        document.getElementById('spPct').textContent = pct + '% funded';
+
+        setTimeout(() => {
+          document.getElementById('spBar').style.width = pct + '%';
+        }, 400);
+      } catch (e) {}
+    })();
+  </script>
+  <script src="auth.js"></script>
+</body>
+</html>

@@ -1000,6 +1000,31 @@
             </div>
           </div>
 
+          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+            <div class="card-header" style="margin-bottom: 0.8rem;">
+              <span class="card-icon">💛</span>
+              <h2 class="card-title">Donations</h2>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="txtPaypalUrl">PayPal donate URL</label>
+              <input type="text" id="txtPaypalUrl" placeholder="https://paypal.me/yourname" />
+              <p class="field-hint">The PayPal.me link or donate button URL.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+              <div class="field">
+                <label class="field-label" for="txtDonationGoal">Monthly goal ($)</label>
+                <input type="text" id="txtDonationGoal" placeholder="25" />
+              </div>
+              <div class="field">
+                <label class="field-label" for="txtDonationCurrent">Current amount ($)</label>
+                <input type="text" id="txtDonationCurrent" placeholder="12" />
+                <p class="field-hint">Update this monthly.</p>
+              </div>
+            </div>
+          </div>
+
           <div class="action-row" style="margin-top: 1.5rem;">
             <button class="btn btn-primary" id="saveTextBtn" type="button">💾 Save Text</button>
             <button class="btn btn-danger" id="resetTextBtn" type="button">Reset to Defaults</button>
@@ -1952,6 +1977,9 @@
       stat3Label: 'txtStat3Label',
       discordUrl: 'txtDiscordUrl',
       serverIp: 'txtServerIp',
+      paypalUrl: 'txtPaypalUrl',
+      donationGoal: 'txtDonationGoal',
+      donationCurrent: 'txtDonationCurrent',
     };
 
     // Mark unsaved when any text field changes

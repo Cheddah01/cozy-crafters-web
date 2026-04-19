@@ -903,6 +903,66 @@ h1 .accent {
 }
 
 /* ============================================
+   DONATION CARD
+   ============================================ */
+.donation-card {
+  max-width: 520px;
+  margin: 2rem auto 0;
+  background: rgba(255, 244, 220, 0.03);
+  border: 1px solid rgba(244, 201, 93, 0.12);
+  border-radius: 18px;
+  padding: 1.8rem;
+  text-align: left;
+}
+
+.donation-bar-wrap { margin-bottom: 1.2rem; }
+
+.donation-bar-label {
+  display: flex; justify-content: space-between;
+  align-items: baseline; margin-bottom: 0.5rem;
+}
+
+.donation-amounts {
+  font-family: 'Fredoka', sans-serif; font-size: 1.2rem;
+  font-weight: 700; color: var(--cream);
+}
+
+.donation-current { color: #A8C77E; }
+.donation-goal { opacity: 0.4; }
+
+.donation-bar-tag {
+  font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 600;
+  color: var(--cream); opacity: 0.35;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+.donation-bar-track {
+  width: 100%; height: 10px;
+  background: rgba(255, 244, 220, 0.06);
+  border-radius: 999px; overflow: hidden;
+}
+
+.donation-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6B8E4E, #A8C77E);
+  border-radius: 999px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 12px rgba(168, 199, 126, 0.3);
+}
+
+.donation-info { text-align: center; }
+
+.donation-desc {
+  font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+  color: var(--cream); opacity: 0.5;
+  line-height: 1.6; margin-bottom: 1rem;
+}
+
+.donation-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+}
+
+/* ============================================
    FOOTER
    ============================================ */
 .site-footer {
@@ -1516,6 +1576,9 @@ input[type="file"]::file-selector-button:hover {
   .discord-info p { font-size: 0.88rem; }
 
   .site-footer { padding: 2rem 1rem; }
+  .donation-card { padding: 1.2rem; border-radius: 14px; }
+  .donation-amounts { font-size: 1.05rem; }
+  .donation-desc { font-size: 0.82rem; }
   .footer-brand { font-size: 1rem; }
   .footer-links { gap: 0.8rem; font-size: 0.78rem; }
   .footer-note, .footer-copy { font-size: 0.72rem; }
