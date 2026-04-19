@@ -462,6 +462,72 @@ h1 .accent {
   opacity: 1;
 }
 
+/* Server IP copy button */
+.server-ip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 201, 93, 0.2);
+  background: rgba(244, 201, 93, 0.06);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.server-ip:hover {
+  background: rgba(244, 201, 93, 0.12);
+  border-color: rgba(244, 201, 93, 0.4);
+  transform: translateY(-2px);
+}
+
+.server-ip .ip-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--sun);
+  opacity: 0.7;
+}
+
+.server-ip .ip-value {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s;
+}
+
+.server-ip .ip-copied {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #A8C77E;
+  background: rgba(107, 142, 78, 0.15);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.server-ip.copied .ip-copied {
+  opacity: 1;
+}
+
+.server-ip.copied .ip-value,
+.server-ip.copied .ip-label {
+  opacity: 0;
+}
+
 .scroll-line {
   width: 2px;
   height: 40px;
@@ -1345,6 +1411,7 @@ input[type="file"]::file-selector-button:hover {
   .bottom { flex-direction: column; gap: 2rem; align-items: flex-start; }
   .stat-block { gap: 1.5rem; }
   .scroll-hint { align-self: center; }
+  .server-ip { align-self: center; }
   .cta-row { flex-direction: column; width: 100%; max-width: 280px; }
   .btn { justify-content: center; }
   .content-section { padding: 4rem 1.5rem; }
