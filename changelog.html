@@ -375,7 +375,7 @@
       const pinBadge = isPinned ? '<div class="entry-pin-badge">📌 Pinned</div>' : '';
 
       return `
-        <div class="changelog-entry${isPinned ? ' pinned' : ''}">
+        <div class="changelog-entry${isPinned ? ' pinned' : ''}" data-entry-id="${entry.id}">
           ${pinBadge}
           <div class="entry-header">
             <span class="entry-title">${entry.title}</span>
@@ -412,5 +412,6 @@
     })();
   </script>
   <script src="auth.js"></script>
+  <script src="inline-admin.js"></script>
 </body>
 </html>
