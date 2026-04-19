@@ -6,248 +6,288 @@
   <title>The Cozy Chronicles · Cozy Crafters SMP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 
   <style>
     body { overflow-x: hidden; }
 
-    /* Masthead */
+    /* ============ MASTHEAD ============ */
     .masthead {
       position: relative; z-index: 10;
-      padding: 8rem 3rem 2.5rem; text-align: center;
+      padding: 8rem 3rem 2rem; text-align: center;
       background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 60%);
     }
-
-    .masthead-rule { width: 80px; height: 2px; background: var(--sun); margin: 0 auto 1.2rem; opacity: 0.6; }
-
-    .masthead-title {
-      font-family: 'Playfair Display', serif; font-weight: 700;
-      font-size: clamp(2.8rem, 7vw, 5rem); color: var(--cream);
-      line-height: 1; margin-bottom: 0.4rem; letter-spacing: -0.02em;
-      font-style: italic; text-align: center; max-width: 100%;
-    }
-
+    .masthead-rule { width: 80px; height: 2px; background: var(--sun); margin: 0 auto 1rem; opacity: 0.6; }
     .masthead-sub {
-      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 500;
-      color: var(--sun); letter-spacing: 0.2em; text-transform: uppercase;
-      margin-bottom: 1rem;
+      font-family: 'Fredoka', sans-serif; font-size: 0.8rem; font-weight: 600;
+      color: var(--sun); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 0.8rem;
     }
-
+    .masthead-title {
+      font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
+      font-size: clamp(2.8rem, 7vw, 5rem); color: var(--cream);
+      line-height: 1; margin-bottom: 0.6rem; letter-spacing: -0.02em;
+      text-align: center;
+    }
+    .masthead-slogan {
+      font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400;
+      font-size: 0.95rem; color: var(--cream); opacity: 0.45;
+      margin-bottom: 0.8rem; min-height: 1.4em;
+      transition: opacity 0.4s;
+    }
     .masthead-date {
-      font-family: 'Nunito', sans-serif; font-size: 0.82rem;
-      color: var(--cream); opacity: 0.4;
+      font-family: 'Nunito', sans-serif; font-size: 0.78rem;
+      color: var(--cream); opacity: 0.3;
     }
-
     .masthead-rule-bottom {
-      width: 100%; height: 1px; margin-top: 2rem;
+      width: 100%; height: 1px; margin-top: 1.5rem;
       background: linear-gradient(90deg, transparent, rgba(244,201,93,0.3), transparent);
     }
 
-    /* Section nav */
+    /* ============ SECTION NAV ============ */
     .section-nav {
       position: sticky; top: 56px; z-index: 10;
-      background: rgba(61, 43, 31, 0.95); backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(244, 201, 93, 0.08);
+      background: rgba(61,43,31,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(244,201,93,0.08);
       padding: 0.8rem 3rem; display: flex; justify-content: center;
       gap: 0.4rem; flex-wrap: wrap;
     }
-
     .section-chip {
       font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
       padding: 0.45rem 1rem; border-radius: 999px;
-      border: 1px solid rgba(244, 201, 93, 0.15);
-      background: rgba(255, 244, 220, 0.04); color: var(--cream);
-      opacity: 0.6; cursor: pointer; transition: all 0.2s ease;
+      border: 1px solid rgba(244,201,93,0.15);
+      background: rgba(255,244,220,0.04); color: var(--cream);
+      opacity: 0.6; cursor: pointer; transition: all 0.2s;
     }
-    .section-chip:hover { opacity: 0.9; border-color: rgba(244, 201, 93, 0.3); }
+    .section-chip:hover { opacity: 0.9; border-color: rgba(244,201,93,0.3); }
     .section-chip.active { background: var(--sun); color: var(--ink); border-color: var(--sun); opacity: 1; }
 
-    /* Main content */
+    /* ============ CONTENT ============ */
     .chronicles-content {
       position: relative; z-index: 10;
-      max-width: 1000px; margin: 0 auto;
-      padding: 3rem 2rem 6rem;
+      max-width: 1000px; margin: 0 auto; padding: 3rem 2rem 2rem;
     }
 
-    /* Featured article (big hero card) */
-    .featured-article {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;
-      align-items: center; margin-bottom: 3rem;
-      padding-bottom: 3rem;
-      border-bottom: 1px solid rgba(244, 201, 93, 0.1);
-      opacity: 0; transform: translateY(20px);
-      animation: fadeUp 0.8s ease 0.2s forwards;
+    /* ============ FEATURED HERO ============ */
+    .featured-hero {
+      position: relative; border-radius: 18px; overflow: hidden;
+      margin-bottom: 3rem; min-height: 400px;
+      display: flex; align-items: flex-end;
+      border: 1px solid rgba(244,201,93,0.1);
+      cursor: pointer; transition: border-color 0.3s;
+      opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
     }
-
-    .featured-article.no-image {
-      grid-template-columns: 1fr;
+    .featured-hero:hover { border-color: rgba(244,201,93,0.25); }
+    .featured-hero-img {
+      position: absolute; inset: 0;
     }
-
-    .featured-image {
-      border-radius: 14px; overflow: hidden;
-      border: 1px solid rgba(244, 201, 93, 0.1);
-      aspect-ratio: 16 / 10;
+    .featured-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+    .featured-hero-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(43,31,21,0.95) 0%, rgba(43,31,21,0.6) 40%, transparent 70%);
     }
-    .featured-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .featured-text .featured-badge {
+    .featured-hero-noimg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--moss-dark) 0%, var(--bark-deep) 100%);
+    }
+    .featured-hero-text {
+      position: relative; padding: 2.5rem; width: 100%; max-width: 650px;
+    }
+    .featured-hero-badge {
       font-family: 'Fredoka', sans-serif; font-size: 0.7rem; font-weight: 600;
-      color: var(--sun); text-transform: uppercase; letter-spacing: 0.15em;
-      margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem;
+      color: var(--ink); background: var(--sun); padding: 0.25rem 0.7rem;
+      border-radius: 6px; text-transform: uppercase; letter-spacing: 0.1em;
+      display: inline-block; margin-bottom: 0.8rem;
     }
-
-    .featured-text .featured-section {
-      font-family: 'Fredoka', sans-serif; font-size: 0.75rem; font-weight: 600;
-      color: var(--moss); text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 0.6rem;
+    .featured-hero-section {
+      font-family: 'Fredoka', sans-serif; font-size: 0.72rem; font-weight: 600;
+      color: var(--sun); text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 0.5rem; opacity: 0.8;
     }
-
-    .featured-text h2 {
-      font-family: 'Playfair Display', serif; font-weight: 700;
-      font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--cream);
-      line-height: 1.15; margin-bottom: 0.6rem; font-style: italic;
+    .featured-hero h2 {
+      font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
+      font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--cream);
+      line-height: 1.1; margin-bottom: 0.5rem;
     }
-
-    .featured-text .featured-subtitle {
-      font-family: 'Nunito', sans-serif; font-size: 0.95rem;
-      color: var(--cream); opacity: 0.6; line-height: 1.6;
-      margin-bottom: 0.8rem;
+    .featured-hero-subtitle {
+      font-family: 'Nunito', sans-serif; font-size: 1rem;
+      color: var(--cream); opacity: 0.6; line-height: 1.5; margin-bottom: 0.6rem;
     }
-
-    .featured-text .featured-meta {
-      font-family: 'Nunito', sans-serif; font-size: 0.78rem;
+    .featured-hero-meta {
+      font-family: 'Nunito', sans-serif; font-size: 0.8rem;
       color: var(--cream); opacity: 0.35;
     }
 
-    /* Article grid */
+    /* ============ ARTICLE GRID ============ */
+    .articles-section-header {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+    }
     .articles-section-title {
       font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
-      font-size: 1.6rem; color: var(--cream); margin-bottom: 0.4rem;
+      font-size: 1.6rem; color: var(--cream);
     }
-
-    .articles-section-rule {
-      width: 50px; height: 2px; background: var(--sun); margin-bottom: 1.5rem; opacity: 0.5;
-    }
-
+    .articles-section-line { flex: 1; height: 1px; background: rgba(244,201,93,0.15); }
     .articles-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
-      margin-bottom: 3rem;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 3rem;
     }
-
     .article-card {
-      background: rgba(255, 244, 220, 0.03);
-      border: 1px solid rgba(244, 201, 93, 0.08);
-      border-radius: 14px; overflow: hidden;
-      transition: all 0.3s ease; cursor: default;
-      opacity: 0; transform: translateY(20px);
+      background: rgba(255,244,220,0.03); border: 1px solid rgba(244,201,93,0.08);
+      border-radius: 14px; overflow: hidden; transition: all 0.3s; cursor: pointer;
+      opacity: 0; transform: translateY(20px); position: relative;
     }
     .article-card.revealed { opacity: 1; transform: translateY(0); }
-    .article-card:hover { background: rgba(255, 244, 220, 0.06); border-color: rgba(244, 201, 93, 0.18); }
-
-    .article-card-image { aspect-ratio: 16 / 9; overflow: hidden; }
-    .article-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
+    .article-card:hover { background: rgba(255,244,220,0.06); border-color: rgba(244,201,93,0.18); transform: translateY(-3px); }
+    .article-card-image { aspect-ratio: 16/9; overflow: hidden; }
+    .article-card-image img { width: 100%; height: 100%; object-fit: cover; }
     .article-card-body { padding: 1.3rem; }
-
     .article-card-section {
       font-family: 'Fredoka', sans-serif; font-size: 0.68rem; font-weight: 600;
-      color: var(--sun); text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 0.5rem;
+      color: var(--sun); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;
     }
-
     .article-card-title {
       font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
-      font-size: 1.15rem; color: var(--cream); line-height: 1.25; margin-bottom: 0.5rem;
+      font-size: 1.15rem; color: var(--cream); line-height: 1.25; margin-bottom: 0.4rem;
     }
-
-    .article-card-subtitle {
-      font-family: 'Nunito', sans-serif; font-size: 0.85rem;
-      color: var(--cream); opacity: 0.55; line-height: 1.5; margin-bottom: 0.6rem;
+    .article-card-preview {
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem;
+      color: var(--cream); opacity: 0.45; line-height: 1.5; margin-bottom: 0.6rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-
     .article-card-meta {
       font-family: 'Nunito', sans-serif; font-size: 0.72rem;
       color: var(--cream); opacity: 0.3;
     }
 
-    /* Expanded article overlay */
+    /* ============ CLASSIFIEDS ============ */
+    .classifieds-section {
+      border-top: 2px solid rgba(244,201,93,0.15); padding-top: 2rem; margin-bottom: 3rem;
+    }
+    .classifieds-header {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;
+    }
+    .classifieds-title {
+      font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
+      font-size: 1.4rem; color: var(--cream);
+    }
+    .classifieds-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem;
+    }
+    .classified-item {
+      background: rgba(255,244,220,0.03); border: 1px solid rgba(244,201,93,0.06);
+      border-radius: 10px; padding: 1rem; font-family: 'Nunito', sans-serif;
+    }
+    .classified-item .cl-title {
+      font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: var(--sun); margin-bottom: 0.3rem; text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .classified-item .cl-text {
+      font-size: 0.8rem; color: var(--cream); opacity: 0.6; line-height: 1.5;
+    }
+
+    /* ============ CORRECTIONS ============ */
+    .corrections-section {
+      border-top: 1px dashed rgba(244,201,93,0.15); padding-top: 1.5rem; margin-bottom: 3rem;
+    }
+    .corrections-title {
+      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+      color: var(--cream); opacity: 0.5; text-transform: uppercase;
+      letter-spacing: 0.15em; margin-bottom: 1rem;
+    }
+    .correction-item {
+      font-family: 'Nunito', sans-serif; font-size: 0.85rem;
+      color: var(--cream); opacity: 0.5; line-height: 1.6;
+      margin-bottom: 0.6rem; padding-left: 1rem;
+      border-left: 2px solid rgba(244,201,93,0.15);
+    }
+    .correction-item em { font-style: italic; }
+
+    /* ============ EXPANDED ARTICLE ============ */
     .article-expanded {
       position: fixed; inset: 0; z-index: 200;
-      background: rgba(43, 31, 21, 0.95); backdrop-filter: blur(12px);
+      background: rgba(43,31,21,0.97); backdrop-filter: blur(12px);
       overflow-y: auto; display: none;
     }
     .article-expanded.open { display: block; }
-
-    .article-expanded-inner {
-      max-width: 720px; margin: 0 auto;
-      padding: 6rem 2rem 4rem;
-    }
-
+    .article-expanded-inner { max-width: 720px; margin: 0 auto; padding: 6rem 2rem 4rem; }
     .article-close {
       position: fixed; top: 1.5rem; right: 2rem; z-index: 210;
       font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
-      background: rgba(255, 244, 220, 0.1); border: 1px solid rgba(255, 244, 220, 0.2);
+      background: rgba(255,244,220,0.1); border: 1px solid rgba(255,244,220,0.2);
       color: var(--cream); padding: 0.5rem 1rem; border-radius: 10px;
       cursor: pointer; transition: all 0.2s;
     }
-    .article-close:hover { background: rgba(255, 244, 220, 0.2); }
+    .article-close:hover { background: rgba(255,244,220,0.2); }
 
-    .article-expanded-section {
+    .ae-section {
       font-family: 'Fredoka', sans-serif; font-size: 0.8rem; font-weight: 600;
-      color: var(--sun); text-transform: uppercase; letter-spacing: 0.15em;
-      margin-bottom: 1rem;
+      color: var(--sun); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;
     }
-
-    .article-expanded-title {
+    .ae-title {
       font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
       font-size: clamp(2rem, 4vw, 3rem); color: var(--cream);
       line-height: 1.1; margin-bottom: 0.6rem;
     }
-
-    .article-expanded-subtitle {
+    .ae-subtitle {
       font-family: 'Nunito', sans-serif; font-size: 1.1rem;
-      color: var(--cream); opacity: 0.6; line-height: 1.5;
-      margin-bottom: 1rem;
+      color: var(--cream); opacity: 0.6; line-height: 1.5; margin-bottom: 1rem;
     }
-
-    .article-expanded-meta {
+    .ae-meta {
       font-family: 'Nunito', sans-serif; font-size: 0.85rem;
       color: var(--cream); opacity: 0.35; margin-bottom: 2rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid rgba(244, 201, 93, 0.1);
+      padding-bottom: 2rem; border-bottom: 1px solid rgba(244,201,93,0.1);
     }
-
-    .article-expanded-image {
+    .ae-image {
       border-radius: 14px; overflow: hidden; margin-bottom: 2rem;
-      border: 1px solid rgba(244, 201, 93, 0.1);
+      border: 1px solid rgba(244,201,93,0.1);
     }
-    .article-expanded-image img { width: 100%; display: block; }
+    .ae-image img { width: 100%; display: block; }
 
-    .article-expanded-body {
+    /* Editor's note */
+    .ae-editors-note {
+      background: rgba(244,201,93,0.06); border-left: 3px solid var(--sun);
+      border-radius: 0 10px 10px 0; padding: 1rem 1.2rem; margin-bottom: 1.5rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: var(--cream);
+      opacity: 0.75; line-height: 1.6;
+    }
+    .ae-editors-note-label {
+      font-family: 'Fredoka', sans-serif; font-size: 0.72rem; font-weight: 600;
+      color: var(--sun); text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Pull quote */
+    .ae-pull-quote {
+      margin: 2rem 0; padding: 1.5rem 2rem;
+      border-top: 2px solid rgba(244,201,93,0.2);
+      border-bottom: 2px solid rgba(244,201,93,0.2);
+      text-align: center;
+    }
+    .ae-pull-quote p {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 1.4rem; color: var(--sun); line-height: 1.4; margin: 0;
+    }
+
+    /* Body */
+    .ae-body {
       font-family: 'Nunito', sans-serif; font-size: 1.05rem;
       line-height: 1.8; color: var(--cream); opacity: 0.85;
     }
-    .article-expanded-body h3 {
+    .ae-body h3 {
       font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
       font-size: 1.4rem; color: var(--sun); margin: 2rem 0 0.8rem;
     }
-    .article-expanded-body h3:first-child { margin-top: 0; }
-    .article-expanded-body ul { list-style: none; padding: 0; margin: 0.8rem 0; }
-    .article-expanded-body ul li { padding-left: 1.2rem; margin-bottom: 0.4rem; position: relative; }
-    .article-expanded-body ul li::before { content: '›'; position: absolute; left: 0; color: var(--sun); font-weight: 700; }
-    .article-expanded-body p { margin-bottom: 0.8rem; }
-    .article-expanded-body strong { color: var(--cream); }
+    .ae-body h3:first-child { margin-top: 0; }
+    .ae-body ul { list-style: none; padding: 0; margin: 0.8rem 0; }
+    .ae-body ul li { padding-left: 1.2rem; margin-bottom: 0.4rem; position: relative; }
+    .ae-body ul li::before { content: '›'; position: absolute; left: 0; color: var(--sun); font-weight: 700; }
+    .ae-body p { margin-bottom: 0.8rem; }
+    .ae-body strong { color: var(--cream); }
 
-    .empty-chronicles {
-      text-align: center; padding: 5rem 2rem;
-      font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4;
-    }
+    /* States */
+    .empty-chronicles { text-align: center; padding: 5rem 2rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4; }
     .empty-chronicles .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
-
-    .loading-chronicles {
-      text-align: center; padding: 4rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5;
-    }
+    .loading-chronicles { text-align: center; padding: 4rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5; }
     .loading-chronicles .load-spinner {
       width: 28px; height: 28px; border: 3px solid rgba(244,201,93,0.15);
       border-top-color: var(--sun); border-radius: 50%;
@@ -257,11 +297,13 @@
     @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
     @media (max-width: 768px) {
-      .masthead { padding: 7rem 1.5rem 2rem; }
+      .masthead { padding: 7rem 1.5rem 1.5rem; }
       .section-nav { padding: 0.6rem 1rem; top: 50px; }
-      .chronicles-content { padding: 2rem 1rem 4rem; }
-      .featured-article { grid-template-columns: 1fr; gap: 1.5rem; }
+      .chronicles-content { padding: 2rem 1rem 2rem; }
+      .featured-hero { min-height: 300px; }
+      .featured-hero-text { padding: 1.5rem; }
       .articles-grid { grid-template-columns: 1fr; }
+      .classifieds-grid { grid-template-columns: 1fr; }
       .article-expanded-inner { padding: 5rem 1.5rem 3rem; }
     }
   </style>
@@ -283,7 +325,6 @@
     </ul>
     <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </nav>
-
   <div class="mobile-menu" id="mobileMenu">
     <ul>
       <li><a href="index.html">Home</a></li>
@@ -295,19 +336,17 @@
     </ul>
   </div>
 
-  <!-- Masthead -->
   <header class="masthead">
     <div class="masthead-rule"></div>
     <div class="masthead-sub">Cozy Crafters SMP</div>
     <h1 class="masthead-title">The Cozy Chronicles</h1>
+    <div class="masthead-slogan" id="mastheadSlogan"></div>
     <div class="masthead-date" id="mastheadDate"></div>
     <div class="masthead-rule-bottom"></div>
   </header>
 
-  <!-- Section nav -->
   <div class="section-nav" id="sectionNav"></div>
 
-  <!-- Content -->
   <div class="chronicles-content" id="chroniclesContent">
     <div class="loading-chronicles" id="loadingState">
       <div class="load-spinner"></div>
@@ -315,13 +354,11 @@
     </div>
   </div>
 
-  <!-- Article expanded view -->
   <div class="article-expanded" id="articleExpanded">
     <button class="article-close" id="articleClose">← Back</button>
     <div class="article-expanded-inner" id="articleExpandedInner"></div>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand"><span class="leaf">🌿</span> Cozy Crafters SMP</div>
@@ -344,11 +381,41 @@
     hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
     mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
 
-    // Set date
+    // Slogans
+    const SLOGANS = [
+      "The Server's Most Trusted (and only) News Source",
+      "Printing Whatever We Want Since 2024",
+      "All the News That Fits, We Print",
+      "Whose Diamonds? Our Story.",
+      "Unflinching. Unbiased. Underfunded.",
+      "Where Journalism Meets Questionable Decision-Making",
+      "Now With 40% Fewer Retractions",
+      "Read By Dozens. Respected By Fewer.",
+      "The Paper of Record (We Keep No Records)",
+      "Editorially Independent. Financially Nonexistent.",
+    ];
+
+    function setupSlogan() {
+      const el = document.getElementById('mastheadSlogan');
+      let idx = Math.floor(Math.random() * SLOGANS.length);
+      el.textContent = `"${SLOGANS[idx]}"`;
+      setInterval(() => {
+        el.style.opacity = '0';
+        setTimeout(() => {
+          idx = (idx + 1) % SLOGANS.length;
+          el.textContent = `"${SLOGANS[idx]}"`;
+          el.style.opacity = '0.45';
+        }, 400);
+      }, 8000);
+    }
+    setupSlogan();
+
+    // Date
     document.getElementById('mastheadDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     let sections = ['Front Page', 'Crime & Mischief', 'Builds & Projects', 'Opinion', 'Classifieds'];
     let articles = [];
+    let chroniclesConfig = {};
     let activeSection = 'all';
 
     // Text parsing
@@ -361,6 +428,10 @@
         if (t.startsWith('## ')) {
           if (inList) { html += '</ul>'; inList = false; }
           html += `<h3>${fmtInline(t.substring(3))}</h3>`;
+        } else if (t.startsWith('> ')) {
+          // Pull quote
+          if (inList) { html += '</ul>'; inList = false; }
+          html += `<div class="ae-pull-quote"><p>${fmtInline(t.substring(2))}</p></div>`;
         } else if (t.startsWith('- ') || t.startsWith('• ')) {
           if (!inList) { html += '<ul>'; inList = true; }
           html += `<li>${fmtInline(t.substring(2))}</li>`;
@@ -378,8 +449,12 @@
       return t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
     }
 
-    function fmtDate(d) {
-      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    function fmtDate(d) { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+
+    function getPreview(body, max) {
+      if (!body) return '';
+      return body.split('\n').filter(l => { const t = l.trim(); return t && !t.startsWith('##') && !t.startsWith('>') && !t.startsWith('-'); })
+        .join(' ').substring(0, max || 120).replace(/\*\*/g, '').replace(/\*/g, '') + '...';
     }
 
     // Section nav
@@ -387,6 +462,7 @@
       const nav = document.getElementById('sectionNav');
       let html = '<button class="section-chip active" data-section="all">All</button>';
       for (const s of sections) {
+        if (s === 'Classifieds') continue; // Classifieds rendered separately
         html += `<button class="section-chip" data-section="${s}">${s}</button>`;
       }
       nav.innerHTML = html;
@@ -404,14 +480,21 @@
     function openArticle(article) {
       const el = document.getElementById('articleExpanded');
       const inner = document.getElementById('articleExpandedInner');
-      const imgHtml = article.image ? `<div class="article-expanded-image"><img src="${article.image}" alt="" /></div>` : '';
+      const imgHtml = article.image ? `<div class="ae-image"><img src="${article.image}" alt="" /></div>` : '';
+      const noteHtml = article.editorsNote ? `
+        <div class="ae-editors-note">
+          <div class="ae-editors-note-label">Editor's Note</div>
+          ${article.editorsNote}
+        </div>` : '';
+
       inner.innerHTML = `
-        <div class="article-expanded-section">${article.section || 'The Cozy Chronicles'}</div>
-        <div class="article-expanded-title">${article.title}</div>
-        ${article.subtitle ? `<div class="article-expanded-subtitle">${article.subtitle}</div>` : ''}
-        <div class="article-expanded-meta">By ${article.author || 'Staff'} · ${fmtDate(article.date)}</div>
+        <div class="ae-section">${article.section || 'The Cozy Chronicles'}</div>
+        <div class="ae-title">${article.title}</div>
+        ${article.subtitle ? `<div class="ae-subtitle">${article.subtitle}</div>` : ''}
+        <div class="ae-meta">By ${article.author || 'Staff'} · ${fmtDate(article.date)}</div>
         ${imgHtml}
-        <div class="article-expanded-body">${parseBody(article.body)}</div>
+        ${noteHtml}
+        <div class="ae-body">${parseBody(article.body)}</div>
       `;
       el.classList.add('open');
       el.scrollTop = 0;
@@ -423,18 +506,20 @@
       document.body.style.overflow = '';
     });
 
-    // Main render
+    // Render
     function renderContent() {
       const content = document.getElementById('chroniclesContent');
       const published = articles.filter(a => a.status !== 'draft');
-      let visible = activeSection === 'all' ? published : published.filter(a => a.section === activeSection);
+      const classifieds = published.filter(a => a.section === 'Classifieds');
+      const nonClassifieds = published.filter(a => a.section !== 'Classifieds');
 
-      if (visible.length === 0) {
+      let visible = activeSection === 'all' ? nonClassifieds : published.filter(a => a.section === activeSection);
+
+      if (visible.length === 0 && classifieds.length === 0) {
         content.innerHTML = `<div class="empty-chronicles"><div class="empty-icon">📰</div><div>${activeSection === 'all' ? 'No articles published yet. The press is on break.' : 'Nothing in this section yet.'}</div></div>`;
         return;
       }
 
-      // Sort: featured first, then by date
       visible.sort((a, b) => {
         if (a.featured && !b.featured) return -1;
         if (!a.featured && b.featured) return 1;
@@ -443,49 +528,82 @@
 
       let html = '';
 
-      // Featured article (first featured one, or first article if viewing all)
-      if (activeSection === 'all') {
+      // Featured hero
+      if (activeSection === 'all' && visible.length > 0) {
         const feat = visible.find(a => a.featured) || visible[0];
-        const hasImage = !!feat.image;
+        const hasImg = !!feat.image;
         html += `
-          <div class="featured-article${hasImage ? '' : ' no-image'}" data-id="${feat.id}">
-            ${hasImage ? `<div class="featured-image"><img src="${feat.image}" alt="" /></div>` : ''}
-            <div class="featured-text">
-              <div class="featured-badge">⭐ Featured Story</div>
-              ${feat.section ? `<div class="featured-section">${feat.section}</div>` : ''}
+          <div class="featured-hero" data-id="${feat.id}">
+            ${hasImg
+              ? `<div class="featured-hero-img"><img src="${feat.image}" alt="" /></div><div class="featured-hero-gradient"></div>`
+              : '<div class="featured-hero-noimg"></div>'}
+            <div class="featured-hero-text">
+              <div class="featured-hero-badge">⭐ Featured Story</div>
+              ${feat.section ? `<div class="featured-hero-section">${feat.section}</div>` : ''}
               <h2>${feat.title}</h2>
-              ${feat.subtitle ? `<div class="featured-subtitle">${feat.subtitle}</div>` : ''}
-              <div class="featured-meta">By ${feat.author || 'Staff'} · ${fmtDate(feat.date)}</div>
+              ${feat.subtitle ? `<div class="featured-hero-subtitle">${feat.subtitle}</div>` : ''}
+              <div class="featured-hero-meta">By ${feat.author || 'Staff'} · ${fmtDate(feat.date)}</div>
             </div>
           </div>`;
         visible = visible.filter(a => a.id !== feat.id);
       }
 
-      // Group remaining by section if viewing all, or just show as grid
-      if (activeSection === 'all') {
-        const bySection = {};
-        for (const a of visible) {
-          const s = a.section || 'Uncategorized';
-          if (!bySection[s]) bySection[s] = [];
-          bySection[s].push(a);
-        }
-        for (const [sec, arts] of Object.entries(bySection)) {
-          html += `<div class="articles-section-title">${sec}</div><div class="articles-section-rule"></div>`;
+      // Group remaining by section if all, or flat grid
+      if (visible.length > 0) {
+        if (activeSection === 'all') {
+          const bySection = {};
+          for (const a of visible) {
+            const s = a.section || 'Uncategorized';
+            if (!bySection[s]) bySection[s] = [];
+            bySection[s].push(a);
+          }
+          for (const [sec, arts] of Object.entries(bySection)) {
+            html += `<div class="articles-section-header"><span class="articles-section-title">${sec}</span><div class="articles-section-line"></div></div>`;
+            html += '<div class="articles-grid">';
+            for (const a of arts) html += renderCard(a);
+            html += '</div>';
+          }
+        } else {
           html += '<div class="articles-grid">';
-          for (const a of arts) html += renderCard(a);
+          for (const a of visible) html += renderCard(a);
           html += '</div>';
         }
-      } else {
-        html += '<div class="articles-grid">';
-        for (const a of visible) html += renderCard(a);
-        html += '</div>';
+      }
+
+      // Classifieds
+      if (activeSection === 'all' && classifieds.length > 0) {
+        html += `
+          <div class="classifieds-section">
+            <div class="classifieds-header">
+              <span class="classifieds-title">Classifieds</span>
+              <div class="articles-section-line"></div>
+            </div>
+            <div class="classifieds-grid">
+              ${classifieds.map(c => `
+                <div class="classified-item">
+                  <div class="cl-title">${c.title}</div>
+                  <div class="cl-text">${c.subtitle || getPreview(c.body, 80)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+      }
+
+      // Corrections
+      if (activeSection === 'all' && chroniclesConfig.corrections && chroniclesConfig.corrections.length > 0) {
+        html += `
+          <div class="corrections-section">
+            <div class="corrections-title">Corrections & Retractions</div>
+            ${chroniclesConfig.corrections.map(c => `
+              <div class="correction-item"><em>${c}</em></div>
+            `).join('')}
+          </div>`;
       }
 
       content.innerHTML = html;
 
       // Click handlers
       content.querySelectorAll('[data-id]').forEach(el => {
-        el.style.cursor = 'pointer';
         el.addEventListener('click', () => {
           const a = articles.find(x => x.id === el.dataset.id);
           if (a) openArticle(a);
@@ -507,13 +625,14 @@
 
     function renderCard(a) {
       const imgHtml = a.image ? `<div class="article-card-image"><img src="${a.image}" alt="" loading="lazy" /></div>` : '';
+      const preview = getPreview(a.body, 100);
       return `
         <div class="article-card" data-id="${a.id}">
           ${imgHtml}
           <div class="article-card-body">
             ${a.section ? `<div class="article-card-section">${a.section}</div>` : ''}
             <div class="article-card-title">${a.title}</div>
-            ${a.subtitle ? `<div class="article-card-subtitle">${a.subtitle}</div>` : ''}
+            ${preview ? `<div class="article-card-preview">${preview}</div>` : ''}
             <div class="article-card-meta">By ${a.author || 'Staff'} · ${fmtDate(a.date)}</div>
           </div>
         </div>`;
@@ -522,12 +641,14 @@
     // Load
     (async function load() {
       try {
-        const [secRes, artRes] = await Promise.all([
+        const [secRes, artRes, cfgRes] = await Promise.all([
           fetch(`${API_BASE}/api/settings/chroniclesSections`),
           fetch(`${API_BASE}/api/settings/chronicles`),
+          fetch(`${API_BASE}/api/settings/chroniclesConfig`),
         ]);
         if (secRes.ok) { const d = await secRes.json(); if (d.value?.length) sections = d.value; }
         if (artRes.ok) { const d = await artRes.json(); articles = d.value || []; }
+        if (cfgRes.ok) { const d = await cfgRes.json(); chroniclesConfig = d.value || {}; }
       } catch (e) {}
       document.getElementById('loadingState').style.display = 'none';
       renderSectionNav();

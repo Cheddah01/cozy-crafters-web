@@ -1118,7 +1118,13 @@
           <div class="field">
             <label class="field-label" for="chrBody">Article body</label>
             <textarea id="chrBody" rows="14" placeholder="## The Incident&#10;&#10;It was a Tuesday. The kind of Tuesday where nothing should go wrong, and yet somehow, everything did.&#10;&#10;According to eyewitnesses — all two of them — the creeper appeared from behind a carefully placed oak door at approximately 6:47pm server time.&#10;&#10;## The Aftermath&#10;&#10;- 47 diamonds, gone&#10;- One perfectly good set of Netherite armor, dented&#10;- The admin's reputation, somehow still intact"></textarea>
-            <p class="field-hint">Use ## for section headers, - for bullet points, **bold**, *italic*.</p>
+            <p class="field-hint">Use ## for headers, - for bullets, **bold**, *italic*, > for pull quotes.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="chrEditorsNote">Editor's note (optional)</label>
+            <input type="text" id="chrEditorsNote" placeholder="The author of this article has been temporarily banned for 'journalistic overreach.'" />
+            <p class="field-hint">Shows as a highlighted callout box at the top of the article.</p>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
@@ -1168,6 +1174,28 @@
         </div>
 
       </div>
+
+      <!-- Corrections manager -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <span class="card-icon">📝</span>
+          <h2 class="card-title">Corrections & Retractions</h2>
+        </div>
+        <p class="card-helper">Deadpan retractions that show at the bottom of the Chronicles page. Keep 'em dry.</p>
+
+        <div id="chrCorrectionsList" style="margin-bottom: 1rem;"></div>
+
+        <div style="display: flex; gap: 0.6rem; align-items: end;">
+          <div class="field" style="margin-bottom:0; flex:1;">
+            <input type="text" id="chrNewCorrection" placeholder="In last week's issue we reported that Cheddah had 'finally done something useful.' We regret the error." />
+          </div>
+          <button class="btn btn-primary" id="chrAddCorrectionBtn" type="button" style="padding:0.85rem 1.2rem; font-size:0.9rem; margin-bottom:0;">+ Add</button>
+        </div>
+        <div class="action-row" style="margin-top: 1rem;">
+          <button class="btn btn-primary" id="chrSaveCorrectionsBtn" type="button" style="font-size:0.9rem; padding:0.7rem 1.2rem;">💾 Save Corrections</button>
+        </div>
+      </div>
+
     </div>
     </div> <!-- /section-chronicles -->
 
@@ -2165,6 +2193,7 @@
     const chrDate = document.getElementById('chrDate');
     const chrImage = document.getElementById('chrImage');
     const chrBody = document.getElementById('chrBody');
+    const chrEditorsNote = document.getElementById('chrEditorsNote');
     const chrAddBtn = document.getElementById('chrAddBtn');
     const chrCancelEdit = document.getElementById('chrCancelEdit');
     const chrFormTitle = document.getElementById('chrFormTitle');
@@ -2255,6 +2284,7 @@
       chrDate.value = new Date().toISOString().split('T')[0];
       chrImage.value = '';
       chrBody.value = '';
+      chrEditorsNote.value = '';
       chrSelectedSection = '';
       chrStatus = 'published';
       chrFeatured = false;
@@ -2317,6 +2347,7 @@
           chrDate.value = a.date || '';
           chrImage.value = a.image || '';
           chrBody.value = a.body || '';
+          chrEditorsNote.value = a.editorsNote || '';
           chrSelectedSection = a.section || '';
           chrStatus = a.status || 'published';
           chrFeatured = !!a.featured;
@@ -2370,6 +2401,7 @@
         section: chrSelectedSection || null,
         image: chrImage.value.trim() || null,
         body: chrBody.value,
+        editorsNote: chrEditorsNote.value.trim() || null,
         status: chrStatus,
         featured: chrFeatured,
         id: chrEditingIndex !== null ? chrArticles[chrEditingIndex].id : `chr-${Date.now()}`,
@@ -2411,9 +2443,10 @@
     // Load on init
     (async function loadChronicles() {
       try {
-        const [secRes, artRes] = await Promise.all([
+        const [secRes, artRes, cfgRes] = await Promise.all([
           fetch(`${API_BASE}/api/settings/chroniclesSections`),
           fetch(`${API_BASE}/api/settings/chronicles`),
+          fetch(`${API_BASE}/api/settings/chroniclesConfig`),
         ]);
         if (secRes.ok) {
           const d = await secRes.json();
@@ -2423,11 +2456,69 @@
           const d = await artRes.json();
           chrArticles = d.value || [];
         }
+        if (cfgRes.ok) {
+          const d = await cfgRes.json();
+          chrConfig = d.value || {};
+          chrCorrections = chrConfig.corrections || [];
+        }
       } catch (e) {}
       renderChrSections();
       renderChrSectionPicker();
       renderChrArticles();
+      renderCorrections();
     })();
+
+    // ============================================
+    // Corrections manager
+    // ============================================
+    let chrCorrections = [];
+    let chrConfig = {};
+
+    function renderCorrections() {
+      const list = document.getElementById('chrCorrectionsList');
+      if (chrCorrections.length === 0) {
+        list.innerHTML = '<div class="changelog-admin-empty" style="padding:1rem;">No corrections yet. The record stands... for now.</div>';
+        return;
+      }
+      list.innerHTML = chrCorrections.map((c, i) => `
+        <div style="display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.5rem; padding:0.6rem 0.8rem; background:rgba(255,244,220,0.03); border:1px solid rgba(244,201,93,0.08); border-radius:10px;">
+          <span style="flex:1; font-family:'Nunito',sans-serif; font-size:0.85rem; color:var(--cream); opacity:0.7; font-style:italic; line-height:1.5;">${c}</span>
+          <button class="cl-btn-delete chr-corr-del" data-idx="${i}" style="flex-shrink:0;">✕</button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.chr-corr-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          chrCorrections.splice(parseInt(btn.dataset.idx), 1);
+          renderCorrections();
+          markUnsaved();
+        });
+      });
+    }
+
+    document.getElementById('chrAddCorrectionBtn').addEventListener('click', () => {
+      const input = document.getElementById('chrNewCorrection');
+      const text = input.value.trim();
+      if (!text) { showToast('Write a correction first.'); return; }
+      chrCorrections.push(text);
+      input.value = '';
+      renderCorrections();
+      markUnsaved();
+      showToast('Correction added!');
+    });
+
+    document.getElementById('chrSaveCorrectionsBtn').addEventListener('click', async () => {
+      chrConfig.corrections = chrCorrections;
+      try {
+        await fetch(`${API_BASE}/api/settings/chroniclesConfig`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: chrConfig }),
+        });
+        markSaved();
+        showToast('Corrections saved!');
+      } catch (e) { showToast('Failed to save.'); }
+    });
 
   } // end initAdmin
 </script>

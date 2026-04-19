@@ -571,8 +571,12 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         </div>
         <div class="im-field">
           <label class="im-label">Body</label>
-          <textarea id="imChrBody" rows="10" placeholder="## The Incident&#10;&#10;It was a Tuesday...">${article?.body || ''}</textarea>
-          <div class="im-hint">## for headers, - for bullets, **bold**, *italic*</div>
+          <textarea id="imChrBody" rows="10" placeholder="## The Incident&#10;&#10;It was a Tuesday...&#10;&#10;> This is a pull quote that gets highlighted">${article?.body || ''}</textarea>
+          <div class="im-hint">## for headers, - for bullets, **bold**, *italic*, > for pull quotes</div>
+        </div>
+        <div class="im-field">
+          <label class="im-label">Editor's Note (optional)</label>
+          <input type="text" id="imChrEditorsNote" value="${escape(article?.editorsNote || '')}" placeholder="The author has been temporarily banned for 'journalistic overreach.'" />
         </div>
         <div class="im-row">
           <div class="im-field">
@@ -610,6 +614,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
             section: activeSection?.dataset.section || null,
             image: document.getElementById('imChrImage').value.trim() || null,
             body: document.getElementById('imChrBody').value,
+            editorsNote: document.getElementById('imChrEditorsNote').value.trim() || null,
             status: activeStatus?.dataset.status || 'published',
             featured: !!overlay.querySelector('.im-feat-btn.active'),
             id: article?.id || `chr-${Date.now()}`,
