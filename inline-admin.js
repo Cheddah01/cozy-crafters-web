@@ -386,10 +386,19 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
     async function initChangelogEditor(token) {
       let tags = [];
+      const DEFAULT_TAGS = [
+        { id: 'new-feature', name: 'New Feature', color: '#A8C77E' },
+        { id: 'bug-fix', name: 'Bug Fix', color: '#E89A6E' },
+        { id: 'balance', name: 'Balance', color: '#8B9CF7' },
+        { id: 'qol', name: 'Quality of Life', color: '#F4C95D' },
+        { id: 'removal', name: 'Removal', color: '#E87070' },
+        { id: 'event', name: 'Event', color: '#C9A0E8' },
+      ];
       try {
         const res = await fetch(`${INLINE_API}/api/settings/changelogTags`);
         if (res.ok) { const d = await res.json(); tags = d.value || []; }
       } catch (e) {}
+      if (tags.length === 0) tags = DEFAULT_TAGS;
 
       let entries = [];
       try {
