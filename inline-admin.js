@@ -385,261 +385,471 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
     }
 
     async function initChangelogEditor(token) {
-      // Load tags
       let tags = [];
       try {
         const res = await fetch(`${INLINE_API}/api/settings/changelogTags`);
         if (res.ok) { const d = await res.json(); tags = d.value || []; }
       } catch (e) {}
 
-      // Add edit buttons to entries
-      addEditButtons('.changelog-entry', (el) => {
-        const entryId = el.dataset.entryId;
-        openChangelogModal(entryId, tags, token);
-      });
-
-      // Add button handler
-      document.getElementById('inlineAddBtn').addEventListener('click', () => {
-        openChangelogModal(null, tags, token);
-      });
-    }
-
-    async function openChangelogModal(entryId, tags, token) {
       let entries = [];
       try {
         const res = await fetch(`${INLINE_API}/api/settings/changelog`);
         if (res.ok) { const d = await res.json(); entries = d.value || []; }
       } catch (e) {}
 
-      const entry = entryId ? entries.find(e => e.id === entryId) : null;
-      const isEdit = !!entry;
-      const selectedTags = new Set(entry?.tags || []);
-      let modalChanges = [...(entry?.changes || [])];
-      let modalChangeTag = '';
+      // Inject side panel CSS
+      const panelStyle = document.createElement('style');
+      panelStyle.textContent = `
+        .cl-quickbar {
+          position: fixed; top: 56px; left: 0; right: 0; z-index: 90;
+          background: rgba(43,31,21,0.97); backdrop-filter: blur(14px);
+          border-bottom: 1px solid rgba(244,201,93,0.12);
+          padding: 0.6rem 2rem; display: flex; align-items: center;
+          gap: 0.8rem; justify-content: center;
+        }
+        .cl-quickbar input {
+          font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #FFF4DC;
+          background: rgba(43,31,21,0.8); border: 1.5px solid rgba(244,201,93,0.15);
+          border-radius: 10px; padding: 0.55rem 0.85rem; outline: none; transition: all 0.2s;
+        }
+        .cl-quickbar input:focus { border-color: #F4C95D; box-shadow: 0 0 0 3px rgba(244,201,93,0.1); }
+        .cl-quickbar input::placeholder { color: #FFF4DC; opacity: 0.3; }
+        .cl-quickbar-btn {
+          font-family: 'Fredoka',sans-serif; font-size: 0.88rem; font-weight: 600;
+          background: #F4C95D; color: #1a1209; border: none; padding: 0.55rem 1.2rem;
+          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #c9a030;
+          transition: all 0.15s; white-space: nowrap;
+        }
+        .cl-quickbar-btn:hover { transform: translateY(-1px); }
 
-      const tagsHtml = tags.map(t => {
-        const active = selectedTags.has(t.id) ? 'active' : '';
-        const style = active
-          ? `background:${t.color}; color:#1a1209; border-color:${t.color};`
-          : `border-color:${t.color}55; color:${t.color};`;
-        return `<button type="button" class="im-tag-btn ${active}" data-tag="${t.id}" style="${style}">${t.name}</button>`;
-      }).join('');
+        .cl-sidepanel {
+          position: fixed; top: 0; right: -480px; width: 460px; max-width: 90vw;
+          height: 100vh; z-index: 300; background: #2b1f15;
+          border-left: 1px solid rgba(244,201,93,0.12);
+          box-shadow: -8px 0 40px rgba(0,0,0,0.4);
+          transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex; flex-direction: column; overflow: hidden;
+        }
+        .cl-sidepanel.open { right: 0; }
+        .cl-panel-scrim {
+          position: fixed; inset: 0; z-index: 299;
+          background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none;
+          transition: opacity 0.3s;
+        }
+        .cl-panel-scrim.open { opacity: 1; pointer-events: auto; }
 
-      function renderModalChanges(container) {
-        if (modalChanges.length === 0) {
-          container.innerHTML = '<div style="font-family:Nunito,sans-serif;font-size:0.82rem;color:#FFF4DC;opacity:0.35;padding:0.5rem 0;">No changes added yet.</div>';
+        .cl-panel-header {
+          padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(244,201,93,0.08);
+          display: flex; align-items: center; justify-content: space-between;
+        }
+        .cl-panel-title { font-family: 'Fredoka',sans-serif; font-size: 1.15rem; font-weight: 700; color: #FFF4DC; }
+        .cl-panel-close {
+          background: none; border: 1px solid rgba(255,244,220,0.15); color: #FFF4DC;
+          font-family: 'Fredoka',sans-serif; font-size: 0.85rem; font-weight: 600;
+          padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; transition: all 0.15s;
+        }
+        .cl-panel-close:hover { background: rgba(255,244,220,0.08); }
+
+        .cl-panel-body {
+          flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem;
+          scrollbar-width: thin; scrollbar-color: rgba(244,201,93,0.15) transparent;
+        }
+        .cl-panel-body::-webkit-scrollbar { width: 6px; }
+        .cl-panel-body::-webkit-scrollbar-thumb { background: rgba(244,201,93,0.15); border-radius: 3px; }
+
+        .cl-panel-footer {
+          padding: 1rem 1.5rem; border-top: 1px solid rgba(244,201,93,0.08);
+          display: flex; gap: 0.6rem;
+        }
+        .cl-panel-save {
+          font-family: 'Fredoka',sans-serif; font-size: 0.9rem; font-weight: 600;
+          background: #F4C95D; color: #1a1209; border: none; padding: 0.65rem 1.4rem;
+          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #c9a030; flex: 1; transition: all 0.15s;
+        }
+        .cl-panel-save:hover { transform: translateY(-1px); }
+        .cl-panel-delete {
+          font-family: 'Fredoka',sans-serif; font-size: 0.9rem; font-weight: 600;
+          background: none; border: 1px solid rgba(232,154,110,0.3); color: #E89A6E;
+          padding: 0.65rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.15s;
+        }
+        .cl-panel-delete:hover { background: rgba(232,154,110,0.1); }
+
+        .sp-field { margin-bottom: 0.9rem; }
+        .sp-label { display: block; font-family: 'Fredoka',sans-serif; font-size: 0.78rem; font-weight: 600; color: #F4C95D; margin-bottom: 0.3rem; letter-spacing: 0.04em; }
+        .sp-input {
+          width: 100%; font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #FFF4DC;
+          background: rgba(43,31,21,0.8); border: 1.5px solid rgba(244,201,93,0.12);
+          border-radius: 8px; padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+        .sp-input:focus { border-color: #F4C95D; }
+        .sp-input::placeholder { color: #FFF4DC; opacity: 0.25; }
+        textarea.sp-input { resize: vertical; min-height: 50px; line-height: 1.5; }
+        .sp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+        .sp-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+        .sp-tag {
+          font-family: 'Fredoka',sans-serif; font-size: 0.72rem; font-weight: 600;
+          padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer; transition: all 0.15s;
+        }
+
+        .sp-divider { height: 1px; background: rgba(244,201,93,0.08); margin: 1rem 0; }
+        .sp-section-label { font-family: 'Fredoka',sans-serif; font-size: 0.9rem; font-weight: 700; color: #FFF4DC; margin-bottom: 0.8rem; }
+
+        /* Change items with drag */
+        .sp-change {
+          display: flex; align-items: flex-start; gap: 0.5rem;
+          padding: 0.6rem 0.5rem; background: rgba(255,244,220,0.03);
+          border: 1px solid rgba(244,201,93,0.06); border-radius: 8px;
+          margin-bottom: 0.4rem; cursor: default; transition: all 0.15s;
+        }
+        .sp-change:hover { border-color: rgba(244,201,93,0.15); }
+        .sp-change.dragging { opacity: 0.4; }
+        .sp-change-drag {
+          cursor: grab; color: #FFF4DC; opacity: 0.2; font-size: 0.85rem;
+          padding: 0.15rem 0; user-select: none; flex-shrink: 0;
+        }
+        .sp-change-drag:active { cursor: grabbing; }
+        .sp-change-tag {
+          font-family: 'Nunito',sans-serif; font-size: 0.6rem; font-weight: 700;
+          text-transform: uppercase; letter-spacing: 0.05em;
+          padding: 0.15rem 0.4rem; border-radius: 4px; flex-shrink: 0; margin-top: 0.15rem;
+        }
+        .sp-change-info { flex: 1; min-width: 0; }
+        .sp-change-title { font-family: 'Fredoka',sans-serif; font-size: 0.82rem; font-weight: 600; color: #FFF4DC; }
+        .sp-change-desc { font-family: 'Nunito',sans-serif; font-size: 0.75rem; color: #FFF4DC; opacity: 0.45; line-height: 1.4; }
+        .sp-change-del {
+          background: none; border: none; color: #E89A6E; opacity: 0.3; cursor: pointer;
+          font-size: 0.8rem; padding: 0; transition: opacity 0.15s; flex-shrink: 0;
+        }
+        .sp-change-del:hover { opacity: 1; }
+
+        .sp-add-change {
+          border: 1px dashed rgba(244,201,93,0.12); border-radius: 8px;
+          padding: 0.8rem; margin-top: 0.5rem;
+        }
+        .sp-add-btn {
+          font-family: 'Fredoka',sans-serif; font-size: 0.82rem; font-weight: 600;
+          background: none; border: 1px solid rgba(244,201,93,0.15); color: #FFF4DC;
+          padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; opacity: 0.6;
+          transition: all 0.15s;
+        }
+        .sp-add-btn:hover { opacity: 1; border-color: rgba(244,201,93,0.3); }
+
+        .sp-img-preview { margin-top: 0.4rem; }
+        .sp-img-preview img { max-width: 160px; max-height: 90px; border-radius: 8px; border: 1px solid rgba(244,201,93,0.1); }
+
+        @media (max-width: 600px) {
+          .cl-sidepanel { width: 100%; right: -100%; }
+          .cl-quickbar { padding: 0.5rem 1rem; flex-wrap: wrap; }
+          .cl-quickbar input { flex: 1; min-width: 0; }
+        }
+      `;
+      document.head.appendChild(panelStyle);
+
+      // Inject quick-add bar
+      const quickbar = document.createElement('div');
+      quickbar.className = 'cl-quickbar';
+      quickbar.innerHTML = `
+        <input type="text" id="qbTitle" placeholder="Patch title..." style="flex:1;min-width:120px;" />
+        <input type="text" id="qbVersion" placeholder="v2.0" style="width:70px;" />
+        <button class="cl-quickbar-btn" id="qbCreateBtn">+ New Patch Note</button>
+        <button class="cl-quickbar-btn" id="qbAdminBtn" style="background:none;border:1px solid rgba(255,244,220,0.15);color:#FFF4DC;box-shadow:none;">⚙ Admin</button>
+      `;
+      document.body.appendChild(quickbar);
+
+      // Inject side panel
+      const scrim = document.createElement('div');
+      scrim.className = 'cl-panel-scrim';
+      scrim.id = 'clPanelScrim';
+      document.body.appendChild(scrim);
+
+      const panel = document.createElement('div');
+      panel.className = 'cl-sidepanel';
+      panel.id = 'clSidePanel';
+      document.body.appendChild(panel);
+
+      // Adjust page content for quickbar
+      document.querySelector('.page-header').style.marginTop = '48px';
+
+      // Hide old toolbar
+      const oldToolbar = document.getElementById('inlineToolbar');
+      if (oldToolbar) oldToolbar.style.display = 'none';
+
+      // State
+      let panelEntry = null;
+      let panelChanges = [];
+      let panelSelectedTags = new Set();
+      let panelChangeTag = '';
+      let panelIsNew = false;
+
+      function getTagById(id) { return tags.find(t => t.id === id); }
+
+      // Open panel
+      function openPanel(entry, isNew) {
+        panelEntry = entry ? { ...entry } : { title: '', version: '', date: new Date().toISOString().split('T')[0], tags: [], changes: [], image: null, status: 'published', pinned: false, id: `cl-${Date.now()}` };
+        panelChanges = [...(panelEntry.changes || [])];
+        panelSelectedTags = new Set(panelEntry.tags || []);
+        panelIsNew = isNew;
+        panelChangeTag = '';
+        renderPanel();
+        panel.classList.add('open');
+        scrim.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePanel() {
+        panel.classList.remove('open');
+        scrim.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      scrim.addEventListener('click', closePanel);
+
+      function renderPanel() {
+        const isEdit = !panelIsNew;
+
+        const tagsHtml = tags.map(t => {
+          const a = panelSelectedTags.has(t.id);
+          const s = a ? `background:${t.color};color:#1a1209;border-color:${t.color};` : `border-color:${t.color}55;color:${t.color};border:1px solid ${t.color}55;background:transparent;`;
+          return `<button type="button" class="sp-tag sp-entry-tag" data-tag="${t.id}" style="${s}">${t.name}</button>`;
+        }).join('');
+
+        panel.innerHTML = `
+          <div class="cl-panel-header">
+            <span class="cl-panel-title">${isEdit ? 'Edit Patch Note' : 'New Patch Note'}</span>
+            <button class="cl-panel-close" id="spClose">✕</button>
+          </div>
+          <div class="cl-panel-body">
+            <div class="sp-field">
+              <label class="sp-label">Title</label>
+              <input class="sp-input" id="spTitle" value="${escape(panelEntry.title || '')}" placeholder="Economy Rebalance" />
+            </div>
+            <div class="sp-row">
+              <div class="sp-field">
+                <label class="sp-label">Version</label>
+                <input class="sp-input" id="spVersion" value="${escape(panelEntry.version || '')}" placeholder="v2.4.1" />
+              </div>
+              <div class="sp-field">
+                <label class="sp-label">Date</label>
+                <input class="sp-input" id="spDate" value="${panelEntry.date || ''}" placeholder="2026-04-18" />
+              </div>
+            </div>
+            <div class="sp-field">
+              <label class="sp-label">Tags</label>
+              <div class="sp-tags" id="spTags">${tagsHtml}</div>
+            </div>
+            <div class="sp-field">
+              <label class="sp-label">Image</label>
+              <div style="display:flex;gap:0.4rem;align-items:end;">
+                <input class="sp-input" id="spImage" value="${escape(panelEntry.image || '')}" placeholder="URL or upload" style="flex:1;" />
+                <input type="file" id="spImageFile" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;" />
+                <button class="sp-add-btn" id="spImageUpload" style="padding:0.5rem 0.6rem;">📷</button>
+              </div>
+              <div class="sp-img-preview" id="spImagePreview"></div>
+            </div>
+
+            <div class="sp-divider"></div>
+            <div class="sp-section-label">Changes</div>
+            <div id="spChangesList"></div>
+
+            <div class="sp-add-change">
+              <div class="sp-field" style="margin-bottom:0.5rem;">
+                <input class="sp-input" id="spNewChangeTitle" placeholder="Change title" />
+              </div>
+              <div class="sp-field" style="margin-bottom:0.5rem;">
+                <textarea class="sp-input" id="spNewChangeDesc" rows="2" placeholder="Description (optional)"></textarea>
+              </div>
+              <div class="sp-field" style="margin-bottom:0.5rem;">
+                <div class="sp-tags" id="spChangeTagPicker"></div>
+              </div>
+              <button class="sp-add-btn" id="spAddChangeBtn">+ Add Change</button>
+            </div>
+          </div>
+          <div class="cl-panel-footer">
+            <button class="cl-panel-save" id="spSave">${isEdit ? 'Save Changes' : 'Publish'}</button>
+            ${isEdit ? '<button class="cl-panel-delete" id="spDelete">Delete</button>' : ''}
+          </div>
+        `;
+
+        // Wire everything
+        panel.querySelector('#spClose').addEventListener('click', closePanel);
+
+        // Entry tag toggles
+        panel.querySelectorAll('.sp-entry-tag').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const t = btn.dataset.tag;
+            panelSelectedTags.has(t) ? panelSelectedTags.delete(t) : panelSelectedTags.add(t);
+            const tag = getTagById(t);
+            const a = panelSelectedTags.has(t);
+            btn.style = a ? `background:${tag.color};color:#1a1209;border-color:${tag.color};` : `border-color:${tag.color}55;color:${tag.color};border:1px solid ${tag.color}55;background:transparent;`;
+          });
+        });
+
+        // Image upload
+        const spImgInput = panel.querySelector('#spImage');
+        const spImgFile = panel.querySelector('#spImageFile');
+
+        function renderImgPreview(url) {
+          const prev = panel.querySelector('#spImagePreview');
+          if (!url) { prev.innerHTML = ''; return; }
+          prev.innerHTML = `<div style="position:relative;display:inline-block;margin-top:0.4rem;">
+            <img src="${url}" style="max-width:160px;max-height:90px;border-radius:8px;border:1px solid rgba(244,201,93,0.1);" />
+            <button type="button" id="spImgClear" style="position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.6rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+          </div>`;
+          prev.querySelector('#spImgClear')?.addEventListener('click', () => { spImgInput.value = ''; prev.innerHTML = ''; });
+        }
+
+        if (panelEntry.image) renderImgPreview(panelEntry.image);
+        spImgInput.addEventListener('input', () => renderImgPreview(spImgInput.value.trim()));
+
+        panel.querySelector('#spImageUpload').addEventListener('click', () => spImgFile.click());
+        spImgFile.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          try {
+            const fd = new FormData(); fd.append('file', file);
+            const tk = localStorage.getItem('ccAuthToken');
+            const res = await fetch(`${INLINE_API}/api/gallery/upload`, { method: 'POST', headers: tk ? { 'Authorization': `Bearer ${tk}` } : {}, body: fd });
+            const data = await res.json();
+            if (res.ok && data.url) { spImgInput.value = data.url; renderImgPreview(data.url); }
+          } catch (err) {}
+          e.target.value = '';
+        });
+
+        // Changes list with drag
+        renderChanges();
+        renderChangeTagPicker();
+
+        // Add change
+        panel.querySelector('#spAddChangeBtn').addEventListener('click', () => {
+          const t = panel.querySelector('#spNewChangeTitle').value.trim();
+          if (!t) return;
+          panelChanges.push({ title: t, description: panel.querySelector('#spNewChangeDesc').value.trim() || null, tag: panelChangeTag || null });
+          panel.querySelector('#spNewChangeTitle').value = '';
+          panel.querySelector('#spNewChangeDesc').value = '';
+          panelChangeTag = '';
+          renderChanges();
+          renderChangeTagPicker();
+        });
+
+        // Save
+        panel.querySelector('#spSave').addEventListener('click', async () => {
+          const title = panel.querySelector('#spTitle').value.trim();
+          const date = panel.querySelector('#spDate').value.trim();
+          if (!title || !date) { showInlineToast('Title and date required.'); return; }
+          if (panelChanges.length === 0) { showInlineToast('Add at least one change.'); return; }
+
+          const updated = {
+            title, version: panel.querySelector('#spVersion').value.trim() || null, date,
+            tags: [...panelSelectedTags], changes: panelChanges,
+            image: panel.querySelector('#spImage').value.trim() || null,
+            status: panelEntry.status || 'published', pinned: panelEntry.pinned || false,
+            id: panelEntry.id,
+          };
+
+          if (panelIsNew) { entries.push(updated); }
+          else { const idx = entries.findIndex(e => e.id === panelEntry.id); if (idx >= 0) entries[idx] = updated; }
+
+          await saveAndReload('changelog', entries, token);
+          closePanel();
+        });
+
+        // Delete
+        panel.querySelector('#spDelete')?.addEventListener('click', async () => {
+          if (!confirm('Delete this patch note?')) return;
+          entries = entries.filter(e => e.id !== panelEntry.id);
+          await saveAndReload('changelog', entries, token);
+          closePanel();
+        });
+      }
+
+      function renderChanges() {
+        const list = panel.querySelector('#spChangesList');
+        if (panelChanges.length === 0) {
+          list.innerHTML = '<div style="font-family:Nunito;font-size:0.8rem;color:#FFF4DC;opacity:0.25;padding:0.5rem 0;">No changes yet</div>';
           return;
         }
-        container.innerHTML = modalChanges.map((c, i) => {
-          const t = c.tag ? tags.find(x => x.id === c.tag) : null;
-          const tagChip = t ? `<span style="font-family:Nunito,sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0.15rem 0.45rem;border-radius:4px;background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;flex-shrink:0;margin-top:0.1rem;">${t.name}</span>` : '';
-          return `<div style="display:flex;align-items:flex-start;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid rgba(244,201,93,0.06);">
-            ${tagChip}
-            <div style="flex:1;min-width:0;">
-              <div style="font-family:Fredoka,sans-serif;font-size:0.85rem;font-weight:600;color:#FFF4DC;">${c.title}</div>
-              ${c.description ? `<div style="font-family:Nunito,sans-serif;font-size:0.78rem;color:#FFF4DC;opacity:0.5;">${c.description}</div>` : ''}
+        list.innerHTML = panelChanges.map((c, i) => {
+          const t = c.tag ? getTagById(c.tag) : null;
+          const tagHtml = t ? `<span class="sp-change-tag" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${t.name}</span>` : '';
+          return `<div class="sp-change" draggable="true" data-idx="${i}">
+            <span class="sp-change-drag">⠿</span>
+            ${tagHtml}
+            <div class="sp-change-info">
+              <div class="sp-change-title">${c.title}</div>
+              ${c.description ? `<div class="sp-change-desc">${c.description}</div>` : ''}
             </div>
-            <button class="im-change-del" data-idx="${i}" style="background:none;border:none;color:#E89A6E;opacity:0.5;cursor:pointer;font-size:0.9rem;">✕</button>
+            <button class="sp-change-del" data-idx="${i}">✕</button>
           </div>`;
         }).join('');
 
-        container.querySelectorAll('.im-change-del').forEach(btn => {
-          btn.addEventListener('click', () => {
-            modalChanges.splice(parseInt(btn.dataset.idx), 1);
-            renderModalChanges(container);
+        // Delete
+        list.querySelectorAll('.sp-change-del').forEach(btn => {
+          btn.addEventListener('click', () => { panelChanges.splice(parseInt(btn.dataset.idx), 1); renderChanges(); });
+        });
+
+        // Drag reorder
+        let dragIdx = null;
+        list.querySelectorAll('.sp-change').forEach(el => {
+          el.addEventListener('dragstart', (e) => {
+            dragIdx = parseInt(el.dataset.idx);
+            el.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+          });
+          el.addEventListener('dragend', () => { el.classList.remove('dragging'); dragIdx = null; });
+          el.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const targetIdx = parseInt(el.dataset.idx);
+            if (dragIdx !== null && dragIdx !== targetIdx) {
+              const [moved] = panelChanges.splice(dragIdx, 1);
+              panelChanges.splice(targetIdx, 0, moved);
+              dragIdx = targetIdx;
+              renderChanges();
+            }
           });
         });
       }
 
-      function renderModalChangeTagPicker(container) {
+      function renderChangeTagPicker() {
+        const container = panel.querySelector('#spChangeTagPicker');
         container.innerHTML = tags.map(t => {
-          const a = modalChangeTag === t.id ? 'active' : '';
-          const s = a ? `background:${t.color};color:#1a1209;border-color:${t.color};` : `border-color:${t.color}55;color:${t.color};`;
-          return `<button type="button" class="im-tag-btn im-ctag-btn ${a}" data-tag="${t.id}" style="${s}">${t.name}</button>`;
+          const a = panelChangeTag === t.id;
+          const s = a ? `background:${t.color};color:#1a1209;border-color:${t.color};` : `border-color:${t.color}55;color:${t.color};border:1px solid ${t.color}55;background:transparent;`;
+          return `<button type="button" class="sp-tag sp-ctag" data-tag="${t.id}" style="${s}">${t.name}</button>`;
         }).join('');
-        container.querySelectorAll('.im-ctag-btn').forEach(btn => {
+        container.querySelectorAll('.sp-ctag').forEach(btn => {
           btn.addEventListener('click', () => {
-            modalChangeTag = modalChangeTag === btn.dataset.tag ? '' : btn.dataset.tag;
-            renderModalChangeTagPicker(container);
+            panelChangeTag = panelChangeTag === btn.dataset.tag ? '' : btn.dataset.tag;
+            renderChangeTagPicker();
           });
         });
       }
 
-      const overlay = createModal(isEdit ? 'Edit Patch Note' : 'New Patch Note', `
-        <div class="im-field">
-          <label class="im-label">Patch Title</label>
-          <input type="text" id="imClTitle" value="${escape(entry?.title || '')}" placeholder="Season 2 Economy Rebalance" />
-        </div>
-        <div class="im-row">
-          <div class="im-field">
-            <label class="im-label">Version</label>
-            <input type="text" id="imClVersion" value="${escape(entry?.version || '')}" placeholder="v2.4.1" />
-          </div>
-          <div class="im-field">
-            <label class="im-label">Date</label>
-            <input type="text" id="imClDate" value="${entry?.date || new Date().toISOString().split('T')[0]}" />
-          </div>
-        </div>
-        <div class="im-field">
-          <label class="im-label">Patch Tags</label>
-          <div class="im-tags" id="imClTags">${tagsHtml}</div>
-        </div>
-        <div class="im-field">
-          <label class="im-label">Image</label>
-          <div style="display:flex;gap:0.5rem;align-items:end;">
-            <input type="text" id="imClImage" value="${escape(entry?.image || '')}" placeholder="URL or upload" style="flex:1;" />
-            <input type="file" id="imClImageFile" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;" />
-            <button class="im-btn im-btn-cancel" id="imClImageUploadBtn" style="font-size:0.8rem;padding:0.5rem 0.8rem;white-space:nowrap;">📷 Upload</button>
-          </div>
-          <div id="imClImageStatus" style="margin-top:0.4rem;"></div>
-          <div id="imClImagePreview" style="margin-top:0.4rem;"></div>
-        </div>
-        <div style="border-top:1px solid rgba(244,201,93,0.1);margin-top:0.5rem;padding-top:1rem;">
-          <label class="im-label" style="margin-bottom:0.6rem;display:block;">Changes</label>
-          <div id="imClChangesList"></div>
-          <div style="background:rgba(255,244,220,0.03);border:1px dashed rgba(244,201,93,0.12);border-radius:10px;padding:0.8rem;margin-top:0.6rem;">
-            <div class="im-field">
-              <label class="im-label">Change title</label>
-              <input type="text" id="imClChangeTitle" placeholder="Netherite Rank Added" />
-            </div>
-            <div class="im-field">
-              <label class="im-label">Description (optional)</label>
-              <textarea id="imClChangeDesc" rows="3" placeholder="New top-tier rank with exclusive perks and cosmetic rewards for dedicated players"></textarea>
-            </div>
-            <div class="im-field">
-              <label class="im-label">Change tag</label>
-              <div class="im-tags" id="imClChangeTagPicker"></div>
-            </div>
-            <button class="im-btn im-btn-cancel" id="imClAddChangeBtn" style="font-size:0.82rem;padding:0.5rem 0.9rem;">+ Add Change</button>
-          </div>
-        </div>
-      `, [
-        { label: isEdit ? 'Save Changes' : 'Publish', class: 'im-btn-save', action: 'save' },
-        { label: 'Cancel', class: 'im-btn-cancel', action: 'cancel' },
-        ...(isEdit ? [{ label: 'Delete', class: 'im-btn-delete', action: 'delete' }] : []),
-      ], async (action) => {
-        if (action === 'save') {
-          const title = document.getElementById('imClTitle').value.trim();
-          const date = document.getElementById('imClDate').value.trim();
-          if (!title || !date) { showInlineToast('Title and date required.'); return 'keep'; }
-          if (modalChanges.length === 0) { showInlineToast('Add at least one change.'); return 'keep'; }
-
-          const activeTags = new Set();
-          overlay.querySelectorAll('#imClTags .im-tag-btn.active').forEach(b => activeTags.add(b.dataset.tag));
-
-          const newEntry = {
-            title,
-            version: document.getElementById('imClVersion').value.trim() || null,
-            date,
-            tags: [...activeTags],
-            changes: [...modalChanges],
-            image: document.getElementById('imClImage').value.trim() || null,
-            status: 'published',
-            pinned: entry?.pinned || false,
-            id: entry?.id || `cl-${Date.now()}`,
-          };
-
-          if (isEdit) {
-            const idx = entries.findIndex(e => e.id === entryId);
-            if (idx >= 0) entries[idx] = newEntry;
-          } else {
-            entries.push(newEntry);
-          }
-
-          return await saveAndReload('changelog', entries, token);
-        } else if (action === 'delete') {
-          if (!confirm('Delete this entry?')) return 'keep';
-          entries = entries.filter(e => e.id !== entryId);
-          return await saveAndReload('changelog', entries, token);
-        }
+      // Quick-add bar
+      document.getElementById('qbCreateBtn').addEventListener('click', () => {
+        const title = document.getElementById('qbTitle').value.trim();
+        const version = document.getElementById('qbVersion').value.trim();
+        const entry = { title: title || '', version: version || null, date: new Date().toISOString().split('T')[0], tags: [], changes: [], image: null, status: 'published', pinned: false, id: `cl-${Date.now()}` };
+        document.getElementById('qbTitle').value = '';
+        document.getElementById('qbVersion').value = '';
+        openPanel(entry, true);
       });
 
-      // Wire up tag toggles
-      overlay.querySelectorAll('#imClTags .im-tag-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          btn.classList.toggle('active');
-          const t = tags.find(x => x.id === btn.dataset.tag);
-          if (t) {
-            btn.style = btn.classList.contains('active')
-              ? `background:${t.color}; color:#1a1209; border-color:${t.color};`
-              : `border-color:${t.color}55; color:${t.color};`;
-          }
-        });
+      document.getElementById('qbAdminBtn').addEventListener('click', () => {
+        window.location.href = 'admin.html';
       });
 
-      // Render changes list and tag picker
-      const changesContainer = overlay.querySelector('#imClChangesList');
-      const changeTagContainer = overlay.querySelector('#imClChangeTagPicker');
-      renderModalChanges(changesContainer);
-      renderModalChangeTagPicker(changeTagContainer);
-
-      // Add change button
-      overlay.querySelector('#imClAddChangeBtn').addEventListener('click', () => {
-        const changeTitle = overlay.querySelector('#imClChangeTitle').value.trim();
-        if (!changeTitle) { showInlineToast('Give the change a title.'); return; }
-        modalChanges.push({
-          title: changeTitle,
-          description: overlay.querySelector('#imClChangeDesc').value.trim() || null,
-          tag: modalChangeTag || null,
+      // Click entries to edit
+      document.querySelectorAll('.changelog-entry').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('.reaction-btn')) return;
+          const entryId = el.dataset.entryId;
+          const entry = entries.find(x => x.id === entryId);
+          if (entry) openPanel(entry, false);
         });
-        overlay.querySelector('#imClChangeTitle').value = '';
-        overlay.querySelector('#imClChangeDesc').value = '';
-        modalChangeTag = '';
-        renderModalChanges(changesContainer);
-        renderModalChangeTagPicker(changeTagContainer);
-      });
-
-      // Image upload
-      const imClUploadBtn = overlay.querySelector('#imClImageUploadBtn');
-      const imClFileInput = overlay.querySelector('#imClImageFile');
-      const imClImageInput = overlay.querySelector('#imClImage');
-
-      function renderImClPreview(url) {
-        const preview = overlay.querySelector('#imClImagePreview');
-        if (!url) { preview.innerHTML = ''; return; }
-        preview.innerHTML = `<div style="position:relative;display:inline-block;">
-          <img src="${url}" style="max-width:180px;max-height:100px;border-radius:8px;border:1px solid rgba(244,201,93,0.15);" />
-          <button type="button" style="position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;" id="imClImgClear">✕</button>
-        </div>`;
-        overlay.querySelector('#imClImgClear')?.addEventListener('click', () => {
-          imClImageInput.value = '';
-          preview.innerHTML = '';
-        });
-      }
-
-      if (entry?.image) renderImClPreview(entry.image);
-      imClImageInput.addEventListener('input', () => renderImClPreview(imClImageInput.value.trim()));
-
-      imClUploadBtn.addEventListener('click', () => imClFileInput.click());
-      imClFileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const status = overlay.querySelector('#imClImageStatus');
-        status.textContent = 'Uploading...';
-        status.style.cssText = 'font-family:Nunito,sans-serif;font-size:0.78rem;color:#F4C95D;';
-        try {
-          const formData = new FormData();
-          formData.append('file', file);
-          const tk = localStorage.getItem('ccAuthToken');
-          const res = await fetch(`${INLINE_API}/api/gallery/upload`, {
-            method: 'POST',
-            headers: tk ? { 'Authorization': `Bearer ${tk}` } : {},
-            body: formData,
-          });
-          const data = await res.json();
-          if (res.ok && data.url) {
-            imClImageInput.value = data.url;
-            renderImClPreview(data.url);
-            status.textContent = '';
-          } else {
-            status.textContent = data.error || 'Failed';
-            status.style.color = '#E89A6E';
-          }
-        } catch (err) {
-          status.textContent = 'Upload failed';
-          status.style.color = '#E89A6E';
-        }
-        e.target.value = '';
       });
     }
 
