@@ -764,6 +764,8 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         });
       }
 
+      let editingChangeIdx = null;
+
       function renderChanges() {
         const list = panel.querySelector('#spChangesList');
         if (panelChanges.length === 0) {
@@ -773,10 +775,36 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         list.innerHTML = panelChanges.map((c, i) => {
           const t = c.tag ? getTagById(c.tag) : null;
           const tagHtml = t ? `<span class="sp-change-tag" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${t.name}</span>` : '';
+
+          if (editingChangeIdx === i) {
+            // Inline edit mode
+            const editTagsHtml = tags.map(tg => {
+              const a = c.tag === tg.id;
+              const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `border-color:${tg.color}55;color:${tg.color};border:1px solid ${tg.color}55;background:transparent;`;
+              return `<button type="button" class="sp-tag sp-edit-ctag" data-tag="${tg.id}" style="${s};font-size:0.65rem;padding:0.2rem 0.45rem;">${tg.name}</button>`;
+            }).join('');
+
+            return `<div class="sp-change" style="border-color:rgba(244,201,93,0.3);background:rgba(244,201,93,0.04);" data-idx="${i}">
+              <div style="width:100%;">
+                <div class="sp-field" style="margin-bottom:0.5rem;">
+                  <input class="sp-input sp-edit-title" value="${escape(c.title)}" style="font-weight:600;font-size:0.88rem;" />
+                </div>
+                <div class="sp-field" style="margin-bottom:0.5rem;">
+                  <textarea class="sp-input sp-edit-desc" rows="2" placeholder="Description (optional)">${c.description || ''}</textarea>
+                </div>
+                <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.5rem;">${editTagsHtml}</div>
+                <div style="display:flex;gap:0.4rem;">
+                  <button class="sp-add-btn sp-edit-done" style="padding:0.35rem 0.7rem;font-size:0.78rem;">✓ Done</button>
+                  <button class="sp-add-btn sp-edit-cancel" style="padding:0.35rem 0.7rem;font-size:0.78rem;">Cancel</button>
+                </div>
+              </div>
+            </div>`;
+          }
+
           return `<div class="sp-change" draggable="true" data-idx="${i}">
             <span class="sp-change-drag">⠿</span>
             ${tagHtml}
-            <div class="sp-change-info">
+            <div class="sp-change-info sp-change-click" data-idx="${i}" style="cursor:pointer;" title="Click to edit">
               <div class="sp-change-title">${c.title}</div>
               ${c.description ? `<div class="sp-change-desc">${c.description}</div>` : ''}
             </div>
@@ -784,14 +812,63 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           </div>`;
         }).join('');
 
-        // Delete
-        list.querySelectorAll('.sp-change-del').forEach(btn => {
-          btn.addEventListener('click', () => { panelChanges.splice(parseInt(btn.dataset.idx), 1); renderChanges(); });
+        // Click to edit
+        list.querySelectorAll('.sp-change-click').forEach(el => {
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editingChangeIdx = parseInt(el.dataset.idx);
+            renderChanges();
+            // Focus the title input
+            const titleInput = list.querySelector('.sp-edit-title');
+            if (titleInput) titleInput.focus();
+          });
         });
 
-        // Drag reorder
+        // Edit mode: done / cancel / tag toggle
+        const doneBtn = list.querySelector('.sp-edit-done');
+        const cancelBtn = list.querySelector('.sp-edit-cancel');
+
+        if (doneBtn) {
+          doneBtn.addEventListener('click', () => {
+            const idx = editingChangeIdx;
+            const titleVal = list.querySelector('.sp-edit-title').value.trim();
+            if (!titleVal) return;
+            panelChanges[idx].title = titleVal;
+            panelChanges[idx].description = list.querySelector('.sp-edit-desc').value.trim() || null;
+            editingChangeIdx = null;
+            renderChanges();
+          });
+        }
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            editingChangeIdx = null;
+            renderChanges();
+          });
+        }
+
+        list.querySelectorAll('.sp-edit-ctag').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = editingChangeIdx;
+            const tag = btn.dataset.tag;
+            panelChanges[idx].tag = panelChanges[idx].tag === tag ? null : tag;
+            renderChanges();
+          });
+        });
+
+        // Delete
+        list.querySelectorAll('.sp-change-del').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panelChanges.splice(parseInt(btn.dataset.idx), 1);
+            if (editingChangeIdx !== null) editingChangeIdx = null;
+            renderChanges();
+          });
+        });
+
+        // Drag reorder (only on non-editing items)
         let dragIdx = null;
-        list.querySelectorAll('.sp-change').forEach(el => {
+        list.querySelectorAll('.sp-change[draggable="true"]').forEach(el => {
           el.addEventListener('dragstart', (e) => {
             dragIdx = parseInt(el.dataset.idx);
             el.classList.add('dragging');
