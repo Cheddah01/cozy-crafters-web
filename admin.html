@@ -728,6 +728,7 @@
       <button class="section-tab" data-section="splashtext" type="button">✏️ Splash Text</button>
       <button class="section-tab" data-section="changelog" type="button">📋 Patch Notes</button>
       <button class="section-tab" data-section="chronicles" type="button">📰 Chronicles</button>
+      <button class="section-tab" data-section="gallery" type="button">📷 Gallery</button>
     </div>
 
     <!-- SECTION: Backgrounds -->
@@ -1299,6 +1300,79 @@
 
     </div>
     </div> <!-- /section-chronicles -->
+
+    <!-- SECTION: Gallery -->
+    <div class="admin-section" id="section-gallery">
+    <div>
+      <h1 class="admin-title">Gallery <span class="accent">Manager</span></h1>
+      <p class="admin-subtitle">View, moderate, and manage community screenshot submissions. Delete inappropriate posts or upload your own.</p>
+
+      <div class="admin-grid">
+
+        <!-- LEFT: Admin upload -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📸</span>
+            <h2 class="card-title">Admin upload</h2>
+          </div>
+          <p class="card-helper">Upload screenshots directly as admin. These show with your account in the gallery.</p>
+
+          <div class="field">
+            <label class="field-label" for="galAdminTitle">Title</label>
+            <input type="text" id="galAdminTitle" placeholder="Server spawn at sunset" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="galAdminCaption">Caption (optional)</label>
+            <textarea id="galAdminCaption" rows="2" placeholder="A nice description"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tags</label>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="galAdminTags">
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="builds">🏗️ Builds</button>
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="landscape">🌄 Landscape</button>
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="cursed">😈 Cursed</button>
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="redstone">⚡ Redstone</button>
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="pvp">⚔️ PvP</button>
+              <button type="button" class="filter-chip gal-tag-btn" data-tag="cozy">🏡 Cozy</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Images</label>
+            <input type="file" id="galAdminFile" accept="image/png,image/jpeg,image/gif,image/webp" multiple />
+            <div class="upload-status" id="galAdminUploadStatus"></div>
+          </div>
+
+          <div id="galAdminThumbs" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;"></div>
+
+          <div class="action-row" style="margin-top:1rem;">
+            <button class="btn btn-primary" id="galAdminPostBtn" type="button">📸 Post to Gallery</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: All posts (moderation) -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">🗂️</span>
+            <h2 class="card-title">All posts</h2>
+          </div>
+          <p class="card-helper">All gallery submissions. Delete anything inappropriate.</p>
+
+          <div id="galAdminList">
+            <div class="changelog-admin-empty">Loading...</div>
+          </div>
+
+          <div class="action-row" style="margin-top: 1.5rem;">
+            <button class="btn btn-secondary" id="galAdminRefresh" type="button">🔄 Refresh</button>
+            <button class="btn btn-secondary" id="galPreviewBtn" type="button">👁 Open Gallery</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div> <!-- /section-gallery -->
 
   </div> <!-- /adminContent -->
 
@@ -2502,6 +2576,160 @@
         showToast('Corrections saved!');
       } catch (e) { showToast('Failed to save.'); }
     });
+
+    // ============================================
+    // Gallery manager
+    // ============================================
+    let galAdminImages = [];
+    let galAdminSelectedTags = new Set();
+
+    // Tag toggles
+    document.querySelectorAll('.gal-tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+        btn.classList.toggle('active');
+        galAdminSelectedTags.has(tag) ? galAdminSelectedTags.delete(tag) : galAdminSelectedTags.add(tag);
+      });
+    });
+
+    // File upload
+    document.getElementById('galAdminFile').addEventListener('change', async (e) => {
+      const files = e.target.files;
+      const status = document.getElementById('galAdminUploadStatus');
+      const thumbs = document.getElementById('galAdminThumbs');
+
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        if (galAdminImages.length >= 10) break;
+
+        status.innerHTML = '<div class="upload-bar"><div class="upload-spinner"></div><span class="upload-label">Uploading ' + file.name + '...</span></div>';
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const res = await fetch(`${API_BASE}/api/gallery/upload`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('ccAuthToken')}` },
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            galAdminImages.push(data.url);
+          }
+        } catch (e) {}
+      }
+
+      status.innerHTML = '';
+      renderGalAdminThumbs();
+      e.target.value = '';
+    });
+
+    function renderGalAdminThumbs() {
+      const thumbs = document.getElementById('galAdminThumbs');
+      thumbs.innerHTML = galAdminImages.map((url, i) =>
+        `<div style="width:70px;height:70px;border-radius:8px;overflow:hidden;position:relative;">
+          <img src="${url}" style="width:100%;height:100%;object-fit:cover;" />
+          <button class="gal-thumb-del" data-idx="${i}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>`
+      ).join('');
+
+      thumbs.querySelectorAll('.gal-thumb-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          galAdminImages.splice(parseInt(btn.dataset.idx), 1);
+          renderGalAdminThumbs();
+        });
+      });
+    }
+
+    // Post
+    document.getElementById('galAdminPostBtn').addEventListener('click', async () => {
+      if (galAdminImages.length === 0) { showToast('Add at least one image.'); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/gallery`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('ccAuthToken')}`,
+          },
+          body: JSON.stringify({
+            title: document.getElementById('galAdminTitle').value.trim() || null,
+            caption: document.getElementById('galAdminCaption').value.trim() || null,
+            tags: [...galAdminSelectedTags],
+            images: galAdminImages,
+          }),
+        });
+
+        if (res.ok) {
+          showToast('Posted to gallery!');
+          document.getElementById('galAdminTitle').value = '';
+          document.getElementById('galAdminCaption').value = '';
+          galAdminImages = [];
+          galAdminSelectedTags.clear();
+          document.querySelectorAll('.gal-tag-btn').forEach(b => b.classList.remove('active'));
+          renderGalAdminThumbs();
+          loadGalAdminList();
+        } else {
+          const err = await res.json();
+          showToast(err.error || 'Failed to post.');
+        }
+      } catch (e) { showToast('Failed to post.'); }
+    });
+
+    // Load all posts for moderation
+    async function loadGalAdminList() {
+      const list = document.getElementById('galAdminList');
+      try {
+        const res = await fetch(`${API_BASE}/api/gallery?limit=50`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('ccAuthToken')}` },
+        });
+        if (!res.ok) { list.innerHTML = '<div class="changelog-admin-empty">Failed to load.</div>'; return; }
+        const data = await res.json();
+        const posts = data.posts || [];
+
+        if (posts.length === 0) {
+          list.innerHTML = '<div class="changelog-admin-empty">No gallery posts yet.</div>';
+          return;
+        }
+
+        list.innerHTML = posts.map(post => {
+          const thumb = post.images?.[0]?.image_url || '';
+          const imgCount = post.images?.length || 0;
+          const tags = post.tags ? JSON.parse(post.tags) : [];
+          const tagsHtml = tags.map(t => `<span style="font-size:0.65rem;opacity:0.5;">${t}</span>`).join(' ');
+
+          return `<div class="cl-entry-item" style="display:flex;gap:0.8rem;align-items:center;">
+            <div style="width:50px;height:50px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--ink);">
+              ${thumb ? `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover;" />` : ''}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="cl-entry-name">${post.title || 'Untitled'}</div>
+              <div class="cl-entry-date">${post.username || 'Unknown'} · ${imgCount} image${imgCount !== 1 ? 's' : ''} ${tagsHtml}</div>
+            </div>
+            <button class="cl-btn-delete gal-del-btn" data-id="${post.id}">Delete</button>
+          </div>`;
+        }).join('');
+
+        list.querySelectorAll('.gal-del-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Delete this gallery post and all its images?')) return;
+            try {
+              await fetch(`${API_BASE}/api/gallery/${btn.dataset.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('ccAuthToken')}` },
+              });
+              showToast('Deleted.');
+              loadGalAdminList();
+            } catch (e) { showToast('Failed to delete.'); }
+          });
+        });
+      } catch (e) { list.innerHTML = '<div class="changelog-admin-empty">Failed to load.</div>'; }
+    }
+
+    document.getElementById('galAdminRefresh').addEventListener('click', loadGalAdminList);
+    document.getElementById('galPreviewBtn').addEventListener('click', () => { window.open('gallery.html', '_blank'); });
+
+    loadGalAdminList();
 
   } // end initAdmin
 </script>
