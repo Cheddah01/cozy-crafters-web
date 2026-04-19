@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cozy Crafters SMP</title>
+  <meta property="og:title" content="Cozy Crafters SMP" />
+  <meta property="og:description" content="A close-knit Minecraft survival server. Small world, warmly built." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cozycrafters.net" />
+  <meta property="og:image" content="https://cozycrafters.net/og-image.png" />
+  <meta name="theme-color" content="#2F4423" />
+  <meta name="description" content="A close-knit Minecraft survival server. Small world, warmly built." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -271,6 +278,7 @@
         if (t.stat3Num) document.getElementById('splashStat3Num').textContent = t.stat3Num;
         if (t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
         if (t.discordUrl) document.getElementById('splashDiscordBtn').href = t.discordUrl;
+        if (t.serverIp) window._serverIp = t.serverIp;
       } catch (e) {
         // No custom text saved, defaults show
       }
@@ -295,11 +303,11 @@
 
     // Copy server IP
     function copyIP() {
-      const ip = 'play.cozycrafters.net';
+      const ip = window._serverIp || 'play.cozycrafters.net';
       const btn = document.getElementById('copyIpBtn');
       const text = document.getElementById('copyIpText');
       navigator.clipboard.writeText(ip).then(() => {
-        text.textContent = 'Copied! — play.cozycrafters.net';
+        text.textContent = 'Copied! — ' + ip;
         btn.style.background = '#A8C77E';
         btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
         setTimeout(() => {
