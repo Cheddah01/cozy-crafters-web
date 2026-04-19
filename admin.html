@@ -730,6 +730,7 @@
       <button class="section-tab" data-section="changelog" type="button">📋 Patch Notes</button>
       <button class="section-tab" data-section="chronicles" type="button">📰 Chronicles</button>
       <button class="section-tab" data-section="gallery" type="button">📷 Gallery</button>
+      <button class="section-tab" data-section="support" type="button">💛 Support</button>
     </div>
 
     <!-- SECTION: Backgrounds -->
@@ -1425,6 +1426,75 @@
       </div>
     </div>
     </div> <!-- /section-gallery -->
+
+    <!-- SECTION: Support -->
+    <div class="admin-section" id="section-support">
+    <div>
+      <h1 class="admin-title">Support <span class="accent">Settings</span></h1>
+      <p class="admin-subtitle">Manage donation goals, PayPal link, and the cost breakdown shown on the support page.</p>
+
+      <div class="admin-grid">
+
+        <!-- LEFT: Donation settings -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">💛</span>
+            <h2 class="card-title">Donation Goal</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="supPaypalUrl">PayPal donate URL</label>
+            <input type="text" id="supPaypalUrl" placeholder="https://paypal.me/yourname" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="supGoal">Monthly goal ($)</label>
+              <input type="text" id="supGoal" placeholder="25" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="supCurrent">Current amount ($)</label>
+              <input type="text" id="supCurrent" placeholder="12" />
+              <p class="field-hint">Update monthly as donations come in.</p>
+            </div>
+          </div>
+
+          <div class="action-row" style="margin-top: 1rem;">
+            <button class="btn btn-primary" id="supSaveDonation" type="button">💾 Save Donation Settings</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Cost breakdown -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2 class="card-title">Cost Breakdown</h2>
+          </div>
+          <p class="card-helper">These show on the support page under "Where does it go?" — be transparent with your community.</p>
+
+          <div id="supCostList" style="margin-bottom: 1rem;"></div>
+
+          <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 0.6rem; align-items: end;">
+            <div class="field" style="margin-bottom:0;">
+              <label class="field-label" for="supNewCostName">Expense name</label>
+              <input type="text" id="supNewCostName" placeholder="Server hosting (RawPower)" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label class="field-label" for="supNewCostAmount">Amount / cycle</label>
+              <input type="text" id="supNewCostAmount" placeholder="$15/mo" style="width:110px;" />
+            </div>
+            <button class="btn btn-primary" id="supAddCostBtn" type="button" style="padding:0.85rem 1.2rem; font-size:0.9rem; margin-bottom:0;">+ Add</button>
+          </div>
+
+          <div class="action-row" style="margin-top: 1rem;">
+            <button class="btn btn-primary" id="supSaveCosts" type="button">💾 Save Costs</button>
+            <button class="btn btn-secondary" id="supPreviewBtn" type="button">👁 Open Support Page</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div> <!-- /section-support -->
 
   </div> <!-- /adminContent -->
 
@@ -2883,6 +2953,98 @@
     document.getElementById('galPreviewBtn').addEventListener('click', () => { window.open('gallery.html', '_blank'); });
 
     loadGalAdminList();
+
+    // ============================================
+    // Support settings
+    // ============================================
+    let supCosts = [];
+
+    function renderSupCosts() {
+      const list = document.getElementById('supCostList');
+      if (supCosts.length === 0) {
+        list.innerHTML = '<div class="changelog-admin-empty" style="padding:1rem;">No expenses added yet.</div>';
+        return;
+      }
+      list.innerHTML = supCosts.map((c, i) => `
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem; padding:0.6rem 0.8rem; background:rgba(255,244,220,0.03); border:1px solid rgba(244,201,93,0.08); border-radius:10px;">
+          <span style="flex:1; font-family:'Nunito',sans-serif; font-size:0.88rem; color:var(--cream); opacity:0.8;">${c.name}</span>
+          <span style="font-family:'Fredoka',sans-serif; font-size:0.85rem; font-weight:600; color:var(--sun); flex-shrink:0;">${c.amount}</span>
+          <button class="cl-btn-delete sup-cost-del" data-idx="${i}" style="flex-shrink:0;">✕</button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.sup-cost-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          supCosts.splice(parseInt(btn.dataset.idx), 1);
+          renderSupCosts();
+        });
+      });
+    }
+
+    document.getElementById('supAddCostBtn').addEventListener('click', () => {
+      const name = document.getElementById('supNewCostName').value.trim();
+      const amount = document.getElementById('supNewCostAmount').value.trim();
+      if (!name || !amount) { showToast('Fill in both fields.'); return; }
+      supCosts.push({ name, amount });
+      document.getElementById('supNewCostName').value = '';
+      document.getElementById('supNewCostAmount').value = '';
+      renderSupCosts();
+    });
+
+    document.getElementById('supSaveCosts').addEventListener('click', async () => {
+      try {
+        await fetch(`${API_BASE}/api/settings/supportCosts`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: supCosts }),
+        });
+        markSaved(); showToast('Costs saved!');
+      } catch (e) { showToast('Failed to save.'); }
+    });
+
+    document.getElementById('supSaveDonation').addEventListener('click', async () => {
+      // Load current splash text, update donation fields, save back
+      try {
+        let splashText = {};
+        const res = await fetch(`${API_BASE}/api/settings/splashText`);
+        if (res.ok) { const d = await res.json(); splashText = d.value || {}; }
+
+        splashText.paypalUrl = document.getElementById('supPaypalUrl').value.trim() || null;
+        splashText.donationGoal = document.getElementById('supGoal').value.trim() || null;
+        splashText.donationCurrent = document.getElementById('supCurrent').value.trim() || null;
+
+        await fetch(`${API_BASE}/api/settings/splashText`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: splashText }),
+        });
+        markSaved(); showToast('Donation settings saved!');
+      } catch (e) { showToast('Failed to save.'); }
+    });
+
+    document.getElementById('supPreviewBtn').addEventListener('click', () => {
+      window.open('support.html', '_blank');
+    });
+
+    // Load support data
+    (async function loadSupport() {
+      try {
+        // Load costs
+        const costsRes = await fetch(`${API_BASE}/api/settings/supportCosts`);
+        if (costsRes.ok) { const d = await costsRes.json(); supCosts = d.value || []; }
+
+        // Load donation settings from splash text
+        const splashRes = await fetch(`${API_BASE}/api/settings/splashText`);
+        if (splashRes.ok) {
+          const d = await splashRes.json();
+          const t = d.value || {};
+          if (t.paypalUrl) document.getElementById('supPaypalUrl').value = t.paypalUrl;
+          if (t.donationGoal) document.getElementById('supGoal').value = t.donationGoal;
+          if (t.donationCurrent) document.getElementById('supCurrent').value = t.donationCurrent;
+        }
+      } catch (e) {}
+      renderSupCosts();
+    })();
 
   } // end initAdmin
 </script>

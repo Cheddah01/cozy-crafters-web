@@ -183,18 +183,10 @@
 
     <div class="support-details">
       <h3>Where does it go?</h3>
-      <div class="cost-list">
+      <div class="cost-list" id="spCostList">
         <div class="cost-item">
-          <span class="cost-name">Server hosting (RawPower)</span>
-          <span class="cost-amount">Monthly</span>
-        </div>
-        <div class="cost-item">
-          <span class="cost-name">Domain (cozycrafters.net)</span>
-          <span class="cost-amount">Yearly</span>
-        </div>
-        <div class="cost-item">
-          <span class="cost-name">Backups & storage</span>
-          <span class="cost-amount">Included</span>
+          <span class="cost-name">Loading...</span>
+          <span class="cost-amount"></span>
         </div>
       </div>
     </div>
@@ -245,6 +237,29 @@
         setTimeout(() => {
           document.getElementById('spBar').style.width = pct + '%';
         }, 400);
+      } catch (e) {}
+
+      // Load cost breakdown
+      try {
+        const costsRes = await fetch(`${API_BASE}/api/settings/supportCosts`);
+        if (costsRes.ok) {
+          const costsData = await costsRes.json();
+          const costs = costsData.value || [];
+          const costList = document.getElementById('spCostList');
+          if (costs.length > 0) {
+            costList.innerHTML = costs.map(c => `
+              <div class="cost-item">
+                <span class="cost-name">${c.name}</span>
+                <span class="cost-amount">${c.amount}</span>
+              </div>
+            `).join('');
+          } else {
+            costList.innerHTML = `
+              <div class="cost-item"><span class="cost-name">Server hosting</span><span class="cost-amount">Monthly</span></div>
+              <div class="cost-item"><span class="cost-name">Domain</span><span class="cost-amount">Yearly</span></div>
+            `;
+          }
+        }
       } catch (e) {}
     })();
   </script>
