@@ -611,13 +611,21 @@
       const input = document.getElementById('cpExternalUrl');
       const url = input.value.trim();
       if (!url) return;
-      // If it looks like a direct image URL, add it to the images array
-      if (/\.(png|jpg|jpeg|gif|webp)(\?|$)/i.test(url)) {
+      // Try to load it as an image regardless of extension
+      const testImg = new Image();
+      testImg.onload = () => {
+        // It loaded as an image — add to images array
         uploadedImageUrls.push(url);
         input.value = '';
         renderImageThumbs();
-      }
-      // Otherwise it stays in the external URL field for the post
+      };
+      testImg.onerror = () => {
+        // Not an image — stays as external URL
+        // Visual feedback that it's been accepted
+        input.style.borderColor = '#A8C77E';
+        setTimeout(() => { input.style.borderColor = ''; }, 1500);
+      };
+      testImg.src = url;
     });
 
     // Submit
@@ -703,9 +711,9 @@
         const multiBadge = imgCount > 1 ? `<div class="gallery-multi-badge">🖼 ${imgCount}</div>` : '';
         const linkBadge = post.external_url ? `<div class="gallery-link-badge">🔗</div>` : '';
         const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${post.id}" onclick="event.stopPropagation()">Delete</button>` : '';
-        const thumbSrc = firstImg || '';
+        const thumbSrc = firstImg || post.external_url || '';
         const noImgStyle = !thumbSrc ? 'style="background:linear-gradient(135deg,#2F4423,#3d2b1f);display:flex;align-items:center;justify-content:center;"' : '';
-        const imgTag = thumbSrc ? `<img src="${thumbSrc}" alt="${post.title || ''}" loading="lazy" />` : `<span style="font-size:2.5rem;opacity:0.3;">🔗</span>`;
+        const imgTag = thumbSrc ? `<img src="${thumbSrc}" alt="${post.title || ''}" loading="lazy" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#2F4423,#3d2b1f)'" />` : `<span style="font-size:2.5rem;opacity:0.3;">🔗</span>`;
 
         return `<div class="gallery-item" data-idx="${i}" ${noImgStyle}>
           ${imgTag}
@@ -774,16 +782,40 @@
       if (img) {
         lightboxImg.src = img.image_url;
         lightboxImg.style.display = '';
+        // Remove any placeholder
+        const ph = lbImageSide.querySelector('.lb-no-image');
+        if (ph) ph.remove();
         document.getElementById('lbPrev').disabled = lbIdx === 0;
         document.getElementById('lbNext').disabled = lbIdx >= images.length - 1;
         document.getElementById('lbPrev').style.display = images.length <= 1 ? 'none' : '';
         document.getElementById('lbNext').style.display = images.length <= 1 ? 'none' : '';
+      } else if (lbPost.external_url) {
+        // Try to display external URL as image
+        document.getElementById('lbPrev').style.display = 'none';
+        document.getElementById('lbNext').style.display = 'none';
+        // Remove any old placeholder
+        const ph = lbImageSide.querySelector('.lb-no-image');
+        if (ph) ph.remove();
+        // Try loading as image
+        lightboxImg.style.display = '';
+        lightboxImg.src = lbPost.external_url;
+        lightboxImg.onerror = () => {
+          // Not an image — show placeholder with link
+          lightboxImg.style.display = 'none';
+          let placeholder = lbImageSide.querySelector('.lb-no-image');
+          if (!placeholder) {
+            placeholder = document.createElement('div');
+            placeholder.className = 'lb-no-image';
+            placeholder.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;width:100%;height:100%;font-family:Nunito,sans-serif;color:#FFF4DC;opacity:0.3;';
+            lbImageSide.appendChild(placeholder);
+          }
+          placeholder.innerHTML = `<span style="font-size:3rem;">🔗</span><span style="font-size:0.9rem;">External link — see sidebar</span>`;
+        };
       } else {
-        // No images — show placeholder or external link preview
+        // No images and no external URL
         lightboxImg.style.display = 'none';
         document.getElementById('lbPrev').style.display = 'none';
         document.getElementById('lbNext').style.display = 'none';
-        // Add a placeholder
         let placeholder = lbImageSide.querySelector('.lb-no-image');
         if (!placeholder) {
           placeholder = document.createElement('div');
@@ -791,11 +823,7 @@
           placeholder.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;width:100%;height:100%;font-family:Nunito,sans-serif;color:#FFF4DC;opacity:0.3;';
           lbImageSide.appendChild(placeholder);
         }
-        if (lbPost.external_url) {
-          placeholder.innerHTML = `<span style="font-size:3rem;">🔗</span><span style="font-size:0.9rem;">External link — see sidebar</span>`;
-        } else {
-          placeholder.innerHTML = `<span style="font-size:3rem;">📷</span><span style="font-size:0.9rem;">No image</span>`;
-        }
+        placeholder.innerHTML = `<span style="font-size:3rem;">📷</span><span style="font-size:0.9rem;">No image</span>`;
       }
 
       const tags = lbPost.tags ? JSON.parse(lbPost.tags) : [];
