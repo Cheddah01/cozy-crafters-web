@@ -804,23 +804,24 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           return `<div class="sp-change" draggable="true" data-idx="${i}">
             <span class="sp-change-drag">⠿</span>
             ${tagHtml}
-            <div class="sp-change-info sp-change-click" data-idx="${i}" style="cursor:pointer;" title="Click to edit">
+            <div class="sp-change-info">
               <div class="sp-change-title">${c.title}</div>
               ${c.description ? `<div class="sp-change-desc">${c.description}</div>` : ''}
             </div>
+            <button class="sp-change-edit" data-idx="${i}" style="background:none;border:none;color:#F4C95D;opacity:0.3;cursor:pointer;font-size:0.75rem;padding:0.15rem;transition:opacity 0.15s;flex-shrink:0;" title="Edit">✎</button>
             <button class="sp-change-del" data-idx="${i}">✕</button>
           </div>`;
         }).join('');
 
-        // Click to edit
-        list.querySelectorAll('.sp-change-click').forEach(el => {
+        // Edit button
+        list.querySelectorAll('.sp-change-edit').forEach(el => {
           el.addEventListener('click', (e) => {
             e.stopPropagation();
+            e.preventDefault();
             editingChangeIdx = parseInt(el.dataset.idx);
             renderChanges();
-            // Focus the title input
             const titleInput = list.querySelector('.sp-edit-title');
-            if (titleInput) titleInput.focus();
+            if (titleInput) { titleInput.focus(); titleInput.select(); }
           });
         });
 
