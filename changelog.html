@@ -385,6 +385,17 @@
         .replace(/\*(.+?)\*/g, '<em>$1</em>');
     }
 
+    // Share link copy
+    function copyEntryLink(btn, id) {
+      const url = `${window.location.origin}/changelog.html#${id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        history.replaceState(null, '', `#${id}`);
+        setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
     function formatDate(dateStr) {
       const [y, m, d] = dateStr.split('-').map(Number);
       return new Date(y, m - 1, d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -482,24 +493,6 @@
       const entryIds = [...feed.querySelectorAll('[data-entry-id]')].map(el => el.dataset.entryId);
       loadReactions(entryIds);
 
-      // Share buttons
-      feed.querySelectorAll('.share-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const id = btn.dataset.id;
-          const url = `${window.location.origin}/changelog.html#${id}`;
-          navigator.clipboard.writeText(url).then(() => {
-            btn.textContent = '✓ Copied!';
-            btn.classList.add('copied');
-            history.replaceState(null, '', `#${id}`);
-            setTimeout(() => {
-              btn.textContent = '🔗 Share';
-              btn.classList.remove('copied');
-            }, 2000);
-          });
-        });
-      });
-
       // Deep-link: scroll to entry if URL has a hash
       if (window.location.hash) {
         const targetId = window.location.hash.substring(1);
@@ -552,17 +545,17 @@
             ${pinBadge}
             <div class="entry-header">
               <span class="entry-title">${entry.title}</span>
-              ${versionHtml}
+              <div style="display:flex;gap:0.4rem;align-items:center;flex-shrink:0;">
+                ${versionHtml}
+                <button class="share-btn" data-id="${entry.id}" title="Copy link" onclick="event.stopPropagation();copyEntryLink(this,'${entry.id}')">🔗</button>
+              </div>
             </div>
             <div class="entry-tags">${tagsHtml}</div>
           </div>
           ${changeCountHtml}
           ${bodyHtml}
           ${imageHtml}
-          <div class="entry-footer">
-            <div class="reaction-bar" data-reactions-for="${entry.id}"></div>
-            <button class="share-btn" data-id="${entry.id}" data-title="${entry.title}" title="Copy link">🔗 Share</button>
-          </div>
+          <div class="reaction-bar" data-reactions-for="${entry.id}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
         </div>`;
     }
 
