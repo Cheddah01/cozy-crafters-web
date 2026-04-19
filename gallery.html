@@ -753,6 +753,10 @@
     function openLightbox(post) {
       lbPost = post;
       lbIdx = 0;
+      // Clean up any previous no-image placeholder
+      const placeholder = document.querySelector('.lb-no-image');
+      if (placeholder) placeholder.remove();
+      document.getElementById('lightboxImg').style.display = '';
       renderLightbox();
       loadComments(post.id);
       document.getElementById('lightbox').classList.add('open');
@@ -763,13 +767,36 @@
       if (!lbPost) return;
       const images = lbPost.images || [];
       const img = images[lbIdx];
-      if (!img) return;
 
-      document.getElementById('lightboxImg').src = img.image_url;
-      document.getElementById('lbPrev').disabled = lbIdx === 0;
-      document.getElementById('lbNext').disabled = lbIdx >= images.length - 1;
-      document.getElementById('lbPrev').style.display = images.length <= 1 ? 'none' : '';
-      document.getElementById('lbNext').style.display = images.length <= 1 ? 'none' : '';
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lbImageSide = lightboxImg.parentElement;
+
+      if (img) {
+        lightboxImg.src = img.image_url;
+        lightboxImg.style.display = '';
+        document.getElementById('lbPrev').disabled = lbIdx === 0;
+        document.getElementById('lbNext').disabled = lbIdx >= images.length - 1;
+        document.getElementById('lbPrev').style.display = images.length <= 1 ? 'none' : '';
+        document.getElementById('lbNext').style.display = images.length <= 1 ? 'none' : '';
+      } else {
+        // No images — show placeholder or external link preview
+        lightboxImg.style.display = 'none';
+        document.getElementById('lbPrev').style.display = 'none';
+        document.getElementById('lbNext').style.display = 'none';
+        // Add a placeholder
+        let placeholder = lbImageSide.querySelector('.lb-no-image');
+        if (!placeholder) {
+          placeholder = document.createElement('div');
+          placeholder.className = 'lb-no-image';
+          placeholder.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;width:100%;height:100%;font-family:Nunito,sans-serif;color:#FFF4DC;opacity:0.3;';
+          lbImageSide.appendChild(placeholder);
+        }
+        if (lbPost.external_url) {
+          placeholder.innerHTML = `<span style="font-size:3rem;">🔗</span><span style="font-size:0.9rem;">External link — see sidebar</span>`;
+        } else {
+          placeholder.innerHTML = `<span style="font-size:3rem;">📷</span><span style="font-size:0.9rem;">No image</span>`;
+        }
+      }
 
       const tags = lbPost.tags ? JSON.parse(lbPost.tags) : [];
       const tagsHtml = tags.map(t => { const g = GALLERY_TAGS.find(x => x.id === t); return g ? g.label : t; }).join('  ');
