@@ -225,11 +225,11 @@
 
   <script>
     // ============================================
-    // CONFIG — update this to your Worker URL
+    // CONFIG
     // ============================================
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
-    // Load background from the API (falls back to default video)
+    // Load and cycle backgrounds from the API
     (async function loadBackground() {
       try {
         const res = await fetch(`${API_BASE}/api/settings/background`);
@@ -237,14 +237,66 @@
         const data = await res.json();
         const cfg = data.value;
         const container = document.getElementById('bgMedia');
-        if (!cfg || !cfg.src) return;
-        if (cfg.type === 'gif' || cfg.type === 'image') {
-          container.innerHTML = `<img src="${cfg.src}" alt="" />`;
-        } else {
-          container.innerHTML = `
-            <video autoplay muted loop playsinline>
-              <source src="${cfg.src}" type="video/mp4" />
-            </video>`;
+        if (!cfg) return;
+
+        // Build the list of backgrounds
+        let items = [];
+        let interval = 30;
+
+        if (cfg.playlist && cfg.playlist.length > 0) {
+          items = cfg.playlist;
+          interval = cfg.cycleInterval || 30;
+        } else if (cfg.src) {
+          items = [{ type: cfg.type, src: cfg.src }];
+        }
+
+        if (items.length === 0) return;
+
+        function showItem(item) {
+          const existing = container.querySelector('video, img');
+
+          let media;
+          if (item.type === 'gif' || item.type === 'image') {
+            media = document.createElement('img');
+            media.src = item.src;
+            media.alt = '';
+          } else {
+            media = document.createElement('video');
+            media.autoplay = true;
+            media.muted = true;
+            media.loop = true;
+            media.playsInline = true;
+            const source = document.createElement('source');
+            source.src = item.src;
+            source.type = 'video/mp4';
+            media.appendChild(source);
+          }
+
+          media.style.opacity = '0';
+          media.style.transition = 'opacity 1.2s ease';
+          container.appendChild(media);
+
+          requestAnimationFrame(() => {
+            media.style.opacity = '1';
+            if (existing) {
+              existing.style.transition = 'opacity 1.2s ease';
+              existing.style.opacity = '0';
+              setTimeout(() => existing.remove(), 1300);
+            }
+          });
+        }
+
+        // Show first immediately
+        container.innerHTML = '';
+        showItem(items[0]);
+
+        // Cycle if more than one
+        if (items.length > 1) {
+          let index = 0;
+          setInterval(() => {
+            index = (index + 1) % items.length;
+            showItem(items[index]);
+          }, interval * 1000);
         }
       } catch (e) {
         console.warn('Failed to load background from API:', e);

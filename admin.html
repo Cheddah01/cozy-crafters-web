@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css" />
 
 <style>
-  /* Login gate styles */
+  /* Login gate */
   .login-gate {
     position: relative;
     z-index: 10;
@@ -33,10 +33,7 @@
     width: 100%;
   }
 
-  .login-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
+  .login-icon { font-size: 2.5rem; margin-bottom: 1rem; }
 
   .login-title {
     font-family: 'Fredoka', sans-serif;
@@ -54,9 +51,7 @@
     margin-bottom: 1.8rem;
   }
 
-  .login-card .field {
-    margin-bottom: 1rem;
-  }
+  .login-card .field { margin-bottom: 1rem; }
 
   .login-card input[type="password"] {
     width: 100%;
@@ -91,9 +86,7 @@
     margin-bottom: 0.8rem;
   }
 
-  .login-btn {
-    width: 100%;
-  }
+  .login-btn { width: 100%; }
 
   .logout-btn {
     font-family: 'Fredoka', sans-serif;
@@ -108,20 +101,11 @@
     transition: opacity 0.2s;
   }
 
-  .logout-btn:hover {
-    opacity: 1;
-  }
+  .logout-btn:hover { opacity: 1; }
 
-  /* Upload status indicator */
-  .upload-status {
-    margin-top: 0.6rem;
-    min-height: 0;
-    transition: all 0.3s ease;
-  }
-
-  .upload-status:empty {
-    display: none;
-  }
+  /* Upload status */
+  .upload-status { margin-top: 0.6rem; }
+  .upload-status:empty { display: none; }
 
   .upload-bar {
     background: rgba(43, 31, 21, 0.8);
@@ -165,47 +149,190 @@
     background: rgba(107, 142, 78, 0.08);
   }
 
-  .upload-bar.done .upload-label {
-    color: #A8C77E;
-  }
+  .upload-bar.done .upload-label { color: #A8C77E; }
 
   .upload-bar.error {
     border-color: rgba(232, 154, 110, 0.4);
     background: rgba(232, 154, 110, 0.08);
   }
 
-  .upload-bar.error .upload-label {
-    color: #E89A6E;
+  .upload-bar.error .upload-label { color: #E89A6E; }
+
+  .upload-check { color: #A8C77E; font-size: 1.1rem; flex-shrink: 0; }
+  .upload-x { color: #E89A6E; font-size: 1.1rem; flex-shrink: 0; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Playlist items */
+  .playlist-area {
+    margin-top: 1.5rem;
   }
 
-  .upload-check {
-    color: #A8C77E;
-    font-size: 1.1rem;
+  .playlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .playlist-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--sun);
+  }
+
+  .playlist-count {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    color: var(--cream);
+    opacity: 0.5;
+  }
+
+  .playlist-empty {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--cream);
+    opacity: 0.4;
+    border: 2px dashed rgba(244, 201, 93, 0.12);
+    border-radius: 14px;
+  }
+
+  .playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.8rem;
+    background: rgba(255, 244, 220, 0.03);
+    border: 1px solid rgba(244, 201, 93, 0.1);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .playlist-item:hover {
+    background: rgba(255, 244, 220, 0.06);
+    border-color: rgba(244, 201, 93, 0.2);
+  }
+
+  .playlist-item.dragging {
+    opacity: 0.5;
+    border-color: var(--sun);
+  }
+
+  .playlist-grip {
+    cursor: grab;
+    color: var(--cream);
+    opacity: 0.3;
+    font-size: 1rem;
+    user-select: none;
     flex-shrink: 0;
   }
 
-  .upload-x {
-    color: #E89A6E;
-    font-size: 1.1rem;
+  .playlist-grip:active { cursor: grabbing; }
+
+  .playlist-thumb {
+    width: 80px;
+    height: 45px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--ink);
     flex-shrink: 0;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  .playlist-thumb video,
+  .playlist-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .playlist-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .playlist-info .pi-name {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cream);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .playlist-info .pi-type {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    color: var(--cream);
+    opacity: 0.45;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .playlist-remove {
+    background: none;
+    border: none;
+    color: #E89A6E;
+    opacity: 0.5;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.3rem;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .playlist-remove:hover { opacity: 1; }
+
+  /* Cycle timer setting */
+  .timer-setting {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.2rem;
+    padding: 1rem;
+    background: rgba(255, 244, 220, 0.03);
+    border: 1px solid rgba(244, 201, 93, 0.1);
+    border-radius: 12px;
+  }
+
+  .timer-setting .timer-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cream);
+    flex-shrink: 0;
+  }
+
+  .timer-setting input[type="range"] {
+    flex: 1;
+    accent-color: var(--sun);
+    cursor: pointer;
+  }
+
+  .timer-setting .timer-value {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--sun);
+    min-width: 3.5rem;
+    text-align: right;
+    flex-shrink: 0;
   }
 </style>
 </head>
 <body>
 
-<!-- Static dim background for the admin page -->
+<!-- Static dim background -->
 <div class="bg-tint" style="background: linear-gradient(180deg, #2F4423 0%, #2B1F15 100%); opacity: 1;"></div>
 <div class="bg-grain"></div>
 
 <div class="admin-shell">
 
-  <!-- ============================================
-       LOGIN GATE
-       ============================================ -->
+  <!-- LOGIN GATE -->
   <div class="login-gate" id="loginGate">
     <div class="login-card">
       <div class="login-icon">🔒</div>
@@ -219,12 +346,9 @@
     </div>
   </div>
 
-  <!-- ============================================
-       ADMIN CONTENT (hidden until authenticated)
-       ============================================ -->
+  <!-- ADMIN CONTENT -->
   <div id="adminContent" style="display: none;">
 
-    <!-- Header / breadcrumbs -->
     <header class="admin-header">
       <div class="crumbs">
         <a href="index.html">🌿 Cozy Crafters</a>
@@ -240,18 +364,16 @@
       </div>
     </header>
 
-    <!-- Title -->
     <h1 class="admin-title">Background <span class="accent">Studio</span></h1>
-    <p class="admin-subtitle">Pick what plays behind the splash screen. Upload a video or gif, paste a link, or grab one of the presets. Hit save and the homepage updates instantly.</p>
+    <p class="admin-subtitle">Build a playlist of backgrounds that cycle on the splash screen. Add videos, gifs, or presets, drag to reorder, and set the timing.</p>
 
-    <!-- Two-column layout -->
     <div class="admin-grid">
 
-      <!-- LEFT: Editor -->
+      <!-- LEFT: Add media + playlist -->
       <div class="card">
         <div class="card-header">
           <span class="card-icon">🎬</span>
-          <h2 class="card-title">Choose your media</h2>
+          <h2 class="card-title">Add media</h2>
         </div>
 
         <!-- Tabs -->
@@ -263,30 +385,34 @@
 
         <!-- VIDEO TAB -->
         <div class="tab-panel active" data-panel="video">
-          <p class="card-helper">Paste a direct link to an MP4 file. Looped video gives the smoothest cozy vibe — try clips around 10–30 seconds.</p>
+          <p class="card-helper">Paste a direct MP4 link or upload a file. It gets added to the playlist below.</p>
 
           <div class="field">
             <label class="field-label" for="videoUrl">Video URL</label>
-            <input type="url" id="videoUrl" placeholder="https://example.com/cozy-clip.mp4" />
-            <p class="field-hint">Must be a direct .mp4 link. YouTube/TikTok URLs won't work — download the clip first.</p>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="url" id="videoUrl" placeholder="https://example.com/cozy-clip.mp4" />
+              <button class="btn btn-primary" id="addVideoUrlBtn" type="button" style="padding: 0.85rem 1.2rem; white-space: nowrap; font-size: 0.9rem;">+ Add</button>
+            </div>
           </div>
 
           <div class="field">
             <label class="field-label" for="videoFile">Or upload a file</label>
             <input type="file" id="videoFile" accept="video/mp4,video/webm" />
-            <p class="field-hint">File will be uploaded to cloud storage permanently. Max 200MB.</p>
+            <p class="field-hint">Uploads to cloud storage permanently. Max 200MB.</p>
             <div class="upload-status" id="videoUploadStatus"></div>
           </div>
         </div>
 
         <!-- GIF TAB -->
         <div class="tab-panel" data-panel="gif">
-          <p class="card-helper">GIFs and looping images work too. Great for pixel-art scenes or hand-made loops.</p>
+          <p class="card-helper">GIFs and looping images work too.</p>
 
           <div class="field">
             <label class="field-label" for="gifUrl">GIF or image URL</label>
-            <input type="url" id="gifUrl" placeholder="https://example.com/cozy-scene.gif" />
-            <p class="field-hint">Direct .gif, .png, .jpg, or .webp link.</p>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="url" id="gifUrl" placeholder="https://example.com/cozy-scene.gif" />
+              <button class="btn btn-primary" id="addGifUrlBtn" type="button" style="padding: 0.85rem 1.2rem; white-space: nowrap; font-size: 0.9rem;">+ Add</button>
+            </div>
           </div>
 
           <div class="field">
@@ -298,31 +424,31 @@
 
         <!-- PRESETS TAB -->
         <div class="tab-panel" data-panel="presets">
-          <p class="card-helper">A handful of cozy starters. Click one to load it into the preview.</p>
+          <p class="card-helper">Click a preset to add it to the playlist.</p>
 
           <div class="preset-grid" id="presetGrid">
-            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4">
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" data-name="Foggy Forest">
               <video autoplay muted loop playsinline>
                 <source src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" type="video/mp4" />
               </video>
               <div class="preset-label">Foggy Forest</div>
             </div>
 
-            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4">
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4" data-name="River Through Trees">
               <video autoplay muted loop playsinline>
                 <source src="https://cdn.coverr.co/videos/coverr-a-river-flowing-through-a-forest-3063/1080p.mp4" type="video/mp4" />
               </video>
               <div class="preset-label">River Through Trees</div>
             </div>
 
-            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4">
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4" data-name="Crackling Hearth">
               <video autoplay muted loop playsinline>
                 <source src="https://cdn.coverr.co/videos/coverr-a-fire-burning-in-a-fireplace-7434/1080p.mp4" type="video/mp4" />
               </video>
               <div class="preset-label">Crackling Hearth</div>
             </div>
 
-            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4">
+            <div class="preset-card" data-type="video" data-src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4" data-name="Falling Snow">
               <video autoplay muted loop playsinline>
                 <source src="https://cdn.coverr.co/videos/coverr-falling-snow-1572/1080p.mp4" type="video/mp4" />
               </video>
@@ -331,11 +457,29 @@
           </div>
         </div>
 
-        <!-- Action row -->
+        <!-- Playlist -->
+        <div class="playlist-area">
+          <div class="playlist-header">
+            <span class="playlist-title">🎵 Playlist</span>
+            <span class="playlist-count" id="playlistCount">0 items</span>
+          </div>
+          <div id="playlistList">
+            <div class="playlist-empty" id="playlistEmpty">No backgrounds yet. Add some above.</div>
+          </div>
+        </div>
+
+        <!-- Cycle timer -->
+        <div class="timer-setting">
+          <span class="timer-label">Cycle every</span>
+          <input type="range" id="timerSlider" min="5" max="120" step="5" value="30" />
+          <span class="timer-value" id="timerValue">30s</span>
+        </div>
+
+        <!-- Actions -->
         <div class="action-row">
-          <button class="btn btn-primary" id="saveBtn" type="button">💾 Save Background</button>
+          <button class="btn btn-primary" id="saveBtn" type="button">💾 Save Playlist</button>
           <button class="btn btn-secondary" id="previewBtn" type="button">👁 Open Splash Page</button>
-          <button class="btn btn-danger" id="resetBtn" type="button">Reset to Default</button>
+          <button class="btn btn-danger" id="clearBtn" type="button">Clear All</button>
         </div>
       </div>
 
@@ -345,12 +489,12 @@
           <span class="card-icon">✨</span>
           <h2 class="card-title">Live preview</h2>
         </div>
-        <p class="card-helper">This is roughly how the splash screen will look with your background. The same warm overlay sits on top to keep text readable.</p>
+        <p class="card-helper">Preview cycles through your playlist. This is what visitors will see.</p>
 
         <div class="preview-frame" id="previewFrame">
           <div class="preview-empty" id="previewEmpty">
             <div class="empty-icon">🎬</div>
-            <div>Pick or paste media to preview</div>
+            <div>Add media to see a preview</div>
           </div>
           <div class="preview-overlay"></div>
           <div class="preview-text">
@@ -365,7 +509,7 @@
       </div>
 
     </div>
-  </div> <!-- /adminContent -->
+  </div>
 
 </div>
 
@@ -376,12 +520,7 @@
 </div>
 
 <script>
-  // ============================================
-  // CONFIG
-  // ============================================
   const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
-
-  // Token stored in sessionStorage (cleared when browser tab closes)
   let AUTH_TOKEN = sessionStorage.getItem('ccAdminToken') || '';
 
   // ============================================
@@ -404,25 +543,17 @@
         body: JSON.stringify({ value: 'ok' }),
       });
       return res.ok;
-    } catch (e) {
-      return false;
-    }
+    } catch (e) { return false; }
   }
 
   async function handleLogin() {
     const token = loginPassword.value.trim();
-    if (!token) {
-      loginError.textContent = 'Enter a password.';
-      return;
-    }
-
+    if (!token) { loginError.textContent = 'Enter a password.'; return; }
     loginBtn.textContent = 'Checking...';
     loginBtn.disabled = true;
     loginError.textContent = '';
 
-    const valid = await verifyToken(token);
-
-    if (valid) {
+    if (await verifyToken(token)) {
       AUTH_TOKEN = token;
       sessionStorage.setItem('ccAdminToken', token);
       loginGate.style.display = 'none';
@@ -431,21 +562,16 @@
     } else {
       loginError.textContent = 'Wrong password.';
     }
-
     loginBtn.textContent = 'Log In →';
     loginBtn.disabled = false;
   }
 
   loginBtn.addEventListener('click', handleLogin);
-  loginPassword.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
-  });
+  loginPassword.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
 
-  // Auto-login if session token still valid
   if (AUTH_TOKEN) {
     (async () => {
-      const valid = await verifyToken(AUTH_TOKEN);
-      if (valid) {
+      if (await verifyToken(AUTH_TOKEN)) {
         loginGate.style.display = 'none';
         adminContent.style.display = 'block';
         initAdmin();
@@ -457,7 +583,7 @@
   }
 
   // ============================================
-  // Admin panel (runs after successful login)
+  // Admin panel
   // ============================================
   function initAdmin() {
 
@@ -465,10 +591,19 @@
     const previewEmpty = document.getElementById('previewEmpty');
     const statusPill = document.getElementById('statusPill');
     const statusText = document.getElementById('statusText');
+    const playlistList = document.getElementById('playlistList');
+    const playlistEmpty = document.getElementById('playlistEmpty');
+    const playlistCount = document.getElementById('playlistCount');
+    const timerSlider = document.getElementById('timerSlider');
+    const timerValue = document.getElementById('timerValue');
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toastText');
 
-    let pending = null;
+    // The playlist data
+    let playlist = [];
+    let cycleInterval = 30;
+    let previewTimer = null;
+    let previewIndex = 0;
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -488,12 +623,126 @@
       });
     });
 
-    // Preview rendering
-    function renderPreview(type, src) {
-      if (!src) return;
-      pending = { type, src };
-      previewEmpty.style.display = 'none';
+    // Helpers
+    function markUnsaved() {
+      statusPill.classList.remove('saved');
+      statusPill.classList.add('unsaved');
+      statusText.textContent = 'Unsaved changes';
+    }
 
+    function markSaved() {
+      statusPill.classList.remove('unsaved');
+      statusPill.classList.add('saved');
+      statusText.textContent = 'All saved';
+    }
+
+    function showToast(msg) {
+      toastText.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function nameFromUrl(url) {
+      try {
+        const parts = new URL(url).pathname.split('/');
+        const filename = parts[parts.length - 1];
+        return decodeURIComponent(filename).replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+      } catch (e) { return 'Background'; }
+    }
+
+    // ============================================
+    // Playlist management
+    // ============================================
+    function addToPlaylist(type, src, name) {
+      if (playlist.some(p => p.src === src)) {
+        showToast('Already in the playlist.');
+        return;
+      }
+      playlist.push({ type, src, name: name || nameFromUrl(src) });
+      renderPlaylist();
+      updatePreview();
+      markUnsaved();
+      showToast('Added to playlist!');
+    }
+
+    function removeFromPlaylist(index) {
+      playlist.splice(index, 1);
+      renderPlaylist();
+      updatePreview();
+      markUnsaved();
+    }
+
+    function renderPlaylist() {
+      playlistCount.textContent = `${playlist.length} item${playlist.length !== 1 ? 's' : ''}`;
+
+      if (playlist.length === 0) {
+        playlistList.innerHTML = '<div class="playlist-empty">No backgrounds yet. Add some above.</div>';
+        return;
+      }
+
+      playlistList.innerHTML = playlist.map((item, i) => {
+        const thumbHtml = (item.type === 'gif' || item.type === 'image')
+          ? `<img src="${item.src}" alt="" />`
+          : `<video autoplay muted loop playsinline><source src="${item.src}" type="video/mp4" /></video>`;
+
+        return `
+          <div class="playlist-item" draggable="true" data-index="${i}">
+            <span class="playlist-grip">⠿</span>
+            <div class="playlist-thumb">${thumbHtml}</div>
+            <div class="playlist-info">
+              <div class="pi-name">${item.name}</div>
+              <div class="pi-type">${item.type}</div>
+            </div>
+            <button class="playlist-remove" data-index="${i}" title="Remove">✕</button>
+          </div>`;
+      }).join('');
+
+      // Remove buttons
+      playlistList.querySelectorAll('.playlist-remove').forEach(btn => {
+        btn.addEventListener('click', () => removeFromPlaylist(parseInt(btn.dataset.index)));
+      });
+
+      // Drag and drop
+      let dragIndex = null;
+      playlistList.querySelectorAll('.playlist-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+          dragIndex = parseInt(item.dataset.index);
+          item.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+          dragIndex = null;
+        });
+
+        item.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+
+        item.addEventListener('drop', e => {
+          e.preventDefault();
+          const dropIndex = parseInt(item.dataset.index);
+          if (dragIndex === null || dragIndex === dropIndex) return;
+          const moved = playlist.splice(dragIndex, 1)[0];
+          playlist.splice(dropIndex, 0, moved);
+          renderPlaylist();
+          markUnsaved();
+        });
+      });
+    }
+
+    // ============================================
+    // Preview cycling
+    // ============================================
+    function showMedia(type, src) {
+      previewEmpty.style.display = 'none';
       const oldMedia = previewFrame.querySelector('video, img');
       if (oldMedia) oldMedia.remove();
 
@@ -513,49 +762,63 @@
         source.type = 'video/mp4';
         media.appendChild(source);
       }
+      media.style.opacity = '0';
+      media.style.transition = 'opacity 0.8s ease';
       previewFrame.insertBefore(media, previewFrame.firstChild);
+      requestAnimationFrame(() => { media.style.opacity = '1'; });
+    }
+
+    function updatePreview() {
+      if (previewTimer) clearInterval(previewTimer);
+
+      if (playlist.length === 0) {
+        previewEmpty.style.display = 'flex';
+        const oldMedia = previewFrame.querySelector('video, img');
+        if (oldMedia) oldMedia.remove();
+        return;
+      }
+
+      previewIndex = 0;
+      showMedia(playlist[0].type, playlist[0].src);
+
+      if (playlist.length > 1) {
+        previewTimer = setInterval(() => {
+          previewIndex = (previewIndex + 1) % playlist.length;
+          showMedia(playlist[previewIndex].type, playlist[previewIndex].src);
+        }, cycleInterval * 1000);
+      }
+    }
+
+    // Timer slider
+    timerSlider.addEventListener('input', () => {
+      cycleInterval = parseInt(timerSlider.value);
+      timerValue.textContent = `${cycleInterval}s`;
+      updatePreview();
       markUnsaved();
-    }
-
-    function markUnsaved() {
-      statusPill.classList.remove('saved');
-      statusPill.classList.add('unsaved');
-      statusText.textContent = 'Unsaved changes';
-    }
-
-    function markSaved() {
-      statusPill.classList.remove('unsaved');
-      statusPill.classList.add('saved');
-      statusText.textContent = 'All saved';
-    }
-
-    function showToast(msg) {
-      toastText.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2400);
-    }
-
-    // Inputs
-    document.getElementById('videoUrl').addEventListener('input', e => {
-      const val = e.target.value.trim();
-      if (val) renderPreview('video', val);
     });
 
-    document.getElementById('gifUrl').addEventListener('input', e => {
-      const val = e.target.value.trim();
-      if (val) renderPreview('gif', val);
+    // ============================================
+    // Adding media
+    // ============================================
+
+    // URL buttons
+    document.getElementById('addVideoUrlBtn').addEventListener('click', () => {
+      const val = document.getElementById('videoUrl').value.trim();
+      if (!val) { showToast('Paste a URL first.'); return; }
+      addToPlaylist('video', val);
+      document.getElementById('videoUrl').value = '';
     });
 
-    // File upload helper — uploads to R2 via the Worker
-    function formatSize(bytes) {
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
-      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-    }
+    document.getElementById('addGifUrlBtn').addEventListener('click', () => {
+      const val = document.getElementById('gifUrl').value.trim();
+      if (!val) { showToast('Paste a URL first.'); return; }
+      addToPlaylist('gif', val);
+      document.getElementById('gifUrl').value = '';
+    });
 
+    // File uploads
     async function uploadFile(file, type, statusElId) {
       const statusEl = document.getElementById(statusElId);
-
-      // Show uploading state
       statusEl.innerHTML = `
         <div class="upload-bar">
           <div class="upload-spinner"></div>
@@ -584,17 +847,14 @@
         }
 
         const data = await res.json();
-
         statusEl.innerHTML = `
           <div class="upload-bar done">
             <span class="upload-check">✓</span>
-            <span class="upload-label">Uploaded — preview updated</span>
+            <span class="upload-label">Uploaded — added to playlist</span>
             <span class="upload-size">${formatSize(file.size)}</span>
           </div>`;
 
-        renderPreview(type, data.url);
-
-        // Fade out after a few seconds
+        addToPlaylist(type, data.url, file.name.replace(/\.[^.]+$/, ''));
         setTimeout(() => { statusEl.innerHTML = ''; }, 5000);
 
       } catch (e) {
@@ -617,19 +877,19 @@
       if (file) uploadFile(file, 'gif', 'gifUploadStatus');
     });
 
-    // Presets
+    // Presets — click to add
     document.querySelectorAll('.preset-card').forEach(card => {
       card.addEventListener('click', () => {
-        document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        renderPreview(card.dataset.type, card.dataset.src);
+        addToPlaylist(card.dataset.type, card.dataset.src, card.dataset.name);
       });
     });
 
-    // Save
+    // ============================================
+    // Save / Clear
+    // ============================================
     document.getElementById('saveBtn').addEventListener('click', async () => {
-      if (!pending) {
-        showToast('Pick a background first!');
+      if (playlist.length === 0) {
+        showToast('Add at least one background first.');
         return;
       }
 
@@ -640,7 +900,12 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${AUTH_TOKEN}`,
           },
-          body: JSON.stringify({ value: pending }),
+          body: JSON.stringify({
+            value: {
+              playlist: playlist,
+              cycleInterval: cycleInterval,
+            },
+          }),
         });
 
         if (!res.ok) {
@@ -650,73 +915,53 @@
         }
 
         markSaved();
-        showToast('Saved! Splash page updated.');
+        showToast('Playlist saved!');
       } catch (e) {
         showToast('Failed to save — check your connection.');
         console.error(e);
       }
     });
 
-    // Open splash
     document.getElementById('previewBtn').addEventListener('click', () => {
       window.open('index.html', '_blank');
     });
 
-    // Reset
-    document.getElementById('resetBtn').addEventListener('click', async () => {
-      if (!confirm('Reset background to the default forest video?')) return;
-
-      const defaultBg = {
-        type: 'video',
-        src: 'https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4'
-      };
-
-      try {
-        await fetch(`${API_BASE}/api/settings/background`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${AUTH_TOKEN}`,
-          },
-          body: JSON.stringify({ value: defaultBg }),
-        });
-      } catch (e) {
-        console.warn('Failed to reset via API:', e);
-      }
-
-      pending = null;
-      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
-      document.getElementById('videoUrl').value = '';
-      document.getElementById('gifUrl').value = '';
-      const oldMedia = previewFrame.querySelector('video, img');
-      if (oldMedia) oldMedia.remove();
-      previewEmpty.style.display = 'flex';
-      markSaved();
-      showToast('Reset to default.');
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (!confirm('Remove all backgrounds from the playlist?')) return;
+      playlist = [];
+      renderPlaylist();
+      updatePreview();
+      markUnsaved();
+      showToast('Playlist cleared.');
     });
 
-    // Load existing config from API
-    (async function initFromAPI() {
+    // ============================================
+    // Load existing playlist from API
+    // ============================================
+    (async function loadFromAPI() {
       try {
         const res = await fetch(`${API_BASE}/api/settings/background`);
         if (!res.ok) return;
         const data = await res.json();
         const cfg = data.value;
-        if (cfg && cfg.src) {
-          renderPreview(cfg.type, cfg.src);
-          if (cfg.type === 'gif' || cfg.type === 'image') {
-            document.getElementById('gifUrl').value = cfg.src;
-            document.querySelector('.tab[data-tab="gif"]').click();
-          } else if (!cfg.src.startsWith('blob:')) {
-            document.getElementById('videoUrl').value = cfg.src;
-          }
-          document.querySelectorAll('.preset-card').forEach(c => {
-            if (c.dataset.src === cfg.src) c.classList.add('selected');
-          });
-          markSaved();
+
+        if (cfg && cfg.playlist) {
+          // New playlist format
+          playlist = cfg.playlist;
+          cycleInterval = cfg.cycleInterval || 30;
+        } else if (cfg && cfg.src) {
+          // Old single-background format — migrate it
+          playlist = [{ type: cfg.type, src: cfg.src, name: nameFromUrl(cfg.src) }];
+          cycleInterval = 30;
         }
+
+        timerSlider.value = cycleInterval;
+        timerValue.textContent = `${cycleInterval}s`;
+        renderPlaylist();
+        updatePreview();
+        markSaved();
       } catch (e) {
-        console.warn('Failed to load config from API:', e);
+        console.warn('Failed to load from API:', e);
       }
     })();
 
