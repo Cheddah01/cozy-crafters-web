@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery · Cozy Crafters SMP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body { overflow-x: hidden; }
+
+    .page-header {
+      position: relative; z-index: 10;
+      padding: 8rem 3rem 3rem; text-align: center;
+      background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 60%);
+      border-bottom: 1px solid rgba(244,201,93,0.1);
+    }
+    .page-header .section-eyebrow { margin-bottom: 1rem; }
+    .page-header h1 {
+      font-family: 'Fredoka', sans-serif; font-weight: 700;
+      font-size: clamp(2.5rem, 6vw, 4rem); color: var(--cream);
+      line-height: 1.1; margin-bottom: 1rem; opacity: 1; animation: none;
+    }
+    .page-header h1 .accent { transform: none; }
+    .page-header p {
+      font-family: 'Nunito', sans-serif; font-size: 1.05rem;
+      color: var(--cream); opacity: 0.6; max-width: 480px;
+      margin: 0 auto; line-height: 1.6;
+    }
+
+    /* Upload bar */
+    .upload-bar {
+      position: relative; z-index: 10;
+      background: rgba(61,43,31,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(244,201,93,0.08);
+      padding: 1rem 3rem; display: flex; justify-content: center;
+      align-items: center; gap: 1rem;
+      position: sticky; top: 56px;
+    }
+
+    .upload-bar-login {
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+      color: var(--cream); opacity: 0.5;
+    }
+
+    .upload-form {
+      display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .upload-form input[type="text"] {
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+      color: var(--cream); background: rgba(43,31,21,0.8);
+      border: 1.5px solid rgba(244,201,93,0.15); border-radius: 10px;
+      padding: 0.6rem 0.9rem; outline: none; width: 240px;
+      transition: all 0.2s;
+    }
+    .upload-form input[type="text"]:focus {
+      border-color: var(--sun); box-shadow: 0 0 0 3px rgba(244,201,93,0.1);
+    }
+    .upload-form input[type="text"]::placeholder { color: var(--cream); opacity: 0.3; }
+
+    .upload-file-btn {
+      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+      background: var(--sun); color: var(--ink); border: none;
+      padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer;
+      box-shadow: 0 2px 0 var(--sun-deep); transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .upload-file-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--sun-deep); }
+
+    .upload-status-msg {
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem;
+      color: var(--sun); font-weight: 600;
+    }
+
+    input[type="file"].hidden-file { display: none; }
+
+    /* Gallery grid */
+    .gallery-content {
+      position: relative; z-index: 10;
+      max-width: 1100px; margin: 0 auto;
+      padding: 2rem 2rem 6rem;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+    }
+
+    .gallery-item {
+      position: relative; aspect-ratio: 1;
+      border-radius: 12px; overflow: hidden;
+      cursor: pointer; transition: all 0.3s ease;
+      opacity: 0; transform: scale(0.95);
+      background: var(--ink);
+    }
+    .gallery-item.revealed { opacity: 1; transform: scale(1); }
+    .gallery-item:hover { transform: scale(1.02); z-index: 2; }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(43,31,21,0.85) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.3s; display: flex;
+      align-items: flex-end; padding: 0.8rem;
+    }
+
+    .gallery-overlay-info {
+      display: flex; align-items: center; gap: 0.5rem; width: 100%;
+    }
+
+    .gallery-overlay-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 1.5px solid rgba(244,201,93,0.3); flex-shrink: 0;
+    }
+
+    .gallery-overlay-user {
+      font-family: 'Fredoka', sans-serif; font-size: 0.78rem;
+      font-weight: 600; color: var(--cream); flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .gallery-overlay-delete {
+      background: rgba(232,154,110,0.2); border: 1px solid rgba(232,154,110,0.4);
+      color: #E89A6E; font-size: 0.75rem; font-weight: 600;
+      font-family: 'Fredoka', sans-serif;
+      padding: 0.2rem 0.5rem; border-radius: 6px; cursor: pointer;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .gallery-overlay-delete:hover { background: rgba(232,154,110,0.4); }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
+      display: none; align-items: center; justify-content: center;
+      flex-direction: column; padding: 2rem;
+    }
+    .lightbox.open { display: flex; }
+
+    .lightbox-close {
+      position: absolute; top: 1.5rem; right: 2rem;
+      font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 0.5rem 1rem; border-radius: 10px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+    .lightbox-img {
+      max-width: 90vw; max-height: 75vh; border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .lightbox-info {
+      margin-top: 1.2rem; display: flex; align-items: center;
+      gap: 0.7rem; max-width: 600px;
+    }
+
+    .lightbox-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid rgba(244,201,93,0.3);
+    }
+
+    .lightbox-meta { flex: 1; }
+
+    .lightbox-user {
+      font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+      font-weight: 600; color: var(--cream);
+    }
+
+    .lightbox-caption {
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+      color: var(--cream); opacity: 0.6; line-height: 1.4;
+      margin-top: 0.15rem;
+    }
+
+    .lightbox-date {
+      font-family: 'Nunito', sans-serif; font-size: 0.75rem;
+      color: var(--cream); opacity: 0.3;
+    }
+
+    /* Load more */
+    .load-more-row {
+      text-align: center; margin-top: 2rem;
+    }
+
+    /* States */
+    .gallery-empty {
+      text-align: center; padding: 5rem 2rem; grid-column: 1 / -1;
+      font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.4;
+    }
+    .gallery-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    .gallery-loading {
+      text-align: center; padding: 4rem; grid-column: 1 / -1;
+      font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5;
+    }
+    .gallery-loading .load-spinner {
+      width: 28px; height: 28px; border: 3px solid rgba(244,201,93,0.15);
+      border-top-color: var(--sun); border-radius: 50%;
+      animation: spin 0.7s linear infinite; margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .page-header { padding: 7rem 1.5rem 2.5rem; }
+      .upload-bar { padding: 0.8rem 1rem; top: 50px; flex-direction: column; }
+      .upload-form { width: 100%; }
+      .upload-form input[type="text"] { flex: 1; width: auto; }
+      .gallery-content { padding: 1.5rem 1rem 4rem; }
+      .gallery-grid { gap: 0.5rem; }
+      .gallery-item { border-radius: 8px; }
+    }
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
+  <div class="bg-grain"></div>
+
+  <nav id="mainNav" class="scrolled">
+    <a href="index.html" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="chronicles.html">Chronicles</a></li>
+      <li><a href="index.html#discord">Discord</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="chronicles.html">Chronicles</a></li>
+      <li><a href="index.html#discord">Discord</a></li>
+    </ul>
+  </div>
+
+  <header class="page-header">
+    <div class="section-eyebrow">✦ Community Screenshots</div>
+    <h1>The <span class="accent">Gallery</span></h1>
+    <p>Builds, landscapes, cursed screenshots, and everything in between. All captured by the community.</p>
+  </header>
+
+  <div class="upload-bar" id="uploadBar"></div>
+
+  <div class="gallery-content">
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-loading" id="galleryLoading">
+        <div class="load-spinner"></div>
+        Loading screenshots...
+      </div>
+    </div>
+    <div class="load-more-row" id="loadMoreRow" style="display:none;">
+      <button class="btn btn-secondary" id="loadMoreBtn">Load More</button>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">✕ Close</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+    <div class="lightbox-info" id="lightboxInfo"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand"><span class="leaf">🌿</span> Cozy Crafters SMP</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a><a href="changelog.html">Changelog</a>
+        <a href="gallery.html">Gallery</a><a href="chronicles.html">Chronicles</a>
+      </div>
+      <p class="footer-note">A small world, warmly built. Paper 1.21 · Season Two</p>
+      <p class="footer-copy">Made with questionable decisions and too much caffeine.</p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
+    const PAGE_SIZE = 30;
+    let allImages = [];
+    let total = 0;
+    let offset = 0;
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+    mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
+
+    function getAuthHeader() {
+      const token = localStorage.getItem('ccAuthToken');
+      return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    function fmtDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // Upload bar
+    function renderUploadBar() {
+      const bar = document.getElementById('uploadBar');
+      const user = typeof ccGetUser === 'function' ? ccGetUser() : null;
+
+      if (!user) {
+        bar.innerHTML = '<span class="upload-bar-login">Log in with Discord to share your screenshots</span>';
+        return;
+      }
+
+      bar.innerHTML = `
+        <div class="upload-form">
+          <input type="text" id="galCaption" placeholder="Add a caption..." />
+          <input type="file" id="galFileInput" class="hidden-file" accept="image/png,image/jpeg,image/gif,image/webp" />
+          <button class="upload-file-btn" id="galUploadBtn">📷 Upload Screenshot</button>
+          <span class="upload-status-msg" id="galStatus"></span>
+        </div>
+      `;
+
+      document.getElementById('galUploadBtn').addEventListener('click', () => {
+        document.getElementById('galFileInput').click();
+      });
+
+      document.getElementById('galFileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('galStatus');
+        const btn = document.getElementById('galUploadBtn');
+        btn.disabled = true;
+        status.textContent = 'Uploading...';
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('caption', document.getElementById('galCaption').value.trim());
+
+          const res = await fetch(`${API_BASE}/api/gallery`, {
+            method: 'POST',
+            headers: getAuthHeader(),
+            body: formData,
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            status.textContent = err.error || 'Upload failed';
+            btn.disabled = false;
+            return;
+          }
+
+          status.textContent = 'Uploaded!';
+          document.getElementById('galCaption').value = '';
+          document.getElementById('galFileInput').value = '';
+
+          // Reload gallery
+          offset = 0;
+          allImages = [];
+          await loadGallery();
+
+          setTimeout(() => { status.textContent = ''; btn.disabled = false; }, 2000);
+        } catch (e) {
+          status.textContent = 'Upload failed';
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Render gallery
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const user = typeof ccGetUser === 'function' ? ccGetUser() : null;
+
+      if (allImages.length === 0) {
+        grid.innerHTML = '<div class="gallery-empty"><div class="empty-icon">📷</div><div>No screenshots yet. Be the first to share one.</div></div>';
+        return;
+      }
+
+      grid.innerHTML = allImages.map((img, i) => {
+        const canDelete = user && (user.sub === img.user_id || user.role === 'admin');
+        const deleteBtn = canDelete
+          ? `<button class="gallery-overlay-delete" data-id="${img.id}" onclick="event.stopPropagation()">Delete</button>`
+          : '';
+
+        return `
+          <div class="gallery-item" data-idx="${i}" style="animation-delay:${i * 0.03}s">
+            <img src="${img.image_url}" alt="${img.caption || ''}" loading="lazy" />
+            <div class="gallery-overlay">
+              <div class="gallery-overlay-info">
+                <img class="gallery-overlay-avatar" src="${img.avatar || ''}" alt="" />
+                <span class="gallery-overlay-user">${img.username || 'Unknown'}</span>
+                ${deleteBtn}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Click to open lightbox
+      grid.querySelectorAll('.gallery-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const idx = parseInt(item.dataset.idx);
+          openLightbox(allImages[idx]);
+        });
+      });
+
+      // Delete buttons
+      grid.querySelectorAll('.gallery-overlay-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!confirm('Delete this screenshot?')) return;
+
+          try {
+            await fetch(`${API_BASE}/api/gallery/${id}`, {
+              method: 'DELETE',
+              headers: getAuthHeader(),
+            });
+            allImages = allImages.filter(img => img.id !== id);
+            renderGallery();
+          } catch (e) {}
+        });
+      });
+
+      // Scroll reveal
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+          if (e.isIntersecting) {
+            setTimeout(() => e.target.classList.add('revealed'), i * 40);
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      grid.querySelectorAll('.gallery-item').forEach(el => obs.observe(el));
+
+      // Load more button
+      const loadMoreRow = document.getElementById('loadMoreRow');
+      loadMoreRow.style.display = allImages.length < total ? '' : 'none';
+    }
+
+    // Lightbox
+    function openLightbox(img) {
+      const lb = document.getElementById('lightbox');
+      document.getElementById('lightboxImg').src = img.image_url;
+      document.getElementById('lightboxInfo').innerHTML = `
+        <img class="lightbox-avatar" src="${img.avatar || ''}" alt="" />
+        <div class="lightbox-meta">
+          <div class="lightbox-user">${img.username || 'Unknown'}</div>
+          ${img.caption ? `<div class="lightbox-caption">${img.caption}</div>` : ''}
+        </div>
+        <div class="lightbox-date">${fmtDate(img.created_at)}</div>
+      `;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    document.getElementById('lightboxClose').addEventListener('click', () => {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+
+    document.getElementById('lightbox').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('lightbox')) {
+        document.getElementById('lightbox').classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('lightbox').classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Load more
+    document.getElementById('loadMoreBtn').addEventListener('click', async () => {
+      offset += PAGE_SIZE;
+      await loadGallery(true);
+    });
+
+    // Load gallery
+    async function loadGallery(append) {
+      try {
+        const res = await fetch(`${API_BASE}/api/gallery?limit=${PAGE_SIZE}&offset=${offset}`, {
+          headers: getAuthHeader(),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (append) {
+            allImages = [...allImages, ...data.images];
+          } else {
+            allImages = data.images;
+          }
+          total = data.total;
+        }
+      } catch (e) {}
+      document.getElementById('galleryLoading').style.display = 'none';
+      renderGallery();
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      renderUploadBar();
+      loadGallery();
+    });
+  </script>
+  <script src="auth.js"></script>
+</body>
+</html>
