@@ -242,10 +242,10 @@
       // Load cost breakdown
       try {
         const costsRes = await fetch(`${API_BASE}/api/settings/supportCosts`);
+        const costList = document.getElementById('spCostList');
         if (costsRes.ok) {
           const costsData = await costsRes.json();
           const costs = costsData.value || [];
-          const costList = document.getElementById('spCostList');
           if (costs.length > 0) {
             costList.innerHTML = costs.map(c => `
               <div class="cost-item">
@@ -254,13 +254,22 @@
               </div>
             `).join('');
           } else {
-            costList.innerHTML = `
-              <div class="cost-item"><span class="cost-name">Server hosting</span><span class="cost-amount">Monthly</span></div>
-              <div class="cost-item"><span class="cost-name">Domain</span><span class="cost-amount">Yearly</span></div>
-            `;
+            costList.innerHTML = defaultCosts();
           }
+        } else {
+          costList.innerHTML = defaultCosts();
         }
-      } catch (e) {}
+      } catch (e) {
+        document.getElementById('spCostList').innerHTML = defaultCosts();
+      }
+
+      function defaultCosts() {
+        return `
+          <div class="cost-item"><span class="cost-name">Server hosting</span><span class="cost-amount">Monthly</span></div>
+          <div class="cost-item"><span class="cost-name">Domain</span><span class="cost-amount">Yearly</span></div>
+          <div class="cost-item"><span class="cost-name">Backups & storage</span><span class="cost-amount">Included</span></div>
+        `;
+      }
     })();
   </script>
   <script src="auth.js"></script>
