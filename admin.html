@@ -640,6 +640,7 @@
       <button class="section-tab active" data-section="backgrounds" type="button">🎬 Backgrounds</button>
       <button class="section-tab" data-section="splashtext" type="button">✏️ Splash Text</button>
       <button class="section-tab" data-section="changelog" type="button">📋 Patch Notes</button>
+      <button class="section-tab" data-section="chronicles" type="button">📰 Chronicles</button>
     </div>
 
     <!-- SECTION: Backgrounds -->
@@ -1044,6 +1045,131 @@
       </div>
     </div>
     </div> <!-- /section-changelog -->
+
+    <!-- SECTION: Chronicles -->
+    <div class="admin-section" id="section-chronicles">
+    <div>
+      <h1 class="admin-title">The Cozy <span class="accent">Chronicles</span></h1>
+      <p class="admin-subtitle">Write and publish newspaper articles. Manage sections, set featured stories, and keep the press rolling.</p>
+
+      <!-- Section manager -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <span class="card-icon">📁</span>
+          <h2 class="card-title">Sections</h2>
+        </div>
+        <p class="card-helper">Organize your newspaper into sections. These show as tabs on the public page.</p>
+
+        <div id="chrSectionList" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;"></div>
+
+        <div style="display: flex; gap: 0.6rem; align-items: end;">
+          <div class="field" style="margin-bottom:0; flex:1;">
+            <label class="field-label" for="chrNewSection">New section name</label>
+            <input type="text" id="chrNewSection" placeholder="Crime & Mischief" />
+          </div>
+          <button class="btn btn-primary" id="chrAddSectionBtn" type="button" style="padding:0.85rem 1.2rem; font-size:0.9rem; margin-bottom:0;">+ Add</button>
+        </div>
+        <div class="action-row" style="margin-top: 1rem;">
+          <button class="btn btn-primary" id="chrSaveSectionsBtn" type="button" style="font-size:0.9rem; padding:0.7rem 1.2rem;">💾 Save Sections</button>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+
+        <!-- LEFT: Article editor -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">✍️</span>
+            <h2 class="card-title" id="chrFormTitle">New article</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="chrTitle">Headline</label>
+            <input type="text" id="chrTitle" placeholder="Local Man Loses Entire Diamond Stash to Creeper; Blames Server Admin" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="chrSubtitle">Subtitle (optional)</label>
+            <input type="text" id="chrSubtitle" placeholder="Witnesses describe the explosion as 'honestly kind of funny'" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="chrAuthor">Author byline</label>
+              <input type="text" id="chrAuthor" placeholder="The Cozy Chronicles Staff" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="chrDate">Date</label>
+              <input type="text" id="chrDate" placeholder="2026-04-18" />
+              <p class="field-hint">YYYY-MM-DD format.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Section</label>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="chrSectionPicker"></div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="chrImage">Featured image URL (optional)</label>
+            <input type="text" id="chrImage" placeholder="https://example.com/screenshot.png" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="chrBody">Article body</label>
+            <textarea id="chrBody" rows="14" placeholder="## The Incident&#10;&#10;It was a Tuesday. The kind of Tuesday where nothing should go wrong, and yet somehow, everything did.&#10;&#10;According to eyewitnesses — all two of them — the creeper appeared from behind a carefully placed oak door at approximately 6:47pm server time.&#10;&#10;## The Aftermath&#10;&#10;- 47 diamonds, gone&#10;- One perfectly good set of Netherite armor, dented&#10;- The admin's reputation, somehow still intact"></textarea>
+            <p class="field-hint">Use ## for section headers, - for bullet points, **bold**, *italic*.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
+            <div class="field" style="margin-bottom:0;">
+              <label class="field-label">Status</label>
+              <div style="display: flex; gap: 0.4rem;">
+                <button type="button" class="filter-chip chr-status-btn active" data-status="published">Published</button>
+                <button type="button" class="filter-chip chr-status-btn" data-status="draft">Draft</button>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label class="field-label">Featured</label>
+              <div style="display: flex; gap: 0.4rem;">
+                <button type="button" class="filter-chip" id="chrFeaturedToggle">⭐ Feature on front</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary" id="chrAddBtn" type="button">+ Publish Article</button>
+            <button class="btn btn-secondary" id="chrCancelEdit" type="button" style="display:none;">Cancel Edit</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Article list -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📰</span>
+            <h2 class="card-title">Articles</h2>
+          </div>
+
+          <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <button class="filter-chip chr-filter-btn active" data-filter="all">All</button>
+            <button class="filter-chip chr-filter-btn" data-filter="published">Published</button>
+            <button class="filter-chip chr-filter-btn" data-filter="draft">Drafts</button>
+            <button class="filter-chip chr-filter-btn" data-filter="featured">Featured</button>
+          </div>
+
+          <div id="chrArticleList">
+            <div class="changelog-admin-empty">Loading...</div>
+          </div>
+
+          <div class="action-row" style="margin-top: 1.5rem;">
+            <button class="btn btn-primary" id="chrSaveBtn" type="button">💾 Save All Articles</button>
+            <button class="btn btn-secondary" id="chrPreviewBtn" type="button">👁 Open Chronicles</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div> <!-- /section-chronicles -->
 
   </div> <!-- /adminContent -->
 
@@ -2020,6 +2146,287 @@
       renderTagManager();
       renderTagPicker();
       renderClEntries();
+    })();
+
+    // ============================================
+    // Chronicles editor
+    // ============================================
+    let chrArticles = [];
+    let chrSections = ['Front Page', 'Crime & Mischief', 'Builds & Projects', 'Opinion', 'Classifieds'];
+    let chrEditingIndex = null;
+    let chrSelectedSection = '';
+    let chrStatus = 'published';
+    let chrFeatured = false;
+    let chrAdminFilter = 'all';
+
+    const chrTitle = document.getElementById('chrTitle');
+    const chrSubtitle = document.getElementById('chrSubtitle');
+    const chrAuthor = document.getElementById('chrAuthor');
+    const chrDate = document.getElementById('chrDate');
+    const chrImage = document.getElementById('chrImage');
+    const chrBody = document.getElementById('chrBody');
+    const chrAddBtn = document.getElementById('chrAddBtn');
+    const chrCancelEdit = document.getElementById('chrCancelEdit');
+    const chrFormTitle = document.getElementById('chrFormTitle');
+    const chrArticleList = document.getElementById('chrArticleList');
+    const chrSectionPicker = document.getElementById('chrSectionPicker');
+    const chrFeaturedToggle = document.getElementById('chrFeaturedToggle');
+
+    chrDate.value = new Date().toISOString().split('T')[0];
+    chrAuthor.value = 'The Cozy Chronicles Staff';
+
+    // Status toggle
+    document.querySelectorAll('.chr-status-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.chr-status-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        chrStatus = btn.dataset.status;
+      });
+    });
+
+    // Featured toggle
+    chrFeaturedToggle.addEventListener('click', () => {
+      chrFeatured = !chrFeatured;
+      chrFeaturedToggle.classList.toggle('active', chrFeatured);
+      chrFeaturedToggle.textContent = chrFeatured ? '⭐ Featured' : '⭐ Feature on front';
+    });
+
+    // Section manager
+    function renderChrSections() {
+      const list = document.getElementById('chrSectionList');
+      list.innerHTML = chrSections.map((s, i) => `
+        <div class="tag-manager-item" style="background:rgba(244,201,93,0.1); color:var(--sun); border:1px solid rgba(244,201,93,0.25);">
+          ${s}
+          <button class="tag-delete" data-idx="${i}" title="Remove">✕</button>
+        </div>
+      `).join('');
+      list.querySelectorAll('.tag-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          chrSections.splice(parseInt(btn.dataset.idx), 1);
+          renderChrSections();
+          renderChrSectionPicker();
+          markUnsaved();
+        });
+      });
+    }
+
+    function renderChrSectionPicker() {
+      chrSectionPicker.innerHTML = chrSections.map(s => {
+        const isActive = chrSelectedSection === s ? 'active' : '';
+        return `<button type="button" class="filter-chip chr-sec-btn ${isActive}" data-section="${s}">${s}</button>`;
+      }).join('');
+      chrSectionPicker.querySelectorAll('.chr-sec-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          chrSelectedSection = chrSelectedSection === btn.dataset.section ? '' : btn.dataset.section;
+          renderChrSectionPicker();
+        });
+      });
+    }
+
+    document.getElementById('chrAddSectionBtn').addEventListener('click', () => {
+      const name = document.getElementById('chrNewSection').value.trim();
+      if (!name) { showToast('Give the section a name.'); return; }
+      if (chrSections.includes(name)) { showToast('Section already exists.'); return; }
+      chrSections.push(name);
+      document.getElementById('chrNewSection').value = '';
+      renderChrSections();
+      renderChrSectionPicker();
+      markUnsaved();
+      showToast('Section added!');
+    });
+
+    document.getElementById('chrSaveSectionsBtn').addEventListener('click', async () => {
+      try {
+        await fetch(`${API_BASE}/api/settings/chroniclesSections`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: chrSections }),
+        });
+        markSaved();
+        showToast('Sections saved!');
+      } catch (e) { showToast('Failed to save sections.'); }
+    });
+
+    // Clear form
+    function clearChrForm() {
+      chrTitle.value = '';
+      chrSubtitle.value = '';
+      chrAuthor.value = 'The Cozy Chronicles Staff';
+      chrDate.value = new Date().toISOString().split('T')[0];
+      chrImage.value = '';
+      chrBody.value = '';
+      chrSelectedSection = '';
+      chrStatus = 'published';
+      chrFeatured = false;
+      document.querySelectorAll('.chr-status-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.chr-status-btn[data-status="published"]').classList.add('active');
+      chrFeaturedToggle.classList.remove('active');
+      chrFeaturedToggle.textContent = '⭐ Feature on front';
+      renderChrSectionPicker();
+      chrEditingIndex = null;
+      chrAddBtn.textContent = '+ Publish Article';
+      chrFormTitle.textContent = 'New article';
+      chrCancelEdit.style.display = 'none';
+    }
+
+    // Render article list
+    function renderChrArticles() {
+      let filtered = chrArticles;
+      if (chrAdminFilter === 'published') filtered = chrArticles.filter(a => a.status !== 'draft');
+      else if (chrAdminFilter === 'draft') filtered = chrArticles.filter(a => a.status === 'draft');
+      else if (chrAdminFilter === 'featured') filtered = chrArticles.filter(a => a.featured);
+
+      if (filtered.length === 0) {
+        chrArticleList.innerHTML = `<div class="changelog-admin-empty">${
+          chrAdminFilter === 'all' ? 'No articles yet. Write one on the left.' : 'No articles match this filter.'
+        }</div>`;
+        return;
+      }
+
+      const sorted = [...filtered].map((a, i) => ({ ...a, _idx: chrArticles.indexOf(a) }))
+        .sort((a, b) => {
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          return new Date(b.date) - new Date(a.date);
+        });
+
+      chrArticleList.innerHTML = sorted.map(article => {
+        const statusClass = article.status === 'draft' ? 'draft' : 'published';
+        const statusLabel = article.status === 'draft' ? 'Draft' : 'Live';
+        return `
+          <div class="cl-entry-item">
+            <div class="cl-entry-top">
+              <span class="cl-entry-name">${article.featured ? '⭐ ' : ''}${article.title}</span>
+              <span class="cl-entry-status ${statusClass}">${statusLabel}</span>
+            </div>
+            <div class="cl-entry-date">${article.date}${article.section ? ` · ${article.section}` : ''}</div>
+            <div class="cl-entry-actions">
+              <button class="cl-btn-edit" data-idx="${article._idx}">Edit</button>
+              <button class="cl-btn-delete" data-idx="${article._idx}">Delete</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      chrArticleList.querySelectorAll('.cl-btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          const a = chrArticles[idx];
+          chrTitle.value = a.title || '';
+          chrSubtitle.value = a.subtitle || '';
+          chrAuthor.value = a.author || '';
+          chrDate.value = a.date || '';
+          chrImage.value = a.image || '';
+          chrBody.value = a.body || '';
+          chrSelectedSection = a.section || '';
+          chrStatus = a.status || 'published';
+          chrFeatured = !!a.featured;
+          document.querySelectorAll('.chr-status-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector(`.chr-status-btn[data-status="${chrStatus}"]`).classList.add('active');
+          chrFeaturedToggle.classList.toggle('active', chrFeatured);
+          chrFeaturedToggle.textContent = chrFeatured ? '⭐ Featured' : '⭐ Feature on front';
+          renderChrSectionPicker();
+          chrEditingIndex = idx;
+          chrAddBtn.textContent = 'Update Article';
+          chrFormTitle.textContent = 'Editing article';
+          chrCancelEdit.style.display = '';
+          chrTitle.focus();
+        });
+      });
+
+      chrArticleList.querySelectorAll('.cl-btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          if (!confirm(`Delete "${chrArticles[idx].title}"?`)) return;
+          chrArticles.splice(idx, 1);
+          renderChrArticles();
+          markUnsaved();
+          if (chrEditingIndex === idx) clearChrForm();
+        });
+      });
+    }
+
+    // Admin filter
+    document.querySelectorAll('.chr-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.chr-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        chrAdminFilter = btn.dataset.filter;
+        renderChrArticles();
+      });
+    });
+
+    // Add / update article
+    chrAddBtn.addEventListener('click', () => {
+      const title = chrTitle.value.trim();
+      const date = chrDate.value.trim();
+      if (!title) { showToast('Give it a headline.'); return; }
+      if (!date) { showToast('Set a date.'); return; }
+
+      const article = {
+        title,
+        subtitle: chrSubtitle.value.trim() || null,
+        author: chrAuthor.value.trim() || 'The Cozy Chronicles Staff',
+        date,
+        section: chrSelectedSection || null,
+        image: chrImage.value.trim() || null,
+        body: chrBody.value,
+        status: chrStatus,
+        featured: chrFeatured,
+        id: chrEditingIndex !== null ? chrArticles[chrEditingIndex].id : `chr-${Date.now()}`,
+      };
+
+      if (chrEditingIndex !== null) {
+        chrArticles[chrEditingIndex] = article;
+        showToast('Article updated!');
+      } else {
+        chrArticles.push(article);
+        showToast('Article published!');
+      }
+
+      clearChrForm();
+      renderChrArticles();
+      markUnsaved();
+    });
+
+    chrCancelEdit.addEventListener('click', clearChrForm);
+
+    // Save
+    document.getElementById('chrSaveBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/chronicles`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value: chrArticles }),
+        });
+        if (!res.ok) { showToast('Save failed.'); return; }
+        markSaved();
+        showToast('Chronicles saved!');
+      } catch (e) { showToast('Failed to save.'); }
+    });
+
+    document.getElementById('chrPreviewBtn').addEventListener('click', () => {
+      window.open('chronicles.html', '_blank');
+    });
+
+    // Load on init
+    (async function loadChronicles() {
+      try {
+        const [secRes, artRes] = await Promise.all([
+          fetch(`${API_BASE}/api/settings/chroniclesSections`),
+          fetch(`${API_BASE}/api/settings/chronicles`),
+        ]);
+        if (secRes.ok) {
+          const d = await secRes.json();
+          if (d.value && d.value.length > 0) chrSections = d.value;
+        }
+        if (artRes.ok) {
+          const d = await artRes.json();
+          chrArticles = d.value || [];
+        }
+      } catch (e) {}
+      renderChrSections();
+      renderChrSectionPicker();
+      renderChrArticles();
     })();
 
   } // end initAdmin
