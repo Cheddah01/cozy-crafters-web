@@ -509,6 +509,130 @@
       </div>
 
     </div>
+
+    <!-- ============================================
+         SPLASH TEXT EDITOR
+         ============================================ -->
+    <div style="margin-top: 2.5rem;">
+      <h1 class="admin-title">Splash <span class="accent">Text</span></h1>
+      <p class="admin-subtitle">Customize what visitors see on the splash screen. Leave a field empty to use the default.</p>
+
+      <div class="admin-grid">
+
+        <!-- LEFT: Text fields -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">✏️</span>
+            <h2 class="card-title">Hero content</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtEyebrow">Eyebrow badge</label>
+            <input type="text" id="txtEyebrow" placeholder="Season Two · Now Live" />
+            <p class="field-hint">The small text in the pill at the top. Good for announcements or season info.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtHeadline1">Headline line 1</label>
+            <input type="text" id="txtHeadline1" placeholder="A small world," />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtHeadline2">Headline line 2 (accented)</label>
+            <input type="text" id="txtHeadline2" placeholder="warmly built." />
+            <p class="field-hint">This line appears in gold/accent color.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtTagline">Tagline</label>
+            <input type="text" id="txtTagline" placeholder="A close-knit Minecraft survival server where..." />
+            <p class="field-hint">The description paragraph below the headline.</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtBtnPrimary">Primary button text</label>
+            <input type="text" id="txtBtnPrimary" placeholder="Join the Server →" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtBtnPrimaryLink">Primary button link</label>
+            <input type="text" id="txtBtnPrimaryLink" placeholder="#join" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtBtnSecondary">Secondary button text</label>
+            <input type="text" id="txtBtnSecondary" placeholder="Learn More" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="txtBtnSecondaryLink">Secondary button link</label>
+            <input type="text" id="txtBtnSecondaryLink" placeholder="#about" />
+          </div>
+        </div>
+
+        <!-- RIGHT: Stats + links -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2 class="card-title">Stats bar</h2>
+          </div>
+          <p class="card-helper">The three stats at the bottom of the splash screen.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="txtStat1Num">Stat 1 value</label>
+              <input type="text" id="txtStat1Num" placeholder="1+ yr" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="txtStat1Label">Stat 1 label</label>
+              <input type="text" id="txtStat1Label" placeholder="Running Strong" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="txtStat2Num">Stat 2 value</label>
+              <input type="text" id="txtStat2Num" placeholder="S2" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="txtStat2Label">Stat 2 label</label>
+              <input type="text" id="txtStat2Label" placeholder="Current Season" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="field">
+              <label class="field-label" for="txtStat3Num">Stat 3 value</label>
+              <input type="text" id="txtStat3Num" placeholder="1.21" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="txtStat3Label">Stat 3 label</label>
+              <input type="text" id="txtStat3Label" placeholder="Paper Edition" />
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+            <div class="card-header" style="margin-bottom: 0.8rem;">
+              <span class="card-icon">🔗</span>
+              <h2 class="card-title">Links</h2>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="txtDiscordUrl">Discord invite URL</label>
+              <input type="text" id="txtDiscordUrl" placeholder="https://discord.gg/your-invite" />
+              <p class="field-hint">Used on the Discord button and the Join section.</p>
+            </div>
+          </div>
+
+          <div class="action-row" style="margin-top: 1.5rem;">
+            <button class="btn btn-primary" id="saveTextBtn" type="button">💾 Save Text</button>
+            <button class="btn btn-danger" id="resetTextBtn" type="button">Reset to Defaults</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -962,6 +1086,114 @@
         markSaved();
       } catch (e) {
         console.warn('Failed to load from API:', e);
+      }
+    })();
+
+    // ============================================
+    // Splash text editor
+    // ============================================
+    const textFields = {
+      eyebrow: 'txtEyebrow',
+      headline1: 'txtHeadline1',
+      headline2: 'txtHeadline2',
+      tagline: 'txtTagline',
+      btnPrimary: 'txtBtnPrimary',
+      btnPrimaryLink: 'txtBtnPrimaryLink',
+      btnSecondary: 'txtBtnSecondary',
+      btnSecondaryLink: 'txtBtnSecondaryLink',
+      stat1Num: 'txtStat1Num',
+      stat1Label: 'txtStat1Label',
+      stat2Num: 'txtStat2Num',
+      stat2Label: 'txtStat2Label',
+      stat3Num: 'txtStat3Num',
+      stat3Label: 'txtStat3Label',
+      discordUrl: 'txtDiscordUrl',
+    };
+
+    // Mark unsaved when any text field changes
+    Object.values(textFields).forEach(id => {
+      document.getElementById(id).addEventListener('input', markUnsaved);
+    });
+
+    function getTextValues() {
+      const values = {};
+      for (const [key, id] of Object.entries(textFields)) {
+        const val = document.getElementById(id).value.trim();
+        if (val) values[key] = val;
+      }
+      return values;
+    }
+
+    function setTextValues(values) {
+      if (!values) return;
+      for (const [key, id] of Object.entries(textFields)) {
+        if (values[key]) {
+          document.getElementById(id).value = values[key];
+        }
+      }
+    }
+
+    // Save text
+    document.getElementById('saveTextBtn').addEventListener('click', async () => {
+      const values = getTextValues();
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/splashText`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: values }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(`Error: ${err.error || 'Save failed'}`);
+          return;
+        }
+
+        markSaved();
+        showToast('Splash text saved!');
+      } catch (e) {
+        showToast('Failed to save — check your connection.');
+        console.error(e);
+      }
+    });
+
+    // Reset text
+    document.getElementById('resetTextBtn').addEventListener('click', async () => {
+      if (!confirm('Reset all splash text to defaults?')) return;
+
+      Object.values(textFields).forEach(id => {
+        document.getElementById(id).value = '';
+      });
+
+      try {
+        await fetch(`${API_BASE}/api/settings/splashText`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: {} }),
+        });
+      } catch (e) {
+        console.warn('Failed to reset text:', e);
+      }
+
+      markSaved();
+      showToast('Text reset to defaults.');
+    });
+
+    // Load text on init
+    (async function loadText() {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/splashText`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setTextValues(data.value);
+      } catch (e) {
+        // No saved text yet, that's fine
       }
     })();
 
