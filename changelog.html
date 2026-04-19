@@ -493,6 +493,29 @@
       const entryIds = [...feed.querySelectorAll('[data-entry-id]')].map(el => el.dataset.entryId);
       loadReactions(entryIds);
 
+      // Inject share buttons into each entry header
+      feed.querySelectorAll('.changelog-entry').forEach(el => {
+        const header = el.querySelector('.entry-header');
+        if (!header) return;
+        const entryId = el.dataset.entryId;
+        const btn = document.createElement('button');
+        btn.className = 'share-btn';
+        btn.textContent = '🔗 Share';
+        btn.title = 'Copy link';
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const url = window.location.origin + '/changelog.html#' + entryId;
+          navigator.clipboard.writeText(url).then(() => {
+            btn.textContent = '✓ Copied!';
+            btn.classList.add('copied');
+            history.replaceState(null, '', '#' + entryId);
+            setTimeout(() => { btn.textContent = '🔗 Share'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+        header.appendChild(btn);
+      });
+
       // Deep-link: scroll to entry if URL has a hash
       if (window.location.hash) {
         const targetId = window.location.hash.substring(1);
@@ -545,10 +568,7 @@
             ${pinBadge}
             <div class="entry-header">
               <span class="entry-title">${entry.title}</span>
-              <div style="display:flex;gap:0.4rem;align-items:center;flex-shrink:0;">
-                ${versionHtml}
-                <button class="share-btn" data-id="${entry.id}" title="Copy link" onclick="event.stopPropagation();copyEntryLink(this,'${entry.id}')">🔗</button>
-              </div>
+              ${versionHtml}
             </div>
             <div class="entry-tags">${tagsHtml}</div>
           </div>
