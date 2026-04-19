@@ -542,6 +542,66 @@
     opacity: 1;
   }
 
+  /* Change builder items */
+  .cl-change-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.8rem;
+    background: rgba(255, 244, 220, 0.03);
+    border: 1px solid rgba(244, 201, 93, 0.08);
+    border-radius: 10px;
+    margin-bottom: 0.4rem;
+  }
+
+  .cl-change-item .change-tag {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .cl-change-item .change-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cl-change-item .change-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cream);
+  }
+
+  .cl-change-item .change-desc {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    color: var(--cream);
+    opacity: 0.5;
+    line-height: 1.4;
+  }
+
+  .cl-change-item .change-remove {
+    background: none;
+    border: none;
+    color: #E89A6E;
+    opacity: 0.4;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .cl-change-item .change-remove:hover {
+    opacity: 1;
+  }
+
   /* Section tabs */
   .section-tabs {
     display: flex;
@@ -953,16 +1013,16 @@
 
       <div class="admin-grid">
 
-        <!-- LEFT: New entry form -->
+        <!-- LEFT: Announcement builder -->
         <div class="card">
           <div class="card-header">
             <span class="card-icon">📝</span>
-            <h2 class="card-title" id="clFormTitle">New entry</h2>
+            <h2 class="card-title" id="clFormTitle">New patch note</h2>
           </div>
 
           <div class="field">
-            <label class="field-label" for="clTitle">Title</label>
-            <input type="text" id="clTitle" placeholder="Economy Rebalance & Bug Fixes" />
+            <label class="field-label" for="clTitle">Patch title</label>
+            <input type="text" id="clTitle" placeholder="Season 2 Economy Rebalance" />
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
@@ -973,22 +1033,13 @@
             <div class="field">
               <label class="field-label" for="clDate">Date</label>
               <input type="text" id="clDate" placeholder="2026-04-18" />
-              <p class="field-hint">YYYY-MM-DD format.</p>
             </div>
           </div>
 
           <div class="field">
-            <label class="field-label">Tags</label>
-            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="clTagPicker">
-              <!-- Populated dynamically from tag manager -->
-            </div>
-            <p class="field-hint">Click to toggle. Multiple allowed.</p>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="clBody">Body</label>
-            <textarea id="clBody" rows="10" placeholder="## Economy Changes&#10;&#10;- Doubled sell prices for emeralds&#10;- Fixed duplication glitch with hoppers&#10;&#10;## Bug Fixes&#10;&#10;- Resolved crash when opening shulker boxes&#10;- Fixed phantom spawning underground"></textarea>
-            <p class="field-hint">Use ## for headers, - for bullets, **bold**, *italic*. Regular lines become paragraphs.</p>
+            <label class="field-label">Patch-level tags</label>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="clTagPicker"></div>
+            <p class="field-hint">Overall theme of this patch. Individual changes can have their own tags too.</p>
           </div>
 
           <div class="field">
@@ -996,7 +1047,30 @@
             <input type="text" id="clImage" placeholder="https://example.com/screenshot.png" />
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
+          <!-- Changes builder -->
+          <div style="border-top: 1px solid rgba(244,201,93,0.1); margin-top: 0.5rem; padding-top: 1rem;">
+            <div class="field-label" style="margin-bottom: 0.8rem; font-size: 0.9rem;">Changes</div>
+
+            <div id="clChangesList"></div>
+
+            <div style="background: rgba(255,244,220,0.03); border: 1px dashed rgba(244,201,93,0.15); border-radius: 12px; padding: 1rem; margin-top: 0.6rem;">
+              <div class="field">
+                <label class="field-label" for="clChangeTitle">Change title</label>
+                <input type="text" id="clChangeTitle" placeholder="Netherite Rank Added" />
+              </div>
+              <div class="field">
+                <label class="field-label" for="clChangeDesc">Description</label>
+                <input type="text" id="clChangeDesc" placeholder="New top-tier rank with exclusive cosmetics and perks" />
+              </div>
+              <div class="field">
+                <label class="field-label">Change tag</label>
+                <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;" id="clChangeTagPicker"></div>
+              </div>
+              <button class="btn btn-secondary" id="clAddChangeBtn" type="button" style="font-size: 0.85rem; padding: 0.6rem 1rem;">+ Add Change</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1rem; margin-bottom: 1rem;">
             <div class="field" style="margin-bottom:0;">
               <label class="field-label">Status</label>
               <div style="display: flex; gap: 0.4rem;">
@@ -1013,7 +1087,7 @@
           </div>
 
           <div class="action-row">
-            <button class="btn btn-primary" id="clAddBtn" type="button">+ Add Entry</button>
+            <button class="btn btn-primary" id="clAddBtn" type="button">+ Publish Patch Note</button>
             <button class="btn btn-secondary" id="clCancelEdit" type="button" style="display:none;">Cancel Edit</button>
           </div>
         </div>
@@ -1838,14 +1912,16 @@
       }
     })();
 
+
     // ============================================
-    // Changelog editor
+    // Changelog — Announcement Builder
     // ============================================
     let clEntries = [];
     let clEditingIndex = null;
     let clAdminFilter = 'all';
+    let clCurrentChanges = [];
+    let clChangeSelectedTag = '';
 
-    // Default tags
     const DEFAULT_TAGS = [
       { id: 'new-feature', name: 'New Feature', color: '#A8C77E' },
       { id: 'bug-fix', name: 'Bug Fix', color: '#E89A6E' },
@@ -1854,13 +1930,11 @@
       { id: 'removal', name: 'Removal', color: '#E87070' },
       { id: 'event', name: 'Event', color: '#C9A0E8' },
     ];
-
     let clTags = [...DEFAULT_TAGS];
 
     const clTitle = document.getElementById('clTitle');
     const clVersion = document.getElementById('clVersion');
     const clDate = document.getElementById('clDate');
-    const clBody = document.getElementById('clBody');
     const clImage = document.getElementById('clImage');
     const clAddBtn = document.getElementById('clAddBtn');
     const clCancelEdit = document.getElementById('clCancelEdit');
@@ -1868,6 +1942,8 @@
     const clEntryList = document.getElementById('clEntryList');
     const clTagPicker = document.getElementById('clTagPicker');
     const clPinToggle = document.getElementById('clPinToggle');
+    const clChangesList = document.getElementById('clChangesList');
+    const clChangeTagPicker = document.getElementById('clChangeTagPicker');
 
     clDate.value = new Date().toISOString().split('T')[0];
 
@@ -1875,7 +1951,6 @@
     let clStatus = 'published';
     let clPinned = false;
 
-    // --- Status toggle ---
     document.querySelectorAll('.cl-status-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.cl-status-btn').forEach(b => b.classList.remove('active'));
@@ -1884,14 +1959,12 @@
       });
     });
 
-    // --- Pin toggle ---
     clPinToggle.addEventListener('click', () => {
       clPinned = !clPinned;
       clPinToggle.classList.toggle('active', clPinned);
       clPinToggle.textContent = clPinned ? '📌 Pinned' : '📌 Pin to top';
     });
 
-    // --- Color picker sync ---
     const colorPicker = document.getElementById('newTagColor');
     const colorHex = document.getElementById('newTagColorHex');
     colorPicker.addEventListener('input', () => { colorHex.value = colorPicker.value; });
@@ -1899,49 +1972,35 @@
       if (/^#[0-9a-fA-F]{6}$/.test(colorHex.value)) colorPicker.value = colorHex.value;
     });
 
-    // ============================================
-    // Tag manager
-    // ============================================
+    function getTagById(id) { return clTags.find(t => t.id === id); }
+
     function renderTagManager() {
       const list = document.getElementById('tagManagerList');
-      list.innerHTML = clTags.map((tag, i) => {
-        const bg = tag.color + '22';
-        const border = tag.color + '55';
-        return `<div class="tag-manager-item" style="background:${bg}; color:${tag.color}; border:1px solid ${border};">
-          ${tag.name}
-          <button class="tag-delete" data-idx="${i}" title="Remove">✕</button>
-        </div>`;
-      }).join('');
-
+      list.innerHTML = clTags.map((tag, i) => `<div class="tag-manager-item" style="background:${tag.color}22; color:${tag.color}; border:1px solid ${tag.color}55;">${tag.name}<button class="tag-delete" data-idx="${i}">✕</button></div>`).join('');
       list.querySelectorAll('.tag-delete').forEach(btn => {
-        btn.addEventListener('click', () => {
-          clTags.splice(parseInt(btn.dataset.idx), 1);
-          renderTagManager();
-          renderTagPicker();
-          markUnsaved();
-        });
+        btn.addEventListener('click', () => { clTags.splice(parseInt(btn.dataset.idx), 1); renderTagManager(); renderTagPicker(); renderChangeTagPicker(); markUnsaved(); });
       });
     }
 
     function renderTagPicker() {
       clTagPicker.innerHTML = clTags.map(tag => {
-        const isActive = clSelectedTags.has(tag.id) ? 'active' : '';
-        const style = isActive
-          ? `background:${tag.color}; color:#1a1209; border-color:${tag.color};`
-          : `border-color:${tag.color}55; color:${tag.color};`;
-        return `<button type="button" class="filter-chip cl-tag-btn ${isActive}" data-tag="${tag.id}" style="${style}">${tag.name}</button>`;
+        const a = clSelectedTags.has(tag.id) ? 'active' : '';
+        const s = a ? `background:${tag.color};color:#1a1209;border-color:${tag.color};` : `border-color:${tag.color}55;color:${tag.color};`;
+        return `<button type="button" class="filter-chip cl-tag-btn ${a}" data-tag="${tag.id}" style="${s}">${tag.name}</button>`;
       }).join('');
-
       clTagPicker.querySelectorAll('.cl-tag-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tag = btn.dataset.tag;
-          if (clSelectedTags.has(tag)) {
-            clSelectedTags.delete(tag);
-          } else {
-            clSelectedTags.add(tag);
-          }
-          renderTagPicker();
-        });
+        btn.addEventListener('click', () => { clSelectedTags.has(btn.dataset.tag) ? clSelectedTags.delete(btn.dataset.tag) : clSelectedTags.add(btn.dataset.tag); renderTagPicker(); });
+      });
+    }
+
+    function renderChangeTagPicker() {
+      clChangeTagPicker.innerHTML = clTags.map(tag => {
+        const a = clChangeSelectedTag === tag.id ? 'active' : '';
+        const s = a ? `background:${tag.color};color:#1a1209;border-color:${tag.color};` : `border-color:${tag.color}55;color:${tag.color};`;
+        return `<button type="button" class="filter-chip cl-ctag-btn ${a}" data-tag="${tag.id}" style="${s}">${tag.name}</button>`;
+      }).join('');
+      clChangeTagPicker.querySelectorAll('.cl-ctag-btn').forEach(btn => {
+        btn.addEventListener('click', () => { clChangeSelectedTag = clChangeSelectedTag === btn.dataset.tag ? '' : btn.dataset.tag; renderChangeTagPicker(); });
       });
     }
 
@@ -1954,58 +2013,55 @@
       if (clTags.some(t => t.id === id)) { showToast('Tag already exists.'); return; }
       clTags.push({ id, name, color });
       document.getElementById('newTagName').value = '';
-      renderTagManager();
-      renderTagPicker();
-      markUnsaved();
-      showToast('Tag added!');
+      renderTagManager(); renderTagPicker(); renderChangeTagPicker(); markUnsaved();
     });
 
     document.getElementById('saveTagsBtn').addEventListener('click', async () => {
-      try {
-        await fetch(`${API_BASE}/api/settings/changelogTags`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
-          body: JSON.stringify({ value: clTags }),
-        });
-        markSaved();
-        showToast('Tags saved!');
-      } catch (e) { showToast('Failed to save tags.'); }
+      try { await fetch(`${API_BASE}/api/settings/changelogTags`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` }, body: JSON.stringify({ value: clTags }) }); markSaved(); showToast('Tags saved!'); } catch (e) { showToast('Failed.'); }
     });
 
     document.getElementById('resetTagsBtn').addEventListener('click', () => {
       if (!confirm('Reset tags to defaults?')) return;
-      clTags = [...DEFAULT_TAGS];
-      renderTagManager();
-      renderTagPicker();
-      markUnsaved();
-      showToast('Tags reset.');
+      clTags = [...DEFAULT_TAGS]; renderTagManager(); renderTagPicker(); renderChangeTagPicker(); markUnsaved();
     });
 
-    // ============================================
-    // Entry form
-    // ============================================
-    function clearClForm() {
-      clTitle.value = '';
-      clVersion.value = '';
-      clDate.value = new Date().toISOString().split('T')[0];
-      clBody.value = '';
-      clImage.value = '';
-      clSelectedTags = new Set();
-      clStatus = 'published';
-      clPinned = false;
-      document.querySelectorAll('.cl-status-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('.cl-status-btn[data-status="published"]').classList.add('active');
-      clPinToggle.classList.remove('active');
-      clPinToggle.textContent = '📌 Pin to top';
-      renderTagPicker();
-      clEditingIndex = null;
-      clAddBtn.textContent = '+ Add Entry';
-      clFormTitle.textContent = 'New entry';
-      clCancelEdit.style.display = 'none';
+    // --- Changes builder ---
+    function renderChanges() {
+      if (clCurrentChanges.length === 0) {
+        clChangesList.innerHTML = '<div class="changelog-admin-empty" style="padding:0.8rem;font-size:0.82rem;">No changes added yet.</div>';
+        return;
+      }
+      clChangesList.innerHTML = clCurrentChanges.map((c, i) => {
+        const tag = getTagById(c.tag);
+        const tagHtml = tag ? `<span class="change-tag" style="background:${tag.color}22;color:${tag.color};border:1px solid ${tag.color}55;">${tag.name}</span>` : '';
+        return `<div class="cl-change-item">${tagHtml}<div class="change-info"><div class="change-title">${c.title}</div>${c.description ? `<div class="change-desc">${c.description}</div>` : ''}</div><button class="change-remove" data-idx="${i}">✕</button></div>`;
+      }).join('');
+      clChangesList.querySelectorAll('.change-remove').forEach(btn => {
+        btn.addEventListener('click', () => { clCurrentChanges.splice(parseInt(btn.dataset.idx), 1); renderChanges(); });
+      });
     }
 
-    function getTagById(id) {
-      return clTags.find(t => t.id === id);
+    document.getElementById('clAddChangeBtn').addEventListener('click', () => {
+      const title = document.getElementById('clChangeTitle').value.trim();
+      if (!title) { showToast('Give the change a title.'); return; }
+      clCurrentChanges.push({ title, description: document.getElementById('clChangeDesc').value.trim() || null, tag: clChangeSelectedTag || null });
+      document.getElementById('clChangeTitle').value = '';
+      document.getElementById('clChangeDesc').value = '';
+      clChangeSelectedTag = '';
+      renderChangeTagPicker(); renderChanges();
+    });
+
+    function clearClForm() {
+      clTitle.value = ''; clVersion.value = ''; clDate.value = new Date().toISOString().split('T')[0];
+      clImage.value = ''; clCurrentChanges = []; clSelectedTags = new Set();
+      clStatus = 'published'; clPinned = false; clChangeSelectedTag = '';
+      document.querySelectorAll('.cl-status-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.cl-status-btn[data-status="published"]').classList.add('active');
+      clPinToggle.classList.remove('active'); clPinToggle.textContent = '📌 Pin to top';
+      document.getElementById('clChangeTitle').value = ''; document.getElementById('clChangeDesc').value = '';
+      renderTagPicker(); renderChangeTagPicker(); renderChanges();
+      clEditingIndex = null; clAddBtn.textContent = '+ Publish Patch Note';
+      clFormTitle.textContent = 'New patch note'; clCancelEdit.style.display = 'none';
     }
 
     function renderClEntries() {
@@ -2013,167 +2069,67 @@
       if (clAdminFilter === 'published') filtered = clEntries.filter(e => e.status !== 'draft');
       else if (clAdminFilter === 'draft') filtered = clEntries.filter(e => e.status === 'draft');
       else if (clAdminFilter === 'pinned') filtered = clEntries.filter(e => e.pinned);
-
-      if (filtered.length === 0) {
-        clEntryList.innerHTML = `<div class="changelog-admin-empty">${
-          clAdminFilter === 'all' ? 'No entries yet. Add one on the left.' : 'No entries match this filter.'
-        }</div>`;
-        return;
-      }
-
-      const sorted = [...filtered].map((e, i) => ({ ...e, _idx: clEntries.indexOf(e) }))
-        .sort((a, b) => {
-          if (a.pinned && !b.pinned) return -1;
-          if (!a.pinned && b.pinned) return 1;
-          return new Date(b.date) - new Date(a.date);
-        });
-
+      if (filtered.length === 0) { clEntryList.innerHTML = `<div class="changelog-admin-empty">${clAdminFilter === 'all' ? 'No patch notes yet.' : 'No match.'}</div>`; return; }
+      const sorted = [...filtered].map((e, i) => ({ ...e, _idx: clEntries.indexOf(e) })).sort((a, b) => { if (a.pinned && !b.pinned) return -1; if (!a.pinned && b.pinned) return 1; return new Date(b.date) - new Date(a.date); });
       clEntryList.innerHTML = sorted.map(entry => {
-        const tagsHtml = (entry.tags || []).map(tId => {
-          const t = getTagById(tId);
-          if (!t) return '';
-          return `<span style="background:${t.color}22; color:${t.color}; border:1px solid ${t.color}55;">${t.name}</span>`;
-        }).join('');
-
-        const statusClass = entry.status === 'draft' ? 'draft' : 'published';
-        const statusLabel = entry.status === 'draft' ? 'Draft' : 'Live';
-
-        return `
-          <div class="cl-entry-item">
-            <div class="cl-entry-top">
-              <span class="cl-entry-name">${entry.pinned ? '📌 ' : ''}${entry.title}</span>
-              <span class="cl-entry-status ${statusClass}">${statusLabel}</span>
-              ${entry.version ? `<span class="cl-entry-ver">${entry.version}</span>` : ''}
-            </div>
-            <div class="cl-entry-date">${entry.date}</div>
-            ${tagsHtml ? `<div class="cl-entry-tags">${tagsHtml}</div>` : ''}
-            <div class="cl-entry-actions">
-              <button class="cl-btn-edit" data-idx="${entry._idx}">Edit</button>
-              <button class="cl-btn-delete" data-idx="${entry._idx}">Delete</button>
-            </div>
-          </div>`;
+        const sc = entry.status === 'draft' ? 'draft' : 'published';
+        const sl = entry.status === 'draft' ? 'Draft' : 'Live';
+        const cc = (entry.changes || []).length;
+        return `<div class="cl-entry-item"><div class="cl-entry-top"><span class="cl-entry-name">${entry.pinned ? '📌 ' : ''}${entry.title}</span><span class="cl-entry-status ${sc}">${sl}</span>${entry.version ? `<span class="cl-entry-ver">${entry.version}</span>` : ''}</div><div class="cl-entry-date">${entry.date} · ${cc} change${cc !== 1 ? 's' : ''}</div><div class="cl-entry-actions"><button class="cl-btn-edit" data-idx="${entry._idx}">Edit</button><button class="cl-btn-delete" data-idx="${entry._idx}">Delete</button></div></div>`;
       }).join('');
-
       clEntryList.querySelectorAll('.cl-btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
-          const idx = parseInt(btn.dataset.idx);
-          const entry = clEntries[idx];
-          clTitle.value = entry.title || '';
-          clVersion.value = entry.version || '';
-          clDate.value = entry.date || '';
-          clBody.value = entry.body || '';
-          clImage.value = entry.image || '';
-          clSelectedTags = new Set(entry.tags || []);
-          clStatus = entry.status || 'published';
-          clPinned = !!entry.pinned;
+          const idx = parseInt(btn.dataset.idx); const e = clEntries[idx];
+          clTitle.value = e.title || ''; clVersion.value = e.version || ''; clDate.value = e.date || '';
+          clImage.value = e.image || ''; clCurrentChanges = [...(e.changes || [])];
+          clSelectedTags = new Set(e.tags || []); clStatus = e.status || 'published'; clPinned = !!e.pinned;
           document.querySelectorAll('.cl-status-btn').forEach(b => b.classList.remove('active'));
           document.querySelector(`.cl-status-btn[data-status="${clStatus}"]`).classList.add('active');
-          clPinToggle.classList.toggle('active', clPinned);
-          clPinToggle.textContent = clPinned ? '📌 Pinned' : '📌 Pin to top';
-          renderTagPicker();
-          clEditingIndex = idx;
-          clAddBtn.textContent = 'Update Entry';
-          clFormTitle.textContent = 'Editing entry';
-          clCancelEdit.style.display = '';
-          clTitle.focus();
+          clPinToggle.classList.toggle('active', clPinned); clPinToggle.textContent = clPinned ? '📌 Pinned' : '📌 Pin to top';
+          renderTagPicker(); renderChanges(); clEditingIndex = idx;
+          clAddBtn.textContent = 'Update Patch Note'; clFormTitle.textContent = 'Editing patch note';
+          clCancelEdit.style.display = ''; clTitle.focus();
         });
       });
-
       clEntryList.querySelectorAll('.cl-btn-delete').forEach(btn => {
         btn.addEventListener('click', () => {
           const idx = parseInt(btn.dataset.idx);
           if (!confirm(`Delete "${clEntries[idx].title}"?`)) return;
-          clEntries.splice(idx, 1);
-          renderClEntries();
-          markUnsaved();
+          clEntries.splice(idx, 1); renderClEntries(); markUnsaved();
           if (clEditingIndex === idx) clearClForm();
         });
       });
     }
 
-    // Admin filter
     document.querySelectorAll('.cl-filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.cl-filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        clAdminFilter = btn.dataset.filter;
-        renderClEntries();
-      });
+      btn.addEventListener('click', () => { document.querySelectorAll('.cl-filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); clAdminFilter = btn.dataset.filter; renderClEntries(); });
     });
 
-    // Add / update entry
     clAddBtn.addEventListener('click', () => {
-      const title = clTitle.value.trim();
-      const date = clDate.value.trim();
+      const title = clTitle.value.trim(); const date = clDate.value.trim();
       if (!title) { showToast('Give it a title.'); return; }
       if (!date) { showToast('Set a date.'); return; }
-
-      const entry = {
-        title,
-        version: clVersion.value.trim() || null,
-        date,
-        tags: [...clSelectedTags],
-        body: clBody.value,
-        image: clImage.value.trim() || null,
-        status: clStatus,
-        pinned: clPinned,
-        id: clEditingIndex !== null ? clEntries[clEditingIndex].id : `cl-${Date.now()}`,
-      };
-
-      if (clEditingIndex !== null) {
-        clEntries[clEditingIndex] = entry;
-        showToast('Entry updated!');
-      } else {
-        clEntries.push(entry);
-        showToast('Entry added!');
-      }
-
-      clearClForm();
-      renderClEntries();
-      markUnsaved();
+      if (clCurrentChanges.length === 0) { showToast('Add at least one change.'); return; }
+      const entry = { title, version: clVersion.value.trim() || null, date, tags: [...clSelectedTags], changes: [...clCurrentChanges], image: clImage.value.trim() || null, status: clStatus, pinned: clPinned, id: clEditingIndex !== null ? clEntries[clEditingIndex].id : `cl-${Date.now()}` };
+      if (clEditingIndex !== null) { clEntries[clEditingIndex] = entry; showToast('Updated!'); } else { clEntries.push(entry); showToast('Published!'); }
+      clearClForm(); renderClEntries(); markUnsaved();
     });
 
     clCancelEdit.addEventListener('click', clearClForm);
 
-    // Save
     document.getElementById('clSaveBtn').addEventListener('click', async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/settings/changelog`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
-          body: JSON.stringify({ value: clEntries }),
-        });
-        if (!res.ok) { showToast('Save failed.'); return; }
-        markSaved();
-        showToast('Changelog saved!');
-      } catch (e) { showToast('Failed to save.'); }
+      try { const res = await fetch(`${API_BASE}/api/settings/changelog`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` }, body: JSON.stringify({ value: clEntries }) }); if (!res.ok) { showToast('Save failed.'); return; } markSaved(); showToast('Changelog saved!'); } catch (e) { showToast('Failed.'); }
     });
 
-    document.getElementById('clPreviewBtn').addEventListener('click', () => {
-      window.open('changelog.html', '_blank');
-    });
+    document.getElementById('clPreviewBtn').addEventListener('click', () => { window.open('changelog.html', '_blank'); });
 
-    // Load tags + entries on init
     (async function loadChangelog() {
       try {
-        const [tagsRes, entriesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/settings/changelogTags`),
-          fetch(`${API_BASE}/api/settings/changelog`),
-        ]);
-        if (tagsRes.ok) {
-          const tagsData = await tagsRes.json();
-          if (tagsData.value && tagsData.value.length > 0) clTags = tagsData.value;
-        }
-        if (entriesRes.ok) {
-          const entriesData = await entriesRes.json();
-          clEntries = entriesData.value || [];
-        }
-      } catch (e) {
-        // defaults are fine
-      }
-      renderTagManager();
-      renderTagPicker();
-      renderClEntries();
+        const [tagsRes, entriesRes] = await Promise.all([fetch(`${API_BASE}/api/settings/changelogTags`), fetch(`${API_BASE}/api/settings/changelog`)]);
+        if (tagsRes.ok) { const d = await tagsRes.json(); if (d.value?.length) clTags = d.value; }
+        if (entriesRes.ok) { const d = await entriesRes.json(); clEntries = d.value || []; }
+      } catch (e) {}
+      renderTagManager(); renderTagPicker(); renderChangeTagPicker(); renderChanges(); renderClEntries();
     })();
 
     // ============================================

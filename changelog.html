@@ -127,6 +127,29 @@
     .entry-image { margin-top: 1.2rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(244, 201, 93, 0.1); }
     .entry-image img { width: 100%; display: block; }
 
+    /* Structured changes */
+    .entry-changes { margin-top: 0.2rem; }
+    .entry-change-row {
+      display: flex; align-items: flex-start; gap: 0.7rem;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(244,201,93,0.05);
+    }
+    .entry-change-row:last-child { border-bottom: none; }
+    .change-chip {
+      font-family: 'Nunito', sans-serif; font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.2rem 0.5rem; border-radius: 5px; white-space: nowrap;
+      flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .entry-change-info { flex: 1; min-width: 0; }
+    .entry-change-title {
+      font-family: 'Fredoka', sans-serif; font-size: 0.92rem; font-weight: 600;
+      color: var(--cream); display: block; line-height: 1.3;
+    }
+    .entry-change-desc {
+      font-family: 'Nunito', sans-serif; font-size: 0.84rem;
+      color: var(--cream); opacity: 0.55; display: block; line-height: 1.5; margin-top: 0.15rem;
+    }
+
     .changelog-loading { text-align: center; padding: 4rem 2rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5; }
     .changelog-loading .load-spinner {
       width: 28px; height: 28px; border: 3px solid rgba(244, 201, 93, 0.15);
@@ -374,6 +397,24 @@
       const imageHtml = entry.image ? `<div class="entry-image"><img src="${entry.image}" alt="" loading="lazy" /></div>` : '';
       const pinBadge = isPinned ? '<div class="entry-pin-badge">📌 Pinned</div>' : '';
 
+      // Render body: structured changes or legacy freeform
+      let bodyHtml = '';
+      if (entry.changes && entry.changes.length > 0) {
+        bodyHtml = '<div class="entry-changes">' + entry.changes.map(c => {
+          const t = c.tag ? getTag(c.tag) : null;
+          const tagChip = t ? `<span class="change-chip" style="background:${t.color}22; color:${t.color}; border:1px solid ${t.color}55;">${t.name}</span>` : '';
+          return `<div class="entry-change-row">
+            ${tagChip}
+            <div class="entry-change-info">
+              <span class="entry-change-title">${c.title}</span>
+              ${c.description ? `<span class="entry-change-desc">${c.description}</span>` : ''}
+            </div>
+          </div>`;
+        }).join('') + '</div>';
+      } else if (entry.body) {
+        bodyHtml = `<div class="entry-body">${parseBody(entry.body)}</div>`;
+      }
+
       return `
         <div class="changelog-entry${isPinned ? ' pinned' : ''}" data-entry-id="${entry.id}">
           ${pinBadge}
@@ -382,7 +423,7 @@
             ${versionHtml}
           </div>
           <div class="entry-tags">${tagsHtml}</div>
-          <div class="entry-body">${parseBody(entry.body)}</div>
+          ${bodyHtml}
           ${imageHtml}
         </div>`;
     }
