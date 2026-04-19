@@ -150,6 +150,44 @@
       color: var(--cream); opacity: 0.55; display: block; line-height: 1.5; margin-top: 0.15rem;
     }
 
+    /* Reactions */
+    .reaction-bar {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1rem;
+      padding-top: 0.8rem; border-top: 1px solid rgba(244,201,93,0.06);
+    }
+
+    .reaction-btn {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px;
+      border: 1px solid rgba(244,201,93,0.1);
+      background: rgba(255,244,220,0.03);
+      color: var(--cream); opacity: 0.5;
+      cursor: pointer; transition: all 0.2s; user-select: none;
+    }
+
+    .reaction-btn:hover {
+      opacity: 0.8; background: rgba(255,244,220,0.06);
+      border-color: rgba(244,201,93,0.2);
+    }
+
+    .reaction-btn.active {
+      opacity: 1; background: rgba(244,201,93,0.12);
+      border-color: rgba(244,201,93,0.35); color: var(--sun);
+    }
+
+    .reaction-btn .r-emoji { font-size: 0.95rem; line-height: 1; }
+    .reaction-btn .r-count { font-size: 0.75rem; min-width: 0.8rem; text-align: center; }
+
+    .reaction-btn.no-count { opacity: 0.3; }
+    .reaction-btn.no-count:hover { opacity: 0.6; }
+
+    .reaction-login-hint {
+      font-family: 'Nunito', sans-serif; font-size: 0.75rem;
+      color: var(--cream); opacity: 0.3; font-style: italic;
+      padding: 0.3rem 0;
+    }
+
     .changelog-loading { text-align: center; padding: 4rem 2rem; font-family: 'Fredoka', sans-serif; color: var(--cream); opacity: 0.5; }
     .changelog-loading .load-spinner {
       width: 28px; height: 28px; border: 3px solid rgba(244, 201, 93, 0.15);
@@ -384,6 +422,10 @@
         });
       }, { threshold: 0.1 });
       entryEls.forEach(el => obs.observe(el));
+
+      // Load reactions for all visible entries
+      const entryIds = [...feed.querySelectorAll('[data-entry-id]')].map(el => el.dataset.entryId);
+      loadReactions(entryIds);
     }
 
     function renderEntry(entry, isPinned) {
@@ -425,7 +467,106 @@
           <div class="entry-tags">${tagsHtml}</div>
           ${bodyHtml}
           ${imageHtml}
+          <div class="reaction-bar" data-reactions-for="${entry.id}"></div>
         </div>`;
+    }
+
+    // ============================================
+    // Reactions system
+    // ============================================
+    const EMOJIS = ['👍', '🎉', '❤️', '🔥', '😂'];
+    let reactionsData = {};
+
+    function isLoggedIn() {
+      return !!ccGetUser();
+    }
+
+    function getAuthHeader() {
+      const token = localStorage.getItem('ccAuthToken');
+      return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    async function loadReactions(entryIds) {
+      if (entryIds.length === 0) return;
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/reactions-bulk?ids=${entryIds.join(',')}`,
+          { headers: getAuthHeader() }
+        );
+        if (res.ok) {
+          reactionsData = await res.json();
+        }
+      } catch (e) {}
+      renderAllReactions();
+    }
+
+    function renderAllReactions() {
+      document.querySelectorAll('[data-reactions-for]').forEach(bar => {
+        const entryId = bar.dataset.reactionsFor;
+        const data = reactionsData[entryId] || { counts: {}, userReactions: [] };
+        renderReactionBar(bar, entryId, data);
+      });
+    }
+
+    function renderReactionBar(bar, entryId, data) {
+      const loggedIn = isLoggedIn();
+
+      bar.innerHTML = EMOJIS.map(emoji => {
+        const count = data.counts[emoji] || 0;
+        const isActive = data.userReactions.includes(emoji);
+        const activeClass = isActive ? ' active' : '';
+        const noCountClass = count === 0 && !isActive ? ' no-count' : '';
+
+        if (loggedIn) {
+          return `<button class="reaction-btn${activeClass}${noCountClass}" data-emoji="${emoji}" data-entry="${entryId}">
+            <span class="r-emoji">${emoji}</span>
+            ${count > 0 ? `<span class="r-count">${count}</span>` : ''}
+          </button>`;
+        } else {
+          if (count === 0) return '';
+          return `<span class="reaction-btn" style="cursor:default;">
+            <span class="r-emoji">${emoji}</span>
+            <span class="r-count">${count}</span>
+          </span>`;
+        }
+      }).join('');
+
+      if (!loggedIn && bar.innerHTML === '') {
+        bar.style.display = 'none';
+        return;
+      }
+
+      // Toggle handlers
+      bar.querySelectorAll('button.reaction-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const emoji = btn.dataset.emoji;
+          const eid = btn.dataset.entry;
+
+          // Optimistic update
+          const d = reactionsData[eid] || { counts: {}, userReactions: [] };
+          const wasActive = d.userReactions.includes(emoji);
+
+          if (wasActive) {
+            d.userReactions = d.userReactions.filter(e => e !== emoji);
+            d.counts[emoji] = Math.max(0, (d.counts[emoji] || 1) - 1);
+            if (d.counts[emoji] === 0) delete d.counts[emoji];
+          } else {
+            d.userReactions.push(emoji);
+            d.counts[emoji] = (d.counts[emoji] || 0) + 1;
+          }
+          reactionsData[eid] = d;
+          renderReactionBar(bar, eid, d);
+
+          // Send to API
+          try {
+            await fetch(`${API_BASE}/api/reactions/${eid}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+              body: JSON.stringify({ emoji }),
+            });
+          } catch (e) {}
+        });
+      });
     }
 
     // Load everything
