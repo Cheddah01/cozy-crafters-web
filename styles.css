@@ -245,6 +245,7 @@ nav#mainNav.scrolled {
   align-items: center;
   text-align: center;
   gap: 1.6rem;
+  padding-bottom: 3rem;
 }
 
 .eyebrow {
