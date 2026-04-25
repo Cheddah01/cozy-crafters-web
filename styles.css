@@ -472,9 +472,9 @@ h1 .accent {
   display: flex;
   align-items: center;
   gap: 1rem;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
+  max-width: 620px;
+  margin: 1.2rem auto 0;
+  padding: 0.8rem 1.2rem;
   border-radius: 14px;
   background: linear-gradient(135deg, rgba(255, 140, 66, 0.08), rgba(232, 93, 38, 0.04));
   border: 1px solid rgba(255, 140, 66, 0.15);
@@ -483,6 +483,8 @@ h1 .accent {
   z-index: 10;
   overflow: hidden;
   transition: all 0.3s;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.8s forwards;
 }
 .anniversary-banner:hover {
   border-color: rgba(255, 140, 66, 0.3);
