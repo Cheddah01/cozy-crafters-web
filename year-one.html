@@ -3,34 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cozy Crafters SMP — Year One</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Year One · Cozy Crafters SMP — Minecraft Server</title>
+<meta name="description" content="365 days of Cozy Crafters SMP. 6,656 hours played, 198,382 messages, 1.47M mobs killed. The full story of Year One." />
+<meta property="og:title" content="Year One — Cozy Crafters SMP" />
+<meta property="og:description" content="365 days. 6,656 hours. 198,382 messages. The full story of our first year." />
+<meta property="og:url" content="https://cozycrafters.net/year-one.html" />
+<meta name="theme-color" content="#2F4423" />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="canonical" href="https://cozycrafters.net/year-one.html" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --orange-bright: #FF8C42;
-  --orange-deep: #E85D26;
-  --yellow-warm: #FFD166;
-  --yellow-light: #FFF3C4;
-  --amber: #F4A623;
-  --cream: #FFF8EE;
-  --dark: #1A1008;
-  --dark-card: #2A1A0A;
-  --dark-card-hover: #3A2510;
-  --text-warm: #FFE8CC;
-  --text-muted: #BFA47A;
-  --glow-orange: rgba(255, 140, 66, 0.3);
+  --sun: #F4C95D;
+  --sun-deep: #C9A23B;
+  --cream: #FFF4DC;
+  --ink: #1A1A12;
+  --moss: #6B8E4E;
+  --moss-dark: #2F4423;
+  --bark: #5C3D2E;
+  --bark-deep: #3D2B1F;
+  --accent-warm: #E89A6E;
+  --text-warm: #FFF4DC;
+  --text-muted: #A89B7A;
+  --dark-card: rgba(255, 244, 220, 0.03);
+  --dark-card-hover: rgba(255, 244, 220, 0.06);
+  --border-subtle: rgba(244, 201, 93, 0.1);
+  --border-hover: rgba(244, 201, 93, 0.25);
+  --glow: rgba(244, 201, 93, 0.3);
 }
 
 html {
   scroll-behavior: smooth;
-  background: var(--dark);
+  background: var(--ink);
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--dark);
+  font-family: 'Nunito', sans-serif;
+  background: var(--ink);
   color: var(--text-warm);
   overflow-x: hidden;
   line-height: 1.6;
@@ -55,7 +69,7 @@ body::before {
   justify-content: center;
   text-align: center;
   position: relative;
-  padding: 2rem;
+  padding: 7rem 2rem 2rem;
 }
 
 .hero::before {
@@ -66,7 +80,7 @@ body::before {
   transform: translateX(-50%);
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(255, 140, 66, 0.15) 0%, rgba(232, 93, 38, 0.05) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(244, 201, 93, 0.1) 0%, rgba(107, 142, 78, 0.05) 40%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -76,22 +90,24 @@ body::before {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1.25rem;
-  border: 1px solid rgba(255, 140, 66, 0.3);
+  border: 1px solid rgba(244, 201, 93, 0.25);
   border-radius: 100px;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif;
   font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--orange-bright);
+  color: var(--sun);
   margin-bottom: 2rem;
   animation: fadeDown 0.8s ease-out;
   backdrop-filter: blur(10px);
-  background: rgba(255, 140, 66, 0.05);
+  background: rgba(244, 201, 93, 0.05);
 }
 
 .hero-title {
+  font-family: 'Fredoka', sans-serif;
   font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 900;
+  font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
@@ -100,23 +116,24 @@ body::before {
 
 .hero-title .line1 {
   display: block;
-  color: var(--yellow-warm);
-  text-shadow: 0 0 60px rgba(255, 209, 102, 0.3);
+  color: var(--cream);
+  text-shadow: 0 0 60px rgba(255, 244, 220, 0.15);
 }
 
 .hero-title .line2 {
   display: block;
-  background: linear-gradient(135deg, var(--orange-bright), var(--orange-deep));
+  background: linear-gradient(135deg, var(--sun), var(--accent-warm));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   color: var(--text-muted);
   max-width: 500px;
-  font-weight: 300;
+  font-weight: 400;
   animation: fadeUp 1s ease-out 0.4s both;
 }
 
@@ -127,19 +144,19 @@ body::before {
   animation: fadeUp 1s ease-out 0.6s both;
 }
 
-.hero-stat {
-  text-align: center;
-}
+.hero-stat { text-align: center; }
 
 .hero-stat-number {
+  font-family: 'Fredoka', sans-serif;
   font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--yellow-warm);
-  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  color: var(--sun);
 }
 
 .hero-stat-label {
+  font-family: 'Nunito', sans-serif;
   font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-muted);
@@ -163,7 +180,7 @@ body::before {
 .scroll-hint svg {
   width: 20px;
   height: 20px;
-  stroke: var(--orange-bright);
+  stroke: var(--sun);
 }
 
 /* ===== SECTION STYLES ===== */
@@ -178,18 +195,18 @@ body::before {
 }
 
 .section-tag {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--orange-bright);
+  color: var(--sun);
   margin-bottom: 0.75rem;
 }
 
-.section-title {
+.section-title { font-family: "Fredoka", sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  color: var(--yellow-warm);
+  font-weight: 700;
+  color: var(--cream);
   letter-spacing: -0.02em;
 }
 
@@ -210,7 +227,7 @@ body::before {
 
 .divider-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 140, 66, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(244, 201, 93, 0.3), transparent);
 }
 
 /* ===== AWARD CARDS ===== */
@@ -222,7 +239,7 @@ body::before {
 
 .award-card {
   background: var(--dark-card);
-  border: 1px solid rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(244, 201, 93, 0.1);
   border-radius: 16px;
   padding: 1.75rem;
   transition: all 0.3s ease;
@@ -237,14 +254,14 @@ body::before {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--orange-bright), var(--yellow-warm));
+  background: linear-gradient(90deg, var(--sun), var(--cream));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .award-card:hover {
   background: var(--dark-card-hover);
-  border-color: rgba(255, 140, 66, 0.25);
+  border-color: rgba(244, 201, 93, 0.25);
   transform: translateY(-2px);
 }
 
@@ -262,15 +279,16 @@ body::before {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--orange-bright);
-  font-family: 'Space Mono', monospace;
+  color: var(--sun);
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .award-player {
+  font-family: 'Fredoka', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--yellow-warm);
+  color: var(--sun);
 }
 
 .award-stat {
@@ -289,7 +307,7 @@ body::before {
 
 .leaderboard {
   background: var(--dark-card);
-  border: 1px solid rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(244, 201, 93, 0.1);
   border-radius: 16px;
   padding: 1.75rem;
 }
@@ -298,8 +316,8 @@ body::before {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--orange-bright);
-  font-family: 'Space Mono', monospace;
+  color: var(--sun);
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
@@ -310,28 +328,28 @@ body::before {
   display: flex;
   align-items: center;
   padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(255, 140, 66, 0.06);
+  border-bottom: 1px solid rgba(244, 201, 93, 0.06);
   position: relative;
 }
 
 .leaderboard-row:last-child { border-bottom: none; }
 
 .lb-rank {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.75rem;
   color: var(--text-muted);
   width: 2rem;
   flex-shrink: 0;
 }
 
-.lb-rank.gold { color: var(--yellow-warm); font-weight: 700; }
+.lb-rank.gold { color: var(--cream); font-weight: 700; }
 .lb-rank.silver { color: #C0C0C0; font-weight: 700; }
 .lb-rank.bronze { color: #CD7F32; font-weight: 700; }
 
 .lb-bar-bg {
   flex: 1;
   height: 28px;
-  background: rgba(255, 140, 66, 0.06);
+  background: rgba(244, 201, 93, 0.06);
   border-radius: 6px;
   position: relative;
   overflow: hidden;
@@ -343,7 +361,7 @@ body::before {
   left: 0;
   height: 100%;
   border-radius: 6px;
-  background: linear-gradient(90deg, rgba(255, 140, 66, 0.2), rgba(255, 209, 102, 0.15));
+  background: linear-gradient(90deg, rgba(244, 201, 93, 0.2), rgba(244, 201, 93, 0.15));
   transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -364,9 +382,9 @@ body::before {
 }
 
 .lb-value {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.75rem;
-  color: var(--orange-bright);
+  color: var(--sun);
 }
 
 /* ===== WORDS CLOUD ===== */
@@ -383,15 +401,15 @@ body::before {
   padding: 0.5rem 1.25rem;
   border-radius: 100px;
   background: var(--dark-card);
-  border: 1px solid rgba(255, 140, 66, 0.1);
-  font-family: 'Space Mono', monospace;
+  border: 1px solid rgba(244, 201, 93, 0.1);
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   transition: all 0.3s ease;
   cursor: default;
 }
 
 .word-bubble:hover {
-  border-color: var(--orange-bright);
-  background: rgba(255, 140, 66, 0.1);
+  border-color: var(--sun);
+  background: rgba(244, 201, 93, 0.1);
   transform: scale(1.05);
 }
 
@@ -417,7 +435,7 @@ body::before {
 
 .lore-card {
   background: var(--dark-card);
-  border: 1px solid rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(244, 201, 93, 0.1);
   border-radius: 16px;
   padding: 2rem;
   position: relative;
@@ -425,15 +443,15 @@ body::before {
 }
 
 .lore-card:hover {
-  border-color: rgba(255, 140, 66, 0.25);
+  border-color: rgba(244, 201, 93, 0.25);
   transform: translateY(-2px);
 }
 
 .lore-card .lore-number {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Fredoka', sans-serif;
   font-size: 3rem;
   font-weight: 700;
-  color: var(--orange-bright);
+  color: var(--sun);
   line-height: 1;
   opacity: 0.8;
 }
@@ -447,11 +465,11 @@ body::before {
 
 .lore-card .lore-detail {
   font-size: 0.75rem;
-  color: var(--orange-bright);
-  font-family: 'Space Mono', monospace;
+  color: var(--sun);
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 140, 66, 0.1);
+  border-top: 1px solid rgba(244, 201, 93, 0.1);
 }
 
 /* ===== COMMANDS SECTION ===== */
@@ -468,20 +486,20 @@ body::before {
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background: var(--dark-card);
-  border: 1px solid rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(244, 201, 93, 0.1);
   border-radius: 8px;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.8rem;
   transition: all 0.3s ease;
   cursor: default;
 }
 
 .cmd-chip:hover {
-  border-color: var(--orange-bright);
-  background: rgba(255, 140, 66, 0.08);
+  border-color: var(--sun);
+  background: rgba(244, 201, 93, 0.08);
 }
 
-.cmd-chip .cmd-name { color: var(--yellow-warm); }
+.cmd-chip .cmd-name { color: var(--cream); }
 .cmd-chip .cmd-count { color: var(--text-muted); font-size: 0.7rem; }
 
 /* ===== GHOST BUILDERS ===== */
@@ -493,23 +511,23 @@ body::before {
 
 .ghost-table th {
   text-align: left;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--text-muted);
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(255, 140, 66, 0.15);
+  border-bottom: 1px solid rgba(244, 201, 93, 0.15);
 }
 
 .ghost-table td {
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid rgba(255, 140, 66, 0.06);
+  border-bottom: 1px solid rgba(244, 201, 93, 0.06);
   font-size: 0.85rem;
 }
 
-.ghost-table td:first-child { color: var(--yellow-warm); font-weight: 500; }
-.ghost-table td:nth-child(2) { font-family: 'Space Mono', monospace; color: var(--orange-bright); font-size: 0.8rem; }
+.ghost-table td:first-child { color: var(--cream); font-weight: 500; }
+.ghost-table td:nth-child(2) { font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--sun); font-size: 0.8rem; }
 .ghost-table td:nth-child(3) { color: var(--text-muted); font-size: 0.8rem; }
 
 /* ===== TIMELINE ===== */
@@ -526,7 +544,7 @@ body::before {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, var(--orange-bright), var(--yellow-warm), transparent);
+  background: linear-gradient(180deg, var(--sun), var(--cream), transparent);
 }
 
 .timeline-item {
@@ -542,15 +560,15 @@ body::before {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--orange-bright);
-  border: 2px solid var(--dark);
+  background: var(--sun);
+  border: 2px solid var(--ink);
   transform: translateX(-4px);
 }
 
 .timeline-date {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.7rem;
-  color: var(--orange-bright);
+  color: var(--sun);
   letter-spacing: 0.05em;
 }
 
@@ -583,7 +601,7 @@ body::before {
 }
 
 .footer-text {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -630,7 +648,7 @@ body::before {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, var(--orange-bright), var(--yellow-warm), var(--orange-deep), var(--yellow-warm), transparent);
+  background: linear-gradient(180deg, var(--sun), var(--cream), var(--accent-warm), var(--cream), transparent);
 }
 
 .era {
@@ -646,35 +664,36 @@ body::before {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--dark);
-  border: 3px solid var(--orange-bright);
+  background: var(--ink);
+  border: 3px solid var(--sun);
   z-index: 1;
 }
 
-.era-dot.golden { border-color: var(--yellow-warm); background: rgba(255, 209, 102, 0.15); }
+.era-dot.golden { border-color: var(--sun); background: rgba(244, 201, 93, 0.15); }
 .era-dot.quiet { border-color: var(--text-muted); }
-.era-dot.peak { border-color: var(--orange-deep); background: rgba(232, 93, 38, 0.15); }
+.era-dot.peak { border-color: var(--moss); background: rgba(107, 142, 78, 0.15); }
 .era-dot.sad { border-color: #888; }
-.era-dot.now { border-color: var(--yellow-warm); background: rgba(255, 209, 102, 0.3); box-shadow: 0 0 12px rgba(255, 209, 102, 0.4); }
+.era-dot.now { border-color: var(--sun); background: rgba(244, 201, 93, 0.3); box-shadow: 0 0 12px rgba(244, 201, 93, 0.4); }
 
 .era-date {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--orange-bright);
+  color: var(--sun);
   margin-bottom: 0.35rem;
 }
 
 .era-title {
+  font-family: 'Fredoka', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--yellow-warm);
+  color: var(--cream);
   margin-bottom: 0.35rem;
 }
 
 .era-stats {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.7rem;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
@@ -690,8 +709,8 @@ body::before {
 .era-quote {
   margin-top: 0.75rem;
   padding: 0.75rem 1rem;
-  background: rgba(255, 140, 66, 0.06);
-  border-left: 2px solid rgba(255, 140, 66, 0.3);
+  background: rgba(244, 201, 93, 0.06);
+  border-left: 2px solid rgba(244, 201, 93, 0.3);
   border-radius: 0 8px 8px 0;
   font-size: 0.8rem;
   font-style: italic;
@@ -702,9 +721,9 @@ body::before {
   display: block;
   margin-top: 0.25rem;
   font-style: normal;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
   font-size: 0.65rem;
-  color: var(--orange-bright);
+  color: var(--sun);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -722,6 +741,31 @@ body::before {
 </style>
 </head>
 <body>
+
+<nav id="mainNav" class="scrolled">
+  <a href="/" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="changelog.html">Changelog</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="chronicles.html">Chronicles</a></li>
+    <li><a href="year-one.html">Year One</a></li>
+    <li><a href="support.html">Support</a></li>
+    <li><a href="#discord">Discord</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburgerBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="changelog.html">Changelog</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="chronicles.html">Chronicles</a></li>
+    <li><a href="year-one.html">Year One</a></li>
+    <li><a href="support.html">Support</a></li>
+    <li><a href="#discord">Discord</a></li>
+  </ul>
+</div>
 
 <!-- ===== HERO ===== -->
 <section class="hero">
@@ -1659,13 +1703,27 @@ body::before {
 </section>
 
 <!-- ===== FOOTER ===== -->
-<footer class="footer reveal">
-  <span class="footer-heart">🧡</span>
-  <p style="color:var(--yellow-warm); font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Thank you for making this place what it is. Here's to Year Two.</p>
-  <p class="footer-text">Made with love — Cozy Crafters SMP</p>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="leaf">🌿</span> Cozy Crafters SMP</div>
+    <div class="footer-links">
+      <a href="/">Home</a><a href="changelog.html">Changelog</a>
+      <a href="gallery.html">Gallery</a><a href="chronicles.html">Chronicles</a>
+    </div>
+    <p class="footer-note">Thank you for making this place what it is. Here's to Year Two. 🧡</p>
+    <p class="footer-copy">Made with questionable decisions and too much caffeine.</p>
+  </div>
 </footer>
 
 <script>
+// Hamburger
+const hamburger = document.getElementById('hamburgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+if (hamburger) {
+  hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+  mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
+}
+
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
