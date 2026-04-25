@@ -466,6 +466,69 @@ h1 .accent {
 }
 
 /* Server IP copy button */
+
+/* Anniversary banner */
+.anniversary-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.08), rgba(232, 93, 38, 0.04));
+  border: 1px solid rgba(255, 140, 66, 0.15);
+  text-decoration: none;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.anniversary-banner:hover {
+  border-color: rgba(255, 140, 66, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 140, 66, 0.1);
+}
+.anniversary-glow {
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(ellipse, rgba(255, 140, 66, 0.06), transparent 70%);
+  pointer-events: none;
+}
+.anniversary-badge {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #FF8C42;
+  background: rgba(255, 140, 66, 0.1);
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.anniversary-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  color: var(--cream);
+  opacity: 0.7;
+  line-height: 1.4;
+}
+.anniversary-text strong {
+  color: #FF8C42;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .anniversary-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    margin: 0 1rem;
+  }
+}
 .server-status {
   display: flex;
   align-items: center;

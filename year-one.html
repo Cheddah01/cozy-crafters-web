@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cozy Crafters SMP — Year One</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange-bright: #FF8C42;
+  --orange-deep: #E85D26;
+  --yellow-warm: #FFD166;
+  --yellow-light: #FFF3C4;
+  --amber: #F4A623;
+  --cream: #FFF8EE;
+  --dark: #1A1008;
+  --dark-card: #2A1A0A;
+  --dark-card-hover: #3A2510;
+  --text-warm: #FFE8CC;
+  --text-muted: #BFA47A;
+  --glow-orange: rgba(255, 140, 66, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--dark);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--dark);
+  color: var(--text-warm);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ===== NOISE TEXTURE OVERLAY ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(255, 140, 66, 0.15) 0%, rgba(232, 93, 38, 0.05) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  border-radius: 100px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--orange-bright);
+  margin-bottom: 2rem;
+  animation: fadeDown 0.8s ease-out;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 140, 66, 0.05);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  animation: fadeUp 1s ease-out 0.2s both;
+}
+
+.hero-title .line1 {
+  display: block;
+  color: var(--yellow-warm);
+  text-shadow: 0 0 60px rgba(255, 209, 102, 0.3);
+}
+
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(135deg, var(--orange-bright), var(--orange-deep));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  color: var(--text-muted);
+  max-width: 500px;
+  font-weight: 300;
+  animation: fadeUp 1s ease-out 0.4s both;
+}
+
+.hero-stats-row {
+  display: flex;
+  gap: 3rem;
+  margin-top: 3rem;
+  animation: fadeUp 1s ease-out 0.6s both;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--yellow-warm);
+  font-family: 'Space Mono', monospace;
+}
+
+.hero-stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  animation: bounce 2s infinite, fadeUp 1s ease-out 1s both;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scroll-hint svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--orange-bright);
+}
+
+/* ===== SECTION STYLES ===== */
+.section {
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 3rem;
+}
+
+.section-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--orange-bright);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--yellow-warm);
+  letter-spacing: -0.02em;
+}
+
+.section-desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  max-width: 600px;
+  font-weight: 300;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 140, 66, 0.3), transparent);
+}
+
+/* ===== AWARD CARDS ===== */
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.award-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 140, 66, 0.1);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.award-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--orange-bright), var(--yellow-warm));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.award-card:hover {
+  background: var(--dark-card-hover);
+  border-color: rgba(255, 140, 66, 0.25);
+  transform: translateY(-2px);
+}
+
+.award-card:hover::before {
+  opacity: 1;
+}
+
+.award-emoji {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.award-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--orange-bright);
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 0.5rem;
+}
+
+.award-player {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--yellow-warm);
+}
+
+.award-stat {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  font-weight: 300;
+}
+
+/* ===== LEADERBOARD ===== */
+.leaderboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+}
+
+.leaderboard {
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 140, 66, 0.1);
+  border-radius: 16px;
+  padding: 1.75rem;
+}
+
+.leaderboard-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--orange-bright);
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 140, 66, 0.06);
+  position: relative;
+}
+
+.leaderboard-row:last-child { border-bottom: none; }
+
+.lb-rank {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 2rem;
+  flex-shrink: 0;
+}
+
+.lb-rank.gold { color: var(--yellow-warm); font-weight: 700; }
+.lb-rank.silver { color: #C0C0C0; font-weight: 700; }
+.lb-rank.bronze { color: #CD7F32; font-weight: 700; }
+
+.lb-bar-bg {
+  flex: 1;
+  height: 28px;
+  background: rgba(255, 140, 66, 0.06);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lb-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255, 140, 66, 0.2), rgba(255, 209, 102, 0.15));
+  transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lb-bar-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  z-index: 1;
+}
+
+.lb-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-warm);
+}
+
+.lb-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--orange-bright);
+}
+
+/* ===== WORDS CLOUD ===== */
+.words-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.word-bubble {
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 140, 66, 0.1);
+  font-family: 'Space Mono', monospace;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.word-bubble:hover {
+  border-color: var(--orange-bright);
+  background: rgba(255, 140, 66, 0.1);
+  transform: scale(1.05);
+}
+
+.word-bubble .word { color: var(--text-warm); }
+.word-bubble .count {
+  color: var(--text-muted);
+  font-size: 0.75em;
+  margin-left: 0.35rem;
+}
+
+.word-bubble.size-1 { font-size: 1.3rem; }
+.word-bubble.size-2 { font-size: 1.1rem; }
+.word-bubble.size-3 { font-size: 0.95rem; }
+.word-bubble.size-4 { font-size: 0.85rem; }
+.word-bubble.size-5 { font-size: 0.75rem; }
+
+/* ===== LORE CARDS ===== */
+.lore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.lore-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 140, 66, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.lore-card:hover {
+  border-color: rgba(255, 140, 66, 0.25);
+  transform: translateY(-2px);
+}
+
+.lore-card .lore-number {
+  font-family: 'Space Mono', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--orange-bright);
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.lore-card .lore-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  font-weight: 300;
+}
+
+.lore-card .lore-detail {
+  font-size: 0.75rem;
+  color: var(--orange-bright);
+  font-family: 'Space Mono', monospace;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 140, 66, 0.1);
+}
+
+/* ===== COMMANDS SECTION ===== */
+.commands-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 800px;
+}
+
+.cmd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--dark-card);
+  border: 1px solid rgba(255, 140, 66, 0.1);
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.cmd-chip:hover {
+  border-color: var(--orange-bright);
+  background: rgba(255, 140, 66, 0.08);
+}
+
+.cmd-chip .cmd-name { color: var(--yellow-warm); }
+.cmd-chip .cmd-count { color: var(--text-muted); font-size: 0.7rem; }
+
+/* ===== GHOST BUILDERS ===== */
+.ghost-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.ghost-table th {
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 140, 66, 0.15);
+}
+
+.ghost-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(255, 140, 66, 0.06);
+  font-size: 0.85rem;
+}
+
+.ghost-table td:first-child { color: var(--yellow-warm); font-weight: 500; }
+.ghost-table td:nth-child(2) { font-family: 'Space Mono', monospace; color: var(--orange-bright); font-size: 0.8rem; }
+.ghost-table td:nth-child(3) { color: var(--text-muted); font-size: 0.8rem; }
+
+/* ===== TIMELINE ===== */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  max-width: 700px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--orange-bright), var(--yellow-warm), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2.5rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -2rem;
+  top: 0.35rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--orange-bright);
+  border: 2px solid var(--dark);
+  transform: translateX(-4px);
+}
+
+.timeline-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--orange-bright);
+  letter-spacing: 0.05em;
+}
+
+.timeline-text {
+  font-size: 1rem;
+  color: var(--text-warm);
+  margin-top: 0.25rem;
+}
+
+.timeline-detail {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  font-weight: 300;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.footer-heart {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+  filter: grayscale(0.3);
+}
+
+.footer-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== ERA TIMELINE ===== */
+.era-timeline {
+  position: relative;
+  max-width: 800px;
+}
+
+.era-timeline::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--orange-bright), var(--yellow-warm), var(--orange-deep), var(--yellow-warm), transparent);
+}
+
+.era {
+  position: relative;
+  padding-left: 60px;
+  padding-bottom: 2.5rem;
+}
+
+.era-dot {
+  position: absolute;
+  left: 14px;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--dark);
+  border: 3px solid var(--orange-bright);
+  z-index: 1;
+}
+
+.era-dot.golden { border-color: var(--yellow-warm); background: rgba(255, 209, 102, 0.15); }
+.era-dot.quiet { border-color: var(--text-muted); }
+.era-dot.peak { border-color: var(--orange-deep); background: rgba(232, 93, 38, 0.15); }
+.era-dot.sad { border-color: #888; }
+.era-dot.now { border-color: var(--yellow-warm); background: rgba(255, 209, 102, 0.3); box-shadow: 0 0 12px rgba(255, 209, 102, 0.4); }
+
+.era-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--orange-bright);
+  margin-bottom: 0.35rem;
+}
+
+.era-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--yellow-warm);
+  margin-bottom: 0.35rem;
+}
+
+.era-stats {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.era-desc {
+  font-size: 0.9rem;
+  color: var(--text-warm);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.era-quote {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 140, 66, 0.06);
+  border-left: 2px solid rgba(255, 140, 66, 0.3);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.era-quote .quote-author {
+  display: block;
+  margin-top: 0.25rem;
+  font-style: normal;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--orange-bright);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-stats-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .hero-stat-number { font-size: 2rem; }
+  .awards-grid { grid-template-columns: 1fr; }
+  .leaderboard-container { grid-template-columns: 1fr; }
+  .lore-grid { grid-template-columns: 1fr; }
+  .section { padding: 3rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-badge">✦ Est. 2025 ✦</div>
+  <h1 class="hero-title">
+    <span class="line1">Year One</span>
+    <span class="line2">Cozy Crafters</span>
+  </h1>
+  <p class="hero-subtitle">365 days of blocks, laughs, and one player who broke past the world border. I dug through our data to see what we've built together.</p>
+  <div class="hero-stats-row">
+    <div class="hero-stat">
+      <div class="hero-stat-number">6,656</div>
+      <div class="hero-stat-label">Hours Played</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">1.4M</div>
+      <div class="hero-stat-label">Mobs Killed</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">24M blocks</div>
+      <div class="hero-stat-label">Distance Traveled</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">1,811</div>
+      <div class="hero-stat-label">"Welcome Back"s</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<!-- ===== PLAYER AWARDS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Player Awards</div>
+    <h2 class="section-title">The Superlatives</h2>
+    <p class="section-desc">Every server has its legends. Here are ours.</p>
+  </div>
+  <div class="awards-grid">
+    <div class="award-card">
+      <span class="award-emoji">🏗️</span>
+      <div class="award-title">The Architect</div>
+      <div class="award-player">BiscuitBouncer</div>
+      <div class="award-stat">2,064,442 blocks placed · 2,806,166 broken</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">💛</span>
+      <div class="award-title">The Loyal One</div>
+      <div class="award-player">Veystar</div>
+      <div class="award-stat">411 logins · 6,691 messages · 1,178 chunks explored</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">👋</span>
+      <div class="award-title">The Official Greeter</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">558 "welcome back"s sent</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">😂</span>
+      <div class="award-title">The LOL King</div>
+      <div class="award-player">miningking11</div>
+      <div class="award-stat">548 "lol"s typed in chat</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🧭</span>
+      <div class="award-title">The World Border Breaker</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">Made it 2,121,281 blocks from spawn</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🗣️</span>
+      <div class="award-title">The Chatterbox</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">11,267 chat messages sent</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">⛏️</span>
+      <div class="award-title">The Demolisher</div>
+      <div class="award-player">BiscuitBouncer</div>
+      <div class="award-stat">2,806,166 blocks broken</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🌍</span>
+      <div class="award-title">The Explorer</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">1,394 unique chunks visited</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">👻</span>
+      <div class="award-title">The Ghost Builder</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">1,222,562 blocks left behind — last seen Nov 2025</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🗡️</span>
+      <div class="award-title">The Mob Slayer</div>
+      <div class="award-player">Rodrigo_vsc</div>
+      <div class="award-stat">475,656 mobs killed</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">💀</span>
+      <div class="award-title">The Reckless One</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">170 deaths — more than anyone else</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🪂</span>
+      <div class="award-title">The Frequent Flyer</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">2,697,000 blocks flown by elytra</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🦘</span>
+      <div class="award-title">The Jumpiest Player</div>
+      <div class="award-player">FluffiiBunnii</div>
+      <div class="award-stat">550,270 jumps — bunny by name, bunny by nature</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🤝</span>
+      <div class="award-title">The Trader</div>
+      <div class="award-player">miningking11</div>
+      <div class="award-stat">8,340 villager trades</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">💎</span>
+      <div class="award-title">The Diamond Hunter</div>
+      <div class="award-player">EaglesDJDan</div>
+      <div class="award-stat">1,766 diamonds mined</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🛏️</span>
+      <div class="award-title">The Sleepiest Player</div>
+      <div class="award-player">FluffiiBunnii</div>
+      <div class="award-stat">1,478 times slept in bed</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🏘️</span>
+      <div class="award-title">The Villager's Nightmare</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">287 villagers killed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LEADERBOARDS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Leaderboards</div>
+    <h2 class="section-title">The Rankings</h2>
+    <p class="section-desc">Who put in the work this year. You guys are insane.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">🧱 Blocks Placed</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">2,064,442</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="59"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">1,222,562</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="21"></div><div class="lb-bar-content"><span class="lb-name">nokc</span><span class="lb-value">429,174</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="16"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">320,270</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">242,344</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">241,784</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="11"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">233,897</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="9"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">184,400</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">💬 Messages Sent</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">11,267</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="59"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">6,691</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="54"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">6,071</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="53"></div><div class="lb-bar-content"><span class="lb-name">FluffiBunnii</span><span class="lb-value">6,002</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="46"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">5,228</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="44"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">4,952</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="38"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">4,272</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="37"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">4,219</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">09</span><div class="lb-bar-bg"><div class="lb-bar" data-width="34"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">3,787</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🔑 Most Logins</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">411</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="75"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">307</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="54"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">221</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="51"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">211</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="44"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">181</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="40"></div><div class="lb-bar-content"><span class="lb-name">Eijan_is_best</span><span class="lb-value">165</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="36"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">147</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="34"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">139</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">09</span><div class="lb-bar-bg"><div class="lb-bar" data-width="26"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">107</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🤗 Most Welcomed Back</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">184</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="70"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">128</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="58"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">106</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="51"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">93</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="47"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">86</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="46"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">85</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="45"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">82</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="24"></div><div class="lb-bar-content"><span class="lb-name">Powerofthedogs90</span><span class="lb-value">45</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOST USED WORDS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header" style="text-align:center;">
+    <div class="section-tag">✦ Chat Culture</div>
+    <h2 class="section-title">What We Say Most</h2>
+    <p class="section-desc" style="margin:0.5rem auto 0;">The words that define us. "wb" being #1 makes me so happy.</p>
+  </div>
+  <div class="words-grid" style="margin-top:2.5rem;">
+    <div class="word-bubble size-1"><span class="word">wb</span> <span class="count">1,811</span></div>
+    <div class="word-bubble size-1"><span class="word">ty</span> <span class="count">879</span></div>
+    <div class="word-bubble size-1"><span class="word">lol</span> <span class="count">807</span></div>
+    <div class="word-bubble size-2"><span class="word">?</span> <span class="count">801</span></div>
+    <div class="word-bubble size-2"><span class="word">lmao</span> <span class="count">677</span></div>
+    <div class="word-bubble size-2"><span class="word">yeah</span> <span class="count">535</span></div>
+    <div class="word-bubble size-3"><span class="word">no</span> <span class="count">466</span></div>
+    <div class="word-bubble size-3"><span class="word">yes</span> <span class="count">424</span></div>
+    <div class="word-bubble size-3"><span class="word">oh</span> <span class="count">423</span></div>
+    <div class="word-bubble size-3"><span class="word">tot</span> <span class="count">407</span></div>
+    <div class="word-bubble size-4"><span class="word">ok</span> <span class="count">371</span></div>
+    <div class="word-bubble size-4"><span class="word">hi</span> <span class="count">322</span></div>
+    <div class="word-bubble size-4"><span class="word">gg</span> <span class="count">315</span></div>
+    <div class="word-bubble size-4"><span class="word">what</span> <span class="count">280</span></div>
+    <div class="word-bubble size-5"><span class="word">thanks</span> <span class="count">221</span></div>
+    <div class="word-bubble size-5"><span class="word">idk</span> <span class="count">214</span></div>
+    <div class="word-bubble size-5"><span class="word">damn</span> <span class="count">209</span></div>
+    <div class="word-bubble size-5"><span class="word">brb</span> <span class="count">204</span></div>
+    <div class="word-bubble size-5"><span class="word">lmfao</span> <span class="count">204</span></div>
+    <div class="word-bubble size-5"><span class="word">t</span> <span class="count">191</span></div>
+  </div>
+</section>
+
+<!-- ===== SERVER LORE ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Server Lore</div>
+    <h2 class="section-title">The Numbers Behind the World</h2>
+    <p class="section-desc">Things I discovered hiding in a year of server data.</p>
+  </div>
+  <div class="lore-grid">
+    <div class="lore-card">
+      <div class="lore-number">2.1M</div>
+      <div class="lore-label">Furthest distance from spawn reached by a player</div>
+      <div class="lore-detail">VoidHeart broke past the world border</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">5.9M</div>
+      <div class="lore-label">Block actions on the busiest day ever</div>
+      <div class="lore-detail">November 5th, 2025</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">411</div>
+      <div class="lore-label">Most logins by a single player</div>
+      <div class="lore-detail">Veystar — showing up every day</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">12,275</div>
+      <div class="lore-label">Times /shop was used</div>
+      <div class="lore-detail">The most used command on the server</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">1,811</div>
+      <div class="lore-label">Times "wb" was said in chat</div>
+      <div class="lore-detail">The most spoken word on the server</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">#1</div>
+      <div class="lore-label">Most active spot on the entire server</div>
+      <div class="lore-detail">It's a farm.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TOP COMMANDS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Commands</div>
+    <h2 class="section-title">Most Used Commands</h2>
+    <p class="section-desc">What you guys actually do all day.</p>
+  </div>
+  <div class="commands-list">
+    <div class="cmd-chip"><span class="cmd-name">/shop</span><span class="cmd-count">12,275</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/pv</span><span class="cmd-count">9,257</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/home</span><span class="cmd-count">9,113</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/abyss</span><span class="cmd-count">4,431</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/back</span><span class="cmd-count">4,319</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/msg</span><span class="cmd-count">1,720</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/tpaccept</span><span class="cmd-count">1,717</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/spawn</span><span class="cmd-count">1,699</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/sellall</span><span class="cmd-count">1,194</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/tp</span><span class="cmd-count">1,105</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/rtp</span><span class="cmd-count">1,090</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/npc</span><span class="cmd-count">1,029</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/tpa</span><span class="cmd-count">978</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/fly</span><span class="cmd-count">904</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/ah</span><span class="cmd-count">876</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/sell</span><span class="cmd-count">865</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/rewards</span><span class="cmd-count">852</span></div>
+    <div class="cmd-chip"><span class="cmd-name">/tpahere</span><span class="cmd-count">850</span></div>
+  </div>
+</section>
+
+<!-- ===== GHOST BUILDERS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Ghosts</div>
+    <h2 class="section-title">The Ones Who Left Their Mark</h2>
+    <p class="section-desc">Players who built something and haven't been back in months. Their builds are still out there waiting.</p>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="ghost-table">
+      <thead><tr><th>Player</th><th>Blocks Left Behind</th><th>Last Seen</th></tr></thead>
+      <tbody>
+        <tr><td>VoidHeart</td><td>1,222,562</td><td>Nov 26, 2025</td></tr>
+        <tr><td>FluffiBunnii</td><td>153,656</td><td>Oct 26, 2025</td></tr>
+        <tr><td>Memehow_</td><td>36,972</td><td>Nov 13, 2025</td></tr>
+        <tr><td>GideonTheDog</td><td>19,107</td><td>Oct 24, 2025</td></tr>
+        <tr><td>.RONINN1588</td><td>14,336</td><td>Nov 15, 2025</td></tr>
+        <tr><td>FicsitSlave</td><td>10,056</td><td>Nov 5, 2025</td></tr>
+        <tr><td>Bone_Man_</td><td>9,905</td><td>Oct 24, 2025</td></tr>
+        <tr><td>deadsilent</td><td>6,865</td><td>Nov 11, 2025</td></tr>
+        <tr><td>gengamorph</td><td>5,256</td><td>Oct 20, 2025</td></tr>
+        <tr><td>tokyo_ngl</td><td>4,999</td><td>Nov 10, 2025</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== BUSIEST DAYS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Timeline</div>
+    <h2 class="section-title">The Busiest Days</h2>
+    <p class="section-desc">The days our little corner of Minecraft came alive.</p>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-date">November 5, 2025</div>
+      <div class="timeline-text">5,931,954 block actions</div>
+      <div class="timeline-detail">The biggest day in server history</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">October 12, 2025</div>
+      <div class="timeline-text">2,838,426 block actions</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">November 14, 2025</div>
+      <div class="timeline-text">2,115,891 block actions</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">October 6, 2025</div>
+      <div class="timeline-text">1,651,052 block actions</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">October 29, 2025</div>
+      <div class="timeline-text">1,000,328 block actions</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">October 17, 2025</div>
+      <div class="timeline-text">821,950 block actions</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">March 28, 2026</div>
+      <div class="timeline-text">692,833 block actions</div>
+      <div class="timeline-detail">Still going strong in Year Two</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COMBAT & DEATH ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Combat</div>
+    <h2 class="section-title">Blood & Glory</h2>
+    <p class="section-desc">1.4 million mobs fell this year. Here's who did the damage.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">🗡️ Mobs Killed</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">475,656</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="38"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">182,117</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="38"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">179,443</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="20"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">96,216</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="20"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">93,401</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="17"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">81,284</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">56,856</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="7"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">32,151</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">💀 Most Deaths</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">170</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="94"></div><div class="lb-bar-content"><span class="lb-name">FluffiiBunnii</span><span class="lb-value">159</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="75"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">128</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="67"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">114</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="55"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">94</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="52"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">88</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="43"></div><div class="lb-bar-content"><span class="lb-name">Eijan_is_best</span><span class="lb-value">73</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="33"></div><div class="lb-bar-content"><span class="lb-name">_Squex_</span><span class="lb-value">56</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOST KILLED MOBS & DEATH CAUSES ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ The Mob Report</div>
+    <h2 class="section-title">What We Killed & What Killed Us</h2>
+    <p class="section-desc">552,132 blazes. I have questions.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">🐄 Most Killed Mob Types</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">Enderman</span><span class="lb-value">563,828</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="98"></div><div class="lb-bar-content"><span class="lb-name">Blaze</span><span class="lb-value">552,132</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="16"></div><div class="lb-bar-content"><span class="lb-name">Wither Skeleton</span><span class="lb-value">90,828</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">Zombie</span><span class="lb-value">69,114</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="8"></div><div class="lb-bar-content"><span class="lb-name">Silverfish</span><span class="lb-value">47,437</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="8"></div><div class="lb-bar-content"><span class="lb-name">Skeleton</span><span class="lb-value">42,922</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="5"></div><div class="lb-bar-content"><span class="lb-name">Creeper</span><span class="lb-value">25,536</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">☠️ What Killed Us Most</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">Other Players</span><span class="lb-value">627</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="27"></div><div class="lb-bar-content"><span class="lb-name">Zombie</span><span class="lb-value">171</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="24"></div><div class="lb-bar-content"><span class="lb-name">Skeleton</span><span class="lb-value">150</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">Creeper</span><span class="lb-value">77</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="11"></div><div class="lb-bar-content"><span class="lb-name">Enderman</span><span class="lb-value">72</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="6"></div><div class="lb-bar-content"><span class="lb-name">Warden</span><span class="lb-value">35</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="5"></div><div class="lb-bar-content"><span class="lb-name">Iron Golem</span><span class="lb-value">33</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRAVEL ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Travel</div>
+    <h2 class="section-title">Where Your Feet Took You</h2>
+    <p class="section-desc">24 million blocks traveled collectively. That's the length of 24,000 diamond ore veins laid end to end.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">🌍 Total Distance</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">5,345,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="46"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">2,450,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="39"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">2,108,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="39"></div><div class="lb-bar-content"><span class="lb-name">FluffiiBunnii</span><span class="lb-value">2,078,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="27"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">1,449,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="23"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">1,215,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="20"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">1,085,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="19"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">1,036,000 blocks</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🪂 Elytra Distance</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">2,697,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="38"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">1,020,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="32"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">853,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="27"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">722,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="25"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">677,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="25"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">661,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="18"></div><div class="lb-bar-content"><span class="lb-name">Yugodz7</span><span class="lb-value">477,000 blocks</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="17"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">459,000 blocks</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MINING & CRAFTING ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Mining & Crafting</div>
+    <h2 class="section-title">What We Dug Up</h2>
+    <p class="section-desc">5,540 diamonds. 22,420 villager trades. The grind is real.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">💎 Diamonds Mined</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">EaglesDJDan</span><span class="lb-value">1,766</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="66"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">1,168</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="41"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">726</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="18"></div><div class="lb-bar-content"><span class="lb-name">FluffiiBunnii</span><span class="lb-value">311</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="12"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">206</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="11"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">195</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🤝 Villager Trades</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">8,340</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="78"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">6,547</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="16"></div><div class="lb-bar-content"><span class="lb-name">Yugodz7</span><span class="lb-value">1,359</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="15"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">1,275</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="15"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">1,241</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="6"></div><div class="lb-bar-content"><span class="lb-name">elizapoes460</span><span class="lb-value">538</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PLAYTIME ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Dedication</div>
+    <h2 class="section-title">Time Well Spent</h2>
+    <p class="section-desc">6,656 hours of combined playtime. That's 277 days. You guys basically live here.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">⏰ Total Playtime</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">1,136 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="85"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">970 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="77"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">870 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="68"></div><div class="lb-bar-content"><span class="lb-name">FluffiiBunnii</span><span class="lb-value">775 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="67"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">762 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="30"></div><div class="lb-bar-content"><span class="lb-name">Rodrigo_vsc</span><span class="lb-value">342 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="24"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">261 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="23"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">257 hrs</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">09</span><div class="lb-bar-bg"><div class="lb-bar" data-width="23"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">257 hrs</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🦘 Most Jumps</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">FluffiiBunnii</span><span class="lb-value">550,270</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="80"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">441,167</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="77"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">423,157</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="36"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">200,777</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="33"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">183,051</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="29"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">159,473</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="26"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">144,199</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="26"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">143,181</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADVANCEMENTS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Advancements</div>
+    <h2 class="section-title">The Achievement Hunters</h2>
+    <p class="section-desc">108 unique advancements completed across the server. Some of you went way too hard.</p>
+  </div>
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-title">🏆 Most Advancements Completed</div>
+      <div class="leaderboard-row"><span class="lb-rank gold">01</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100"></div><div class="lb-bar-content"><span class="lb-name">XDragon6798</span><span class="lb-value">98</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank silver">02</span><div class="lb-bar-bg"><div class="lb-bar" data-width="87"></div><div class="lb-bar-content"><span class="lb-name">VoidHeart</span><span class="lb-value">85</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank bronze">03</span><div class="lb-bar-bg"><div class="lb-bar" data-width="80"></div><div class="lb-bar-content"><span class="lb-name">CaduCL28</span><span class="lb-value">78</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-bar-bg"><div class="lb-bar" data-width="73"></div><div class="lb-bar-content"><span class="lb-name">BiscuitBouncer</span><span class="lb-value">72</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">05</span><div class="lb-bar-bg"><div class="lb-bar" data-width="70"></div><div class="lb-bar-content"><span class="lb-name">coshmee</span><span class="lb-value">69</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">06</span><div class="lb-bar-bg"><div class="lb-bar" data-width="69"></div><div class="lb-bar-content"><span class="lb-name">Veystar</span><span class="lb-value">68</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">07</span><div class="lb-bar-bg"><div class="lb-bar" data-width="66"></div><div class="lb-bar-content"><span class="lb-name">tokyo_ngl</span><span class="lb-value">65</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">08</span><div class="lb-bar-bg"><div class="lb-bar" data-width="65"></div><div class="lb-bar-content"><span class="lb-name">miningking11</span><span class="lb-value">64</span></div></div></div>
+    </div>
+    <div class="leaderboard">
+      <div class="leaderboard-title">🥇 Server Firsts</div>
+      <div class="leaderboard-row"><span class="lb-rank">⚔️</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Dragon Kill</span><span class="lb-value">0sca</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">🥚</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Dragon Egg</span><span class="lb-value">0sca</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">🪂</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Elytra</span><span class="lb-value">0sca</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">💀</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Wither Summon</span><span class="lb-value">BiscuitBouncer</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">🔮</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Beacon</span><span class="lb-value">cimou</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">🗺️</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First All Biomes</span><span class="lb-value">XDragon6798</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">⚗️</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First Full Netherite</span><span class="lb-value">cimou</span></div></div></div>
+      <div class="leaderboard-row"><span class="lb-rank">🗡️</span><div class="lb-bar-bg"><div class="lb-bar" data-width="100" style="background:linear-gradient(90deg, rgba(255,140,66,0.25), rgba(255,209,102,0.15))"></div><div class="lb-bar-content"><span class="lb-name">First All Mobs Killed</span><span class="lb-value">XDragon6798</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADVANCEMENT AWARDS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ Advancement Legends</div>
+    <h2 class="section-title">The Only Ones</h2>
+    <p class="section-desc">Advancements completed by a single player on the entire server. Absolute legends.</p>
+  </div>
+  <div class="awards-grid">
+    <div class="award-card">
+      <span class="award-emoji">⚡</span>
+      <div class="award-title">Day One Speedrunner</div>
+      <div class="award-player">0sca</div>
+      <div class="award-stat">Killed the dragon, grabbed the egg, and found elytra all on April 12 — the day the server opened.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🏆</span>
+      <div class="award-title">The Completionist</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">98 advancements. 100% of End. 90% of Adventure. 8 advancements that literally nobody else has done.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🍽️</span>
+      <div class="award-title">A Balanced Diet</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">The only player to eat every food in the game. Including spider eyes and pufferfish.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🗡️</span>
+      <div class="award-title">Monsters Hunted</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">The only player to kill every type of hostile mob in the game.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">👻</span>
+      <div class="award-title">Ghast Wrangler</div>
+      <div class="award-player">FicsitSlave</div>
+      <div class="award-stat">The only player to bring a Ghast through a portal to the Overworld. One of the hardest advancements in the game.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐸</span>
+      <div class="award-title">Frog Collector</div>
+      <div class="award-player">FluffiiBunnii</div>
+      <div class="award-stat">The only player to leash all frog variants. Of course it was FluffiiBunnii.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">📖</span>
+      <div class="award-title">The Power of Books</div>
+      <div class="award-player">nokc</div>
+      <div class="award-stat">The only player to discover the power of the chiseled bookshelf. Knowledge is power.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🔭</span>
+      <div class="award-title">The Birdwatcher</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">The only player to use a spyglass to look at the Ender Dragon, a Ghast, AND a Parrot. What are you looking for?</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🌍</span>
+      <div class="award-title">Pure Overworld</div>
+      <div class="award-player">Rafaau</div>
+      <div class="award-stat">Earned 20 advancements without ever entering the Nether. Some people just like the surface.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🏔️</span>
+      <div class="award-title">No End In Sight</div>
+      <div class="award-player">gengamorph</div>
+      <div class="award-stat">32 advancements and has never entered The End. The dragon is safe... for now.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STILL UNCLAIMED ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header" style="text-align:center;">
+    <div class="section-tag">✦ The Challenge</div>
+    <h2 class="section-title">Still Unclaimed</h2>
+    <p class="section-desc" style="margin:0.5rem auto 0;">Advancements that nobody on the server has completed. Year Two goals?</p>
+  </div>
+  <div class="lore-grid" style="margin-top:2.5rem;">
+    <div class="lore-card">
+      <div class="lore-number" style="font-size:1.5rem;">🧪</div>
+      <div class="lore-label">How Did We Get Here?</div>
+      <div class="lore-detail">Have every effect applied at the same time</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number" style="font-size:1.5rem;">⚗️</div>
+      <div class="lore-label">A Furious Cocktail</div>
+      <div class="lore-detail">Have every potion effect applied at once</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number" style="font-size:1.5rem;">🐾</div>
+      <div class="lore-label">Two by Two</div>
+      <div class="lore-detail">Breed all animals</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number" style="font-size:1.5rem;">⚒️</div>
+      <div class="lore-label">Smithing with Style</div>
+      <div class="lore-detail">Apply all exclusive armor trims</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE WEIRD STUFF ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ The Weird Stuff</div>
+    <h2 class="section-title">Things That Shouldn't Have Happened</h2>
+    <p class="section-desc">I dug through the data and found things I can't explain. You know who you are.</p>
+  </div>
+  <div class="awards-grid">
+    <div class="award-card">
+      <span class="award-emoji">🔔</span>
+      <div class="award-title">The Bell Ringer</div>
+      <div class="award-player">Powerofthedogs90</div>
+      <div class="award-stat">Rang a bell 2,585 times. Nobody else even broke 600. What are you summoning?</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐄</span>
+      <div class="award-title">Mooshroom Exterminator</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">Killed 2,253 mooshrooms. Out of 2,444 total server-wide. That's 92% of all mooshroom deaths.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐡</span>
+      <div class="award-title">The Pufferfish Gourmet</div>
+      <div class="award-player">nokc</div>
+      <div class="award-stat">Ate 8 pufferfish. On purpose. Nobody else ate more than 2.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐝</span>
+      <div class="award-title">Death By Bee</div>
+      <div class="award-player">FluffiiBunnii</div>
+      <div class="award-stat">The only player in server history to be killed by a bee.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">💗</span>
+      <div class="award-title">The Pink Obsession</div>
+      <div class="award-player">Yugodz7</div>
+      <div class="award-stat">Crafted 21,047 pink dye. That's 88% of all pink dye ever made on this server.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🤖</span>
+      <div class="award-title">Village Enemy #1</div>
+      <div class="award-player">tokyo_ngl</div>
+      <div class="award-stat">Killed by iron golems 25 times. The villages have a bounty on this player.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🥕</span>
+      <div class="award-title">Carrot Addiction</div>
+      <div class="award-player">Everyone</div>
+      <div class="award-stat">66,329 carrots eaten server-wide. Second place food was cooked beef at 13,844. We are rabbits.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐔</span>
+      <div class="award-title">Raw Chicken Enjoyer</div>
+      <div class="award-player">BiscuitBouncer</div>
+      <div class="award-stat">Ate 11 raw chickens. Nobody asked them to do this.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🎯</span>
+      <div class="award-title">The Only Target Hit</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">Hit a target block exactly once. The only player who ever has. One and done.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🦴</span>
+      <div class="award-title">The Warden's Favorite Snack</div>
+      <div class="award-player">Veystar</div>
+      <div class="award-stat">Killed by the Warden 9 times. Please stop going back down there.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🧽</span>
+      <div class="award-title">The Sponge Collector</div>
+      <div class="award-player">cimou</div>
+      <div class="award-stat">Picked up 5,914 wet sponges. What exactly are you building?</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🐼</span>
+      <div class="award-title">The Animal Menace</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">Killed 74 axolotls, 33 frogs, 15 pandas, 90 snow golems, and 4 camels. No species is safe.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🫧</span>
+      <div class="award-title">Fall Damage Champion</div>
+      <div class="award-player">BiscuitBouncer</div>
+      <div class="award-stat">Fell a total of 248,795 blocks. That's like falling from build limit to bedrock 776 times.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🤫</span>
+      <div class="award-title">The Sneakiest Player</div>
+      <div class="award-player">VoidHeart</div>
+      <div class="award-stat">Crouched for 153,514 blocks. What are you hiding from?</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🍎</span>
+      <div class="award-title">God Apple Addict</div>
+      <div class="award-player">CaduCL28</div>
+      <div class="award-stat">Ate 142 enchanted golden apples. 618 were consumed server-wide. The economy fears nothing.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">⛏️</span>
+      <div class="award-title">Mending? Never Heard Of It</div>
+      <div class="award-player">BiscuitBouncer</div>
+      <div class="award-stat">Broke 12 diamond pickaxes. The next highest player broke 2.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">💀</span>
+      <div class="award-title">Skull Hoarder</div>
+      <div class="award-player">XDragon6798</div>
+      <div class="award-stat">Picked up 4,164 player heads. An actual collection of faces.</div>
+    </div>
+    <div class="award-card">
+      <span class="award-emoji">🧹</span>
+      <div class="award-title">The Only Neat Freak</div>
+      <div class="award-player">CaduCL28</div>
+      <div class="award-stat">The only player who has ever cleaned a banner or shulker box in a cauldron. 23 times total.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVER-WIDE NUMBERS ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header" style="text-align:center;">
+    <div class="section-tag">✦ The Big Picture</div>
+    <h2 class="section-title">Year One In Numbers</h2>
+    <p class="section-desc" style="margin:0.5rem auto 0;">Everything we did, combined.</p>
+  </div>
+  <div class="lore-grid" style="margin-top:2.5rem;">
+    <div class="lore-card">
+      <div class="lore-number">6,656</div>
+      <div class="lore-label">Total hours played across all players</div>
+      <div class="lore-detail">That's 277 full days</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">1.47M</div>
+      <div class="lore-label">Mobs killed</div>
+      <div class="lore-detail">Endermen feared us most</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">24M blocks</div>
+      <div class="lore-label">Distance traveled</div>
+      <div class="lore-detail">That's 24 million steps through our world</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">3.2M</div>
+      <div class="lore-label">Total jumps</div>
+      <div class="lore-detail">FluffiiBunnii did 550K of those</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">5,540</div>
+      <div class="lore-label">Diamonds mined</div>
+      <div class="lore-detail">Still not enough</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">22,420</div>
+      <div class="lore-label">Villager trades completed</div>
+      <div class="lore-detail">The economy is booming</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">170K</div>
+      <div class="lore-label">Chests opened</div>
+      <div class="lore-detail">Looking for that one item</div>
+    </div>
+    <div class="lore-card">
+      <div class="lore-number">1,411</div>
+      <div class="lore-label">Total deaths</div>
+      <div class="lore-detail">627 of those were PvP</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE STORY OF YEAR ONE ===== -->
+<div class="divider"><div class="divider-line"></div></div>
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">✦ The Full Story</div>
+    <h2 class="section-title">The Eras of Year One</h2>
+    <p class="section-desc">198,382 chat messages. One year. This is the story they tell.</p>
+  </div>
+  <div class="era-timeline">
+
+    <div class="era">
+      <div class="era-dot golden"></div>
+      <div class="era-date">May 15, 2025</div>
+      <div class="era-title">Genesis</div>
+      <div class="era-stats">33,354 messages · 42 players</div>
+      <div class="era-desc">The server opens and the very first conversation is me and FluffiiBunnii going "lmao" and "hmmm." BiscuitBouncer shows up and immediately says "the laggg." tokyo comes in with "hai." Within 24 hours some absolute maniac named 0sca has already killed the Ender Dragon. We barely had iron tools. The very first "wb" is said. And yeah. That kinda set the tone for everything.</div>
+      <div class="era-quote">"he killed the dragon in like 15 mins lmao"<span class="quote-author">— Cheddah01, May 16</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot golden"></div>
+      <div class="era-date">June 2025</div>
+      <div class="era-title">The Golden Age</div>
+      <div class="era-stats">53,415 messages · 40 players · busiest month ever</div>
+      <div class="era-desc">This month was genuinely unhinged. Arkansas Man shows up and immediately starts referring to himself in the third person. Nova and Yukimiracle have the first server wedding and BiscuitBouncer tries to bail halfway through. We added a marriage plugin and it caused absolute chaos. CaduCL28 walks in and says "I have returned" like an anime character. XDragon says "hello" for the first time and then just never logs off for the rest of the year.</div>
+      <div class="era-quote">"god do I love this server"<span class="quote-author">— Nova2O09, June 5 (one month before they leave forever)</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot quiet"></div>
+      <div class="era-date">July 2025</div>
+      <div class="era-title">The Quiet Summer</div>
+      <div class="era-stats">208 messages · 8 players</div>
+      <div class="era-desc">Summer hit and everyone disappeared lol. 208 messages. The entire month. 8 people. The server was basically in a coma but the builds were all still there just sitting in the dark waiting for someone to come back.</div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot"></div>
+      <div class="era-date">August – September 2025</div>
+      <div class="era-title">The Comeback</div>
+      <div class="era-stats">25,572 messages · new players arriving</div>
+      <div class="era-desc">And people did come back. Powerofthedogs90 shows up and says "k" and then immediately starts ringing bells 2,585 times (we still dont know why). EaglesDJDan walks in asking "voicechat?" and proceeds to mine 1,766 diamonds. coshmee and Rodrigo find each other and start building the most beautiful town any of us have ever seen. VoidHeart joins as HeartOfChaos1290 calling everyone "cheese man" and nobody knows what they're about to become.</div>
+      <div class="era-quote">"remember when i crashed the server with lava"<span class="quote-author">— BiscuitBouncer, August 13</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot peak"></div>
+      <div class="era-date">October – November 2025</div>
+      <div class="era-title">The Second Peak</div>
+      <div class="era-stats">58,639 messages · 43 players · 5.9M block actions in one day</div>
+      <div class="era-desc">This was the absolute peak of everything. 43 players talking at once. November 5th had 5.9 million block actions in a single day which is actually insane. Veystar joins and the first thing they do is propose to me (i said no). Eijan arrives screaming "YOO." Arkansas Man declares himself commander of the north legion army. The Justice for Cadu movement happens. VoidHeart goes full villain arc killing every mooshroom and endangered animal they can find. Halloween goes crazy. Everything is happening at once and it feels like the server will be like this forever.</div>
+      <div class="era-quote">"justice for Cadu!!!!"<span class="quote-author">— Yugodz7, November 1</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot sad"></div>
+      <div class="era-date">Late November – December 2025</div>
+      <div class="era-title">The Departure</div>
+      <div class="era-stats">Activity falling · core players going silent one by one</div>
+      <div class="era-desc">One by one people just stopped showing up. FluffiiBunnii said "ill be back in a bit maybe" on October 26. They didnt come back. Arkansas Man's last words were "I am Arkansas man commander of the north legion army. Goodnight." GideonTheDog said "oop" and vanished. deadsilent said "imma get off for the night. gnite" and that was it. VoidHeart left with a bang on December 10. You dont really notice it happening until you look at the numbers and realize how quiet it got.</div>
+      <div class="era-quote">"god I love this server"<span class="quote-author">— VoidHeart, November 13 (three days before going quiet)</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot"></div>
+      <div class="era-date">January – March 2026</div>
+      <div class="era-title">The Faithful Few</div>
+      <div class="era-stats">18,079 messages · the core group holds the line</div>
+      <div class="era-desc">Smaller but not gone. XDragon, BiscuitBouncer, coshmee, miningking11, and CaduCL28 just kept showing up. XDragon went on a completionist tear and killed every hostile mob type in the game. coshmee hit a 60,706 to 1 kill death ratio which honestly shouldnt be possible. Season 2 talk started. The world was quieter but the people still here really loved it and thats what mattered.</div>
+      <div class="era-quote">"cozy crafters season 2 confirmed??"<span class="quote-author">— Yugodz7, March 14</span></div>
+    </div>
+
+    <div class="era">
+      <div class="era-dot now"></div>
+      <div class="era-date">April 2026</div>
+      <div class="era-title">The Anniversary</div>
+      <div class="era-stats">One year · 198,382 messages · 6,656 hours played · 1.4M mobs killed</div>
+      <div class="era-desc">And here we are. One year of blocks placed and broken. Of "wb" and "ty." Of weddings and wars and Arkansas Man and pufferfish dinners and FluffiiBunnii jumping half a million times and VoidHeart breaking past the world border. I dug through every piece of data this server has ever created to put this page together and honestly it made me realize something. Every single number up there is a moment one of you chose to spend here on this little passion project ive created. And thats pretty cool, so thank you :)</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer reveal">
+  <span class="footer-heart">🧡</span>
+  <p style="color:var(--yellow-warm); font-size:1.1rem; font-weight:600; margin-bottom:0.5rem;">Thank you for making this place what it is. Here's to Year Two.</p>
+  <p class="footer-text">Made with love — Cozy Crafters SMP</p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate bars when leaderboard becomes visible
+      entry.target.querySelectorAll('.lb-bar').forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.width + '%';
+        }, i * 80);
+      });
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Initialize bars at 0
+document.querySelectorAll('.lb-bar').forEach(bar => {
+  bar.style.width = '0%';
+});
+</script>
+
+</body>
+</html>
