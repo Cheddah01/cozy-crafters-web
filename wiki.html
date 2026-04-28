@@ -142,6 +142,45 @@
     }
     .wiki-editor-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
 
+    /* Toolbar */
+    .wiki-toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center;
+      padding: 0.5rem 0.6rem; margin-bottom: -1px;
+      background: rgba(255,244,220,0.04);
+      border: 1px solid rgba(244,201,93,0.1);
+      border-radius: 10px 10px 0 0;
+    }
+    .wiki-toolbar-btn {
+      font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 700;
+      background: rgba(255,255,255,0.05); color: var(--cream); opacity: 0.6;
+      border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;
+      padding: 0.3rem 0.55rem; cursor: pointer; transition: all 0.15s;
+      min-width: 32px; text-align: center; line-height: 1;
+    }
+    .wiki-toolbar-btn:hover { opacity: 1; background: rgba(244,201,93,0.1); border-color: rgba(244,201,93,0.2); }
+    .wiki-toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.06); margin: 0 0.3rem; }
+    .wiki-toolbar + textarea { border-radius: 0 0 10px 10px; }
+
+    /* Editor tab toggle */
+    .wiki-editor-tabs {
+      display: flex; gap: 0; margin-bottom: 0.6rem;
+    }
+    .wiki-editor-tab {
+      font-family: 'Fredoka', sans-serif; font-size: 0.78rem; font-weight: 600;
+      padding: 0.4rem 1rem; cursor: pointer; border: none;
+      color: var(--cream); opacity: 0.4; transition: all 0.15s;
+      background: rgba(255,255,255,0.03); border-radius: 8px 8px 0 0;
+    }
+    .wiki-editor-tab.active { opacity: 1; color: var(--sun); background: rgba(244,201,93,0.08); }
+    .wiki-editor-tab:hover { opacity: 0.8; }
+    .wiki-editor-preview {
+      display: none; min-height: 500px;
+      padding: 1.2rem; background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(244,201,93,0.1); border-radius: 0 0 10px 10px;
+      overflow-y: auto;
+    }
+    .wiki-editor-preview.active { display: block; }
+
     /* Welcome state */
     .wiki-welcome {
       text-align: center; padding: 4rem 2rem;
@@ -408,7 +447,13 @@
               <input class="wiki-editor-field" id="edCategory" value="${page.category}" placeholder="Category (e.g. Plugins)" />
               <input class="wiki-editor-field" id="edSort" value="${page.sort_order}" placeholder="0" style="width:70px;" type="number" />
             </div>
+            <div class="wiki-editor-tabs">
+              <button class="wiki-editor-tab active" data-tab="write" onclick="switchEdTab('write','ed')">✏️ Write</button>
+              <button class="wiki-editor-tab" data-tab="preview" onclick="switchEdTab('preview','ed')">👁 Preview</button>
+            </div>
+            <div class="wiki-toolbar" id="edToolbar"></div>
             <textarea class="wiki-editor-field" id="edContent" placeholder="Write in Markdown...">${page.content}</textarea>
+            <div class="wiki-editor-preview wiki-body" id="edPreview"></div>
             <div class="wiki-editor-actions">
               <button class="wiki-btn wiki-btn-save" id="edSave">💾 Save</button>
               <button class="wiki-btn wiki-btn-cancel" id="edCancel">Cancel</button>
@@ -422,6 +467,7 @@
             document.getElementById('wikiEditor').classList.add('active');
             document.querySelector('.wiki-content-header').style.display = 'none';
             document.querySelector('.wiki-page-meta').style.display = 'none';
+            initToolbar('ed');
           });
 
           document.getElementById('edCancel').addEventListener('click', () => openPage(slug));
@@ -475,20 +521,20 @@
             <input class="wiki-editor-field" id="newCategory" placeholder="Category (e.g. Plugins, Moderation, Policies)" />
             <input class="wiki-editor-field" id="newSort" placeholder="0" style="width:70px;" type="number" value="0" />
           </div>
-          <textarea class="wiki-editor-field" id="newContent" placeholder="Write in Markdown...
-
-# Commands
-- \`/ban <player>\` — Ban a player
-- \`/mute <player>\` — Mute a player
-
-## Notes
-Use **bold** for emphasis and \`code\` for commands.
-"></textarea>
+          <div class="wiki-editor-tabs">
+            <button class="wiki-editor-tab active" data-tab="write" onclick="switchEdTab('write','new')">✏️ Write</button>
+            <button class="wiki-editor-tab" data-tab="preview" onclick="switchEdTab('preview','new')">👁 Preview</button>
+          </div>
+          <div class="wiki-toolbar" id="newToolbar"></div>
+          <textarea class="wiki-editor-field" id="newContent" placeholder="Start writing..."></textarea>
+          <div class="wiki-editor-preview wiki-body" id="newPreview"></div>
           <div class="wiki-editor-actions">
             <button class="wiki-btn wiki-btn-save" id="newSave">💾 Create Page</button>
           </div>
         </div>
       `;
+
+      initToolbar('new');
 
       document.getElementById('newSave').addEventListener('click', async () => {
         const title = document.getElementById('newTitle').value.trim();
@@ -516,6 +562,124 @@ Use **bold** for emphasis and \`code\` for commands.
       if (!d) return '';
       const date = new Date(d + 'Z');
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // ============================================
+    // Toolbar Editor
+    // ============================================
+    const toolbarButtons = [
+      { label: 'H1', md: '# ', type: 'line', title: 'Heading 1' },
+      { label: 'H2', md: '## ', type: 'line', title: 'Heading 2' },
+      { label: 'H3', md: '### ', type: 'line', title: 'Heading 3' },
+      { type: 'sep' },
+      { label: 'B', md: '**', wrap: true, title: 'Bold', style: 'font-weight:800' },
+      { label: 'I', md: '*', wrap: true, title: 'Italic', style: 'font-style:italic' },
+      { label: '<>', md: '`', wrap: true, title: 'Inline Code' },
+      { type: 'sep' },
+      { label: '• List', md: '- ', type: 'line', title: 'Bullet List' },
+      { label: '1. List', md: '1. ', type: 'line', title: 'Numbered List' },
+      { label: '> Quote', md: '> ', type: 'line', title: 'Blockquote' },
+      { type: 'sep' },
+      { label: '—', md: '\n---\n', type: 'insert', title: 'Horizontal Rule' },
+      { label: '🔗 Link', type: 'link', title: 'Insert Link' },
+      { label: '```', type: 'codeblock', title: 'Code Block' },
+      { label: '📊 Table', type: 'table', title: 'Insert Table' },
+    ];
+
+    function initToolbar(prefix) {
+      const toolbar = document.getElementById(prefix + 'Toolbar');
+      const textarea = document.getElementById(prefix + 'Content');
+      if (!toolbar || !textarea) return;
+
+      toolbar.innerHTML = toolbarButtons.map((btn, i) => {
+        if (btn.type === 'sep') return '<div class="wiki-toolbar-sep"></div>';
+        return `<button class="wiki-toolbar-btn" data-idx="${i}" title="${btn.title || ''}" ${btn.style ? `style="${btn.style}"` : ''}>${btn.label}</button>`;
+      }).join('');
+
+      toolbar.querySelectorAll('.wiki-toolbar-btn').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          const btn = toolbarButtons[parseInt(el.dataset.idx)];
+          applyFormat(textarea, btn);
+        });
+      });
+    }
+
+    function applyFormat(textarea, btn) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selected = text.substring(start, end);
+
+      let insert = '';
+      let cursorOffset = 0;
+
+      if (btn.wrap) {
+        // Wrap selection: **selected** or *selected*
+        if (selected) {
+          insert = btn.md + selected + btn.md;
+          cursorOffset = insert.length;
+        } else {
+          insert = btn.md + 'text' + btn.md;
+          cursorOffset = btn.md.length;
+        }
+      } else if (btn.type === 'line') {
+        // Line prefix: find start of line
+        const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+        textarea.setSelectionRange(lineStart, end);
+        insert = btn.md + (selected || 'text');
+        cursorOffset = insert.length;
+      } else if (btn.type === 'insert') {
+        insert = btn.md;
+        cursorOffset = insert.length;
+      } else if (btn.type === 'link') {
+        if (selected) {
+          insert = `[${selected}](url)`;
+          cursorOffset = insert.length - 1;
+        } else {
+          insert = '[link text](url)';
+          cursorOffset = 1;
+        }
+      } else if (btn.type === 'codeblock') {
+        insert = '```\n' + (selected || 'code here') + '\n```';
+        cursorOffset = 4;
+      } else if (btn.type === 'table') {
+        insert = '\n| Column 1 | Column 2 | Column 3 |\n|---|---|---|\n| data | data | data |\n';
+        cursorOffset = 3;
+      }
+
+      // Insert the text
+      const before = text.substring(0, textarea.selectionStart);
+      const after = text.substring(textarea.selectionEnd);
+      textarea.value = before + insert + after;
+      textarea.focus();
+
+      if (btn.wrap && !selected) {
+        // Select the placeholder word
+        textarea.setSelectionRange(start + btn.md.length, start + btn.md.length + 4);
+      } else {
+        textarea.setSelectionRange(start + cursorOffset, start + cursorOffset);
+      }
+    }
+
+    function switchEdTab(tab, prefix) {
+      const textarea = document.getElementById(prefix + 'Content');
+      const preview = document.getElementById(prefix + 'Preview');
+      const toolbar = document.getElementById(prefix + 'Toolbar');
+      const tabs = textarea.closest('.wiki-editor').querySelectorAll('.wiki-editor-tab');
+
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+
+      if (tab === 'write') {
+        textarea.style.display = '';
+        toolbar.style.display = '';
+        preview.classList.remove('active');
+      } else {
+        textarea.style.display = 'none';
+        toolbar.style.display = 'none';
+        preview.innerHTML = renderMarkdown(textarea.value);
+        preview.classList.add('active');
+      }
     }
 
     init();
