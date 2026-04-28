@@ -233,12 +233,12 @@
     mobileMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
 
     function getAuthHeader() {
-      const token = localStorage.getItem('ccToken');
+      const token = localStorage.getItem('ccAuthToken');
       return token ? { 'Authorization': `Bearer ${token}` } : {};
     }
 
     function getUser() {
-      const token = localStorage.getItem('ccToken');
+      const token = localStorage.getItem('ccAuthToken');
       if (!token) return null;
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
