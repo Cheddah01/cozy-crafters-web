@@ -3107,7 +3107,7 @@
         });
         if (!res.ok) { table.innerHTML = '<div style="padding:1rem;opacity:0.3;">Failed to load users.</div>'; return; }
         const data = await res.json();
-        const users = data.users || [];
+        const users = Array.isArray(data) ? data : (data.users || []);
 
         if (users.length === 0) {
           table.innerHTML = '<div style="padding:1rem;opacity:0.3;">No users have logged in yet.</div>';
