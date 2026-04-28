@@ -198,7 +198,7 @@
     <div class="wiki-gate-icon">🔒</div>
     <div class="wiki-gate-title">Staff Wiki</div>
     <div class="wiki-gate-text">This area is for Cozy Crafters staff only. Log in with Discord to continue.</div>
-    <button class="btn btn-primary" id="wikiLoginBtn" onclick="window.location.href='/'">Log In</button>
+    <button class="btn btn-primary" id="wikiLoginBtn" onclick="localStorage.setItem('ccAuthReturn','wiki.html');window.location.href='https://cozy-crafters-api.colbysthickey.workers.dev/auth/discord'">Log In</button>
   </div>
 
   <!-- Wiki: shown when authenticated as staff -->
