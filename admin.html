@@ -676,6 +676,30 @@
     display: block;
   }
 
+  .user-row {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.7rem 0.8rem; border-radius: 10px;
+    border-bottom: 1px solid rgba(244,201,93,0.04);
+    transition: background 0.15s;
+  }
+  .user-row:hover { background: rgba(255,244,220,0.03); }
+  .user-row-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(244,201,93,0.15); flex-shrink: 0; }
+  .user-row-name { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--cream); }
+  .user-row-info { flex: 1; }
+  .user-row-id { font-family: 'Nunito', sans-serif; font-size: 0.68rem; color: var(--cream); opacity: 0.2; }
+  .user-role-select {
+    font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 600;
+    background: rgba(255,255,255,0.05); color: var(--cream);
+    border: 1px solid rgba(244,201,93,0.12); border-radius: 8px;
+    padding: 0.35rem 0.5rem; cursor: pointer; outline: none;
+  }
+  .user-role-select:focus { border-color: rgba(244,201,93,0.3); }
+  .user-role-legend {
+    font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 600;
+    color: var(--cream); opacity: 0.5; display: flex; align-items: center; gap: 0.3rem;
+  }
+  .user-role-dot { width: 8px; height: 8px; border-radius: 50%; }
+
   @media (max-width: 768px) {
     .section-tabs {
       flex-direction: column;
@@ -731,6 +755,7 @@
       <button class="section-tab" data-section="chronicles" type="button">📰 Chronicles</button>
       <button class="section-tab" data-section="gallery" type="button">📷 Gallery</button>
       <button class="section-tab" data-section="support" type="button">💛 Support</button>
+      <button class="section-tab" data-section="users" type="button">👥 Users</button>
     </div>
 
     <!-- SECTION: Backgrounds -->
@@ -1495,6 +1520,31 @@
       </div>
     </div>
     </div> <!-- /section-support -->
+
+    <!-- SECTION: Users -->
+    <div class="admin-section" id="section-users">
+    <div>
+      <h1 class="admin-title">User <span class="accent">Management</span></h1>
+      <p class="admin-subtitle">Manage roles for users who have logged in via Discord. Roles control access to the staff wiki and admin panel.</p>
+
+      <div class="card" style="max-width:100%;">
+        <div class="card-header">
+          <span class="card-icon">👥</span>
+          <h2 class="card-title">All Users</h2>
+        </div>
+
+        <div style="display:flex;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <span class="user-role-legend"><span class="user-role-dot" style="background:#E87070;"></span> Admin</span>
+          <span class="user-role-legend"><span class="user-role-dot" style="background:#F4C95D;"></span> Moderator</span>
+          <span class="user-role-legend"><span class="user-role-dot" style="background:#6B8E4E;"></span> Member</span>
+        </div>
+
+        <div id="usersTable" style="margin-top:0.5rem;">
+          <div class="changelog-admin-empty" style="padding:2rem;">Loading users...</div>
+        </div>
+      </div>
+    </div>
+    </div> <!-- /section-users -->
 
   </div> <!-- /adminContent -->
 
@@ -3045,6 +3095,77 @@
       } catch (e) {}
       renderSupCosts();
     })();
+
+    // ============================================
+    // User Management
+    // ============================================
+    async function loadUsers() {
+      const table = document.getElementById('usersTable');
+      try {
+        const res = await fetch(`${API_BASE}/api/users`, {
+          headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` },
+        });
+        if (!res.ok) { table.innerHTML = '<div style="padding:1rem;opacity:0.3;">Failed to load users.</div>'; return; }
+        const data = await res.json();
+        const users = data.users || [];
+
+        if (users.length === 0) {
+          table.innerHTML = '<div style="padding:1rem;opacity:0.3;">No users have logged in yet.</div>';
+          return;
+        }
+
+        const roleColor = { admin: '#E87070', moderator: '#F4C95D', member: '#6B8E4E' };
+
+        table.innerHTML = users.map(u => {
+          const role = u.role || 'member';
+          const avatar = u.avatar
+            ? `https://cdn.discordapp.com/avatars/${u.discord_id}/${u.avatar}.png?size=64`
+            : 'https://cdn.discordapp.com/embed/avatars/0.png';
+          const dot = `<span class="user-role-dot" style="background:${roleColor[role] || roleColor.member};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:0.3rem;"></span>`;
+
+          return `<div class="user-row">
+            <img class="user-row-avatar" src="${avatar}" alt="" />
+            <div class="user-row-info">
+              <div class="user-row-name">${dot}${u.username}</div>
+              <div class="user-row-id">${u.discord_id}</div>
+            </div>
+            <select class="user-role-select" data-uid="${u.id}" data-current="${role}">
+              <option value="member" ${role === 'member' ? 'selected' : ''}>Member</option>
+              <option value="moderator" ${role === 'moderator' ? 'selected' : ''}>Moderator</option>
+              <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
+            </select>
+          </div>`;
+        }).join('');
+
+        table.querySelectorAll('.user-role-select').forEach(sel => {
+          sel.addEventListener('change', async () => {
+            const uid = sel.dataset.uid;
+            const newRole = sel.value;
+            try {
+              const res = await fetch(`${API_BASE}/api/users/${uid}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+                body: JSON.stringify({ role: newRole }),
+              });
+              if (res.ok) {
+                showToast(`Role updated to ${newRole}`);
+                loadUsers();
+              } else {
+                showToast('Failed to update role');
+                sel.value = sel.dataset.current;
+              }
+            } catch (e) {
+              showToast('Error updating role');
+              sel.value = sel.dataset.current;
+            }
+          });
+        });
+      } catch (e) {
+        table.innerHTML = '<div style="padding:1rem;opacity:0.3;">Error loading users.</div>';
+      }
+    }
+
+    loadUsers();
 
   } // end initAdmin
 </script>
