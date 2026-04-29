@@ -111,25 +111,39 @@
           </div>
         </div>
 
-        <aside class="featured-aside" id="featuredDonate">
-          <div class="featured-head featured-head-aside">
-            <div>
-              <div class="section-eyebrow">✦ Support</div>
-              <h2 class="section-headline">Keep the <span class="accent">lights on</span></h2>
+        <aside class="featured-aside">
+          <div class="aside-block donate-block" id="featuredDonate">
+            <div class="featured-head featured-head-aside">
+              <div>
+                <div class="section-eyebrow">✦ Support</div>
+                <h2 class="section-headline">Keep the <span class="accent">lights on</span></h2>
+              </div>
+            </div>
+            <div class="donate-mini-card" id="donateMiniCard">
+              <div class="dm-progress" id="dmProgress">
+                <div class="dm-amounts">
+                  <span class="dm-current" id="dmCurrent">$0</span>
+                  <span class="dm-divider">/</span>
+                  <span class="dm-goal" id="dmGoal">$25</span>
+                  <span class="dm-tag">this month</span>
+                </div>
+                <div class="dm-track"><div class="dm-fill" id="dmBar" style="width: 0%;"></div></div>
+                <div class="dm-pct" id="dmPct">0% funded</div>
+              </div>
+              <a href="/support.html" class="btn btn-primary dm-btn" id="dmDonateBtn">Support the server →</a>
             </div>
           </div>
-          <div class="donate-mini-card" id="donateMiniCard">
-            <div class="dm-progress" id="dmProgress">
-              <div class="dm-amounts">
-                <span class="dm-current" id="dmCurrent">$0</span>
-                <span class="dm-divider">/</span>
-                <span class="dm-goal" id="dmGoal">$25</span>
-                <span class="dm-tag">this month</span>
+
+          <div class="aside-block online-block" id="featuredOnline">
+            <div class="featured-head featured-head-aside">
+              <div>
+                <div class="section-eyebrow">✦ Online Now</div>
+                <h2 class="section-headline">Who's <span class="accent">playing</span></h2>
               </div>
-              <div class="dm-track"><div class="dm-fill" id="dmBar" style="width: 0%;"></div></div>
-              <div class="dm-pct" id="dmPct">0% funded</div>
             </div>
-            <a href="/support.html" class="btn btn-primary dm-btn" id="dmDonateBtn">Support the server →</a>
+            <div class="online-mini-card" id="onlineMiniCard">
+              <div class="om-empty">Checking server…</div>
+            </div>
           </div>
         </aside>
       </div>
@@ -719,7 +733,46 @@
       if (e.key === 'Escape') setHubDrawer('');
     });
 
-    // Live server status (writes into the activity bar)
+    function renderOnlinePlayers({ status, count, players }) {
+      const card = document.getElementById('onlineMiniCard');
+      if (!card) return;
+      if (status === 'unreachable') {
+        card.innerHTML = '<div class="om-empty">Server status unavailable</div>';
+        return;
+      }
+      if (status === 'offline') {
+        card.innerHTML = '<div class="om-empty">🌙 Server is offline<span class="om-empty-sub">Check back soon</span></div>';
+        return;
+      }
+      if (count === 0) {
+        card.innerHTML = '<div class="om-empty">Nobody online right now :(<span class="om-empty-sub">Be the first to log in</span></div>';
+        return;
+      }
+      if (!players || players.length === 0) {
+        card.innerHTML = `<div class="om-empty">${count} player${count !== 1 ? 's' : ''} online<span class="om-empty-sub">(names hidden by server)</span></div>`;
+        return;
+      }
+
+      const MAX_VISIBLE = 8;
+      const visible = players.slice(0, MAX_VISIBLE);
+      const overflow = Math.max(0, players.length - MAX_VISIBLE);
+
+      const rowsHtml = visible.map(p => {
+        const uuid = (p.uuid || '').replace(/-/g, '');
+        const name = p.name_clean || p.name_raw || 'Unknown';
+        const safeName = ccEscapeHtml(name);
+        const initial = ccEscapeHtml((name || '?').slice(0, 1).toUpperCase());
+        const headHtml = uuid
+          ? `<img src="https://mc-heads.net/avatar/${uuid}/24" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;om-head-fallback&quot;>${initial}</span>'" />`
+          : `<span class="om-head-fallback">${initial}</span>`;
+        return `<li class="om-row" title="${safeName}"><span class="om-head">${headHtml}</span><span class="om-name">${safeName}</span><span class="om-dot" aria-hidden="true"></span></li>`;
+      }).join('');
+
+      const moreHtml = overflow > 0 ? `<div class="om-more">+${overflow} more online</div>` : '';
+      card.innerHTML = `<ul class="om-list">${rowsHtml}</ul>${moreHtml}`;
+    }
+
+    // Live server status (writes into the activity bar AND the online players card)
     async function fetchServerStatus() {
       const dot = document.getElementById('haStatusDot');
       const text = document.getElementById('haStatusText');
@@ -747,15 +800,18 @@
           } else {
             headsEl.innerHTML = '';
           }
+          renderOnlinePlayers({ status: 'online', count, players });
         } else {
           dot.className = 'ha-dot offline';
           text.textContent = 'Server is offline';
           headsEl.innerHTML = '';
+          renderOnlinePlayers({ status: 'offline' });
         }
       } catch (e) {
         dot.className = 'ha-dot';
         text.textContent = 'Could not reach server';
         headsEl.innerHTML = '';
+        renderOnlinePlayers({ status: 'unreachable' });
       }
     }
 

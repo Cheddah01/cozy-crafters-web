@@ -2278,7 +2278,8 @@ input[type="file"]::file-selector-button:hover {
   margin: 0 auto;
 }
 .featured-main { min-width: 0; }
-.featured-aside { min-width: 0; display: flex; flex-direction: column; }
+.featured-aside { min-width: 0; display: flex; flex-direction: column; gap: 1.4rem; }
+.aside-block { display: flex; flex-direction: column; min-width: 0; }
 .featured-head-aside { margin-bottom: 0.85rem; }
 
 .featured-patch-slot { max-width: none; margin: 0; }
@@ -2332,17 +2333,112 @@ input[type="file"]::file-selector-button:hover {
   padding: 0.7rem 1rem;
   margin-top: 0.1rem;
 }
-.featured-aside.is-empty .dm-progress { display: none; }
+.donate-block.is-empty .dm-progress { display: none; }
+
+/* Online players mini card */
+.online-mini-card {
+  background: rgba(255, 244, 220, 0.04);
+  border: 1px solid rgba(244, 201, 93, 0.18);
+  border-radius: 16px;
+  padding: 0.55rem 0.55rem 0.7rem;
+}
+.om-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.om-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  min-height: 32px;
+}
+.om-row:hover { background: rgba(244, 201, 93, 0.08); }
+.om-head {
+  display: inline-flex;
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+}
+.om-head img {
+  width: 100%; height: 100%;
+  image-rendering: pixelated;
+  border-radius: 5px;
+  border: 1.5px solid rgba(244, 201, 93, 0.25);
+  display: block;
+}
+.om-head-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  border-radius: 5px;
+  background: rgba(244, 201, 93, 0.12);
+  border: 1.5px solid rgba(244, 201, 93, 0.25);
+  color: var(--cream);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.7;
+}
+.om-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cream);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.om-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #A8C77E;
+  box-shadow: 0 0 8px rgba(168, 199, 126, 0.5);
+  flex-shrink: 0;
+}
+.om-more {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cream);
+  opacity: 0.55;
+  padding: 0.45rem 0.55rem 0.15rem;
+}
+.om-empty {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  color: var(--cream);
+  opacity: 0.55;
+  padding: 1rem 0.6rem;
+  text-align: center;
+  line-height: 1.45;
+}
+.om-empty-sub {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  margin-top: 0.25rem;
+}
 
 @media (max-width: 1024px) {
   .featured-row { grid-template-columns: 1fr; }
   .featured-aside { max-width: 560px; margin: 0 auto; width: 100%; }
 }
 @media (max-width: 768px) {
-  .featured-aside { max-width: none; }
+  .featured-aside { max-width: none; gap: 1.1rem; }
   .donate-mini-card { padding: 1rem 1.1rem 1.1rem; }
   .dm-current { font-size: 1.3rem; }
   .dm-divider, .dm-goal { font-size: 1rem; }
+  .om-row { padding: 0.35rem 0.5rem; min-height: 30px; }
+  .om-name { font-size: 0.85rem; }
 }
 
 .gallery-strip {
@@ -2517,6 +2613,23 @@ body.pastel-theme .dm-tag { color: var(--ink-soft); opacity: 0.65; }
 body.pastel-theme .dm-track { background: rgba(43, 31, 21, 0.08); }
 body.pastel-theme .dm-fill { box-shadow: 0 0 12px rgba(108, 142, 78, 0.35); }
 body.pastel-theme .dm-pct { color: #5C8245; opacity: 0.95; }
+
+/* Online mini card on pastel bg */
+body.pastel-theme .online-mini-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--pastel-border);
+  box-shadow: 0 6px 24px rgba(61, 43, 31, 0.06);
+}
+body.pastel-theme .om-row:hover { background: rgba(244, 201, 93, 0.18); }
+body.pastel-theme .om-head img { border-color: var(--pastel-border); }
+body.pastel-theme .om-head-fallback {
+  background: var(--pastel-surface-soft);
+  border-color: var(--pastel-border);
+  color: var(--ink-soft);
+}
+body.pastel-theme .om-name { color: var(--ink); }
+body.pastel-theme .om-more { color: var(--ink-soft); opacity: 0.7; }
+body.pastel-theme .om-empty { color: var(--ink-soft); opacity: 0.75; }
 
 /* Featured patch entry on pastel bg */
 body.pastel-theme .featured-patch-slot .changelog-entry {
