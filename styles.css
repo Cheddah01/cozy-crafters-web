@@ -2531,9 +2531,9 @@ input[type="file"]::file-selector-button:hover {
   --butter-soft: #FEF7DD;
   --butter-warm: #FFF6D8;
   --ink-soft: #6B4F3A;
-  /* Moss accent for muted text/links/eyebrows on pastel bg — ties to global palette (--moss-deep / --moss-dark). */
-  --pastel-accent: var(--moss-deep);
-  --pastel-accent-strong: var(--moss-dark);
+  /* Warm light brown accents on butter bg — lighter than --ink-soft / bark, still WCAG AA (~4.6:1 +). */
+  --pastel-accent: #8B6649;
+  --pastel-accent-strong: #5E3F2E;
   --pastel-surface: rgba(255, 255, 255, 0.55);
   --pastel-surface-soft: rgba(255, 255, 255, 0.4);
   --pastel-surface-strong: rgba(255, 255, 255, 0.78);
