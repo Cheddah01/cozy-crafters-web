@@ -93,19 +93,45 @@
   </section>
 
   <!-- ============================================
-       FEATURED PATCH NOTE
+       FEATURED PATCH NOTE + DONATE ASIDE
        ============================================ -->
   <section class="content-section section-featured" id="sectionFeatured">
     <div class="section-inner">
-      <div class="featured-head">
-        <div>
-          <div class="section-eyebrow">✦ Latest Update</div>
-          <h2 class="section-headline">What's <span class="accent">new</span></h2>
+      <div class="featured-row">
+        <div class="featured-main">
+          <div class="featured-head">
+            <div>
+              <div class="section-eyebrow">✦ Latest Update</div>
+              <h2 class="section-headline">What's <span class="accent">new</span></h2>
+            </div>
+            <a href="changelog.html" class="featured-all">All patch notes →</a>
+          </div>
+          <div id="featuredPatch" class="featured-patch-slot">
+            <div class="changelog-loading"><div class="load-spinner"></div>Loading the latest patch note…</div>
+          </div>
         </div>
-        <a href="changelog.html" class="featured-all">All patch notes →</a>
-      </div>
-      <div id="featuredPatch" class="featured-patch-slot">
-        <div class="changelog-loading"><div class="load-spinner"></div>Loading the latest patch note…</div>
+
+        <aside class="featured-aside" id="featuredDonate">
+          <div class="featured-head featured-head-aside">
+            <div>
+              <div class="section-eyebrow">✦ Support</div>
+              <h2 class="section-headline">Keep the <span class="accent">lights on</span></h2>
+            </div>
+          </div>
+          <div class="donate-mini-card" id="donateMiniCard">
+            <div class="dm-progress" id="dmProgress">
+              <div class="dm-amounts">
+                <span class="dm-current" id="dmCurrent">$0</span>
+                <span class="dm-divider">/</span>
+                <span class="dm-goal" id="dmGoal">$25</span>
+                <span class="dm-tag">this month</span>
+              </div>
+              <div class="dm-track"><div class="dm-fill" id="dmBar" style="width: 0%;"></div></div>
+              <div class="dm-pct" id="dmPct">0% funded</div>
+            </div>
+            <a href="/support.html" class="btn btn-primary dm-btn" id="dmDonateBtn">Support the server →</a>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -535,6 +561,21 @@
       setTimeout(() => { document.getElementById('hubDonBar').style.width = pct + '%'; }, 500);
     }
 
+    function applyDonateMini(goal, current, hasData) {
+      const aside = document.getElementById('featuredDonate');
+      if (!aside) return;
+      if (!hasData) {
+        aside.classList.add('is-empty');
+        return;
+      }
+      aside.classList.remove('is-empty');
+      const pct = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+      document.getElementById('dmGoal').textContent = '$' + goal;
+      document.getElementById('dmCurrent').textContent = '$' + current;
+      document.getElementById('dmPct').textContent = pct + '% funded';
+      setTimeout(() => { document.getElementById('dmBar').style.width = pct + '%'; }, 500);
+    }
+
     function setHubDrawer(drawerId) {
       const drawers = document.querySelectorAll('.hub-drawer');
       const buttons = {
@@ -582,7 +623,11 @@
 
       const goal = parseFloat(t.donationGoal) || 25;
       const current = parseFloat(t.donationCurrent) || 0;
+      const hasDonationData = splashData && splashData.value && (
+        t.donationGoal !== undefined || t.donationCurrent !== undefined
+      );
       applyHubDonationBars(goal, current);
+      applyDonateMini(goal, current, hasDonationData);
 
       const tagsData = await safeJson(tagsRes);
       if (tagsData && Array.isArray(tagsData.value) && tagsData.value.length > 0) {
