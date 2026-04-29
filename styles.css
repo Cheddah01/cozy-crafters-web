@@ -3076,6 +3076,31 @@ body.sunset input[type="file"]::file-selector-button:hover {
   background: rgba(232, 155, 107, 0.3);
 }
 
+/* Auth UI in nav — auth.js writes inline styles tuned for dark nav. Override
+   them on light themes (sunset + pastel) so the username/log-out are legible
+   and the admin button matches the new accent. */
+body.sunset .cc-auth-name,
+body.sunset .cc-auth-logout,
+body.pastel-theme .cc-auth-name,
+body.pastel-theme .cc-auth-logout {
+  color: var(--text-primary) !important;
+}
+body.sunset .cc-auth-logout,
+body.pastel-theme .cc-auth-logout {
+  border-color: var(--border) !important;
+  opacity: 0.75 !important;
+}
+body.sunset .cc-auth-admin,
+body.pastel-theme .cc-auth-admin {
+  background: rgba(232, 155, 107, 0.18) !important;
+  border-color: rgba(232, 155, 107, 0.45) !important;
+  color: var(--accent-deep) !important;
+}
+body.sunset .cc-auth-avatar,
+body.pastel-theme .cc-auth-avatar {
+  border-color: rgba(232, 155, 107, 0.45) !important;
+}
+
 /* Admin shell tints — flip dark cards/tabs to light */
 body.sunset .admin-header { border-bottom-color: rgba(232, 155, 107, 0.35); }
 body.sunset .card {
