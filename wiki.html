@@ -308,7 +308,9 @@
         // Horizontal rules
         .replace(/^---$/gm, '<hr>')
         // Unordered lists
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/^- (.+)$/gm, '<li class="ul">$1</li>')
+        // Ordered lists
+        .replace(/^\d+\. (.+)$/gm, '<li class="ol">$1</li>')
         // Tables
         .replace(/^\|(.+)\|$/gm, (match) => {
           const cells = match.split('|').filter(c => c.trim());
@@ -316,8 +318,9 @@
           return cells.map(c => `<td>${c.trim()}</td>`).join('');
         });
 
-      // Wrap list items
-      html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+      // Wrap list items in ul/ol
+      html = html.replace(/((?:<li class="ul">.*<\/li>\n?)+)/g, (m) => '<ul>' + m.replace(/ class="ul"/g, '') + '</ul>');
+      html = html.replace(/((?:<li class="ol">.*<\/li>\n?)+)/g, (m) => '<ol>' + m.replace(/ class="ol"/g, '') + '</ol>');
       // Wrap table rows
       html = html.replace(/((?:<td>.*<\/td>)+)/g, '<tr>$1</tr>');
       html = html.replace(/((?:<tr>.*<\/tr>\n?)+)/g, (m) => {
@@ -331,7 +334,7 @@
       html = html.split('\n\n').map(block => {
         block = block.trim();
         if (!block) return '';
-        if (/^<[hupoltb]/.test(block)) return block;
+        if (/^<[hupoltb]/.test(block) || /^<ol/.test(block)) return block;
         return `<p>${block}</p>`;
       }).join('\n');
       // Clean up leftover newlines in paragraphs
