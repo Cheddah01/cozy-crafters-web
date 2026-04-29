@@ -13,6 +13,20 @@
   --sun: #F4C95D;
   --sun-deep: #D9A441;
   --ink: #2B1F15;
+
+  /* Sunset Cozy palette (new unified theme — not yet applied) */
+  --bg-primary: #FFF5EB;
+  --bg-secondary: #FFEBD7;
+  --bg-tertiary: #FFE0C2;
+  --accent: #E89B6B;
+  --accent-deep: #D17A4A;
+  --accent-soft: #FFC8A8;
+  --text-primary: #4A2C1A;
+  --text-secondary: #8B6F5C;
+  --text-muted: #B89A82;
+  --border: rgba(232, 155, 107, 0.15);
+  --success: #7BA05B;
+  --error: #C94A3B;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
