@@ -2531,10 +2531,10 @@ input[type="file"]::file-selector-button:hover {
   --butter-soft: #FEF7DD;
   --butter-warm: #FFF6D8;
   --ink-soft: #6B4F3A;
-  /* Warm deep amber that hits WCAG AA on butter bg (~5.4:1) — replaces --sun-deep
-     for muted text/links/eyebrows that disappear into the pastel background. */
-  --pastel-accent: #8C5A1F;
-  --pastel-accent-strong: #6B4216;
+  /* Warm terracotta accent for muted text/links/eyebrows on the pastel bg.
+     --pastel-accent hits WCAG AA on butter (~5.2:1); strong is the hover/emphasis tone. */
+  --pastel-accent: #A8471F;
+  --pastel-accent-strong: #8C3A12;
   --pastel-surface: rgba(255, 255, 255, 0.55);
   --pastel-surface-soft: rgba(255, 255, 255, 0.4);
   --pastel-surface-strong: rgba(255, 255, 255, 0.78);
