@@ -757,6 +757,8 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           if (!title || !date) { showInlineToast('Title and date required.'); return; }
           if (panelChanges.length === 0) { showInlineToast('Add at least one change.'); return; }
 
+          const prevEntries = JSON.parse(JSON.stringify(entries));
+
           const updated = {
             title, version: panel.querySelector('#spVersion').value.trim() || null, date,
             tags: [...panelSelectedTags], changes: panelChanges,
@@ -768,15 +770,16 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           if (panelIsNew) { entries.push(updated); }
           else { const idx = entries.findIndex(e => e.id === panelEntry.id); if (idx >= 0) entries[idx] = updated; }
 
-          await saveAndReload('changelog', entries, token);
+          await saveChangelogAndReload(prevEntries, entries, token);
           closePanel();
         });
 
         // Delete
         panel.querySelector('#spDelete')?.addEventListener('click', async () => {
           if (!confirm('Delete this patch note?')) return;
+          const prevEntries = JSON.parse(JSON.stringify(entries));
           entries = entries.filter(e => e.id !== panelEntry.id);
-          await saveAndReload('changelog', entries, token);
+          await saveChangelogAndReload(prevEntries, entries, token);
           closePanel();
         });
       }
@@ -1194,6 +1197,88 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       attachButtons();
       const observer = new MutationObserver(attachButtons);
       observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function normalizeDiscordWebhookCfgInline(raw) {
+      if (typeof raw === 'string') return { url: raw.trim(), autoPost: false };
+      if (!raw || typeof raw !== 'object') return { url: '', autoPost: false };
+      return { url: String(raw.url || '').trim(), autoPost: !!raw.autoPost };
+    }
+
+    function computeEligibleDiscordIdsInline(prevList, nextList) {
+      const prevMap = Object.fromEntries(prevList.map(e => [e.id, e]));
+      const ids = [];
+      for (const e of nextList) {
+        if (!e || e.status === 'draft') continue;
+        const p = prevMap[e.id];
+        if (!p) ids.push(e.id);
+        else if (p.status === 'draft' && e.status !== 'draft') ids.push(e.id);
+      }
+      return ids;
+    }
+
+    async function maybeDiscordAutoPostInline(prevEntries, nextEntries, token) {
+      let cfg = { url: '', autoPost: false };
+      try {
+        const cr = await fetch(`${INLINE_API}/api/settings/discordWebhookPatchNotes`);
+        if (cr.ok) {
+          const d = await cr.json();
+          cfg = normalizeDiscordWebhookCfgInline(d.value);
+        }
+      } catch (e) {}
+      if (!cfg.url || !cfg.autoPost) return '';
+      const eligible = computeEligibleDiscordIdsInline(prevEntries, nextEntries);
+      if (eligible.length === 0) return '';
+      if (eligible.length === 1) {
+        const res = await fetch(`${INLINE_API}/api/discord/post-patchnote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ entryId: eligible[0] }),
+        });
+        if (!res.ok) {
+          let err = {};
+          try { err = await res.json(); } catch (e2) {}
+          showInlineToast(err.error || 'Discord post failed.');
+          return '';
+        }
+        return 'Posted to Discord';
+      }
+      let ok = 0;
+      for (const eid of eligible) {
+        const res = await fetch(`${INLINE_API}/api/discord/post-patchnote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ entryId: eid }),
+        });
+        if (res.ok) ok++;
+        else {
+          let err = {};
+          try { err = await res.json(); } catch (e2) {}
+          showInlineToast(err.error || 'Discord post failed.');
+          return '';
+        }
+      }
+      return `Posted ${ok} patch notes`;
+    }
+
+    async function saveChangelogAndReload(prevEntries, nextEntries, token) {
+      try {
+        const res = await fetch(`${INLINE_API}/api/settings/changelog`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: nextEntries }),
+        });
+        if (!res.ok) {
+          showInlineToast('Save failed.');
+          return 'keep';
+        }
+        const discordNote = await maybeDiscordAutoPostInline(prevEntries, nextEntries, token);
+        showInlineToast(discordNote ? `${discordNote} · Saved!` : 'Saved!');
+        setTimeout(() => window.location.reload(), 800);
+      } catch (e) {
+        showInlineToast('Save failed — check connection.');
+        return 'keep';
+      }
     }
 
     async function saveAndReload(settingKey, data, token) {

@@ -66,7 +66,7 @@ The official website for Cozy Crafters SMP, a Minecraft survival server. Built a
 ## Database Schema
 
 ### Settings (key-value store)
-Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesSections`, `chroniclesConfig`, `supportCosts`, `background`
+Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesSections`, `chroniclesConfig`, `supportCosts`, `background`, `discordWebhookPatchNotes`
 
 ### Users
 `id, discord_id, username, avatar, role, created_at, last_login`
@@ -126,6 +126,9 @@ Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesS
 - `POST /api/wiki` → create page (admin only)
 - `PUT /api/wiki/:slug` → update page (admin only)
 - `DELETE /api/wiki/:slug` → delete page (admin only)
+
+### Discord webhook (patch notes)
+- `POST /api/discord/post-patchnote` → admin bearer (`AUTH_TOKEN`), body `{ "entryId": "<changelog entry id>" }`; reads webhook URL from settings key `discordWebhookPatchNotes`, builds embed, POSTs to Discord
 
 ### Media
 - `POST /api/upload` → admin upload to R2 (up to 200MB)
@@ -210,10 +213,10 @@ cimou, Coshmee, Rodrigo, biscutbouncer, zer0vr09, puzzle4770, aloe202
 - ✅ SEO (meta tags, sitemap, JSON-LD, Google Search Console)
 - ✅ VotingPlugin + VotifierPlus reward config
 - ✅ Server listing descriptions and voting setup
+- ✅ Discord webhook for patch note publishing (admin webhook URL + auto-post / manual post)
 
 ## Pending / Possible Future Work
 - 🔲 Upload og-image.png (1200x630) to repo for Discord embed previews
 - 🔲 LiteBans web integration via Cloudflare Hyperdrive (started discussion, not built)
-- 🔲 Discord webhook for patch note publishing
 - 🔲 404 page
 - 🔲 Server listing submissions (some done, more to go)

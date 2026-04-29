@@ -495,6 +495,15 @@
     background: rgba(232, 154, 110, 0.2);
   }
 
+  .cl-btn-discord {
+    background: rgba(107, 142, 78, 0.15);
+    color: var(--moss);
+  }
+
+  .cl-btn-discord:hover {
+    background: rgba(107, 142, 78, 0.28);
+  }
+
   .changelog-admin-empty {
     text-align: center;
     padding: 2rem;
@@ -1066,6 +1075,26 @@
     <div>
       <h1 class="admin-title">Patch <span class="accent">Notes</span></h1>
       <p class="admin-subtitle">Create and manage changelog entries with custom tags, formatting, pinning, and draft/publish control.</p>
+
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <span class="card-icon">💬</span>
+          <h2 class="card-title">Discord</h2>
+        </div>
+        <p class="field-hint" style="margin-bottom: 1rem;">Optional webhook for announcing patch notes. Save this URL before using auto-post or manual post. Auto-post runs only when you use Save All Changes after adding a new published note or publishing a draft.</p>
+        <div class="field">
+          <label class="field-label" for="clDiscordWebhookUrl">Discord webhook URL</label>
+          <input type="password" id="clDiscordWebhookUrl" placeholder="https://discord.com/api/webhooks/..." autocomplete="off" />
+        </div>
+        <div class="field" style="margin-bottom: 0.6rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-family: 'Nunito', sans-serif; color: var(--cream); font-size: 0.92rem;">
+            <input type="checkbox" id="clDiscordAutoPost" /> Auto-post to Discord on publish
+          </label>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary" id="clDiscordSaveBtn" type="button">💾 Save Discord Settings</button>
+        </div>
+      </div>
 
       <!-- Tag manager -->
       <div class="card" style="margin-bottom: 1.5rem;">
@@ -2194,6 +2223,47 @@
     // ============================================
     // Changelog — Announcement Builder
     // ============================================
+    let clPersistedSnapshot = [];
+
+    function normalizeDiscordWebhookCfgAdmin(raw) {
+      if (typeof raw === 'string') return { url: raw.trim(), autoPost: false };
+      if (!raw || typeof raw !== 'object') return { url: '', autoPost: false };
+      return { url: String(raw.url || '').trim(), autoPost: !!raw.autoPost };
+    }
+
+    function computeEligibleDiscordIds(prevList, nextList) {
+      const prevMap = Object.fromEntries(prevList.map(e => [e.id, e]));
+      const ids = [];
+      for (const e of nextList) {
+        if (!e || e.status === 'draft') continue;
+        const p = prevMap[e.id];
+        if (!p) ids.push(e.id);
+        else if (p.status === 'draft' && e.status !== 'draft') ids.push(e.id);
+      }
+      return ids;
+    }
+
+    async function postDiscordPatchNote(entryId, quietSuccess) {
+      try {
+        const res = await fetch(`${API_BASE}/api/discord/post-patchnote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ entryId }),
+        });
+        let data = {};
+        try { data = await res.json(); } catch (e) {}
+        if (!res.ok) {
+          showToast(data.error || data.detail || 'Discord post failed.');
+          return false;
+        }
+        if (!quietSuccess) showToast('Posted to Discord!');
+        return true;
+      } catch (e) {
+        showToast('Discord post failed.');
+        return false;
+      }
+    }
+
     let clEntries = [];
     let clEditingIndex = null;
     let clAdminFilter = 'all';
@@ -2397,7 +2467,7 @@
         const sc = entry.status === 'draft' ? 'draft' : 'published';
         const sl = entry.status === 'draft' ? 'Draft' : 'Live';
         const cc = (entry.changes || []).length;
-        return `<div class="cl-entry-item"><div class="cl-entry-top"><span class="cl-entry-name">${entry.pinned ? '📌 ' : ''}${entry.title}</span><span class="cl-entry-status ${sc}">${sl}</span>${entry.version ? `<span class="cl-entry-ver">${entry.version}</span>` : ''}</div><div class="cl-entry-date">${entry.date} · ${cc} change${cc !== 1 ? 's' : ''}</div><div class="cl-entry-actions"><button class="cl-btn-edit" data-idx="${entry._idx}">Edit</button><button class="cl-btn-delete" data-idx="${entry._idx}">Delete</button></div></div>`;
+        return `<div class="cl-entry-item"><div class="cl-entry-top"><span class="cl-entry-name">${entry.pinned ? '📌 ' : ''}${entry.title}</span><span class="cl-entry-status ${sc}">${sl}</span>${entry.version ? `<span class="cl-entry-ver">${entry.version}</span>` : ''}</div><div class="cl-entry-date">${entry.date} · ${cc} change${cc !== 1 ? 's' : ''}</div><div class="cl-entry-actions"><button class="cl-btn-edit" data-idx="${entry._idx}">Edit</button>${entry.status !== 'draft' ? `<button type="button" class="cl-btn-discord" data-idx="${entry._idx}" data-entry-id="${entry.id}">Post to Discord</button>` : ''}<button class="cl-btn-delete" data-idx="${entry._idx}">Delete</button></div></div>`;
       }).join('');
       clEntryList.querySelectorAll('.cl-btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2421,6 +2491,15 @@
           if (clEditingIndex === idx) clearClForm();
         });
       });
+      clEntryList.querySelectorAll('.cl-btn-discord').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const entryId = btn.dataset.entryId;
+          if (!entryId) return;
+          btn.disabled = true;
+          await postDiscordPatchNote(entryId);
+          btn.disabled = false;
+        });
+      });
     }
 
     document.querySelectorAll('.cl-filter-btn').forEach(btn => {
@@ -2439,17 +2518,72 @@
 
     clCancelEdit.addEventListener('click', clearClForm);
 
+    document.getElementById('clDiscordSaveBtn').addEventListener('click', async () => {
+      const value = normalizeDiscordWebhookCfgAdmin({
+        url: document.getElementById('clDiscordWebhookUrl').value.trim(),
+        autoPost: document.getElementById('clDiscordAutoPost').checked,
+      });
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/discordWebhookPatchNotes`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
+          body: JSON.stringify({ value }),
+        });
+        if (!res.ok) { showToast('Save failed.'); return; }
+        markSaved();
+        showToast('Discord settings saved!');
+      } catch (e) {
+        showToast('Failed.');
+      }
+    });
+
     document.getElementById('clSaveBtn').addEventListener('click', async () => {
-      try { const res = await fetch(`${API_BASE}/api/settings/changelog`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` }, body: JSON.stringify({ value: clEntries }) }); if (!res.ok) { showToast('Save failed.'); return; } markSaved(); showToast('Changelog saved!'); } catch (e) { showToast('Failed.'); }
+      const prevSnap = JSON.parse(JSON.stringify(clPersistedSnapshot));
+      try {
+        const res = await fetch(`${API_BASE}/api/settings/changelog`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` }, body: JSON.stringify({ value: clEntries }) });
+        if (!res.ok) { showToast('Save failed.'); return; }
+        markSaved();
+        let discordNote = '';
+        const cfg = normalizeDiscordWebhookCfgAdmin({
+          url: document.getElementById('clDiscordWebhookUrl').value.trim(),
+          autoPost: document.getElementById('clDiscordAutoPost').checked,
+        });
+        if (cfg.url && cfg.autoPost) {
+          const eligible = computeEligibleDiscordIds(prevSnap, clEntries);
+          if (eligible.length === 1) {
+            if (await postDiscordPatchNote(eligible[0], true)) discordNote = 'Posted to Discord';
+          } else if (eligible.length > 1) {
+            let okCount = 0;
+            for (const eid of eligible) {
+              if (await postDiscordPatchNote(eid, true)) okCount++;
+            }
+            if (okCount === eligible.length) discordNote = `Posted ${okCount} patch notes`;
+            else if (okCount > 0) discordNote = `Posted ${okCount} of ${eligible.length}`;
+          }
+        }
+        showToast(discordNote ? `${discordNote} · Changelog saved!` : 'Changelog saved!');
+        clPersistedSnapshot = JSON.parse(JSON.stringify(clEntries));
+      } catch (e) { showToast('Failed.'); }
     });
 
     document.getElementById('clPreviewBtn').addEventListener('click', () => { window.open('changelog.html', '_blank'); });
 
     (async function loadChangelog() {
       try {
-        const [tagsRes, entriesRes] = await Promise.all([fetch(`${API_BASE}/api/settings/changelogTags`), fetch(`${API_BASE}/api/settings/changelog`)]);
+        const [tagsRes, entriesRes, discordRes] = await Promise.all([
+          fetch(`${API_BASE}/api/settings/changelogTags`),
+          fetch(`${API_BASE}/api/settings/changelog`),
+          fetch(`${API_BASE}/api/settings/discordWebhookPatchNotes`),
+        ]);
         if (tagsRes.ok) { const d = await tagsRes.json(); if (d.value?.length) clTags = d.value; }
         if (entriesRes.ok) { const d = await entriesRes.json(); clEntries = d.value || []; }
+        clPersistedSnapshot = JSON.parse(JSON.stringify(clEntries));
+        if (discordRes.ok) {
+          const d = await discordRes.json();
+          const cfg = normalizeDiscordWebhookCfgAdmin(d.value);
+          document.getElementById('clDiscordWebhookUrl').value = cfg.url;
+          document.getElementById('clDiscordAutoPost').checked = cfg.autoPost;
+        }
       } catch (e) {}
       renderTagManager(); renderTagPicker(); renderChangeTagPicker(); renderChanges(); renderClEntries();
     })();

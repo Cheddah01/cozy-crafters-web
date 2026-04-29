@@ -39,6 +39,109 @@ async function verifyJWT(token, secret) {
   } catch (e) { return null; }
 }
 
+function truncateDiscord(str, max) {
+  const s = String(str ?? '');
+  if (s.length <= max) return s;
+  return s.slice(0, Math.max(0, max - 1)) + '…';
+}
+
+function normalizeDiscordWebhookCfg(raw) {
+  if (!raw) return { url: '', autoPost: false };
+  if (typeof raw === 'string') return { url: raw.trim(), autoPost: false };
+  return { url: String(raw.url || '').trim(), autoPost: !!raw.autoPost };
+}
+
+function discordBucketForTag(tagId, changelogTags) {
+  const tags = Array.isArray(changelogTags) ? changelogTags : [];
+  const meta = tags.find((t) => t && t.id === tagId);
+  if (meta && meta.discordBucket && ['added', 'changed', 'fixed', 'removed', 'other'].includes(meta.discordBucket)) {
+    return meta.discordBucket;
+  }
+  const fallback = {
+    'new-feature': 'added',
+    'bug-fix': 'fixed',
+    'removal': 'removed',
+    'balance': 'changed',
+    'qol': 'changed',
+    'event': 'changed',
+  };
+  if (tagId && fallback[tagId]) return fallback[tagId];
+  return 'other';
+}
+
+function formatChangeLine(c) {
+  let line = `• **${truncateDiscord(c.title || 'Change', 200)}**`;
+  if (c.description) line += `\n${c.description}`;
+  return line;
+}
+
+function buildPatchNoteDiscordEmbed(entry, changelogTags, siteUrl) {
+  const entryId = entry.id || '';
+  const pageUrl = `${siteUrl}/changelog.html#${encodeURIComponent(entryId)}`;
+  const dateStr = entry.date || '';
+  const rawTitle = `📋 Patch Notes — ${dateStr}`;
+  let title = truncateDiscord(rawTitle, 256);
+
+  const ver = entry.version ? `\n*${entry.version}*` : '';
+  let description = truncateDiscord(`**${entry.title || 'Patch notes'}**${ver}\n\n[View full notes on the site](${pageUrl})`, 4096);
+
+  const buckets = { added: [], changed: [], fixed: [], removed: [], other: [] };
+  for (const ch of entry.changes || []) {
+    const b = discordBucketForTag(ch && ch.tag ? ch.tag : null, changelogTags);
+    const key = buckets[b] !== undefined ? b : 'other';
+    buckets[key].push(formatChangeLine(ch));
+  }
+
+  const fieldLabels = {
+    added: 'Added',
+    changed: 'Changed',
+    fixed: 'Fixed',
+    removed: 'Removed',
+    other: 'Other',
+  };
+
+  let fields = [];
+  for (const k of ['added', 'changed', 'fixed', 'removed', 'other']) {
+    if (buckets[k].length === 0) continue;
+    let val = buckets[k].join('\n\n');
+    val = truncateDiscord(val, 1024);
+    fields.push({ name: fieldLabels[k], value: val, inline: false });
+  }
+
+  let embed = {
+    title,
+    url: pageUrl,
+    color: 16041821,
+    description,
+    fields,
+    footer: { text: truncateDiscord('Cozy Crafters SMP — Season 2', 2048) },
+  };
+
+  function embedCharCount(em) {
+    let n = (em.title || '').length + (em.description || '').length + (em.footer?.text || '').length;
+    for (const f of em.fields || []) {
+      n += (f.name || '').length + (f.value || '').length;
+    }
+    return n;
+  }
+
+  let budget = 5800;
+  while (embedCharCount(embed) > budget && embed.fields.length > 0) {
+    const f = embed.fields[embed.fields.length - 1];
+    f.value = truncateDiscord(f.value, Math.max(100, Math.floor(f.value.length * 0.85)));
+    if (f.value.length <= 120) embed.fields.pop();
+  }
+  if (embedCharCount(embed) > budget) {
+    embed.description = truncateDiscord(embed.description, Math.max(200, Math.floor(embed.description.length * 0.8)));
+  }
+  if (embedCharCount(embed) > budget) {
+    embed.description = truncateDiscord('Patch note was too long for Discord; [read the full changelog](' + pageUrl + ').', 4096);
+    embed.fields = [];
+  }
+
+  return embed;
+}
+
 // ============================================
 // Main Worker
 // ============================================
@@ -847,6 +950,85 @@ export default {
         const key = path.replace('/api/upload/', '');
         await env.MEDIA.delete(key);
         return new Response(JSON.stringify({ success: true, deleted: key }), {
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+
+      // POST /api/discord/post-patchnote — admin only
+      if (request.method === 'POST' && path === '/api/discord/post-patchnote') {
+        if (!requireAdmin(request)) {
+          return new Response(JSON.stringify({ error: 'unauthorized' }), {
+            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        let body;
+        try {
+          body = await request.json();
+        } catch (e) {
+          return new Response(JSON.stringify({ error: 'invalid JSON' }), {
+            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        const entryId = body && body.entryId ? String(body.entryId) : '';
+        if (!entryId) {
+          return new Response(JSON.stringify({ error: 'entryId required' }), {
+            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+
+        const whRow = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind('discordWebhookPatchNotes').first();
+        const whCfg = normalizeDiscordWebhookCfg(whRow ? JSON.parse(whRow.value) : null);
+        if (!whCfg.url || !isHttpUrl(whCfg.url)) {
+          return new Response(JSON.stringify({ error: 'Webhook not configured' }), {
+            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+
+        const clRow = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind('changelog').first();
+        const changelogTagsRow = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind('changelogTags').first();
+        let entries = [];
+        let changelogTags = [];
+        try {
+          entries = clRow ? JSON.parse(clRow.value) : [];
+          changelogTags = changelogTagsRow ? JSON.parse(changelogTagsRow.value) : [];
+        } catch (e) {
+          return new Response(JSON.stringify({ error: 'invalid changelog data' }), {
+            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        if (!Array.isArray(entries)) entries = [];
+        const entry = entries.find((e) => e && String(e.id) === entryId);
+        if (!entry) {
+          return new Response(JSON.stringify({ error: 'entry not found' }), {
+            status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        if (entry.status === 'draft') {
+          return new Response(JSON.stringify({ error: 'draft entries cannot be posted' }), {
+            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+
+        const embed = buildPatchNoteDiscordEmbed(entry, changelogTags, SITE_URL);
+        const whRes = await fetch(whCfg.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embeds: [embed] }),
+        });
+        if (!whRes.ok) {
+          let detail = '';
+          try {
+            detail = await whRes.text();
+          } catch (e) {}
+          return new Response(JSON.stringify({
+            error: 'discord webhook failed',
+            status: whRes.status,
+            detail: truncateDiscord(detail, 500),
+          }), {
+            status: 502, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        return new Response(JSON.stringify({ success: true }), {
           headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
