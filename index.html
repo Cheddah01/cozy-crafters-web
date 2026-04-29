@@ -376,7 +376,7 @@
         btn.style.background = '#A8C77E';
         btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
         setTimeout(() => {
-          text.textContent = 'Join the Server →';
+          text.textContent = window.__splashPrimaryBtnLabel || 'Join the Server →';
           btn.style.background = '';
           btn.style.boxShadow = '';
         }, 2500);
