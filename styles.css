@@ -2056,6 +2056,23 @@ input[type="file"]::file-selector-button:hover {
 .share-btn:hover { opacity: 0.9; border-color: rgba(244,201,93,0.3); background: rgba(255,244,220,0.08); }
 .share-btn.copied { opacity: 1; color: #A8C77E; border-color: rgba(168,199,126,0.4); background: rgba(168,199,126,0.08); }
 
+/* Inline share link (text-only variant used in the changelog feed entry headers) */
+.share-link {
+  display: inline-block;
+  font-family: 'Fredoka', sans-serif; font-size: 0.75rem; font-weight: 600;
+  color: var(--sun); opacity: 0.5; text-decoration: none;
+  margin-top: 0.3rem;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.share-link:hover { opacity: 0.9; }
+.share-link.copied { color: #A8C77E; opacity: 1; }
+
+/* Changelog feed reaction bar — wider padding and a divider above */
+.changelog-feed .reaction-bar {
+  padding: 0.8rem 1.8rem 1.2rem;
+  border-top: 1px solid rgba(244, 201, 93, 0.06);
+}
+
 .changelog-entry.highlighted {
   border-color: rgba(244,201,93,0.4) !important;
   box-shadow: 0 0 30px rgba(244,201,93,0.1);

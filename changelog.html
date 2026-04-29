@@ -358,10 +358,9 @@
           const url = window.location.origin + '/changelog.html#' + entryId;
           navigator.clipboard.writeText(url).then(() => {
             link.textContent = '✓ Link copied!';
-            link.style.color = '#A8C77E';
-            link.style.opacity = '1';
+            link.classList.add('copied');
             history.replaceState(null, '', '#' + entryId);
-            setTimeout(() => { link.textContent = '🔗 Copy link'; link.style.color = '#F4C95D'; link.style.opacity = '0.5'; }, 2000);
+            setTimeout(() => { link.textContent = '🔗 Copy link'; link.classList.remove('copied'); }, 2000);
           });
         });
       });
@@ -423,12 +422,12 @@
               ${versionHtml}
             </div>
             <div class="entry-tags">${tagsHtml}</div>
-            <a href="#${entryId}" class="share-link" data-id="${entryId}" style="display:inline-block;font-family:Fredoka,sans-serif;font-size:0.75rem;font-weight:600;color:#F4C95D;opacity:0.5;text-decoration:none;margin-top:0.3rem;">🔗 Copy link</a>
+            <a href="#${entryId}" class="share-link" data-id="${entryId}">🔗 Copy link</a>
           </div>
           ${imageHtml}
           ${changeCountHtml}
           ${bodyHtml}
-          <div class="reaction-bar" data-reactions-for="${entryId}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
+          <div class="reaction-bar" data-reactions-for="${entryId}"></div>
         </div>`;
     }
 
