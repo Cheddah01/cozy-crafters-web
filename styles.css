@@ -2741,6 +2741,83 @@ body.pastel-theme .featured-patch-slot .share-btn {
 body.pastel-theme .featured-patch-slot .share-btn:hover { background: var(--pastel-surface-strong); opacity: 1; }
 body.pastel-theme .featured-patch-slot .reaction-login-hint { color: var(--ink-soft); opacity: 0.95; }
 
+/* Changelog page feed entries on pastel bg — mirrors the homepage's featured-patch-slot
+   look but at the full reading size for the standalone feed. */
+body.pastel-theme .changelog-feed .changelog-entry {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--pastel-border);
+  box-shadow: 0 6px 24px rgba(61, 43, 31, 0.06);
+}
+body.pastel-theme .changelog-feed .changelog-entry:hover {
+  background: var(--pastel-surface-strong);
+  border-color: var(--pastel-border-strong);
+}
+body.pastel-theme .changelog-feed .changelog-entry.pinned {
+  border-color: var(--pastel-border-strong);
+  background: rgba(255, 255, 255, 0.78);
+}
+body.pastel-theme .changelog-feed .entry-top {
+  background: linear-gradient(135deg, rgba(168, 199, 126, 0.14) 0%, rgba(244, 201, 93, 0.12) 100%);
+  border-bottom-color: var(--pastel-border-soft);
+}
+body.pastel-theme .changelog-feed .entry-pin-badge {
+  background: var(--pastel-accent);
+  color: var(--cream);
+}
+body.pastel-theme .changelog-feed .entry-title { color: var(--ink); }
+body.pastel-theme .changelog-feed .entry-version {
+  background: transparent;
+  color: var(--ink-soft);
+  box-shadow: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-weight: 700;
+  opacity: 0.95;
+  text-transform: lowercase;
+}
+body.pastel-theme .changelog-feed .entry-change-row { border-bottom-color: var(--pastel-border-soft); }
+body.pastel-theme .changelog-feed .entry-change-title { color: var(--ink); }
+body.pastel-theme .changelog-feed .entry-change-desc { color: var(--ink-soft); opacity: 0.9; }
+body.pastel-theme .changelog-feed .entry-change-count { color: var(--ink-soft); opacity: 0.85; }
+body.pastel-theme .changelog-feed .entry-body { color: var(--ink); opacity: 0.95; }
+body.pastel-theme .changelog-feed .entry-body strong { color: var(--ink); }
+body.pastel-theme .changelog-feed .entry-body h3 { color: var(--pastel-accent); }
+body.pastel-theme .changelog-feed .entry-body ul li::before { color: var(--pastel-accent); }
+body.pastel-theme .changelog-feed .entry-image { border-color: var(--pastel-border); }
+body.pastel-theme .changelog-feed .reaction-bar { border-top: 1px solid var(--pastel-border-soft); }
+body.pastel-theme .changelog-feed .reaction-btn {
+  background: var(--pastel-surface);
+  border-color: var(--pastel-border);
+  color: var(--ink); opacity: 0.9;
+}
+body.pastel-theme .changelog-feed .reaction-btn:hover {
+  background: var(--pastel-surface-strong);
+  border-color: var(--pastel-border-strong);
+  opacity: 1;
+}
+body.pastel-theme .changelog-feed .reaction-btn.active {
+  background: rgba(244, 201, 93, 0.25);
+  border-color: var(--pastel-border-strong);
+  color: var(--pastel-accent-strong); opacity: 1;
+}
+body.pastel-theme .changelog-feed .share-link {
+  color: var(--pastel-accent);
+  opacity: 0.95;
+}
+body.pastel-theme .changelog-feed .share-link:hover { color: var(--pastel-accent-strong); opacity: 1; }
+body.pastel-theme .changelog-feed .reaction-login-hint { color: var(--ink-soft); opacity: 0.95; }
+body.pastel-theme .changelog-loading { color: var(--ink-soft); opacity: 0.85; }
+body.pastel-theme .changelog-loading .load-spinner {
+  border-color: var(--pastel-border);
+  border-top-color: var(--pastel-accent);
+}
+body.pastel-theme .changelog-empty { color: var(--ink-soft); opacity: 0.8; }
+body.pastel-theme .changelog-feed .changelog-entry.highlighted {
+  border-color: var(--pastel-accent) !important;
+  box-shadow: 0 0 30px rgba(140, 102, 73, 0.18);
+}
+
 /* Gallery strip on pastel bg */
 body.pastel-theme .gs-card {
   background: var(--pastel-surface-soft);

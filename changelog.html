@@ -21,41 +21,53 @@
   <style>
     body { overflow-x: hidden; }
 
+    /* Page-specific layout: header, filter bar, feed timeline.
+       Colours come from the global pastel palette (--pastel-*). */
     .page-header {
       position: relative; z-index: 10;
-      padding: 8rem 3rem 4rem; text-align: center;
-      background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 60%);
-      border-bottom: 1px solid rgba(244, 201, 93, 0.1);
+      padding: 8rem 3rem 3rem; text-align: center;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%),
+        var(--butter-warm);
+      border-bottom: 1px solid var(--pastel-border-soft);
     }
-    .page-header .section-eyebrow { margin-bottom: 1rem; }
+    .page-header .section-eyebrow { margin-bottom: 0.75rem; color: var(--pastel-accent); opacity: 1; }
     .page-header h1 {
       font-family: 'Fredoka', sans-serif; font-weight: 700;
-      font-size: clamp(2.5rem, 6vw, 4rem); color: var(--cream);
+      font-size: clamp(2.5rem, 6vw, 4rem); color: var(--ink);
       line-height: 1.1; margin-bottom: 1rem; opacity: 1; animation: none;
     }
-    .page-header h1 .accent { transform: none; }
+    .page-header h1 .accent { color: var(--pastel-accent); transform: none; }
     .page-header p {
       font-family: 'Nunito', sans-serif; font-size: 1.05rem;
-      color: var(--cream); opacity: 0.6; max-width: 500px;
+      color: var(--ink-soft); opacity: 0.95; max-width: 500px;
       margin: 0 auto; line-height: 1.6;
     }
 
     .filter-bar {
       position: sticky; top: 56px; z-index: 10;
-      background: rgba(61, 43, 31, 0.92); backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(244, 201, 93, 0.08);
+      background: rgba(251, 241, 210, 0.92); backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--pastel-border-soft);
       padding: 1rem 3rem; display: flex; justify-content: center;
       gap: 0.5rem; flex-wrap: wrap;
     }
     .filter-chip {
       font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
       padding: 0.45rem 1rem; border-radius: 999px;
-      border: 1px solid rgba(244, 201, 93, 0.15);
-      background: rgba(255, 244, 220, 0.04); color: var(--cream);
-      opacity: 0.6; cursor: pointer; transition: all 0.2s ease;
+      border: 1px solid var(--pastel-border);
+      background: var(--pastel-surface); color: var(--ink);
+      opacity: 0.85; cursor: pointer; transition: all 0.2s ease;
     }
-    .filter-chip:hover { opacity: 0.9; border-color: rgba(244, 201, 93, 0.3); }
-    .filter-chip.active { background: var(--sun); color: var(--ink); border-color: var(--sun); opacity: 1; }
+    .filter-chip:hover {
+      opacity: 1;
+      background: var(--pastel-surface-strong);
+      border-color: var(--pastel-border-strong);
+    }
+    .filter-chip.active {
+      background: var(--pastel-accent); color: var(--cream);
+      border-color: var(--pastel-accent); opacity: 1;
+    }
 
     .changelog-feed {
       position: relative; z-index: 10; max-width: 780px;
@@ -63,7 +75,8 @@
     }
     .changelog-feed::before {
       content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
-      width: 2px; background: linear-gradient(180deg, var(--sun) 0%, rgba(244, 201, 93, 0.1) 100%);
+      width: 2px; background: linear-gradient(180deg, var(--pastel-accent) 0%, var(--pastel-border-soft) 100%);
+      opacity: 0.55;
     }
 
     .date-marker {
@@ -71,13 +84,13 @@
       gap: 1rem; margin-bottom: 1.5rem; padding-top: 2rem;
     }
     .date-marker .date-dot {
-      width: 14px; height: 14px; border-radius: 50%; background: var(--sun);
-      box-shadow: 0 0 12px rgba(244, 201, 93, 0.4); flex-shrink: 0;
+      width: 14px; height: 14px; border-radius: 50%; background: var(--pastel-accent);
+      box-shadow: 0 0 12px rgba(140, 102, 73, 0.25); flex-shrink: 0;
       position: relative; left: 22px; z-index: 2;
     }
     .date-marker .date-text {
-      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
-      color: var(--sun); letter-spacing: 0.1em; text-transform: uppercase; padding-left: 1rem;
+      font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 700;
+      color: var(--pastel-accent); letter-spacing: 0.1em; text-transform: uppercase; padding-left: 1rem;
     }
 
     /* changelog-feed timeline overrides for the entry on this page */
@@ -85,9 +98,12 @@
     .changelog-feed .changelog-entry::before {
       content: ''; position: absolute; left: -34px; top: 2rem;
       width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(244, 201, 93, 0.3); border: 2px solid var(--bark-deep);
+      background: var(--pastel-border-strong); border: 2px solid var(--butter);
     }
-    .changelog-feed .changelog-entry.pinned::before { background: var(--sun); box-shadow: 0 0 8px rgba(244, 201, 93, 0.3); }
+    .changelog-feed .changelog-entry.pinned::before {
+      background: var(--pastel-accent);
+      box-shadow: 0 0 8px rgba(140, 102, 73, 0.3);
+    }
 
     @media (max-width: 768px) {
       .page-header { padding: 7rem 1rem 2rem; }
@@ -112,10 +128,7 @@
     }
   </style>
 </head>
-<body>
-
-  <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
-  <div class="bg-grain"></div>
+<body class="pastel-theme">
 
   <nav id="mainNav" class="scrolled">
     <a href="/" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
