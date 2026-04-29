@@ -411,22 +411,22 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       panelStyle.textContent = `
         .cl-quickbar {
           position: fixed; top: 56px; left: 0; right: 0; z-index: 90;
-          background: rgba(43,31,21,0.97); backdrop-filter: blur(14px);
-          border-bottom: 1px solid rgba(244,201,93,0.12);
+          background: rgba(255, 245, 235, 0.95); backdrop-filter: blur(14px);
+          border-bottom: 1px solid rgba(232, 155, 107, 0.18);
           padding: 0.6rem 2rem; display: flex; align-items: center;
           gap: 0.8rem; justify-content: center;
         }
         .cl-quickbar input {
-          font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #FFF4DC;
-          background: rgba(43,31,21,0.8); border: 1.5px solid rgba(244,201,93,0.15);
+          font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #4A2C1A;
+          background: rgba(255, 245, 235, 0.85); border: 1.5px solid rgba(232, 155, 107, 0.2);
           border-radius: 10px; padding: 0.55rem 0.85rem; outline: none; transition: all 0.2s;
         }
-        .cl-quickbar input:focus { border-color: #F4C95D; box-shadow: 0 0 0 3px rgba(244,201,93,0.1); }
-        .cl-quickbar input::placeholder { color: #FFF4DC; opacity: 0.3; }
+        .cl-quickbar input:focus { border-color: #E89B6B; box-shadow: 0 0 0 3px rgba(232,155,107,0.15); }
+        .cl-quickbar input::placeholder { color: #8B6F5C; opacity: 0.65; }
         .cl-quickbar-btn {
           font-family: 'Fredoka',sans-serif; font-size: 0.88rem; font-weight: 600;
-          background: #F4C95D; color: #1a1209; border: none; padding: 0.55rem 1.2rem;
-          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #c9a030;
+          background: #E89B6B; color: #FFF5EB; border: none; padding: 0.55rem 1.2rem;
+          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #D17A4A;
           transition: all 0.15s; white-space: nowrap;
         }
         .cl-quickbar-btn:hover { transform: translateY(-1px); }

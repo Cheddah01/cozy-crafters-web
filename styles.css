@@ -2623,6 +2623,8 @@ body.pastel-theme.home {
   --butter-soft: var(--bg-secondary);
   --ink: var(--text-primary);
   --ink-soft: var(--text-secondary);
+  --sun: var(--accent);
+  --sun-deep: var(--accent-deep);
   --pastel-accent: var(--accent);
   --pastel-accent-strong: var(--accent-deep);
   --pastel-border: var(--border);
@@ -2651,22 +2653,41 @@ body.pastel-theme.home nav#mainNav.scrolled {
 }
 
 body.pastel-theme {
+  /* Sunset Cozy palette — applies to changelog + gallery (homepage uses .home which
+     overrides this with its own surface tints). All three share the sunset look. */
+  --butter: var(--bg-primary);
+  --butter-warm: var(--bg-secondary);
+  --butter-deep: var(--bg-tertiary);
+  --butter-soft: var(--bg-secondary);
+  --ink: var(--text-primary);
+  --ink-soft: var(--text-secondary);
+  --sun: var(--accent);
+  --sun-deep: var(--accent-deep);
+  --pastel-accent: var(--accent);
+  --pastel-accent-strong: var(--accent-deep);
+  --pastel-border: var(--border);
+  --pastel-border-soft: rgba(232, 155, 107, 0.08);
+  --pastel-border-strong: rgba(232, 155, 107, 0.4);
+  --pastel-surface: rgba(255, 245, 235, 0.55);
+  --pastel-surface-soft: rgba(255, 245, 235, 0.4);
+  --pastel-surface-strong: rgba(255, 245, 235, 0.85);
+
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(255, 255, 255, 0.7), transparent 55%),
-    radial-gradient(ellipse at 90% 30%, rgba(244, 201, 93, 0.18), transparent 55%),
-    radial-gradient(ellipse at 5% 80%, rgba(168, 199, 126, 0.14), transparent 55%),
-    var(--butter);
-  color: var(--ink);
+    radial-gradient(ellipse at 50% -10%, rgba(255, 245, 235, 0.7), transparent 55%),
+    radial-gradient(ellipse at 90% 30%, rgba(232, 155, 107, 0.2), transparent 55%),
+    radial-gradient(ellipse at 5% 80%, rgba(255, 200, 168, 0.18), transparent 55%),
+    var(--bg-primary);
+  color: var(--text-primary);
 }
 
 body.pastel-theme nav#mainNav {
-  background: rgba(251, 241, 210, 0.65);
+  background: rgba(255, 245, 235, 0.65);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--pastel-border-soft);
 }
 body.pastel-theme nav#mainNav.scrolled {
-  background: rgba(251, 241, 210, 0.92);
-  box-shadow: 0 2px 16px rgba(61, 43, 31, 0.08);
+  background: rgba(255, 245, 235, 0.92);
+  box-shadow: 0 2px 16px rgba(74, 44, 26, 0.08);
 }
 body.pastel-theme .brand-mark,
 body.pastel-theme .nav-links a,
@@ -2812,9 +2833,9 @@ body.pastel-theme .featured-patch-slot .reaction-login-hint { color: var(--ink-s
 /* Changelog page feed entries on pastel bg — mirrors the homepage's featured-patch-slot
    look but at the full reading size for the standalone feed. */
 body.pastel-theme .changelog-feed .changelog-entry {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--bg-secondary);
   border-color: var(--pastel-border);
-  box-shadow: 0 6px 24px rgba(61, 43, 31, 0.06);
+  box-shadow: 0 6px 24px rgba(74, 44, 26, 0.06);
 }
 body.pastel-theme .changelog-feed .changelog-entry:hover {
   background: var(--pastel-surface-strong);
@@ -2822,15 +2843,15 @@ body.pastel-theme .changelog-feed .changelog-entry:hover {
 }
 body.pastel-theme .changelog-feed .changelog-entry.pinned {
   border-color: var(--pastel-border-strong);
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--bg-tertiary);
 }
 body.pastel-theme .changelog-feed .entry-top {
-  background: linear-gradient(135deg, rgba(168, 199, 126, 0.14) 0%, rgba(244, 201, 93, 0.12) 100%);
+  background: linear-gradient(135deg, rgba(255, 200, 168, 0.28) 0%, rgba(232, 155, 107, 0.18) 100%);
   border-bottom-color: var(--pastel-border-soft);
 }
 body.pastel-theme .changelog-feed .entry-pin-badge {
   background: var(--pastel-accent);
-  color: var(--cream);
+  color: var(--bg-primary);
 }
 body.pastel-theme .changelog-feed .entry-title { color: var(--ink); }
 body.pastel-theme .changelog-feed .entry-version {
@@ -2865,7 +2886,7 @@ body.pastel-theme .changelog-feed .reaction-btn:hover {
   opacity: 1;
 }
 body.pastel-theme .changelog-feed .reaction-btn.active {
-  background: rgba(244, 201, 93, 0.25);
+  background: rgba(255, 200, 168, 0.35);
   border-color: var(--pastel-border-strong);
   color: var(--pastel-accent-strong); opacity: 1;
 }
@@ -2883,16 +2904,16 @@ body.pastel-theme .changelog-loading .load-spinner {
 body.pastel-theme .changelog-empty { color: var(--ink-soft); opacity: 0.8; }
 body.pastel-theme .changelog-feed .changelog-entry.highlighted {
   border-color: var(--pastel-accent) !important;
-  box-shadow: 0 0 30px rgba(140, 102, 73, 0.18);
+  box-shadow: 0 0 30px rgba(232, 155, 107, 0.25);
 }
 
 /* Gallery strip on pastel bg */
 body.pastel-theme .gs-card {
   background: var(--pastel-surface-soft);
   border-color: var(--pastel-border);
-  box-shadow: 0 2px 8px rgba(61, 43, 31, 0.06);
+  box-shadow: 0 2px 8px rgba(74, 44, 26, 0.06);
 }
-body.pastel-theme .gs-card:hover { border-color: var(--pastel-border-strong); box-shadow: 0 12px 28px rgba(61, 43, 31, 0.14); }
+body.pastel-theme .gs-card:hover { border-color: var(--pastel-border-strong); box-shadow: 0 12px 28px rgba(74, 44, 26, 0.14); }
 body.pastel-theme .gallery-strip-empty { color: var(--ink-soft); }
 body.pastel-theme .gallery-strip::-webkit-scrollbar-thumb { background: var(--pastel-border); }
 
@@ -2913,19 +2934,19 @@ body.pastel-theme .content-section.section-hub::before {
 body.pastel-theme .hub-card {
   background: var(--pastel-surface);
   border-color: var(--pastel-border);
-  box-shadow: 0 4px 16px rgba(61, 43, 31, 0.05);
+  box-shadow: 0 4px 16px rgba(74, 44, 26, 0.05);
 }
 body.pastel-theme .hub-card:hover {
   background: var(--pastel-surface-strong);
   border-color: var(--pastel-border-strong);
-  box-shadow: 0 12px 28px rgba(61, 43, 31, 0.12);
+  box-shadow: 0 12px 28px rgba(74, 44, 26, 0.12);
 }
-body.pastel-theme .hub-card-icon { filter: drop-shadow(0 1px 1px rgba(61, 43, 31, 0.15)); }
+body.pastel-theme .hub-card-icon { filter: drop-shadow(0 1px 1px rgba(74, 44, 26, 0.15)); }
 body.pastel-theme .hub-card-title { color: var(--pastel-accent); }
 body.pastel-theme .hub-card-body { color: var(--ink); opacity: 0.92; }
 body.pastel-theme .hub-ip-value { color: var(--ink); }
 body.pastel-theme .hub-ip-sub { color: var(--ink-soft); opacity: 0.95; }
-body.pastel-theme .hub-mini-track { background: rgba(255, 255, 255, 0.6); border-color: var(--pastel-border); }
+body.pastel-theme .hub-mini-track { background: rgba(255, 245, 235, 0.6); border-color: var(--pastel-border); }
 body.pastel-theme .hub-mini-label { background: var(--pastel-surface); border-color: var(--pastel-border); color: var(--ink); opacity: 1; }
 body.pastel-theme .hub-drawer { background: var(--pastel-surface); border-color: var(--pastel-border); }
 body.pastel-theme .hub-drawer-inner h3 { color: var(--ink); }
@@ -2939,11 +2960,11 @@ body.pastel-theme .fab-chronicles {
   background: var(--pastel-surface-strong);
   border-color: var(--pastel-border);
   color: var(--ink);
-  box-shadow: 0 2px 10px rgba(61, 43, 31, 0.12);
+  box-shadow: 0 2px 10px rgba(74, 44, 26, 0.12);
 }
-body.pastel-theme .fab-chronicles:hover { background: rgba(255, 255, 255, 0.95); border-color: var(--pastel-border-strong); }
+body.pastel-theme .fab-chronicles:hover { background: rgba(255, 245, 235, 0.95); border-color: var(--pastel-border-strong); }
 
-body.pastel-theme .mobile-menu { background: rgba(251, 241, 210, 0.97); }
+body.pastel-theme .mobile-menu { background: rgba(255, 245, 235, 0.97); }
 body.pastel-theme .mobile-menu a { color: var(--ink); }
 body.pastel-theme .mobile-menu a:hover { color: var(--pastel-accent-strong); }
 
@@ -2951,6 +2972,123 @@ body.pastel-theme .mobile-menu a:hover { color: var(--pastel-accent-strong); }
 body.pastel-theme .site-footer {
   background: var(--bark-deep);
   border-top: 1px solid var(--pastel-border);
+}
+
+/* ============================================
+   SUNSET THEME (scoped to body.sunset)
+   Used by support, year-one, wiki, admin, 404 — pages that were dark.
+   Flips body bg + text and overrides nav, buttons, mobile menu.
+   Per-page inline <style> blocks handle their own card/surface inversions.
+   ============================================ */
+body.sunset {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+body.sunset html { background: var(--bg-primary); }
+
+body.sunset nav#mainNav {
+  background: rgba(255, 245, 235, 0.65);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+body.sunset nav#mainNav.scrolled {
+  background: rgba(255, 245, 235, 0.92);
+  box-shadow: 0 2px 16px rgba(74, 44, 26, 0.08);
+}
+body.sunset .brand-mark,
+body.sunset .nav-links a,
+body.sunset .nav-hamburger span {
+  color: var(--text-primary);
+}
+body.sunset .nav-links a { opacity: 0.85; }
+body.sunset .nav-links a:hover { color: var(--accent); opacity: 1; }
+body.sunset .nav-hamburger span { background: var(--text-primary); }
+
+body.sunset .mobile-menu { background: rgba(255, 245, 235, 0.97); }
+body.sunset .mobile-menu a { color: var(--text-primary); }
+body.sunset .mobile-menu a:hover { color: var(--accent-deep); }
+
+body.sunset .btn-primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow:
+    0 4px 0 var(--accent-deep),
+    0 8px 24px rgba(232, 155, 107, 0.3);
+}
+body.sunset .btn-primary:hover {
+  box-shadow:
+    0 6px 0 var(--accent-deep),
+    0 12px 32px rgba(232, 155, 107, 0.45);
+}
+body.sunset .btn-primary:active {
+  box-shadow:
+    0 2px 0 var(--accent-deep),
+    0 4px 12px rgba(232, 155, 107, 0.25);
+}
+body.sunset .btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+body.sunset .btn-secondary:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent);
+}
+
+/* Footer stays dark for contrast — same pattern as homepage. */
+body.sunset .site-footer {
+  background: var(--bark-deep);
+  border-top: 1px solid var(--border);
+}
+
+/* Form inputs (admin + gallery + wiki) — flip dark input chrome to light */
+body.sunset input[type="text"],
+body.sunset input[type="url"],
+body.sunset input[type="password"],
+body.sunset input[type="file"],
+body.sunset input[type="number"],
+body.sunset textarea {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+}
+body.sunset input[type="text"]::placeholder,
+body.sunset input[type="url"]::placeholder,
+body.sunset textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+body.sunset input[type="text"]:focus,
+body.sunset input[type="url"]:focus,
+body.sunset input[type="password"]:focus,
+body.sunset textarea:focus {
+  border-color: var(--accent);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 4px rgba(232, 155, 107, 0.18);
+}
+body.sunset input[type="file"]::file-selector-button {
+  background: rgba(232, 155, 107, 0.18);
+  color: var(--accent-deep);
+  border: 1px solid rgba(232, 155, 107, 0.35);
+}
+body.sunset input[type="file"]::file-selector-button:hover {
+  background: rgba(232, 155, 107, 0.3);
+}
+
+/* Admin shell tints — flip dark cards/tabs to light */
+body.sunset .admin-header { border-bottom-color: rgba(232, 155, 107, 0.35); }
+body.sunset .card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+body.sunset .tabs { background: var(--bg-tertiary); }
+body.sunset .tab { color: var(--text-primary); opacity: 0.7; }
+body.sunset .tab:hover { opacity: 1; }
+body.sunset .tab.active {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 2px 0 var(--accent-deep);
 }
 
 /* ============================================

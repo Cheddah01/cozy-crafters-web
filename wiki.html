@@ -12,6 +12,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <style>
+    /* Sunset Cozy palette overrides — flips wiki from dark to light */
+    body.sunset {
+      --cream: var(--text-primary);
+      --ink: var(--bg-primary);
+      --sun: var(--accent);
+      --sun-deep: var(--accent-deep);
+    }
+
     .wiki-gate {
       min-height: 80vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center; text-align: center;
@@ -29,13 +37,13 @@
     /* Sidebar */
     .wiki-sidebar {
       width: 280px; flex-shrink: 0;
-      background: rgba(255, 244, 220, 0.02);
-      border-right: 1px solid rgba(244, 201, 93, 0.08);
+      background: rgba(74, 44, 26, 0.02);
+      border-right: 1px solid rgba(232, 155, 107, 0.08);
       padding: 1.5rem 0; overflow-y: auto;
       position: sticky; top: 64px; height: calc(100vh - 64px);
     }
     .wiki-sidebar-header {
-      padding: 0 1.2rem 1rem; border-bottom: 1px solid rgba(244, 201, 93, 0.06);
+      padding: 0 1.2rem 1rem; border-bottom: 1px solid rgba(232, 155, 107, 0.06);
       margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: space-between;
     }
     .wiki-sidebar-title {
@@ -62,10 +70,10 @@
       color: var(--cream); opacity: 0.6; text-decoration: none;
       border-left: 3px solid transparent; transition: all 0.15s; cursor: pointer;
     }
-    .wiki-nav-item:hover { opacity: 0.9; background: rgba(255, 244, 220, 0.03); }
+    .wiki-nav-item:hover { opacity: 0.9; background: rgba(74, 44, 26, 0.03); }
     .wiki-nav-item.active {
       opacity: 1; color: var(--sun);
-      border-left-color: var(--sun); background: rgba(244, 201, 93, 0.05);
+      border-left-color: var(--sun); background: rgba(232, 155, 107, 0.05);
     }
 
     /* Content area */
@@ -89,33 +97,33 @@
     .wiki-btn {
       font-family: 'Fredoka', sans-serif; font-size: 0.78rem; font-weight: 600;
       padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer;
-      border: 1px solid rgba(244, 201, 93, 0.15); transition: all 0.15s;
+      border: 1px solid rgba(232, 155, 107, 0.15); transition: all 0.15s;
     }
-    .wiki-btn-edit { background: rgba(244, 201, 93, 0.08); color: var(--sun); }
-    .wiki-btn-edit:hover { background: rgba(244, 201, 93, 0.15); }
+    .wiki-btn-edit { background: rgba(232, 155, 107, 0.08); color: var(--sun); }
+    .wiki-btn-edit:hover { background: rgba(232, 155, 107, 0.15); }
     .wiki-btn-delete { background: rgba(232, 112, 112, 0.08); color: #E87070; border-color: rgba(232, 112, 112, 0.15); }
     .wiki-btn-delete:hover { background: rgba(232, 112, 112, 0.15); }
     .wiki-btn-save { background: var(--sun); color: var(--ink); border-color: var(--sun); }
     .wiki-btn-save:hover { transform: translateY(-1px); }
-    .wiki-btn-cancel { background: rgba(255, 255, 255, 0.05); color: var(--cream); }
+    .wiki-btn-cancel { background: rgba(74, 44, 26, 0.05); color: var(--cream); }
 
     /* Rendered content */
     .wiki-body { line-height: 1.8; }
-    .wiki-body h1 { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--cream); margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(244, 201, 93, 0.08); }
+    .wiki-body h1 { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--cream); margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(232, 155, 107, 0.08); }
     .wiki-body h2 { font-family: 'Fredoka', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--cream); margin: 1.8rem 0 0.6rem; }
     .wiki-body h3 { font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--sun); margin: 1.4rem 0 0.5rem; }
     .wiki-body p { font-family: 'Nunito', sans-serif; font-size: 0.92rem; color: var(--cream); opacity: 0.75; margin-bottom: 1rem; }
     .wiki-body ul, .wiki-body ol { font-family: 'Nunito', sans-serif; font-size: 0.92rem; color: var(--cream); opacity: 0.75; margin-bottom: 1rem; padding-left: 1.5rem; }
     .wiki-body li { margin-bottom: 0.3rem; }
-    .wiki-body code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; background: rgba(255, 244, 220, 0.06); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--sun); }
-    .wiki-body pre { background: rgba(0,0,0,0.3); border: 1px solid rgba(244,201,93,0.08); border-radius: 10px; padding: 1rem; overflow-x: auto; margin-bottom: 1rem; }
+    .wiki-body code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.82rem; background: rgba(74, 44, 26, 0.06); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--sun); }
+    .wiki-body pre { background: rgba(74,44,26,0.3); border: 1px solid rgba(232, 155, 107,0.08); border-radius: 10px; padding: 1rem; overflow-x: auto; margin-bottom: 1rem; }
     .wiki-body pre code { background: none; padding: 0; font-size: 0.8rem; color: var(--cream); opacity: 0.8; }
-    .wiki-body blockquote { border-left: 3px solid var(--sun); padding: 0.5rem 1rem; margin: 1rem 0; background: rgba(244, 201, 93, 0.03); border-radius: 0 8px 8px 0; }
+    .wiki-body blockquote { border-left: 3px solid var(--sun); padding: 0.5rem 1rem; margin: 1rem 0; background: rgba(232, 155, 107, 0.03); border-radius: 0 8px 8px 0; }
     .wiki-body blockquote p { opacity: 0.6; font-style: italic; margin-bottom: 0; }
     .wiki-body table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-family: 'Nunito', sans-serif; font-size: 0.85rem; }
-    .wiki-body th { text-align: left; padding: 0.5rem 0.8rem; border-bottom: 2px solid rgba(244,201,93,0.15); color: var(--sun); font-weight: 700; }
-    .wiki-body td { padding: 0.45rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--cream); opacity: 0.7; }
-    .wiki-body hr { border: none; border-top: 1px solid rgba(244,201,93,0.08); margin: 1.5rem 0; }
+    .wiki-body th { text-align: left; padding: 0.5rem 0.8rem; border-bottom: 2px solid rgba(232, 155, 107,0.15); color: var(--sun); font-weight: 700; }
+    .wiki-body td { padding: 0.45rem 0.8rem; border-bottom: 1px solid rgba(74, 44, 26,0.04); color: var(--cream); opacity: 0.7; }
+    .wiki-body hr { border: none; border-top: 1px solid rgba(232, 155, 107,0.08); margin: 1.5rem 0; }
     .wiki-body a { color: var(--sun); text-decoration: underline; text-underline-offset: 2px; }
     .wiki-body strong { color: var(--cream); opacity: 1; }
 
@@ -124,12 +132,12 @@
     .wiki-editor.active { display: block; }
     .wiki-editor-field {
       width: 100%; font-family: 'Nunito', sans-serif; font-size: 0.9rem;
-      color: var(--cream); background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(244,201,93,0.1); border-radius: 10px;
+      color: var(--cream); background: rgba(74,44,26,0.2);
+      border: 1px solid rgba(232, 155, 107,0.1); border-radius: 10px;
       padding: 0.7rem 1rem; outline: none; margin-bottom: 0.6rem;
       transition: border-color 0.2s;
     }
-    .wiki-editor-field:focus { border-color: rgba(244,201,93,0.3); }
+    .wiki-editor-field:focus { border-color: rgba(232, 155, 107,0.3); }
     .wiki-editor-field::placeholder { color: var(--cream); opacity: 0.2; }
     .wiki-editor textarea {
       min-height: 500px; resize: vertical;
@@ -146,19 +154,19 @@
     .wiki-toolbar {
       display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center;
       padding: 0.5rem 0.6rem; margin-bottom: -1px;
-      background: rgba(255,244,220,0.04);
-      border: 1px solid rgba(244,201,93,0.1);
+      background: rgba(74, 44, 26,0.04);
+      border: 1px solid rgba(232, 155, 107,0.1);
       border-radius: 10px 10px 0 0;
     }
     .wiki-toolbar-btn {
       font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 700;
-      background: rgba(255,255,255,0.05); color: var(--cream); opacity: 0.6;
-      border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;
+      background: rgba(74, 44, 26,0.05); color: var(--cream); opacity: 0.6;
+      border: 1px solid rgba(74, 44, 26,0.06); border-radius: 6px;
       padding: 0.3rem 0.55rem; cursor: pointer; transition: all 0.15s;
       min-width: 32px; text-align: center; line-height: 1;
     }
-    .wiki-toolbar-btn:hover { opacity: 1; background: rgba(244,201,93,0.1); border-color: rgba(244,201,93,0.2); }
-    .wiki-toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.06); margin: 0 0.3rem; }
+    .wiki-toolbar-btn:hover { opacity: 1; background: rgba(232, 155, 107,0.1); border-color: rgba(232, 155, 107,0.2); }
+    .wiki-toolbar-sep { width: 1px; height: 20px; background: rgba(74, 44, 26,0.06); margin: 0 0.3rem; }
     .wiki-toolbar + textarea { border-radius: 0 0 10px 10px; }
 
     /* Editor tab toggle */
@@ -169,14 +177,14 @@
       font-family: 'Fredoka', sans-serif; font-size: 0.78rem; font-weight: 600;
       padding: 0.4rem 1rem; cursor: pointer; border: none;
       color: var(--cream); opacity: 0.4; transition: all 0.15s;
-      background: rgba(255,255,255,0.03); border-radius: 8px 8px 0 0;
+      background: rgba(74, 44, 26,0.03); border-radius: 8px 8px 0 0;
     }
-    .wiki-editor-tab.active { opacity: 1; color: var(--sun); background: rgba(244,201,93,0.08); }
+    .wiki-editor-tab.active { opacity: 1; color: var(--sun); background: rgba(232, 155, 107,0.08); }
     .wiki-editor-tab:hover { opacity: 0.8; }
     .wiki-editor-preview {
       display: none; min-height: 500px;
-      padding: 1.2rem; background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(244,201,93,0.1); border-radius: 0 0 10px 10px;
+      padding: 1.2rem; background: rgba(74,44,26,0.2);
+      border: 1px solid rgba(232, 155, 107,0.1); border-radius: 0 0 10px 10px;
       overflow-y: auto;
     }
     .wiki-editor-preview.active { display: block; }
@@ -194,7 +202,7 @@
       .wiki-layout { flex-direction: column; }
       .wiki-sidebar {
         width: 100%; position: relative; top: 0; height: auto;
-        border-right: none; border-bottom: 1px solid rgba(244,201,93,0.08);
+        border-right: none; border-bottom: 1px solid rgba(232, 155, 107,0.08);
         padding: 1rem 0; max-height: 50vh; overflow-y: auto;
       }
       .wiki-content { padding: 1.5rem 1.2rem; }
@@ -203,9 +211,7 @@
     }
   </style>
 </head>
-<body>
-  <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
-  <div class="bg-grain"></div>
+<body class="sunset">
 
   <nav id="mainNav" class="scrolled">
     <a href="/" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>

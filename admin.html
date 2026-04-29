@@ -13,6 +13,14 @@
 <link rel="stylesheet" href="styles.css" />
 
 <style>
+  /* Sunset Cozy palette overrides — flips admin from dark to light */
+  body.sunset {
+    --cream: var(--text-primary);
+    --ink: var(--bg-primary);
+    --sun: var(--accent);
+    --sun-deep: var(--accent-deep);
+  }
+
   /* Login gate */
   .login-gate {
     position: relative;
@@ -25,8 +33,8 @@
   }
 
   .login-card {
-    background: rgba(255, 244, 220, 0.04);
-    border: 1px solid rgba(244, 201, 93, 0.15);
+    background: rgba(74, 44, 26, 0.04);
+    border: 1px solid rgba(232, 155, 107, 0.15);
     border-radius: 20px;
     padding: 3rem 2.5rem;
     text-align: center;
@@ -59,8 +67,8 @@
     font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--cream);
-    background: rgba(43, 31, 21, 0.8);
-    border: 2px solid rgba(244, 201, 93, 0.2);
+    background: rgba(255, 245, 235, 0.8);
+    border: 2px solid rgba(232, 155, 107, 0.2);
     border-radius: 12px;
     padding: 0.9rem 1rem;
     transition: all 0.25s ease;
@@ -75,8 +83,8 @@
 
   .login-card input[type="password"]:focus {
     border-color: var(--sun);
-    background: rgba(43, 31, 21, 1);
-    box-shadow: 0 0 0 4px rgba(244, 201, 93, 0.15);
+    background: rgba(255, 245, 235, 1);
+    box-shadow: 0 0 0 4px rgba(232, 155, 107, 0.15);
   }
 
   .login-error {
@@ -109,8 +117,8 @@
   .upload-status:empty { display: none; }
 
   .upload-bar {
-    background: rgba(43, 31, 21, 0.8);
-    border: 1px solid rgba(244, 201, 93, 0.15);
+    background: rgba(255, 245, 235, 0.8);
+    border: 1px solid rgba(232, 155, 107, 0.15);
     border-radius: 10px;
     padding: 0.7rem 1rem;
     display: flex;
@@ -121,7 +129,7 @@
   .upload-bar .upload-spinner {
     width: 18px;
     height: 18px;
-    border: 2.5px solid rgba(244, 201, 93, 0.2);
+    border: 2.5px solid rgba(232, 155, 107, 0.2);
     border-top-color: var(--sun);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
@@ -197,7 +205,7 @@
     font-size: 0.9rem;
     color: var(--cream);
     opacity: 0.4;
-    border: 2px dashed rgba(244, 201, 93, 0.12);
+    border: 2px dashed rgba(232, 155, 107, 0.12);
     border-radius: 14px;
   }
 
@@ -206,16 +214,16 @@
     align-items: center;
     gap: 0.8rem;
     padding: 0.7rem 0.8rem;
-    background: rgba(255, 244, 220, 0.03);
-    border: 1px solid rgba(244, 201, 93, 0.1);
+    background: rgba(74, 44, 26, 0.03);
+    border: 1px solid rgba(232, 155, 107, 0.1);
     border-radius: 12px;
     margin-bottom: 0.5rem;
     transition: all 0.2s ease;
   }
 
   .playlist-item:hover {
-    background: rgba(255, 244, 220, 0.06);
-    border-color: rgba(244, 201, 93, 0.2);
+    background: rgba(74, 44, 26, 0.06);
+    border-color: rgba(232, 155, 107, 0.2);
   }
 
   .playlist-item.dragging {
@@ -295,8 +303,8 @@
     gap: 1rem;
     margin-top: 1.2rem;
     padding: 1rem;
-    background: rgba(255, 244, 220, 0.03);
-    border: 1px solid rgba(244, 201, 93, 0.1);
+    background: rgba(74, 44, 26, 0.03);
+    border: 1px solid rgba(232, 155, 107, 0.1);
     border-radius: 12px;
   }
 
@@ -330,8 +338,8 @@
     font-family: 'Nunito', sans-serif;
     font-size: 0.95rem;
     color: var(--cream);
-    background: rgba(43, 31, 21, 0.8);
-    border: 2px solid rgba(244, 201, 93, 0.2);
+    background: rgba(255, 245, 235, 0.8);
+    border: 2px solid rgba(232, 155, 107, 0.2);
     border-radius: 12px;
     padding: 0.85rem 1rem;
     transition: all 0.25s ease;
@@ -348,8 +356,8 @@
 
   textarea:focus {
     border-color: var(--sun);
-    background: rgba(43, 31, 21, 1);
-    box-shadow: 0 0 0 4px rgba(244, 201, 93, 0.15);
+    background: rgba(255, 245, 235, 1);
+    box-shadow: 0 0 0 4px rgba(232, 155, 107, 0.15);
   }
 
   .filter-chip.cl-tag-btn {
@@ -371,8 +379,8 @@
     font-weight: 600;
     padding: 0.45rem 0.9rem;
     border-radius: 999px;
-    border: 1px solid rgba(244, 201, 93, 0.2);
-    background: rgba(43, 31, 21, 0.6);
+    border: 1px solid rgba(232, 155, 107, 0.2);
+    background: rgba(255, 245, 235, 0.6);
     color: var(--cream);
     opacity: 0.7;
     cursor: pointer;
@@ -381,7 +389,7 @@
 
   .admin-section .filter-chip:hover {
     opacity: 0.9;
-    background: rgba(43, 31, 21, 0.8);
+    background: rgba(255, 245, 235, 0.8);
   }
 
   .admin-section .filter-chip.active {
@@ -393,15 +401,15 @@
 
   .cl-entry-item {
     padding: 1rem;
-    background: rgba(255, 244, 220, 0.03);
-    border: 1px solid rgba(244, 201, 93, 0.08);
+    background: rgba(74, 44, 26, 0.03);
+    border: 1px solid rgba(232, 155, 107, 0.08);
     border-radius: 12px;
     margin-bottom: 0.6rem;
     transition: all 0.2s ease;
   }
 
   .cl-entry-item:hover {
-    border-color: rgba(244, 201, 93, 0.18);
+    border-color: rgba(232, 155, 107, 0.18);
   }
 
   .cl-entry-top {
@@ -426,7 +434,7 @@
     font-size: 0.72rem;
     font-weight: 600;
     color: var(--sun);
-    background: rgba(244, 201, 93, 0.12);
+    background: rgba(232, 155, 107, 0.12);
     padding: 0.15rem 0.5rem;
     border-radius: 999px;
     flex-shrink: 0;
@@ -455,9 +463,9 @@
     letter-spacing: 0.06em;
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
-    background: rgba(244, 201, 93, 0.1);
+    background: rgba(232, 155, 107, 0.1);
     color: var(--sun);
-    border: 1px solid rgba(244, 201, 93, 0.2);
+    border: 1px solid rgba(232, 155, 107, 0.2);
   }
 
   .cl-entry-actions {
@@ -478,12 +486,12 @@
   }
 
   .cl-btn-edit {
-    background: rgba(244, 201, 93, 0.12);
+    background: rgba(232, 155, 107, 0.12);
     color: var(--sun);
   }
 
   .cl-btn-edit:hover {
-    background: rgba(244, 201, 93, 0.25);
+    background: rgba(232, 155, 107, 0.25);
   }
 
   .cl-btn-delete {
@@ -561,9 +569,9 @@
   }
 
   .cl-entry-status.draft {
-    background: rgba(244, 201, 93, 0.1);
+    background: rgba(232, 155, 107, 0.1);
     color: var(--sun);
-    border: 1px solid rgba(244, 201, 93, 0.2);
+    border: 1px solid rgba(232, 155, 107, 0.2);
   }
 
   .cl-entry-pin {
@@ -585,8 +593,8 @@
     align-items: flex-start;
     gap: 0.6rem;
     padding: 0.7rem 0.8rem;
-    background: rgba(255, 244, 220, 0.03);
-    border: 1px solid rgba(244, 201, 93, 0.08);
+    background: rgba(74, 44, 26, 0.03);
+    border: 1px solid rgba(232, 155, 107, 0.08);
     border-radius: 10px;
     margin-bottom: 0.4rem;
   }
@@ -647,9 +655,9 @@
 
   .cl-editor-card,
   .cl-entry-panel {
-    background: rgba(255, 244, 220, 0.025);
-    border-color: rgba(244, 201, 93, 0.1);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+    background: rgba(74, 44, 26, 0.025);
+    border-color: rgba(232, 155, 107, 0.1);
+    box-shadow: 0 18px 50px rgba(74, 44, 26, 0.12);
   }
 
   .cl-editor-card {
@@ -700,12 +708,12 @@
 
   .cl-doc-title-input:hover,
   .cl-doc-title-input:focus {
-    background: rgba(255, 244, 220, 0.035) !important;
-    border-color: rgba(244, 201, 93, 0.12) !important;
+    background: rgba(74, 44, 26, 0.035) !important;
+    border-color: rgba(232, 155, 107, 0.12) !important;
   }
 
   .cl-doc-title-input::placeholder {
-    color: rgba(255, 244, 220, 0.28) !important;
+    color: rgba(74, 44, 26, 0.28) !important;
   }
 
   .cl-doc-meta {
@@ -767,8 +775,8 @@
   .cl-change-row-title:focus,
   .cl-change-row-desc:hover,
   .cl-change-row-desc:focus {
-    background: rgba(255, 244, 220, 0.04) !important;
-    border-color: rgba(244, 201, 93, 0.14) !important;
+    background: rgba(74, 44, 26, 0.04) !important;
+    border-color: rgba(232, 155, 107, 0.14) !important;
   }
 
   .cl-doc-block {
@@ -786,8 +794,8 @@
   }
 
   .cl-doc-details {
-    border-top: 1px solid rgba(244, 201, 93, 0.08);
-    border-bottom: 1px solid rgba(244, 201, 93, 0.08);
+    border-top: 1px solid rgba(232, 155, 107, 0.08);
+    border-bottom: 1px solid rgba(232, 155, 107, 0.08);
     padding: 0.8rem 0;
     margin-bottom: 1.35rem;
   }
@@ -833,7 +841,7 @@
   #clChangesList .changelog-admin-empty {
     text-align: left;
     padding: 1.1rem 0.25rem;
-    border: 1px dashed rgba(244, 201, 93, 0.12);
+    border: 1px dashed rgba(232, 155, 107, 0.12);
     border-left: 0;
     border-right: 0;
   }
@@ -852,8 +860,8 @@
 
   .cl-change-item:hover,
   .cl-change-item:focus-within {
-    background: rgba(255, 244, 220, 0.035);
-    border-color: rgba(244, 201, 93, 0.1);
+    background: rgba(74, 44, 26, 0.035);
+    border-color: rgba(232, 155, 107, 0.1);
   }
 
   .cl-change-handle {
@@ -893,9 +901,9 @@
 
   .cl-change-tag-button {
     cursor: pointer;
-    background: rgba(255, 244, 220, 0.035);
-    border: 1px solid rgba(244, 201, 93, 0.12);
-    color: rgba(255, 244, 220, 0.48);
+    background: rgba(74, 44, 26, 0.035);
+    border: 1px solid rgba(232, 155, 107, 0.12);
+    color: rgba(74, 44, 26, 0.48);
     opacity: 0.8;
   }
 
@@ -909,10 +917,10 @@
     gap: 0.32rem;
     width: min(280px, 70vw);
     padding: 0.55rem;
-    background: rgba(43, 31, 21, 0.98);
-    border: 1px solid rgba(244, 201, 93, 0.16);
+    background: rgba(255, 245, 235, 0.98);
+    border: 1px solid rgba(232, 155, 107, 0.16);
     border-radius: 12px;
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+    box-shadow: 0 18px 44px rgba(74, 44, 26, 0.32);
   }
 
   .cl-change-tag-menu:hover .cl-change-tag-options,
@@ -979,7 +987,7 @@
     align-items: start;
     margin-top: 0.55rem;
     padding: 0.65rem 0.45rem;
-    border-top: 1px solid rgba(244, 201, 93, 0.08);
+    border-top: 1px solid rgba(232, 155, 107, 0.08);
   }
 
   .cl-block-handle {
@@ -1035,7 +1043,7 @@
   }
 
   .cl-add-change-inline:hover {
-    background: rgba(244, 201, 93, 0.08);
+    background: rgba(232, 155, 107, 0.08);
     opacity: 1;
     transform: translateY(-1px);
   }
@@ -1068,8 +1076,8 @@
   }
 
   .cl-entry-item:hover {
-    background: rgba(255, 244, 220, 0.035);
-    border-color: rgba(244, 201, 93, 0.1);
+    background: rgba(74, 44, 26, 0.035);
+    border-color: rgba(232, 155, 107, 0.1);
   }
 
   .cl-entry-actions button {
@@ -1122,10 +1130,10 @@
     display: flex;
     gap: 0.4rem;
     margin-bottom: 2rem;
-    background: rgba(43, 31, 21, 0.6);
+    background: rgba(255, 245, 235, 0.6);
     border-radius: 14px;
     padding: 0.35rem;
-    border: 1px solid rgba(244, 201, 93, 0.08);
+    border: 1px solid rgba(232, 155, 107, 0.08);
   }
 
   .section-tab {
@@ -1166,21 +1174,21 @@
   .user-row {
     display: flex; align-items: center; gap: 0.8rem;
     padding: 0.7rem 0.8rem; border-radius: 10px;
-    border-bottom: 1px solid rgba(244,201,93,0.04);
+    border-bottom: 1px solid rgba(232, 155, 107,0.04);
     transition: background 0.15s;
   }
-  .user-row:hover { background: rgba(255,244,220,0.03); }
-  .user-row-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(244,201,93,0.15); flex-shrink: 0; }
+  .user-row:hover { background: rgba(74, 44, 26,0.03); }
+  .user-row-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(232, 155, 107,0.15); flex-shrink: 0; }
   .user-row-name { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--cream); }
   .user-row-info { flex: 1; }
   .user-row-id { font-family: 'Nunito', sans-serif; font-size: 0.68rem; color: var(--cream); opacity: 0.2; }
   .user-role-select {
     font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 600;
-    background: rgba(255,255,255,0.05); color: var(--cream);
-    border: 1px solid rgba(244,201,93,0.12); border-radius: 8px;
+    background: rgba(74, 44, 26,0.05); color: var(--cream);
+    border: 1px solid rgba(232, 155, 107,0.12); border-radius: 8px;
     padding: 0.35rem 0.5rem; cursor: pointer; outline: none;
   }
-  .user-role-select:focus { border-color: rgba(244,201,93,0.3); }
+  .user-role-select:focus { border-color: rgba(232, 155, 107,0.3); }
   .user-role-legend {
     font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 600;
     color: var(--cream); opacity: 0.5; display: flex; align-items: center; gap: 0.3rem;
@@ -1194,11 +1202,7 @@
   }
 </style>
 </head>
-<body>
-
-<!-- Static dim background -->
-<div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--ink) 100%); opacity: 1;"></div>
-<div class="bg-grain"></div>
+<body class="sunset">
 
 <div class="admin-shell">
 
@@ -1494,7 +1498,7 @@
             </div>
           </div>
 
-          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+          <div style="border-top: 1px solid rgba(232, 155, 107, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
             <div class="card-header" style="margin-bottom: 0.8rem;">
               <span class="card-icon">🔗</span>
               <h2 class="card-title">Links</h2>
@@ -1513,7 +1517,7 @@
             </div>
           </div>
 
-          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+          <div style="border-top: 1px solid rgba(232, 155, 107, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
             <div class="card-header" style="margin-bottom: 0.8rem;">
               <span class="card-icon">💛</span>
               <h2 class="card-title">Donations</h2>
@@ -1538,7 +1542,7 @@
             </div>
           </div>
 
-          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+          <div style="border-top: 1px solid rgba(232, 155, 107, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
             <div class="card-header" style="margin-bottom: 0.8rem;">
               <span class="card-icon">🧭</span>
               <h2 class="card-title">Homepage hub</h2>
@@ -2156,7 +2160,7 @@
     loginMessage.textContent = `Welcome, ${user.username}. Enter the admin API token to continue.`;
     loginGate.querySelector('.login-card').insertAdjacentHTML('beforeend', `
       <div class="field" style="margin-top:1rem;" id="apiTokenField">
-        <input type="password" id="apiTokenInput" placeholder="Admin API token" style="width:100%; font-family:'Nunito',sans-serif; font-size:1rem; color:var(--cream); background:rgba(43,31,21,0.8); border:2px solid rgba(244,201,93,0.2); border-radius:12px; padding:0.9rem 1rem; outline:none; text-align:center;" />
+        <input type="password" id="apiTokenInput" placeholder="Admin API token" style="width:100%; font-family:'Nunito',sans-serif; font-size:1rem; color:var(--cream); background:rgba(255, 245, 235,0.8); border:2px solid rgba(232, 155, 107,0.2); border-radius:12px; padding:0.9rem 1rem; outline:none; text-align:center;" />
       </div>
       <button class="btn btn-primary login-btn" id="apiTokenBtn" type="button" style="margin-top:0.8rem; width:100%;">Unlock Panel</button>
     `);
@@ -2893,9 +2897,9 @@
       const preview = document.getElementById('clImagePreview');
       if (!url) { preview.innerHTML = ''; return; }
       preview.innerHTML = `<div style="position:relative;display:inline-block;">
-        <img src="${url}" style="max-width:200px;max-height:120px;border-radius:10px;border:1px solid rgba(244,201,93,0.15);" />
+        <img src="${url}" style="max-width:200px;max-height:120px;border-radius:10px;border:1px solid rgba(232, 155, 107,0.15);" />
         <button type="button" onclick="document.getElementById('clImage').value='';document.getElementById('clImagePreview').innerHTML='';"
-          style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.7rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+          style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(74, 44, 26,0.7);border:none;color:#fff;font-size:0.7rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
       </div>`;
     }
 
@@ -2989,7 +2993,7 @@
           ? `<button type="button" class="cl-change-tag-button" style="background:${tag.color}22;color:${tag.color};border:1px solid ${tag.color}55;">${ccEscapeHtml(tag.name)}</button>`
           : `<button type="button" class="cl-change-tag-button">Tag</button>`;
         const tagOptions = [
-          `<button type="button" data-tag="" style="background:rgba(255,244,220,0.04);color:rgba(255,244,220,0.65);border:1px solid rgba(244,201,93,0.12);">None</button>`,
+          `<button type="button" data-tag="" style="background:rgba(74, 44, 26,0.04);color:rgba(74, 44, 26,0.65);border:1px solid rgba(232, 155, 107,0.12);">None</button>`,
           ...clTags.map(t => `<button type="button" data-tag="${ccEscapeHtml(t.id)}" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${ccEscapeHtml(t.name)}</button>`),
         ].join('');
         return `
@@ -3275,9 +3279,9 @@
       if (!url) { preview.innerHTML = ''; return; }
       preview.innerHTML = `
         <div style="position:relative; display:inline-block;">
-          <img src="${url}" style="max-width:200px; max-height:120px; border-radius:10px; border:1px solid rgba(244,201,93,0.15);" />
+          <img src="${url}" style="max-width:200px; max-height:120px; border-radius:10px; border:1px solid rgba(232, 155, 107,0.15);" />
           <button type="button" onclick="document.getElementById('chrImage').value=''; document.getElementById('chrImagePreview').innerHTML='';"
-            style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.7rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(74, 44, 26,0.7);border:none;color:#fff;font-size:0.7rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>`;
     }
 
@@ -3304,7 +3308,7 @@
     function renderChrSections() {
       const list = document.getElementById('chrSectionList');
       list.innerHTML = chrSections.map((s, i) => `
-        <div class="tag-manager-item" style="background:rgba(244,201,93,0.1); color:var(--sun); border:1px solid rgba(244,201,93,0.25);">
+        <div class="tag-manager-item" style="background:rgba(232, 155, 107,0.1); color:var(--sun); border:1px solid rgba(232, 155, 107,0.25);">
           ${s}
           <button class="tag-delete" data-idx="${i}" title="Remove">✕</button>
         </div>
@@ -3563,7 +3567,7 @@
         return;
       }
       list.innerHTML = chrCorrections.map((c, i) => `
-        <div style="display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.5rem; padding:0.6rem 0.8rem; background:rgba(255,244,220,0.03); border:1px solid rgba(244,201,93,0.08); border-radius:10px;">
+        <div style="display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.5rem; padding:0.6rem 0.8rem; background:rgba(74, 44, 26,0.03); border:1px solid rgba(232, 155, 107,0.08); border-radius:10px;">
           <span style="flex:1; font-family:'Nunito',sans-serif; font-size:0.85rem; color:var(--cream); opacity:0.7; font-style:italic; line-height:1.5;">${c}</span>
           <button class="cl-btn-delete chr-corr-del" data-idx="${i}" style="flex-shrink:0;">✕</button>
         </div>
@@ -3654,7 +3658,7 @@
       thumbs.innerHTML = galAdminImages.map((url, i) =>
         `<div style="width:70px;height:70px;border-radius:8px;overflow:hidden;position:relative;">
           <img src="${url}" style="width:100%;height:100%;object-fit:cover;" />
-          <button class="gal-thumb-del" data-idx="${i}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+          <button class="gal-thumb-del" data-idx="${i}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(74, 44, 26,0.7);border:none;color:#fff;font-size:0.65rem;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>`
       ).join('');
 
@@ -3768,7 +3772,7 @@
         return;
       }
       list.innerHTML = supCosts.map((c, i) => `
-        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem; padding:0.6rem 0.8rem; background:rgba(255,244,220,0.03); border:1px solid rgba(244,201,93,0.08); border-radius:10px;">
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem; padding:0.6rem 0.8rem; background:rgba(74, 44, 26,0.03); border:1px solid rgba(232, 155, 107,0.08); border-radius:10px;">
           <span style="flex:1; font-family:'Nunito',sans-serif; font-size:0.88rem; color:var(--cream); opacity:0.8;">${c.name}</span>
           <span style="font-family:'Fredoka',sans-serif; font-size:0.85rem; font-weight:600; color:var(--sun); flex-shrink:0;">${c.amount}</span>
           <button class="cl-btn-delete sup-cost-del" data-idx="${i}" style="flex-shrink:0;">✕</button>

@@ -47,10 +47,10 @@
       line-height: 0.95;
       letter-spacing: -0.05em;
       margin: 0 0 1.25rem;
-      background: linear-gradient(180deg, #FFF4DC 0%, var(--sun) 42%, var(--sun-deep) 100%);
+      background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent) 42%, var(--accent-deep) 100%);
       -webkit-background-clip: text;
       background-clip: text;
-      color: var(--sun);
+      color: var(--accent);
     }
 
     @supports (background-clip: text) or (-webkit-background-clip: text) {
@@ -63,7 +63,7 @@
       font-family: 'Fredoka', sans-serif;
       font-weight: 600;
       font-size: clamp(1.05rem, 2.8vw, 1.35rem);
-      color: var(--cream);
+      color: var(--text-primary);
       line-height: 1.35;
       margin-bottom: 1rem;
     }
@@ -71,8 +71,7 @@
     .error-body {
       font-family: 'Nunito', sans-serif;
       font-size: 1.02rem;
-      color: var(--cream);
-      opacity: 0.58;
+      color: var(--text-secondary);
       line-height: 1.65;
       margin-bottom: 2.25rem;
       max-width: 440px;
@@ -95,9 +94,9 @@
       margin-left: auto;
       margin-right: auto;
       border-radius: 10px;
-      background: linear-gradient(145deg, rgba(107, 142, 78, 0.5), rgba(47, 68, 35, 0.35));
-      border: 2px solid rgba(244, 201, 93, 0.12);
-      box-shadow: inset 0 1px 0 rgba(255, 244, 220, 0.06);
+      background: linear-gradient(145deg, rgba(123, 160, 91, 0.45), rgba(47, 68, 35, 0.3));
+      border: 2px solid var(--border);
+      box-shadow: inset 0 1px 0 rgba(255, 245, 235, 0.5);
       opacity: 0.85;
     }
 
@@ -108,9 +107,7 @@
     }
   </style>
 </head>
-<body>
-  <div class="bg-tint" style="background: linear-gradient(180deg, var(--moss-dark) 0%, var(--bark-deep) 30%); opacity: 1;"></div>
-  <div class="bg-grain"></div>
+<body class="sunset">
 
   <nav id="mainNav" class="scrolled">
     <a href="/" class="brand-mark"><span class="leaf">🌿</span><span>Cozy Crafters</span></a>
