@@ -61,9 +61,11 @@
 
     .front-page {
       position: relative;
-      max-width: 1120px;
+      box-sizing: border-box;
+      width: min(100%, 1160px);
+      max-width: 1160px;
       margin: 0 auto;
-      padding: 0.95rem 1.35rem 1.05rem;
+      padding: 1.05rem clamp(2.5rem, 4.6vw, 3.75rem) 1.25rem;
       background:
         radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.28), transparent 35%),
         radial-gradient(ellipse at 3% 35%, rgba(70,48,18,0.08), transparent 38%),
@@ -230,15 +232,33 @@
       font-family: 'Lora', serif;
       font-size: 0.89rem;
       line-height: 1.43;
-      column-count: 2;
-      column-gap: 1.55rem;
-      column-rule: 1px solid rgba(17,16,13,0.28);
-      text-align: justify;
-      hyphens: auto;
+      display: grid;
+      grid-template-columns: minmax(260px, 0.42fr) minmax(0, 0.58fr);
+      gap: 1.45rem;
+      align-items: start;
+      max-width: 980px;
+      margin: 0 auto;
       color: var(--news-ink-soft);
     }
 
-    .front-story > p:first-of-type::first-letter {
+    .front-story.no-image {
+      display: block;
+      max-width: 960px;
+    }
+
+    .front-copy {
+      column-count: 2;
+      column-gap: 1.2rem;
+      column-rule: 1px solid rgba(17,16,13,0.28);
+      text-align: justify;
+      hyphens: auto;
+    }
+
+    .front-story.no-image .front-copy {
+      column-gap: 1.55rem;
+    }
+
+    .front-copy > p:first-of-type::first-letter {
       float: left;
       font-family: 'Playfair Display', serif;
       font-size: 4.05rem;
@@ -250,7 +270,7 @@
 
     .news-photo {
       break-inside: avoid;
-      display: inline-block;
+      display: block;
       width: 100%;
       margin: 0 0 0.68rem;
       border: 2px solid var(--news-ink);
@@ -560,7 +580,7 @@
       }
 
       .front-page {
-        padding: 0.8rem;
+        padding: 0.85rem;
       }
 
       .masthead-row {
@@ -591,8 +611,19 @@
 
       .front-story,
       .ae-body {
-        column-count: 1;
         text-align: left;
+      }
+
+      .front-story {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        max-width: 100%;
+      }
+
+      .front-copy,
+      .front-story.no-image .front-copy,
+      .ae-body {
+        column-count: 1;
       }
 
       .article-card {
@@ -777,10 +808,12 @@
           <h1 class="headline">${ccEscapeHtml(latestArticle.title)}</h1>
           ${latestArticle.subtitle ? `<div class="deck">${ccEscapeHtml(latestArticle.subtitle)}</div>` : ''}
           <div class="double-rule"></div>
-          <div class="front-story">
-            ${imageHtml}
-            ${noteHtml}
-            ${parseBody(latestArticle.body)}
+          <div class="front-story${imageHtml ? '' : ' no-image'}">
+            ${imageHtml ? `<div class="front-media-col">${imageHtml}</div>` : ''}
+            <div class="front-copy">
+              ${noteHtml}
+              ${parseBody(latestArticle.body)}
+            </div>
           </div>
           <div class="news-bottom-band"><span>❋</span><span>${ccEscapeHtml(issueDate)}</span><span>❋</span><span>All Rumors Checked At Least Once</span><span>❋</span></div>
         </article>
