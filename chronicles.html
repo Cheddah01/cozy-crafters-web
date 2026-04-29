@@ -20,9 +20,10 @@
 
   <style>
     :root {
-      --paper: #F4EFE3;
-      --paper-deep: #E6DDCA;
-      --news-ink: #11100D;
+      --paper: #F1E8D2;
+      --paper-deep: #DCCFAF;
+      --news-ink: #0D0D0B;
+      --news-ink-soft: #1A1A17;
     }
 
     body {
@@ -34,11 +35,14 @@
       position: relative;
       z-index: 10;
       min-height: 100vh;
-      padding: 6.25rem 1.2rem 3rem;
+      padding: 5.9rem 1.2rem 3rem;
       background:
-        radial-gradient(circle at 20% 12%, rgba(0,0,0,0.045), transparent 22%),
-        radial-gradient(circle at 82% 8%, rgba(0,0,0,0.035), transparent 18%),
-        linear-gradient(180deg, #E9DFC8 0%, var(--paper) 18%, #EFE6D5 100%);
+        radial-gradient(ellipse at 50% 4%, rgba(255,255,255,0.22), transparent 28%),
+        radial-gradient(ellipse at 0% 50%, rgba(60,42,19,0.11), transparent 42%),
+        radial-gradient(ellipse at 100% 48%, rgba(60,42,19,0.10), transparent 40%),
+        radial-gradient(circle at 20% 12%, rgba(0,0,0,0.055), transparent 22%),
+        radial-gradient(circle at 82% 8%, rgba(0,0,0,0.045), transparent 18%),
+        linear-gradient(180deg, #E4D5B8 0%, var(--paper) 18%, #E9DFC8 100%);
     }
 
     .newspaper-shell::before {
@@ -46,21 +50,60 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: 0.22;
+      opacity: 0.34;
       mix-blend-mode: multiply;
       background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E");
+        radial-gradient(circle at 12px 18px, rgba(0,0,0,0.18) 0 0.45px, transparent 0.7px),
+        radial-gradient(circle at 70px 45px, rgba(0,0,0,0.12) 0 0.4px, transparent 0.65px),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.44'/%3E%3C/svg%3E");
+      background-size: 86px 86px, 130px 130px, 160px 160px;
     }
 
     .front-page {
       position: relative;
       max-width: 1120px;
       margin: 0 auto;
-      padding: 1.15rem 1.5rem 1.3rem;
-      background: rgba(244, 239, 227, 0.94);
+      padding: 0.95rem 1.35rem 1.05rem;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.28), transparent 35%),
+        radial-gradient(ellipse at 3% 35%, rgba(70,48,18,0.08), transparent 38%),
+        radial-gradient(ellipse at 97% 65%, rgba(70,48,18,0.075), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.12), transparent 38%),
+        rgba(241, 232, 210, 0.97);
       color: var(--news-ink);
       border-left: 1px solid rgba(17,16,13,0.35);
       border-right: 1px solid rgba(17,16,13,0.35);
+    }
+
+    .front-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      mix-blend-mode: multiply;
+      background-image:
+        radial-gradient(circle, rgba(0,0,0,0.22) 0 0.45px, transparent 0.75px),
+        radial-gradient(circle, rgba(0,0,0,0.12) 0 0.35px, transparent 0.7px),
+        linear-gradient(90deg, rgba(0,0,0,0.035), transparent 8%, transparent 92%, rgba(0,0,0,0.04));
+      background-size: 46px 46px, 77px 77px, 100% 100%;
+      background-position: 0 0, 18px 31px, 0 0;
+    }
+
+    .front-page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.52;
+      background:
+        linear-gradient(90deg, rgba(67,43,14,0.12), transparent 7%, transparent 93%, rgba(67,43,14,0.12)),
+        linear-gradient(180deg, rgba(67,43,14,0.10), transparent 9%, transparent 91%, rgba(67,43,14,0.13));
+    }
+
+    .front-page > * {
+      position: relative;
+      z-index: 1;
     }
 
     .news-top-band,
@@ -73,20 +116,22 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
       text-align: center;
-      padding: 0.45rem 0.7rem;
+      padding: 0.42rem 0.7rem;
     }
 
     .news-top-band {
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.65rem;
     }
 
     .news-bottom-band {
-      margin-top: 1.2rem;
+      margin-top: 0.85rem;
       display: flex;
       justify-content: center;
       gap: 1rem;
       align-items: center;
       flex-wrap: wrap;
+      border-top: 2px solid var(--news-ink);
+      border-bottom: 2px solid var(--news-ink);
     }
 
     .masthead-row {
@@ -127,12 +172,12 @@
       font-family: 'Lora', serif;
       font-style: italic;
       font-size: clamp(0.82rem, 1.5vw, 1rem);
-      line-height: 1.5;
+      line-height: 1.25;
       text-align: center;
-      padding: 0.55rem 0 0.45rem;
+      padding: 0.36rem 0 0.28rem;
       color: rgba(17,16,13,0.76);
       border-bottom: 1px solid var(--news-ink);
-      min-height: 2.3rem;
+      min-height: 1.6rem;
       transition: opacity 0.35s;
     }
 
@@ -140,7 +185,7 @@
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.45rem 0;
+      padding: 0.34rem 0;
       border-bottom: 2px solid var(--news-ink);
       font-family: 'Lora', serif;
       font-size: 0.72rem;
@@ -151,18 +196,20 @@
 
     .headline {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(3.1rem, 8.8vw, 8rem);
+      font-size: clamp(2.8rem, 6.7vw, 6.35rem);
       font-weight: 900;
-      line-height: 0.82;
+      line-height: 0.86;
       text-align: center;
       text-transform: uppercase;
-      letter-spacing: -0.065em;
-      margin: 0.24em 0 0.18em;
+      letter-spacing: -0.055em;
+      margin: 0.18em 0 0.1em;
+      color: var(--news-ink) !important;
+      opacity: 1 !important;
     }
 
     .deck {
       max-width: 900px;
-      margin: 0 auto 0.75rem;
+      margin: 0 auto 0.48rem;
       font-family: 'Lora', serif;
       font-size: clamp(1rem, 2vw, 1.35rem);
       font-style: italic;
@@ -175,51 +222,65 @@
       height: 8px;
       border-top: 4px solid var(--news-ink);
       border-bottom: 1px solid var(--news-ink);
-      margin: 0.95rem 0 1.05rem;
+      margin: 0.62rem 0 0.7rem;
     }
 
     .front-story {
       font-family: 'Lora', serif;
-      font-size: 0.87rem;
-      line-height: 1.47;
+      font-size: 0.89rem;
+      line-height: 1.43;
       column-count: 2;
       column-gap: 1.55rem;
       column-rule: 1px solid rgba(17,16,13,0.28);
       text-align: justify;
       hyphens: auto;
+      color: var(--news-ink-soft);
     }
 
     .front-story > p:first-of-type::first-letter {
       float: left;
       font-family: 'Playfair Display', serif;
-      font-size: 4.8rem;
-      line-height: 0.72;
-      padding: 0.1rem 0.35rem 0 0;
+      font-size: 4.05rem;
+      line-height: 0.76;
+      padding: 0.08rem 0.34rem 0 0;
       font-weight: 900;
+      color: var(--news-ink);
     }
 
     .news-photo {
       break-inside: avoid;
       display: inline-block;
       width: 100%;
-      margin: 0 0 0.75rem;
-      border-top: 3px solid var(--news-ink);
-      border-bottom: 1px solid var(--news-ink);
-      padding: 0.3rem 0 0.45rem;
+      margin: 0 0 0.68rem;
+      border: 2px solid var(--news-ink);
+      padding: 0.32rem;
+      position: relative;
+      background: rgba(13,13,11,0.04);
+    }
+
+    .news-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0.32rem;
+      pointer-events: none;
+      opacity: 0.2;
+      mix-blend-mode: multiply;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.55) 0 0.55px, transparent 0.75px);
+      background-size: 3px 3px;
     }
 
     .news-photo img {
       width: 100%;
       display: block;
-      filter: grayscale(1) contrast(1.18) brightness(0.96);
+      filter: grayscale(1) contrast(0.92) brightness(0.94);
       mix-blend-mode: multiply;
     }
 
     .news-photo figcaption {
-      margin-top: 0.35rem;
+      margin-top: 0.32rem;
       font-family: 'Lora', serif;
       font-style: italic;
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       line-height: 1.35;
       color: rgba(17,16,13,0.72);
       text-align: left;
@@ -235,7 +296,7 @@
     }
 
     .front-story p {
-      margin: 0 0 0.58rem;
+      margin: 0 0 0.5rem;
     }
 
     .front-story ul {
@@ -522,7 +583,9 @@
       }
 
       .headline {
-        font-size: clamp(2.4rem, 15vw, 4.8rem);
+        font-size: clamp(2.15rem, 12vw, 3.85rem);
+        line-height: 0.9;
+        letter-spacing: -0.045em;
       }
 
       .front-story,
