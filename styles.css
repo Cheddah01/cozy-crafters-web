@@ -211,10 +211,10 @@ nav#mainNav.scrolled {
   gap: 2rem;
 }
 
-.mobile-menu a {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 2rem;
-  font-weight: 600;
+  .mobile-menu a {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
   color: var(--cream);
   text-decoration: none;
   transition: color 0.2s;
@@ -1581,7 +1581,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 /* ============================================
-   MOBILE
+   MOBILE — breakpoints: 900px layout, 768px nav/hamburger, 420px tight phones
    ============================================ */
 @media (max-width: 900px) {
   .admin-grid {
@@ -1653,7 +1653,7 @@ input[type="file"]::file-selector-button:hover {
 
   /* Mobile menu */
   .mobile-menu ul { padding: 1.5rem; }
-  .mobile-menu a { font-size: 1.1rem; }
+  .mobile-menu a { font-size: 1.25rem; }
 }
 
 @media (max-width: 420px) {

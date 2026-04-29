@@ -39,13 +39,10 @@
       position: sticky; top: 56px;
     }
     .create-bar-login { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: var(--cream); opacity: 0.5; }
-    .create-toggle-btn {
-      font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600;
-      background: var(--sun); color: var(--ink); border: none; padding: 0.6rem 1.4rem;
-      border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 var(--sun-deep);
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    .create-bar .btn-primary {
+      font-size: 0.9rem;
+      padding: 0.65rem 1.4rem;
     }
-    .create-toggle-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--sun-deep); }
 
     /* Expanding creator panel */
     .create-panel {
@@ -119,20 +116,15 @@
     }
     .cp-add-img-btn:hover { border-color: var(--sun); background: rgba(244,201,93,0.05); }
 
-    .cp-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; align-items: center; }
-    .cp-submit {
-      font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 600;
-      background: var(--sun); color: var(--ink); border: none; padding: 0.75rem 1.6rem;
-      border-radius: 12px; cursor: pointer; box-shadow: 0 3px 0 var(--sun-deep); transition: all 0.2s;
+    .cp-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; align-items: center; flex-wrap: wrap; }
+    .cp-actions .btn-primary { font-size: 0.95rem; padding: 0.8rem 1.5rem; }
+    .cp-actions .btn-secondary { font-size: 0.88rem; padding: 0.75rem 1.35rem; }
+    .cp-actions .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: default;
+      transform: none;
+      pointer-events: none;
     }
-    .cp-submit:hover { transform: translateY(-1px); }
-    .cp-submit:disabled { opacity: 0.5; cursor: default; transform: none; }
-    .cp-cancel {
-      font-family: 'Fredoka', sans-serif; font-size: 0.88rem; font-weight: 600;
-      background: none; border: 1px solid rgba(255,244,220,0.15); color: var(--cream);
-      padding: 0.7rem 1.2rem; border-radius: 10px; cursor: pointer; transition: all 0.2s;
-    }
-    .cp-cancel:hover { border-color: rgba(255,244,220,0.3); }
     .cp-status { font-family: 'Nunito', sans-serif; font-size: 0.82rem; color: var(--sun); font-weight: 600; margin-left: auto; }
 
     input[type="file"].hidden-file { display: none; }
@@ -327,7 +319,7 @@
       .page-header p { font-size: 0.9rem; padding: 0 0.5rem; }
 
       .create-bar { padding: 0.6rem 0.8rem; top: 50px; }
-      .create-toggle-btn { font-size: 0.82rem; padding: 0.5rem 1rem; }
+      .create-bar .btn-primary { font-size: 0.82rem; padding: 0.5rem 1rem; }
       .create-bar-login { font-size: 0.8rem; }
 
       .create-panel-inner { padding: 1.2rem; }
@@ -338,8 +330,8 @@
       .cp-images-area { padding: 0.8rem; min-height: 80px; }
       .cp-img-thumb { width: 80px; height: 80px; }
       .cp-add-img-btn { width: 80px; height: 80px; }
-      .cp-submit { font-size: 0.88rem; padding: 0.65rem 1.2rem; }
-      .cp-cancel { font-size: 0.82rem; }
+      .cp-actions .btn-primary { font-size: 0.88rem; padding: 0.65rem 1.2rem; }
+      .cp-actions .btn-secondary { font-size: 0.82rem; }
 
       .gallery-content { padding: 1.2rem 0.6rem 4rem; }
       .gallery-grid { gap: 0.4rem; }
@@ -445,8 +437,8 @@
         <p style="font-family:Nunito,sans-serif;font-size:0.72rem;color:var(--cream);opacity:0.3;margin-top:0.3rem;">Paste a YouTube link, Imgur URL, or direct image URL. Shows as a clickable link on the post.</p>
       </div>
       <div class="cp-actions">
-        <button class="cp-submit" id="cpSubmit">Post to Gallery</button>
-        <button class="cp-cancel" id="cpCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="cpSubmit">Post to Gallery</button>
+        <button type="button" class="btn btn-secondary" id="cpCancel">Cancel</button>
         <span class="cp-status" id="cpStatus"></span>
       </div>
     </div>
@@ -527,7 +519,7 @@
       const bar = document.getElementById('createBar');
       const user = getUser();
       if (!user) { bar.innerHTML = '<span class="create-bar-login">Log in with Discord to share screenshots</span>'; return; }
-      bar.innerHTML = '<button class="create-toggle-btn" id="createToggle">📸 Share a Screenshot</button>';
+      bar.innerHTML = '<button type="button" class="btn btn-primary" id="createToggle">📸 Share a Screenshot</button>';
       document.getElementById('createToggle').addEventListener('click', toggleCreatePanel);
     }
 

@@ -141,12 +141,13 @@ Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesS
 
 ### Palette
 - `--sun: #F4C95D` — gold accent
-- `--sun-deep: #C9A23B` — gold shadow
+- `--sun-deep: #D9A441` — gold shadow (3D buttons)
 - `--cream: #FFF4DC` — text/light
-- `--ink: #1A1A12` — dark background
+- `--ink: #2B1F15` — dark background / UI surfaces
 - `--moss: #6B8E4E` — green accent
 - `--moss-dark: #2F4423` — dark green
-- `--bark: #5C3D2E` — brown
+- `--moss-deep: #4A6B35` — deeper green (CSS variables)
+- `--bark: #6B4F3A` — brown
 - `--bark-deep: #3D2B1F` — dark brown
 
 ### Fonts
