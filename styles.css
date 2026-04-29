@@ -310,6 +310,7 @@ h1 .accent {
 
 .cta-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 0.8rem;
   opacity: 0;
@@ -368,6 +369,19 @@ h1 .accent {
   background: rgba(255, 244, 220, 0.18);
   border-color: var(--cream);
   transform: translateY(-2px);
+}
+
+.btn-anniversary-hero {
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.16), rgba(232, 93, 38, 0.08));
+  color: #FFB36B;
+  border: 2px solid rgba(255, 140, 66, 0.28);
+  box-shadow: 0 4px 0 rgba(232, 93, 38, 0.35), 0 8px 24px rgba(255, 140, 66, 0.12);
+}
+
+.btn-anniversary-hero:hover {
+  border-color: rgba(255, 140, 66, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(232, 93, 38, 0.35), 0 12px 32px rgba(255, 140, 66, 0.18);
 }
 
 .btn-danger {
