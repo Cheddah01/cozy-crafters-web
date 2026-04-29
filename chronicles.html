@@ -31,6 +31,19 @@
       background: var(--bark-deep);
     }
 
+    /* Kill global header text-shadows on the newspaper page */
+    .newspaper-shell h1,
+    .newspaper-shell h2,
+    .newspaper-shell h3,
+    .paper-title,
+    .headline,
+    .deck,
+    .ae-title {
+      text-shadow: none !important;
+      -webkit-text-stroke: 0 !important;
+      filter: none !important;
+    }
+
     .newspaper-shell {
       position: relative;
       z-index: 10;
@@ -199,15 +212,16 @@
 
     .headline {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.8rem, 6.7vw, 6.35rem);
+      font-size: clamp(2.8rem, 6.4vw, 5.9rem);
       font-weight: 900;
-      line-height: 0.86;
+      line-height: 0.88;
       text-align: center;
       text-transform: uppercase;
-      letter-spacing: -0.055em;
-      margin: 0.18em 0 0.1em;
+      letter-spacing: -0.05em;
+      margin: 0.16em 0 0.1em;
       color: var(--news-ink) !important;
       opacity: 1 !important;
+      text-shadow: none !important;
     }
 
     .deck {
@@ -222,23 +236,24 @@
     }
 
     .double-rule {
-      height: 8px;
-      border-top: 4px solid var(--news-ink);
+      height: 7px;
+      border-top: 3px solid var(--news-ink);
       border-bottom: 1px solid var(--news-ink);
-      margin: 0.62rem 0 0.7rem;
+      margin: 0.55rem 0 0.7rem;
+      opacity: 1;
     }
 
     .front-story {
       font-family: 'Lora', serif;
-      font-size: 0.89rem;
-      line-height: 1.43;
+      font-size: 0.92rem;
+      line-height: 1.5;
       display: grid;
-      grid-template-columns: minmax(260px, 0.42fr) minmax(0, 0.58fr);
-      gap: 1.45rem;
+      grid-template-columns: minmax(260px, 0.4fr) minmax(0, 0.6fr);
+      gap: 1.6rem;
       align-items: start;
-      max-width: 980px;
+      max-width: 1000px;
       margin: 0 auto;
-      color: var(--news-ink-soft);
+      color: var(--news-ink);
     }
 
     .front-story.no-image {
@@ -248,22 +263,23 @@
 
     .front-copy {
       column-count: 2;
-      column-gap: 1.2rem;
-      column-rule: 1px solid rgba(17,16,13,0.28);
-      text-align: justify;
-      hyphens: auto;
+      column-gap: 1.4rem;
+      column-rule: 1px solid var(--news-ink);
+      text-align: left;
+      hyphens: manual;
+      word-spacing: 0.01em;
     }
 
     .front-story.no-image .front-copy {
-      column-gap: 1.55rem;
+      column-gap: 1.7rem;
     }
 
     .front-copy > p:first-of-type::first-letter {
       float: left;
       font-family: 'Playfair Display', serif;
-      font-size: 4.05rem;
-      line-height: 0.76;
-      padding: 0.08rem 0.34rem 0 0;
+      font-size: 3.85rem;
+      line-height: 0.78;
+      padding: 0.1rem 0.36rem 0 0;
       font-weight: 900;
       color: var(--news-ink);
     }
@@ -272,39 +288,29 @@
       break-inside: avoid;
       display: block;
       width: 100%;
-      margin: 0 0 0.68rem;
+      margin: 0 0 0.7rem;
       border: 2px solid var(--news-ink);
       padding: 0.32rem;
       position: relative;
-      background: rgba(13,13,11,0.04);
-    }
-
-    .news-photo::after {
-      content: '';
-      position: absolute;
-      inset: 0.32rem;
-      pointer-events: none;
-      opacity: 0.2;
-      mix-blend-mode: multiply;
-      background-image: radial-gradient(circle, rgba(0,0,0,0.55) 0 0.55px, transparent 0.75px);
-      background-size: 3px 3px;
+      background: var(--paper);
     }
 
     .news-photo img {
       width: 100%;
       display: block;
-      filter: grayscale(1) contrast(0.92) brightness(0.94);
-      mix-blend-mode: multiply;
+      filter: grayscale(1) contrast(1.05);
     }
 
     .news-photo figcaption {
-      margin-top: 0.32rem;
+      margin-top: 0.4rem;
       font-family: 'Lora', serif;
       font-style: italic;
-      font-size: 0.71rem;
-      line-height: 1.35;
-      color: rgba(17,16,13,0.72);
+      font-size: 0.74rem;
+      line-height: 1.4;
+      color: var(--news-ink);
       text-align: left;
+      border-top: 1px solid var(--news-ink);
+      padding-top: 0.32rem;
     }
 
     .front-story h3 {
@@ -570,6 +576,43 @@
     .site-footer {
       position: relative;
       z-index: 10;
+    }
+
+    /* Mute inline-admin toolbar so it doesn't clash with newsprint aesthetic */
+    .inline-toolbar { opacity: 0.35; transition: opacity 0.2s ease !important; }
+    .inline-toolbar:hover { opacity: 1; }
+    .inline-toolbar-btn,
+    .inline-toolbar-btn.primary,
+    .inline-toolbar-btn.secondary {
+      background: var(--news-ink) !important;
+      color: var(--paper) !important;
+      border: 1px solid var(--news-ink) !important;
+      border-radius: 0 !important;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2) !important;
+      font-family: 'Lora', serif !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      font-size: 0.72rem !important;
+      backdrop-filter: none !important;
+    }
+    .inline-toolbar-btn:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.25) !important;
+    }
+    .inline-edit-btn {
+      background: var(--news-ink) !important;
+      color: var(--paper) !important;
+      border: 1px solid var(--news-ink) !important;
+      border-radius: 0 !important;
+      font-family: 'Lora', serif !important;
+      font-size: 0.65rem !important;
+      letter-spacing: 0.06em !important;
+      text-transform: uppercase !important;
+    }
+    .inline-edit-btn:hover {
+      background: var(--paper) !important;
+      color: var(--news-ink) !important;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
