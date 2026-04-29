@@ -2523,6 +2523,46 @@ input[type="file"]::file-selector-button:hover {
 }
 
 /* ============================================
+   FLOATING CHRONICLES LINK (reusable on any page)
+   ============================================ */
+.fab-chronicles {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.55rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cream);
+  background: rgba(43, 31, 21, 0.72);
+  border: 1px solid rgba(244, 201, 93, 0.18);
+  border-radius: 2rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.fab-chronicles:hover {
+  transform: translateY(-2px);
+  background: rgba(43, 31, 21, 0.88);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-color: rgba(244, 201, 93, 0.32);
+}
+@media (max-width: 600px) {
+  .fab-chronicles {
+    bottom: 1rem;
+    left: 1rem;
+    font-size: 0.75rem;
+    padding: 0.45rem 0.85rem;
+  }
+}
+
+/* ============================================
    HOMEPAGE PASTEL THEME (scoped to body.pastel-theme)
    ============================================ */
 :root {
