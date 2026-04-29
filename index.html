@@ -33,28 +33,12 @@
   }
   </script>
 </head>
-<body>
-
-  <!-- ============================================
-       BACKGROUND MEDIA (splash only)
-       ============================================ -->
-  <div class="bg-media" id="bgMedia">
-    <video autoplay muted loop playsinline>
-      <source src="https://cdn.coverr.co/videos/coverr-a-foggy-forest-with-trees-and-sunlight-9088/1080p.mp4" type="video/mp4" />
-    </video>
-  </div>
-  <div class="bg-tint"></div>
-  <div class="bg-grain"></div>
-
-  <div class="ornament tl">🌿</div>
-  <div class="ornament tr">🍄</div>
-  <div class="ornament bl">🍂</div>
-  <div class="ornament br">🌱</div>
+<body class="home-pastel">
 
   <!-- ============================================
        NAV (fixed)
        ============================================ -->
-  <nav id="mainNav">
+  <nav id="mainNav" class="scrolled">
     <a href="/" class="brand-mark">
       <span class="leaf">🌿</span>
       <span>Cozy Crafters</span>
@@ -85,48 +69,62 @@
   </div>
 
   <!-- ============================================
-       HERO / SPLASH
+       ACTIVITY BAR (live counts + IP + Year One)
        ============================================ -->
-  <section class="stage" id="hero">
-    <div class="hero">
-      <div class="eyebrow"><span class="dot"></span><span id="splashEyebrow">Season Two · Now Live</span></div>
-      <h1><span id="splashHeadline1">A small world,</span><br /><span class="accent" id="splashHeadline2">warmly built.</span></h1>
-      <p class="tagline" id="splashTagline">A close-knit Minecraft survival server where the chests are full, the neighbors are loud, and somebody's always building something they probably shouldn't.</p>
-      <div class="cta-row">
-        <button class="btn btn-primary" id="copyIpBtn" onclick="copyIP()">
-          <span id="copyIpText">Join the Server →</span>
-        </button>
-        <a href="changelog.html" class="btn btn-secondary" id="splashBtnSecondary">What's New</a>
-        <a href="year-one.html" class="btn btn-anniversary-hero">🧡 Year One</a>
+  <section class="home-activity" id="homeActivity">
+    <div class="home-activity-inner">
+      <div class="ha-pill ha-status">
+        <span class="ha-dot" id="haStatusDot"></span>
+        <span id="haStatusText">Checking server…</span>
+        <span class="ha-heads" id="haHeads"></span>
       </div>
-
-      <div class="server-status" id="serverStatus">
-        <div class="status-indicator" id="statusDot"></div>
-        <span class="status-text" id="statusText">Checking server...</span>
+      <div class="ha-pill ha-discord" id="haDiscordPill">
+        <span class="ha-icon" aria-hidden="true">💬</span>
+        <span class="ha-value" id="haDiscordCount">—</span>
+        <span class="ha-sub">on Discord</span>
       </div>
-      <div class="player-heads" id="playerHeads"></div>
+      <div class="ha-pill ha-ip">
+        <span class="ha-label">IP</span>
+        <code class="ha-ip-value" id="haIpValue">play.cozycrafters.net</code>
+        <button type="button" class="ha-copy" id="haCopyBtn">Copy</button>
+      </div>
+      <a href="year-one.html" class="ha-pill ha-year">🧡 Year One</a>
     </div>
+  </section>
 
-    <div class="bottom">
-      <div class="stat-block">
-        <div class="stat">
-          <div class="stat-num" id="splashStat1Num">1+ yr</div>
-          <div class="stat-label" id="splashStat1Label">Running Strong</div>
+  <!-- ============================================
+       FEATURED PATCH NOTE
+       ============================================ -->
+  <section class="content-section section-featured" id="sectionFeatured">
+    <div class="section-inner">
+      <div class="featured-head">
+        <div>
+          <div class="section-eyebrow">✦ Latest Update</div>
+          <h2 class="section-headline">What's <span class="accent">new</span></h2>
         </div>
-        <div class="stat">
-          <div class="stat-num" id="splashStat2Num">S2</div>
-          <div class="stat-label" id="splashStat2Label">Current Season</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num" id="splashStat3Num">1.21</div>
-          <div class="stat-label" id="splashStat3Label">Paper Edition</div>
-        </div>
+        <a href="changelog.html" class="featured-all">All patch notes →</a>
       </div>
+      <div id="featuredPatch" class="featured-patch-slot">
+        <div class="changelog-loading"><div class="load-spinner"></div>Loading the latest patch note…</div>
+      </div>
+    </div>
+  </section>
 
-      <a href="#server-hub" class="scroll-hint">
-        <span>Explore</span>
-        <div class="scroll-line"></div>
-      </a>
+  <!-- ============================================
+       RECENT GALLERY STRIP
+       ============================================ -->
+  <section class="content-section section-gallery-strip" id="sectionGallery">
+    <div class="section-inner">
+      <div class="featured-head">
+        <div>
+          <div class="section-eyebrow">✦ Community</div>
+          <h2 class="section-headline">Recent <span class="accent">creations</span></h2>
+        </div>
+        <a href="gallery.html" class="featured-all">View gallery →</a>
+      </div>
+      <div class="gallery-strip" id="galleryStrip">
+        <div class="gallery-strip-empty">Loading the latest creations…</div>
+      </div>
     </div>
   </section>
 
@@ -191,11 +189,10 @@
 
         <article class="hub-card hub-card-whatsnew">
           <div class="hub-card-icon" aria-hidden="true">✨</div>
-          <h3 class="hub-card-title">What’s New</h3>
-          <p class="hub-card-body hub-whats-title" id="hubChangelogTitle">Latest patch notes load here.</p>
-          <p class="hub-card-body hub-whats-date" id="hubChangelogDate" style="opacity:0.45;font-size:0.82rem;"></p>
+          <h3 class="hub-card-title">Patch Notes</h3>
+          <p class="hub-card-body">Every tweak, fix, and questionable decision — documented for posterity.</p>
           <div class="hub-card-actions">
-            <a href="/changelog.html" class="btn btn-secondary" id="hubChangelogBtn">Patch notes</a>
+            <a href="/changelog.html" class="btn btn-secondary" id="hubChangelogBtn">Browse all patch notes</a>
           </div>
         </article>
       </div>
@@ -281,84 +278,7 @@
 
   <script src="security.js"></script>
   <script>
-    // ============================================
-    // CONFIG
-    // ============================================
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
-
-    // Load and cycle backgrounds from the API
-    (async function loadBackground() {
-      try {
-        const res = await fetch(`${API_BASE}/api/settings/background`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const cfg = data.value;
-        const container = document.getElementById('bgMedia');
-        if (!cfg) return;
-
-        // Build the list of backgrounds
-        let items = [];
-        let interval = 30;
-
-        if (cfg.playlist && cfg.playlist.length > 0) {
-          items = cfg.playlist;
-          interval = cfg.cycleInterval || 30;
-        } else if (cfg.src) {
-          items = [{ type: cfg.type, src: cfg.src }];
-        }
-
-        if (items.length === 0) return;
-
-        function showItem(item) {
-          const existing = container.querySelector('video, img');
-
-          let media;
-          if (item.type === 'gif' || item.type === 'image') {
-            media = document.createElement('img');
-            media.src = item.src;
-            media.alt = '';
-          } else {
-            media = document.createElement('video');
-            media.autoplay = true;
-            media.muted = true;
-            media.loop = true;
-            media.playsInline = true;
-            const source = document.createElement('source');
-            source.src = item.src;
-            source.type = 'video/mp4';
-            media.appendChild(source);
-          }
-
-          media.style.opacity = '0';
-          media.style.transition = 'opacity 1.2s ease';
-          container.appendChild(media);
-
-          requestAnimationFrame(() => {
-            media.style.opacity = '1';
-            if (existing) {
-              existing.style.transition = 'opacity 1.2s ease';
-              existing.style.opacity = '0';
-              setTimeout(() => existing.remove(), 1300);
-            }
-          });
-        }
-
-        // Show first immediately
-        container.innerHTML = '';
-        showItem(items[0]);
-
-        // Cycle if more than one
-        if (items.length > 1) {
-          let index = 0;
-          setInterval(() => {
-            index = (index + 1) % items.length;
-            showItem(items[index]);
-          }, interval * 1000);
-        }
-      } catch (e) {
-        console.warn('Failed to load background from API:', e);
-      }
-    })();
 
     const DEFAULT_VOTE_SITES = [
       { label: 'Minecraft-ServerList', url: 'https://minecraft-serverlist.com/server/4965' },
@@ -377,12 +297,26 @@
       'Use common sense and listen to staff when they step in.',
     ];
 
-    function formatHubDate(dateStr) {
-      if (!dateStr || typeof dateStr !== 'string') return '';
-      const parts = dateStr.split('-').map(Number);
-      if (parts.length !== 3) return dateStr;
-      return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const DEFAULT_TAGS = [
+      { id: 'new-feature', name: 'New Feature', color: '#A8C77E' },
+      { id: 'bug-fix', name: 'Bug Fix', color: '#E89A6E' },
+      { id: 'balance', name: 'Balance', color: '#8B9CF7' },
+      { id: 'qol', name: 'Quality of Life', color: '#F4C95D' },
+      { id: 'removal', name: 'Removal', color: '#E87070' },
+      { id: 'event', name: 'Event', color: '#C9A0E8' },
+    ];
+
+    const REACTION_EMOJIS = ['👍', '🎉', '❤️', '🔥', '😂'];
+
+    let homepageTags = [...DEFAULT_TAGS];
+    let featuredEntryId = null;
+
+    function isLoggedIn() { return !!ccGetUser(); }
+    function getAuthHeader() {
+      const token = localStorage.getItem('ccAuthToken');
+      return token ? { 'Authorization': `Bearer ${token}` } : {};
     }
+    function getTag(id) { return homepageTags.find(t => t.id === id); }
 
     function pickLatestChangelogEntry(entries) {
       if (!Array.isArray(entries)) return null;
@@ -395,11 +329,189 @@
       return visible[0] || null;
     }
 
-    function applyHubDonationBars(goal, current) {
-      document.getElementById('hubDonGoal').textContent = '$' + goal;
-      document.getElementById('hubDonCurrent').textContent = '$' + current;
-      const pct = Math.min(100, Math.round((current / goal) * 100));
-      setTimeout(() => { document.getElementById('hubDonBar').style.width = pct + '%'; }, 500);
+    function parseEntryBody(text) {
+      if (!text) return '';
+      const lines = text.split('\n');
+      let html = '';
+      let inList = false;
+      for (const raw of lines) {
+        const trimmed = raw.trim();
+        if (trimmed.startsWith('## ')) {
+          if (inList) { html += '</ul>'; inList = false; }
+          html += `<h3>${ccFormatInline(trimmed.substring(3))}</h3>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${ccFormatInline(trimmed.substring(2))}</li>`;
+        } else {
+          if (inList) { html += '</ul>'; inList = false; }
+          if (trimmed === '') continue;
+          html += `<p>${ccFormatInline(trimmed)}</p>`;
+        }
+      }
+      if (inList) html += '</ul>';
+      return html;
+    }
+
+    function renderFeaturedEntry(entry) {
+      if (!entry) {
+        document.getElementById('featuredPatch').innerHTML =
+          '<div class="changelog-empty"><div class="empty-icon">📋</div><div>No patch notes yet. Check back soon.</div></div>';
+        return;
+      }
+      featuredEntryId = entry.id;
+      const tagsHtml = (entry.tags || []).map(tId => {
+        const t = getTag(tId);
+        if (!t) return '';
+        return `<span class="entry-tag" style="background:${ccEscapeHtml(t.color)}22; color:${ccEscapeHtml(t.color)}; border:1px solid ${ccEscapeHtml(t.color)}55;">${ccEscapeHtml(t.name)}</span>`;
+      }).join('');
+      const versionHtml = entry.version ? `<span class="entry-version">${ccEscapeHtml(entry.version)}</span>` : '';
+      const imageUrl = ccSafeImageUrl(entry.image);
+      const imageHtml = imageUrl ? `<div class="entry-image"><img src="${ccEscapeHtml(imageUrl)}" alt="" loading="lazy" /></div>` : '';
+      const pinBadge = entry.pinned ? '<div class="entry-pin-badge">📌 Pinned</div>' : '';
+
+      let bodyHtml = '';
+      let changeCountHtml = '';
+      if (entry.changes && entry.changes.length > 0) {
+        changeCountHtml = `<div class="entry-change-count">${entry.changes.length} change${entry.changes.length !== 1 ? 's' : ''} in this update</div>`;
+        bodyHtml = '<div class="entry-changes">' + entry.changes.map(c => {
+          const t = c.tag ? getTag(c.tag) : null;
+          const tagChip = t ? `<span class="change-chip" style="background:${ccEscapeHtml(t.color)}22; color:${ccEscapeHtml(t.color)}; border:1px solid ${ccEscapeHtml(t.color)}55;">${ccEscapeHtml(t.name)}</span>` : '';
+          return `<div class="entry-change-row">
+            ${tagChip}
+            <div class="entry-change-info">
+              <span class="entry-change-title">${ccEscapeHtml(c.title)}</span>
+              ${c.description ? `<span class="entry-change-desc">${ccEscapeHtml(c.description)}</span>` : ''}
+            </div>
+          </div>`;
+        }).join('') + '</div>';
+      } else if (entry.body) {
+        bodyHtml = `<div class="entry-body">${parseEntryBody(entry.body)}</div>`;
+      }
+
+      const entryId = ccEscapeHtml(entry.id);
+      document.getElementById('featuredPatch').innerHTML = `
+        <article class="changelog-entry${entry.pinned ? ' pinned' : ''} revealed" data-entry-id="${entryId}" id="${entryId}">
+          <div class="entry-top">
+            ${pinBadge}
+            <div class="entry-header">
+              <span class="entry-title">${ccEscapeHtml(entry.title || 'Patch notes')}</span>
+              ${versionHtml}
+            </div>
+            <div class="entry-tags">${tagsHtml}</div>
+            <a href="changelog.html#${entryId}" class="share-btn" data-id="${entryId}" style="display:inline-block;margin-top:0.4rem;">🔗 Copy link</a>
+          </div>
+          ${imageHtml}
+          ${changeCountHtml}
+          ${bodyHtml}
+          <div class="reaction-bar" data-reactions-for="${entryId}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
+        </article>`;
+
+      const shareBtn = document.querySelector('#featuredPatch .share-btn');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = `${window.location.origin}/changelog.html#${entry.id}`;
+          navigator.clipboard.writeText(url).then(() => {
+            shareBtn.textContent = '✓ Link copied!';
+            shareBtn.classList.add('copied');
+            setTimeout(() => { shareBtn.textContent = '🔗 Copy link'; shareBtn.classList.remove('copied'); }, 2000);
+          });
+        });
+      }
+
+      loadFeaturedReactions(entry.id);
+    }
+
+    let featuredReactions = { counts: {}, userReactions: [] };
+
+    async function loadFeaturedReactions(entryId) {
+      try {
+        const res = await fetch(`${API_BASE}/api/reactions-bulk?ids=${encodeURIComponent(entryId)}`, {
+          headers: getAuthHeader(),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          featuredReactions = data[entryId] || { counts: {}, userReactions: [] };
+        }
+      } catch (e) {}
+      renderFeaturedReactionBar();
+    }
+
+    function renderFeaturedReactionBar() {
+      const bar = document.querySelector('#featuredPatch [data-reactions-for]');
+      if (!bar) return;
+      const loggedIn = isLoggedIn();
+      bar.innerHTML = REACTION_EMOJIS.map(emoji => {
+        const count = featuredReactions.counts[emoji] || 0;
+        const isActive = featuredReactions.userReactions.includes(emoji);
+        const activeClass = isActive ? ' active' : '';
+        const noCountClass = count === 0 && !isActive ? ' no-count' : '';
+        if (loggedIn) {
+          return `<button class="reaction-btn${activeClass}${noCountClass}" data-emoji="${emoji}">
+            <span class="r-emoji">${emoji}</span>
+            ${count > 0 ? `<span class="r-count">${count}</span>` : ''}
+          </button>`;
+        }
+        if (count === 0) return '';
+        return `<span class="reaction-btn" style="cursor:default;">
+          <span class="r-emoji">${emoji}</span><span class="r-count">${count}</span>
+        </span>`;
+      }).join('');
+
+      bar.querySelectorAll('button.reaction-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const emoji = btn.dataset.emoji;
+          const wasActive = featuredReactions.userReactions.includes(emoji);
+          if (wasActive) {
+            featuredReactions.userReactions = featuredReactions.userReactions.filter(e => e !== emoji);
+            featuredReactions.counts[emoji] = Math.max(0, (featuredReactions.counts[emoji] || 1) - 1);
+            if (featuredReactions.counts[emoji] === 0) delete featuredReactions.counts[emoji];
+          } else {
+            featuredReactions.userReactions.push(emoji);
+            featuredReactions.counts[emoji] = (featuredReactions.counts[emoji] || 0) + 1;
+          }
+          renderFeaturedReactionBar();
+          try {
+            await fetch(`${API_BASE}/api/reactions/${featuredEntryId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+              body: JSON.stringify({ emoji }),
+            });
+          } catch (e) {}
+        });
+      });
+    }
+
+    function renderGalleryStrip(posts) {
+      const strip = document.getElementById('galleryStrip');
+      const items = (posts || []).filter(p => {
+        if (Array.isArray(p.images) && p.images.length > 0 && p.images[0].image_url) return true;
+        if (p.external_url) return true;
+        return false;
+      }).slice(0, 8);
+
+      if (items.length === 0) {
+        strip.innerHTML = '<div class="gallery-strip-empty">No creations yet — be the first to share!</div>';
+        return;
+      }
+
+      strip.innerHTML = items.map(post => {
+        const thumb = (post.images && post.images[0] && post.images[0].image_url) || post.external_url || '';
+        const safeThumb = ccSafeImageUrl(thumb) || ccSafeUrl(thumb, '#');
+        const title = ccEscapeHtml(post.title || 'Untitled');
+        const username = ccEscapeHtml(post.username || 'unknown');
+        const avatar = ccSafeImageUrl(post.avatar);
+        const avatarImg = avatar ? `<img src="${ccEscapeHtml(avatar)}" alt="" loading="lazy" />` : '';
+        const commentCount = Number(post.comment_count || 0);
+        const commentsHtml = commentCount > 0 ? `<span class="gs-comments">💬 ${commentCount}</span>` : '';
+        return `<a class="gs-card" href="gallery.html#post-${ccEscapeHtml(post.id)}" aria-label="${title} by ${username}">
+          <img src="${ccEscapeHtml(safeThumb)}" alt="" loading="lazy" />
+          <div class="gs-overlay">
+            <span class="gs-title">${title}</span>
+            <span class="gs-meta">${avatarImg}<span>${username}</span>${commentsHtml}</span>
+          </div>
+        </a>`;
+      }).join('');
     }
 
     function renderHubVoteLinks(sites) {
@@ -407,14 +519,20 @@
       ul.innerHTML = (sites || []).map((s) => {
         const label = ccEscapeHtml(s.label || 'Vote');
         const safe = ccSafeUrl(s.url, '#');
-        const href = ccEscapeHtml(safe);
-        return `<li><a href="${href}" target="_blank" rel="noopener">${label}</a></li>`;
+        return `<li><a href="${ccEscapeHtml(safe)}" target="_blank" rel="noopener">${label}</a></li>`;
       }).join('');
     }
 
     function renderHubRules() {
       const list = document.getElementById('hubRulesList');
       list.innerHTML = HUB_RULES.map((rule) => `<li>${ccEscapeHtml(rule)}</li>`).join('');
+    }
+
+    function applyHubDonationBars(goal, current) {
+      document.getElementById('hubDonGoal').textContent = '$' + goal;
+      document.getElementById('hubDonCurrent').textContent = '$' + current;
+      const pct = Math.min(100, Math.round((current / goal) * 100));
+      setTimeout(() => { document.getElementById('hubDonBar').style.width = pct + '%'; }, 500);
     }
 
     function setHubDrawer(drawerId) {
@@ -436,84 +554,72 @@
     renderHubVoteLinks(DEFAULT_VOTE_SITES);
     renderHubRules();
 
-    // Splash text, hub cards, changelog peek, and Discord widget.
-    (async function loadHomePageSettings() {
-      let t = {};
-      try {
-        const res = await fetch(`${API_BASE}/api/settings/splashText`);
-        if (res.ok) {
-          const data = await res.json();
-          t = data.value || {};
-        }
-      } catch (e) {}
+    // Bootstrap: fetch everything in parallel and populate the page
+    (async function bootstrapHomepage() {
+      const safeJson = async (res) => {
+        if (!res || !res.ok) return null;
+        try { return await res.json(); } catch (e) { return null; }
+      };
 
-      const ipDefault = 'play.cozycrafters.net';
-      const ip = (t && t.serverIp) ? t.serverIp : ipDefault;
+      const [splashRes, changelogRes, tagsRes, guildRes, galleryRes] = await Promise.all([
+        fetch(`${API_BASE}/api/settings/splashText`).catch(() => null),
+        fetch(`${API_BASE}/api/settings/changelog`).catch(() => null),
+        fetch(`${API_BASE}/api/settings/changelogTags`).catch(() => null),
+        fetch(`${API_BASE}/api/settings/discordGuildId`).catch(() => null),
+        fetch(`${API_BASE}/api/gallery?limit=8&offset=0`).catch(() => null),
+      ]);
+
+      const splashData = await safeJson(splashRes);
+      const t = (splashData && splashData.value) || {};
+
+      const ip = t.serverIp || 'play.cozycrafters.net';
       window._serverIp = ip;
       document.getElementById('hubIpDisplay').textContent = ip;
+      document.getElementById('haIpValue').textContent = ip;
 
-      if (t && t.eyebrow) document.getElementById('splashEyebrow').textContent = t.eyebrow;
-      if (t && t.headline1) document.getElementById('splashHeadline1').textContent = t.headline1;
-      if (t && t.headline2) document.getElementById('splashHeadline2').textContent = t.headline2;
-      if (t && t.tagline) document.getElementById('splashTagline').textContent = t.tagline;
-      if (t && t.btnPrimary) {
-        document.getElementById('copyIpText').textContent = t.btnPrimary;
-        window.__splashPrimaryBtnLabel = t.btnPrimary;
-      } else {
-        window.__splashPrimaryBtnLabel = 'Join the Server →';
-      }
-      if (t && t.btnSecondary) document.getElementById('splashBtnSecondary').textContent = t.btnSecondary;
-      if (t && t.btnSecondaryLink) ccSetSafeHref('splashBtnSecondary', t.btnSecondaryLink, 'changelog.html');
-      if (t && t.stat1Num) document.getElementById('splashStat1Num').textContent = t.stat1Num;
-      if (t && t.stat1Label) document.getElementById('splashStat1Label').textContent = t.stat1Label;
-      if (t && t.stat2Num) document.getElementById('splashStat2Num').textContent = t.stat2Num;
-      if (t && t.stat2Label) document.getElementById('splashStat2Label').textContent = t.stat2Label;
-      if (t && t.stat3Num) document.getElementById('splashStat3Num').textContent = t.stat3Num;
-      if (t && t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
+      const dUrl = t.discordUrl || '';
+      if (dUrl) ccSetSafeHref('hubDiscordBtn', dUrl);
 
-      const dUrl = t && t.discordUrl ? t.discordUrl : '';
-      if (dUrl) {
-        ccSetSafeHref('hubDiscordBtn', dUrl);
-      }
-
-      const goal = parseFloat(t && t.donationGoal) || 25;
-      const current = parseFloat(t && t.donationCurrent) || 0;
+      const goal = parseFloat(t.donationGoal) || 25;
+      const current = parseFloat(t.donationCurrent) || 0;
       applyHubDonationBars(goal, current);
 
-      try {
-        const cr = await fetch(`${API_BASE}/api/settings/changelog`);
-        if (cr.ok) {
-          const cd = await cr.json();
-          const latest = pickLatestChangelogEntry(Array.isArray(cd.value) ? cd.value : []);
-          if (latest) {
-            document.getElementById('hubChangelogTitle').textContent = latest.title || 'Patch notes';
-            document.getElementById('hubChangelogDate').textContent = 'Last updated ' + formatHubDate(latest.date);
-          }
-        }
-      } catch (e) {}
+      const tagsData = await safeJson(tagsRes);
+      if (tagsData && Array.isArray(tagsData.value) && tagsData.value.length > 0) {
+        homepageTags = tagsData.value;
+      }
 
-      try {
-        const gidRes = await fetch(`${API_BASE}/api/settings/discordGuildId`);
-        if (gidRes.ok) {
-          const gidData = await gidRes.json();
-          const serverId = String(gidData.value || '').trim();
-          if (serverId) {
-            const widgetRes = await fetch(`https://discord.com/api/guilds/${encodeURIComponent(serverId)}/widget.json`);
-            if (widgetRes.ok) {
-              const widget = await widgetRes.json();
-              if (typeof widget.presence_count === 'number') {
-                const count = widget.presence_count.toLocaleString();
-                document.getElementById('hubDiscordDescription').textContent =
-                  `${count} member${widget.presence_count === 1 ? '' : 's'} online right now`;
-              }
-              if (widget.instant_invite) {
-                ccSetSafeHref('hubDiscordBtn', widget.instant_invite, dUrl || '#');
-              }
+      const changelogData = await safeJson(changelogRes);
+      const latest = pickLatestChangelogEntry(changelogData && Array.isArray(changelogData.value) ? changelogData.value : []);
+      renderFeaturedEntry(latest);
+
+      const galleryData = await safeJson(galleryRes);
+      renderGalleryStrip(galleryData && Array.isArray(galleryData.posts) ? galleryData.posts : []);
+
+      const guildData = await safeJson(guildRes);
+      const serverId = guildData ? String(guildData.value || '').trim() : '';
+      if (serverId) {
+        try {
+          const widgetRes = await fetch(`https://discord.com/api/guilds/${encodeURIComponent(serverId)}/widget.json`);
+          if (widgetRes.ok) {
+            const widget = await widgetRes.json();
+            if (typeof widget.presence_count === 'number') {
+              const count = widget.presence_count.toLocaleString();
+              document.getElementById('haDiscordCount').textContent = count;
+              document.getElementById('hubDiscordDescription').textContent =
+                `${count} member${widget.presence_count === 1 ? '' : 's'} online right now`;
             }
+            if (widget.instant_invite) {
+              ccSetSafeHref('hubDiscordBtn', widget.instant_invite, dUrl || '#');
+            }
+          } else {
+            document.getElementById('haDiscordPill').style.display = 'none';
           }
+        } catch (e) {
+          document.getElementById('haDiscordPill').style.display = 'none';
         }
-      } catch (e) {
-        // Keep the static copy and splashText.discordUrl fallback if the widget is disabled or blocked.
+      } else {
+        document.getElementById('haDiscordPill').style.display = 'none';
       }
     })();
 
@@ -531,34 +637,36 @@
       });
     });
 
-    // Nav background on scroll
-    const nav = document.getElementById('mainNav');
-
-    function copyServerIp(btnId, textId, restoreLabel) {
+    // Activity bar IP copy
+    document.getElementById('haCopyBtn').addEventListener('click', () => {
       const ip = window._serverIp || 'play.cozycrafters.net';
-      const btn = document.getElementById(btnId);
-      const text = document.getElementById(textId);
-      if (!btn || !text) return;
-      const fallback = restoreLabel != null ? restoreLabel : text.textContent;
+      const btn = document.getElementById('haCopyBtn');
+      navigator.clipboard.writeText(ip).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+
+    // Hub IP copy
+    function copyHubIp() {
+      const ip = window._serverIp || 'play.cozycrafters.net';
+      const btn = document.getElementById('hubCopyIpBtn');
+      const text = document.getElementById('hubCopyIpText');
+      const original = text.textContent;
       navigator.clipboard.writeText(ip).then(() => {
         text.textContent = 'Copied! — ' + ip;
         btn.style.background = '#A8C77E';
         btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
         setTimeout(() => {
-          text.textContent = fallback;
+          text.textContent = original;
           btn.style.background = '';
           btn.style.boxShadow = '';
         }, 2500);
       });
     }
-
-    function copyIP() {
-      copyServerIp('copyIpBtn', 'copyIpText', window.__splashPrimaryBtnLabel || 'Join the Server →');
-    }
-
-    function copyHubIp() {
-      copyServerIp('hubCopyIpBtn', 'hubCopyIpText', 'Copy IP');
-    }
+    window.copyHubIp = copyHubIp;
 
     document.getElementById('hubVoteBtn').addEventListener('click', () => setHubDrawer('hubVoteDrawer'));
     document.getElementById('hubRulesBtn').addEventListener('click', () => setHubDrawer('hubRulesDrawer'));
@@ -566,66 +674,50 @@
       if (e.key === 'Escape') setHubDrawer('');
     });
 
-    // Live server status
+    // Live server status (writes into the activity bar)
     async function fetchServerStatus() {
-      const dot = document.getElementById('statusDot');
-      const text = document.getElementById('statusText');
-      const headsEl = document.getElementById('playerHeads');
+      const dot = document.getElementById('haStatusDot');
+      const text = document.getElementById('haStatusText');
+      const headsEl = document.getElementById('haHeads');
       const serverIp = window._serverIp || 'play.cozycrafters.net';
 
       try {
         const res = await fetch(`https://api.mcstatus.io/v2/status/java/${encodeURIComponent(serverIp)}`);
         const data = await res.json();
-
         if (data.online) {
-          dot.className = 'status-indicator online';
+          dot.className = 'ha-dot online';
           const count = data.players?.online || 0;
           const max = data.players?.max || 20;
-
-          if (count === 0) {
-            text.innerHTML = `<span class="status-count">Online</span> · No players right now`;
-          } else {
-            text.innerHTML = `<span class="status-count">${count}/${max}</span> player${count !== 1 ? 's' : ''} online`;
-          }
-
-          // Show player heads
+          text.textContent = count === 0
+            ? 'Online · No players right now'
+            : `${count}/${max} player${count !== 1 ? 's' : ''} online`;
           const players = data.players?.list || [];
           if (players.length > 0) {
-            headsEl.innerHTML = players.slice(0, 20).map(p => {
+            headsEl.innerHTML = players.slice(0, 6).map(p => {
               const uuid = p.uuid?.replace(/-/g, '') || '';
-              const headUrl = uuid ? `https://mc-heads.net/avatar/${uuid}/28` : '';
+              const headUrl = uuid ? `https://mc-heads.net/avatar/${uuid}/22` : '';
               const name = ccEscapeHtml(p.name_clean || p.name_raw || '');
-              return headUrl ? `<img class="player-head" src="${headUrl}" alt="${name}" title="${name}" />` : '';
+              return headUrl ? `<img src="${headUrl}" alt="${name}" title="${name}" />` : '';
             }).join('');
           } else {
             headsEl.innerHTML = '';
           }
         } else {
-          dot.className = 'status-indicator offline';
-          text.innerHTML = 'Server is offline';
+          dot.className = 'ha-dot offline';
+          text.textContent = 'Server is offline';
           headsEl.innerHTML = '';
         }
       } catch (e) {
-        dot.className = 'status-indicator';
-        text.innerHTML = 'Could not reach server';
+        dot.className = 'ha-dot';
+        text.textContent = 'Could not reach server';
         headsEl.innerHTML = '';
       }
     }
 
-    // Fetch on load, then every 60 seconds
     fetchServerStatus();
     setInterval(fetchServerStatus, 60000);
 
-    const heroSection = document.getElementById('hero');
-    const navObserver = new IntersectionObserver(
-      ([entry]) => {
-        nav.classList.toggle('scrolled', !entry.isIntersecting);
-      },
-      { threshold: 0.7 }
-    );
-    navObserver.observe(heroSection);
-
-    // Scroll reveal
+    // Scroll reveal for content sections
     const revealEls = document.querySelectorAll('.content-section .section-inner');
     const revealObs = new IntersectionObserver(
       (entries) => {
@@ -639,17 +731,6 @@
       { threshold: 0.1 }
     );
     revealEls.forEach(el => revealObs.observe(el));
-
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
   </script>
   <script src="auth.js"></script>
 </body>

@@ -42,7 +42,7 @@ The official website for Cozy Crafters SMP, a Minecraft survival server. Built a
 
 | File | Public | Description |
 |------|--------|-------------|
-| `index.html` | Yes | Homepage — cycling video backgrounds, splash text, Server Info Hub (connect, Discord, vote modal, donate mini-bar, rules, changelog peek), live server status with player heads, anniversary banner; slim Discord strip + link to support page |
+| `index.html` | Yes | Homepage — pastel-yellow community hub: live activity bar (server status + Discord member count + IP copy + Year One pill), full Featured Patch Note with reactions and share-link, horizontal Recent Gallery strip (deep-links to `gallery.html#post-<id>`), Server Info Hub utility cards (Connect, Discord, Vote drawer, Donate mini-bar, Rules drawer, Patch Notes), floating Chronicles link |
 | `changelog.html` | Yes | Patch notes — structured changes builder, custom tags, emoji reactions (👍🎉❤️🔥😂), share links with deep-linking, Notion-style side panel editor |
 | `chronicles.html` | Yes | Newspaper — Playfair Display masthead, rotating slogans, sections, classifieds, corrections, editor's notes, pull quotes |
 | `gallery.html` | Yes | Community gallery — multi-image posts, tags, Instagram-style lightbox with sidebar comments, external URL support, comment count badges |

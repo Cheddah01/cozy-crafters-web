@@ -999,9 +999,27 @@
       } catch (e) {}
       document.getElementById('galleryLoading').style.display = 'none';
       renderGallery();
+      maybeOpenDeepLinkedPost();
     }
 
-    // Init
+    async function maybeOpenDeepLinkedPost() {
+      const hash = window.location.hash || '';
+      if (!hash.startsWith('#post-')) return;
+      const id = hash.slice('#post-'.length);
+      if (!id) return;
+      let post = allPosts.find(p => p.id === id);
+      if (!post) {
+        try {
+          const res = await fetch(`${API_BASE}/api/gallery?limit=200`, { headers: getAuthHeader() });
+          if (res.ok) {
+            const data = await res.json();
+            post = (data.posts || []).find(p => p.id === id);
+          }
+        } catch (e) {}
+      }
+      if (post) openLightbox(post);
+    }
+
     renderCreateBar();
     renderTagFilter();
     loadGallery();
