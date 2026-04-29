@@ -159,10 +159,6 @@
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="chronicles.html">Chronicles</a></li>
       <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="support.html">Support</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
       <li><a href="support.html">Support</a></li>
       <li><a href="wiki.html">Staff</a></li>
     </ul>
@@ -211,6 +207,7 @@
     </div>
   </footer>
 
+  <script src="security.js"></script>
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
@@ -229,7 +226,7 @@
         const t = data.value;
         if (!t) return;
 
-        if (t.paypalUrl) document.getElementById('spDonateBtn').href = t.paypalUrl;
+        if (t.paypalUrl) ccSetSafeHref('spDonateBtn', t.paypalUrl);
 
         const goal = parseFloat(t.donationGoal) || 25;
         const current = parseFloat(t.donationCurrent) || 0;
@@ -254,8 +251,8 @@
           if (costs.length > 0) {
             costList.innerHTML = costs.map(c => `
               <div class="cost-item">
-                <span class="cost-name">${c.name}</span>
-                <span class="cost-amount">${c.amount}</span>
+                <span class="cost-name">${ccEscapeHtml(c.name)}</span>
+                <span class="cost-amount">${ccEscapeHtml(c.amount)}</span>
               </div>
             `).join('');
           } else {

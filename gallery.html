@@ -394,10 +394,6 @@
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="chronicles.html">Chronicles</a></li>
       <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="support.html">Support</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
       <li><a href="support.html">Support</a></li>
       <li><a href="wiki.html">Staff</a></li>
     </ul>
@@ -493,6 +489,7 @@
     </div>
   </footer>
 
+  <script src="security.js"></script>
   <script src="auth.js"></script>
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
@@ -697,7 +694,7 @@
       const el = document.getElementById('tagFilter');
       let html = `<button class="tag-filter-chip${!activeTag ? ' active' : ''}" data-tag="">All</button>`;
       for (const t of GALLERY_TAGS) {
-        html += `<button class="tag-filter-chip${activeTag === t.id ? ' active' : ''}" data-tag="${t.id}">${t.label}</button>`;
+        html += `<button class="tag-filter-chip${activeTag === t.id ? ' active' : ''}" data-tag="${ccEscapeHtml(t.id)}">${ccEscapeHtml(t.label)}</button>`;
       }
       el.innerHTML = html;
       el.querySelectorAll('.tag-filter-chip').forEach(chip => {
@@ -719,16 +716,17 @@
       }
 
       grid.innerHTML = allPosts.map((post, i) => {
-        const firstImg = post.images?.[0]?.image_url || '';
+        const firstImg = ccSafeImageUrl(post.images?.[0]?.image_url);
         const imgCount = post.images?.length || 0;
         const canDelete = user && (user.sub === post.user_id || user.role === 'admin');
         const multiBadge = imgCount > 1 ? `<div class="gallery-multi-badge">🖼 ${imgCount}</div>` : '';
         const commentBadge = post.comment_count > 0 ? `<div class="gallery-comment-badge">💬 ${post.comment_count}</div>` : '';
         const linkBadge = post.external_url ? `<div class="gallery-link-badge">🔗</div>` : '';
-        const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${post.id}" onclick="event.stopPropagation()">Delete</button>` : '';
-        const thumbSrc = firstImg || post.external_url || '';
+        const postId = ccEscapeHtml(post.id);
+        const deleteBtn = canDelete ? `<button class="gallery-overlay-delete" data-id="${postId}" onclick="event.stopPropagation()">Delete</button>` : '';
+        const thumbSrc = firstImg || ccSafeImageUrl(post.external_url);
         const noImgStyle = !thumbSrc ? 'style="background:linear-gradient(135deg,#2F4423,#3d2b1f);display:flex;align-items:center;justify-content:center;"' : '';
-        const imgTag = thumbSrc ? `<img src="${thumbSrc}" alt="${post.title || ''}" loading="lazy" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#2F4423,#3d2b1f)'" />` : `<span style="font-size:2.5rem;opacity:0.3;">🔗</span>`;
+        const imgTag = thumbSrc ? `<img src="${ccEscapeHtml(thumbSrc)}" alt="${ccEscapeHtml(post.title || '')}" loading="lazy" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#2F4423,#3d2b1f)'" />` : `<span style="font-size:2.5rem;opacity:0.3;">🔗</span>`;
 
         return `<div class="gallery-item" data-idx="${i}" ${noImgStyle}>
           ${imgTag}
@@ -736,10 +734,10 @@
           ${commentBadge}
           ${linkBadge}
           <div class="gallery-overlay">
-            ${post.title ? `<div class="gallery-overlay-title">${post.title}</div>` : ''}
+            ${post.title ? `<div class="gallery-overlay-title">${ccEscapeHtml(post.title)}</div>` : ''}
             <div class="gallery-overlay-info">
-              <img class="gallery-overlay-avatar" src="${post.avatar || ''}" alt="" />
-              <span class="gallery-overlay-user">${post.username || 'Unknown'}</span>
+              <img class="gallery-overlay-avatar" src="${ccEscapeHtml(ccSafeImageUrl(post.avatar))}" alt="" />
+              <span class="gallery-overlay-user">${ccEscapeHtml(post.username || 'Unknown')}</span>
               ${deleteBtn}
             </div>
           </div>
@@ -796,7 +794,7 @@
       const lbImageSide = lightboxImg.parentElement;
 
       if (img) {
-        lightboxImg.src = img.image_url;
+        lightboxImg.src = ccSafeImageUrl(img.image_url);
         lightboxImg.style.display = '';
         // Remove any placeholder
         const ph = lbImageSide.querySelector('.lb-no-image');
@@ -814,7 +812,7 @@
         if (ph) ph.remove();
         // Try loading as image
         lightboxImg.style.display = '';
-        lightboxImg.src = lbPost.external_url;
+        lightboxImg.src = ccSafeImageUrl(lbPost.external_url);
         lightboxImg.onerror = () => {
           // Not an image — show placeholder with link
           lightboxImg.style.display = 'none';
@@ -842,19 +840,21 @@
         placeholder.innerHTML = `<span style="font-size:3rem;">📷</span><span style="font-size:0.9rem;">No image</span>`;
       }
 
-      const tags = lbPost.tags ? JSON.parse(lbPost.tags) : [];
+      let tags = [];
+      try { tags = lbPost.tags ? JSON.parse(lbPost.tags) : []; } catch (e) {}
       const tagsHtml = tags.map(t => { const g = GALLERY_TAGS.find(x => x.id === t); return g ? g.label : t; }).join('  ');
+      const externalUrl = ccSafeUrl(lbPost.external_url, '');
 
       document.getElementById('lightboxInfo').innerHTML = `
         <div class="lb-meta">
-          <img class="lb-avatar" src="${lbPost.avatar || ''}" alt="" />
-          <span class="lb-user">${lbPost.username || 'Unknown'}</span>
-          <span class="lb-date">${fmtDate(lbPost.created_at)}</span>
+          <img class="lb-avatar" src="${ccEscapeHtml(ccSafeImageUrl(lbPost.avatar))}" alt="" />
+          <span class="lb-user">${ccEscapeHtml(lbPost.username || 'Unknown')}</span>
+          <span class="lb-date">${ccEscapeHtml(fmtDate(lbPost.created_at))}</span>
         </div>
-        ${lbPost.title ? `<div class="lb-title">${lbPost.title}</div>` : ''}
-        ${lbPost.caption ? `<div class="lb-caption">${lbPost.caption}</div>` : ''}
-        ${lbPost.external_url ? `<a href="${lbPost.external_url}" target="_blank" rel="noopener" class="lb-external-link" onclick="event.stopPropagation();">🔗 ${formatExternalUrl(lbPost.external_url)}</a>` : ''}
-        ${tagsHtml ? `<div class="lb-tags-row">${tagsHtml}</div>` : ''}
+        ${lbPost.title ? `<div class="lb-title">${ccEscapeHtml(lbPost.title)}</div>` : ''}
+        ${lbPost.caption ? `<div class="lb-caption">${ccEscapeHtml(lbPost.caption)}</div>` : ''}
+        ${externalUrl ? `<a href="${ccEscapeHtml(externalUrl)}" target="_blank" rel="noopener" class="lb-external-link" onclick="event.stopPropagation();">🔗 ${ccEscapeHtml(formatExternalUrl(externalUrl))}</a>` : ''}
+        ${tagsHtml ? `<div class="lb-tags-row">${ccEscapeHtml(tagsHtml)}</div>` : ''}
         ${images.length > 1 ? `<div class="lb-dots">${images.map((_, i) => `<div class="lb-dot${i === lbIdx ? ' active' : ''}"></div>`).join('')}</div>` : ''}
       `;
     }
@@ -876,14 +876,14 @@
           html += '<div class="lb-comments-list">';
           html += comments.map(c => {
             const canDel = user && (user.sub === c.user_id || user.role === 'admin');
-            const delBtn = canDel ? `<button class="lb-comment-del" data-cid="${c.id}">✕</button>` : '';
+            const delBtn = canDel ? `<button class="lb-comment-del" data-cid="${ccEscapeHtml(c.id)}">✕</button>` : '';
             const timeAgo = fmtTimeAgo(c.created_at);
             return `<div class="lb-comment">
-              <img class="lb-comment-avatar" src="${c.avatar || ''}" alt="" />
+              <img class="lb-comment-avatar" src="${ccEscapeHtml(ccSafeImageUrl(c.avatar))}" alt="" />
               <div class="lb-comment-body">
-                <span class="lb-comment-user">${c.username || 'Unknown'}</span>
+                <span class="lb-comment-user">${ccEscapeHtml(c.username || 'Unknown')}</span>
                 <div class="lb-comment-text">${escapeHtml(c.body)}</div>
-                <div class="lb-comment-time">${timeAgo}</div>
+                <div class="lb-comment-time">${ccEscapeHtml(timeAgo)}</div>
               </div>
               ${delBtn}
             </div>`;
@@ -955,7 +955,7 @@
     }
 
     function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return ccEscapeHtml(str);
     }
 
     function formatExternalUrl(url) {
@@ -968,7 +968,7 @@
         if (host.includes('twitch.tv')) return 'Watch on Twitch';
         if (host.includes('tiktok.com')) return 'View on TikTok';
         return host;
-      } catch (e) { return url; }
+      } catch (e) { return ''; }
     }
 
     function fmtTimeAgo(dateStr) {
@@ -1001,7 +1001,7 @@
     async function loadGallery(append) {
       try {
         let url = `${API_BASE}/api/gallery?limit=${PAGE_SIZE}&offset=${offset}`;
-        if (activeTag) url += `&tag=${activeTag}`;
+        if (activeTag) url += `&tag=${encodeURIComponent(activeTag)}`;
         const res = await fetch(url, { headers: getAuthHeader() });
         if (res.ok) {
           const data = await res.json();

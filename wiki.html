@@ -258,6 +258,7 @@
     </main>
   </div>
 
+  <script src="security.js"></script>
   <script src="auth.js"></script>
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
@@ -277,70 +278,81 @@
     }
 
     function getUser() {
-      const token = localStorage.getItem('ccAuthToken');
-      if (!token) return null;
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp && payload.exp * 1000 < Date.now()) return null;
-        return payload;
-      } catch (e) { return null; }
+      return typeof ccGetUser === 'function' ? ccGetUser() : null;
     }
 
-    // Simple markdown renderer
+    // Simple safe markdown renderer
     function renderMarkdown(md) {
-      let html = md
-        // Code blocks
-        .replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`)
-        // Inline code
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        // Headers
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-        // Bold & italic
-        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Links
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-        // Blockquotes
-        .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
-        // Horizontal rules
-        .replace(/^---$/gm, '<hr>')
-        // Unordered lists
-        .replace(/^- (.+)$/gm, '<li class="ul">$1</li>')
-        // Ordered lists
-        .replace(/^\d+\. (.+)$/gm, '<li class="ol">$1</li>')
-        // Tables
-        .replace(/^\|(.+)\|$/gm, (match) => {
-          const cells = match.split('|').filter(c => c.trim());
-          if (cells.every(c => /^[\s-:]+$/.test(c))) return '<!--sep-->';
-          return cells.map(c => `<td>${c.trim()}</td>`).join('');
-        });
+      const lines = String(md || '').split('\n');
+      const out = [];
+      let inCode = false;
+      let codeLines = [];
+      let listType = null;
+      let paragraph = [];
 
-      // Wrap list items in ul/ol
-      html = html.replace(/((?:<li class="ul">.*<\/li>\n?)+)/g, (m) => '<ul>' + m.replace(/ class="ul"/g, '') + '</ul>');
-      html = html.replace(/((?:<li class="ol">.*<\/li>\n?)+)/g, (m) => '<ol>' + m.replace(/ class="ol"/g, '') + '</ol>');
-      // Wrap table rows
-      html = html.replace(/((?:<td>.*<\/td>)+)/g, '<tr>$1</tr>');
-      html = html.replace(/((?:<tr>.*<\/tr>\n?)+)/g, (m) => {
-        const cleaned = m.replace(/<!--sep-->\n?/g, '');
-        const rows = cleaned.match(/<tr>.*?<\/tr>/g) || [];
-        if (rows.length === 0) return '';
-        const header = rows[0].replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
-        return `<table>${header}${rows.slice(1).join('')}</table>`;
-      });
-      // Paragraphs
-      html = html.split('\n\n').map(block => {
-        block = block.trim();
-        if (!block) return '';
-        if (/^<[hupoltb]/.test(block) || /^<ol/.test(block)) return block;
-        return `<p>${block}</p>`;
-      }).join('\n');
-      // Clean up leftover newlines in paragraphs
-      html = html.replace(/<p>(<[hupoltb])/g, '$1');
+      function inline(text) {
+        return ccEscapeHtml(text)
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => `<a href="${ccEscapeHtml(ccSafeUrl(href))}" target="_blank" rel="noopener">${label}</a>`)
+          .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>');
+      }
 
-      return html;
+      function closeList() {
+        if (!listType) return;
+        out.push(`</${listType}>`);
+        listType = null;
+      }
+
+      function flushParagraph() {
+        if (paragraph.length === 0) return;
+        closeList();
+        out.push(`<p>${inline(paragraph.join(' '))}</p>`);
+        paragraph = [];
+      }
+
+      for (const line of lines) {
+        if (line.startsWith('```')) {
+          if (inCode) {
+            out.push(`<pre><code>${ccEscapeHtml(codeLines.join('\n'))}</code></pre>`);
+            codeLines = [];
+            inCode = false;
+          } else {
+            flushParagraph();
+            closeList();
+            inCode = true;
+          }
+          continue;
+        }
+        if (inCode) { codeLines.push(line); continue; }
+
+        const trimmed = line.trim();
+        if (!trimmed) { flushParagraph(); closeList(); continue; }
+        if (trimmed === '---') { flushParagraph(); closeList(); out.push('<hr>'); continue; }
+        if (trimmed.startsWith('### ')) { flushParagraph(); closeList(); out.push(`<h3>${inline(trimmed.slice(4))}</h3>`); continue; }
+        if (trimmed.startsWith('## ')) { flushParagraph(); closeList(); out.push(`<h2>${inline(trimmed.slice(3))}</h2>`); continue; }
+        if (trimmed.startsWith('# ')) { flushParagraph(); closeList(); out.push(`<h1>${inline(trimmed.slice(2))}</h1>`); continue; }
+        if (trimmed.startsWith('> ')) { flushParagraph(); closeList(); out.push(`<blockquote><p>${inline(trimmed.slice(2))}</p></blockquote>`); continue; }
+        if (trimmed.startsWith('- ')) {
+          flushParagraph();
+          if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; }
+          out.push(`<li>${inline(trimmed.slice(2))}</li>`);
+          continue;
+        }
+        if (/^\d+\. /.test(trimmed)) {
+          flushParagraph();
+          if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; }
+          out.push(`<li>${inline(trimmed.replace(/^\d+\. /, ''))}</li>`);
+          continue;
+        }
+        paragraph.push(trimmed);
+      }
+
+      if (inCode) out.push(`<pre><code>${ccEscapeHtml(codeLines.join('\n'))}</code></pre>`);
+      flushParagraph();
+      closeList();
+      return out.join('\n');
     }
 
     async function init() {
@@ -399,10 +411,10 @@
       });
 
       sortedCats.forEach(cat => {
-        html += `<div class="wiki-category">${cat}</div>`;
+        html += `<div class="wiki-category">${ccEscapeHtml(cat)}</div>`;
         categories[cat].sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
         categories[cat].forEach(p => {
-          html += `<a class="wiki-nav-item${p.slug === currentSlug ? ' active' : ''}" data-slug="${p.slug}">${p.title}</a>`;
+          html += `<a class="wiki-nav-item${p.slug === currentSlug ? ' active' : ''}" data-slug="${ccEscapeHtml(p.slug)}">${ccEscapeHtml(p.title)}</a>`;
         });
       });
 
@@ -438,24 +450,24 @@
 
         content.innerHTML = `
           <div class="wiki-content-header">
-            <h1 class="wiki-page-title">${page.title}</h1>
+            <h1 class="wiki-page-title">${ccEscapeHtml(page.title)}</h1>
             ${actions}
           </div>
-          <div class="wiki-page-meta">Last updated by ${page.updated_by || 'unknown'} · ${fmtDate(page.updated_at)}</div>
+          <div class="wiki-page-meta">Last updated by ${ccEscapeHtml(page.updated_by || 'unknown')} · ${ccEscapeHtml(fmtDate(page.updated_at))}</div>
           <div class="wiki-body" id="wikiBody">${renderMarkdown(page.content)}</div>
 
           <div class="wiki-editor" id="wikiEditor">
             <div class="wiki-editor-row">
-              <input class="wiki-editor-field" id="edTitle" value="${page.title}" placeholder="Page title" />
-              <input class="wiki-editor-field" id="edCategory" value="${page.category}" placeholder="Category (e.g. Plugins)" />
-              <input class="wiki-editor-field" id="edSort" value="${page.sort_order}" placeholder="0" style="width:70px;" type="number" />
+              <input class="wiki-editor-field" id="edTitle" value="${ccEscapeHtml(page.title)}" placeholder="Page title" />
+              <input class="wiki-editor-field" id="edCategory" value="${ccEscapeHtml(page.category)}" placeholder="Category (e.g. Plugins)" />
+              <input class="wiki-editor-field" id="edSort" value="${ccEscapeHtml(page.sort_order)}" placeholder="0" style="width:70px;" type="number" />
             </div>
             <div class="wiki-editor-tabs">
               <button class="wiki-editor-tab active" data-tab="write" onclick="switchEdTab('write','ed')">✏️ Write</button>
               <button class="wiki-editor-tab" data-tab="preview" onclick="switchEdTab('preview','ed')">👁 Preview</button>
             </div>
             <div class="wiki-toolbar" id="edToolbar"></div>
-            <textarea class="wiki-editor-field" id="edContent" placeholder="Write in Markdown...">${page.content}</textarea>
+            <textarea class="wiki-editor-field" id="edContent" placeholder="Write in Markdown...">${ccEscapeHtml(page.content)}</textarea>
             <div class="wiki-editor-preview wiki-body" id="edPreview"></div>
             <div class="wiki-editor-actions">
               <button class="wiki-btn wiki-btn-save" id="edSave">💾 Save</button>
@@ -596,7 +608,7 @@
 
       toolbar.innerHTML = toolbarButtons.map((btn, i) => {
         if (btn.type === 'sep') return '<div class="wiki-toolbar-sep"></div>';
-        return `<button class="wiki-toolbar-btn" data-idx="${i}" title="${btn.title || ''}" ${btn.style ? `style="${btn.style}"` : ''}>${btn.label}</button>`;
+        return `<button class="wiki-toolbar-btn" data-idx="${i}" title="${ccEscapeHtml(btn.title || '')}" ${btn.style ? `style="${ccEscapeHtml(btn.style)}"` : ''}>${ccEscapeHtml(btn.label)}</button>`;
       }).join('');
 
       toolbar.querySelectorAll('.wiki-toolbar-btn').forEach(el => {

@@ -396,10 +396,6 @@
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="chronicles.html">Chronicles</a></li>
       <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="support.html">Support</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
       <li><a href="support.html">Support</a></li>
       <li><a href="wiki.html">Staff</a></li>
     </ul>
@@ -441,6 +437,7 @@
     </div>
   </footer>
 
+  <script src="security.js"></script>
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
@@ -515,7 +512,7 @@
     }
 
     function fmtInline(t) {
-      return t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+      return ccFormatInline(t);
     }
 
     function fmtDate(d) { const [y,m,day] = d.split('-').map(Number); return new Date(y, m-1, day).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
@@ -532,7 +529,7 @@
       let html = '<button class="section-chip active" data-section="all">All</button>';
       for (const s of sections) {
         if (s === 'Classifieds') continue; // Classifieds rendered separately
-        html += `<button class="section-chip" data-section="${s}">${s}</button>`;
+        html += `<button class="section-chip" data-section="${ccEscapeHtml(s)}">${ccEscapeHtml(s)}</button>`;
       }
       nav.innerHTML = html;
       nav.querySelectorAll('.section-chip').forEach(chip => {
@@ -549,18 +546,19 @@
     function openArticle(article) {
       const el = document.getElementById('articleExpanded');
       const inner = document.getElementById('articleExpandedInner');
-      const imgHtml = article.image ? `<div class="ae-image"><img src="${article.image}" alt="" /></div>` : '';
+      const imgUrl = ccSafeImageUrl(article.image);
+      const imgHtml = imgUrl ? `<div class="ae-image"><img src="${ccEscapeHtml(imgUrl)}" alt="" /></div>` : '';
       const noteHtml = article.editorsNote ? `
         <div class="ae-editors-note">
           <div class="ae-editors-note-label">Editor's Note</div>
-          ${article.editorsNote}
+          ${ccEscapeHtml(article.editorsNote)}
         </div>` : '';
 
       inner.innerHTML = `
-        <div class="ae-section">${article.section || 'The Cozy Chronicles'}</div>
-        <div class="ae-title">${article.title}</div>
-        ${article.subtitle ? `<div class="ae-subtitle">${article.subtitle}</div>` : ''}
-        <div class="ae-meta">By ${article.author || 'Staff'} · ${fmtDate(article.date)}</div>
+        <div class="ae-section">${ccEscapeHtml(article.section || 'The Cozy Chronicles')}</div>
+        <div class="ae-title">${ccEscapeHtml(article.title)}</div>
+        ${article.subtitle ? `<div class="ae-subtitle">${ccEscapeHtml(article.subtitle)}</div>` : ''}
+        <div class="ae-meta">By ${ccEscapeHtml(article.author || 'Staff')} · ${ccEscapeHtml(fmtDate(article.date))}</div>
         ${imgHtml}
         ${noteHtml}
         <div class="ae-body">${parseBody(article.body)}</div>
@@ -602,16 +600,16 @@
         const feat = visible.find(a => a.featured) || visible[0];
         const hasImg = !!feat.image;
         html += `
-          <div class="featured-hero" data-id="${feat.id}">
+          <div class="featured-hero" data-id="${ccEscapeHtml(feat.id)}">
             ${hasImg
-              ? `<div class="featured-hero-img"><img src="${feat.image}" alt="" /></div><div class="featured-hero-gradient"></div>`
+              ? `<div class="featured-hero-img"><img src="${ccEscapeHtml(ccSafeImageUrl(feat.image))}" alt="" /></div><div class="featured-hero-gradient"></div>`
               : '<div class="featured-hero-noimg"></div>'}
             <div class="featured-hero-text">
               <div class="featured-hero-badge">⭐ Featured Story</div>
-              ${feat.section ? `<div class="featured-hero-section">${feat.section}</div>` : ''}
-              <h2>${feat.title}</h2>
-              ${feat.subtitle ? `<div class="featured-hero-subtitle">${feat.subtitle}</div>` : ''}
-              <div class="featured-hero-meta">By ${feat.author || 'Staff'} · ${fmtDate(feat.date)}</div>
+              ${feat.section ? `<div class="featured-hero-section">${ccEscapeHtml(feat.section)}</div>` : ''}
+              <h2>${ccEscapeHtml(feat.title)}</h2>
+              ${feat.subtitle ? `<div class="featured-hero-subtitle">${ccEscapeHtml(feat.subtitle)}</div>` : ''}
+              <div class="featured-hero-meta">By ${ccEscapeHtml(feat.author || 'Staff')} · ${ccEscapeHtml(fmtDate(feat.date))}</div>
             </div>
           </div>`;
         visible = visible.filter(a => a.id !== feat.id);
@@ -627,7 +625,7 @@
             bySection[s].push(a);
           }
           for (const [sec, arts] of Object.entries(bySection)) {
-            html += `<div class="articles-section-header"><span class="articles-section-title">${sec}</span><div class="articles-section-line"></div></div>`;
+            html += `<div class="articles-section-header"><span class="articles-section-title">${ccEscapeHtml(sec)}</span><div class="articles-section-line"></div></div>`;
             html += '<div class="articles-grid">';
             for (const a of arts) html += renderCard(a);
             html += '</div>';
@@ -650,8 +648,8 @@
             <div class="classifieds-grid">
               ${classifieds.map(c => `
                 <div class="classified-item">
-                  <div class="cl-title">${c.title}</div>
-                  <div class="cl-text">${c.subtitle || getPreview(c.body, 80)}</div>
+                  <div class="cl-title">${ccEscapeHtml(c.title)}</div>
+                  <div class="cl-text">${ccEscapeHtml(c.subtitle || getPreview(c.body, 80))}</div>
                 </div>
               `).join('')}
             </div>
@@ -664,7 +662,7 @@
           <div class="corrections-section">
             <div class="corrections-title">Corrections & Retractions</div>
             ${chroniclesConfig.corrections.map(c => `
-              <div class="correction-item"><em>${c}</em></div>
+              <div class="correction-item"><em>${ccEscapeHtml(c)}</em></div>
             `).join('')}
           </div>`;
       }
@@ -693,16 +691,18 @@
     }
 
     function renderCard(a) {
-      const imgHtml = a.image ? `<div class="article-card-image"><img src="${a.image}" alt="" loading="lazy" /></div>` : '';
+      const imgUrl = ccSafeImageUrl(a.image);
+      const imgHtml = imgUrl ? `<div class="article-card-image"><img src="${ccEscapeHtml(imgUrl)}" alt="" loading="lazy" /></div>` : '';
       const preview = getPreview(a.body, 100);
+      const articleId = ccEscapeHtml(a.id);
       return `
-        <div class="article-card" data-id="${a.id}">
+        <div class="article-card" data-id="${articleId}">
           ${imgHtml}
           <div class="article-card-body">
-            ${a.section ? `<div class="article-card-section">${a.section}</div>` : ''}
-            <div class="article-card-title">${a.title}</div>
-            ${preview ? `<div class="article-card-preview">${preview}</div>` : ''}
-            <div class="article-card-meta">By ${a.author || 'Staff'} · ${fmtDate(a.date)}</div>
+            ${a.section ? `<div class="article-card-section">${ccEscapeHtml(a.section)}</div>` : ''}
+            <div class="article-card-title">${ccEscapeHtml(a.title)}</div>
+            ${preview ? `<div class="article-card-preview">${ccEscapeHtml(preview)}</div>` : ''}
+            <div class="article-card-meta">By ${ccEscapeHtml(a.author || 'Staff')} · ${ccEscapeHtml(fmtDate(a.date))}</div>
           </div>
         </div>`;
     }
