@@ -108,12 +108,6 @@
         <span class="status-text" id="statusText">Checking server...</span>
       </div>
       <div class="player-heads" id="playerHeads"></div>
-
-      <a href="year-one.html" class="anniversary-banner">
-        <span class="anniversary-glow"></span>
-        <span class="anniversary-badge">🧡 Year One</span>
-        <span class="anniversary-text">6,656 hours played. 198,382 messages. 1.47M mobs killed. <strong>Read the full story →</strong></span>
-      </a>
     </div>
 
     <div class="bottom">
@@ -132,85 +126,127 @@
         </div>
       </div>
 
-      <a href="#discord" class="scroll-hint">
+      <a href="#server-hub" class="scroll-hint">
         <span>Explore</span>
         <div class="scroll-line"></div>
       </a>
     </div>
   </section>
 
+  <div class="home-anniversary-slot">
+    <a href="year-one.html" class="anniversary-banner">
+      <span class="anniversary-glow"></span>
+      <span class="anniversary-badge">🧡 Year One</span>
+      <span class="anniversary-text">6,656 hours played. 198,382 messages. 1.47M mobs killed. <strong>Read the full story →</strong></span>
+    </a>
+  </div>
+
   <!-- ============================================
-       DISCORD
+       SERVER INFO HUB
        ============================================ -->
-  <section class="content-section section-discord" id="discord">
-    <div class="section-inner discord-inner">
-      <div class="discord-text">
-        <div class="section-eyebrow">✦ Come Hang Out</div>
-        <h2 class="section-title">The Discord is where<br />the <span class="accent">real</span> server lives.</h2>
-        <p class="section-body">
-          Server announcements, build flexes, cursed screenshots, and the occasional deeply unhinged conversation about Minecraft lore. If you're even slightly interested, come say hi. Worst case, you witness something weird.
-        </p>
-        <a href="#" class="btn btn-discord" id="splashDiscordBtn">
+  <section class="content-section section-hub" id="server-hub">
+    <div class="section-inner">
+      <div class="section-eyebrow">✦ Everything You Need</div>
+      <h2 class="section-headline server-hub-title">Server <span class="accent">Info</span></h2>
+
+      <div class="server-hub-grid">
+        <article class="hub-card hub-card-connect">
+          <div class="hub-card-icon" aria-hidden="true">⛏️</div>
+          <h3 class="hub-card-title">Connect</h3>
+          <div class="hub-ip-value" id="hubIpDisplay">play.cozycrafters.net</div>
+          <div class="hub-ip-sub">Java Edition · Paper 1.21</div>
+          <div class="hub-card-actions">
+            <button type="button" class="btn btn-primary" id="hubCopyIpBtn" onclick="copyHubIp()"><span id="hubCopyIpText">Copy IP</span></button>
+          </div>
+        </article>
+
+        <article class="hub-card hub-card-discord">
+          <div class="hub-card-icon" aria-hidden="true">💬</div>
+          <h3 class="hub-card-title">Discord</h3>
+          <p class="hub-card-body">Announcements, builds, and general chaos. Pull up a chair.</p>
+          <p class="hub-card-body hub-discord-presence" id="hubDiscordPresence" style="display:none;"></p>
+          <div class="hub-card-actions">
+            <a href="#" class="btn btn-discord" id="hubDiscordBtn">
+              <svg class="discord-logo" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.947 2.418-2.157 2.418z"/></svg>
+              Join Discord
+            </a>
+          </div>
+        </article>
+
+        <article class="hub-card hub-card-vote">
+          <div class="hub-card-icon" aria-hidden="true">🗳️</div>
+          <h3 class="hub-card-title">Vote</h3>
+          <p class="hub-card-body">Boost our listings — free support that helps new players find us.</p>
+          <div class="hub-card-actions">
+            <button type="button" class="btn btn-secondary" id="voteModalOpenBtn">View vote links</button>
+          </div>
+        </article>
+
+        <article class="hub-card hub-card-donate">
+          <div class="hub-card-icon" aria-hidden="true">💛</div>
+          <h3 class="hub-card-title">Donate</h3>
+          <div class="hub-mini-track"><div class="hub-mini-fill" id="hubDonBar" style="width: 0%;"></div></div>
+          <div class="hub-mini-label"><span id="hubDonCurrent">$0</span> / <span id="hubDonGoal">$25</span> monthly goal</div>
+          <div class="hub-card-actions">
+            <a href="support.html" class="btn btn-primary" id="hubDonateBtn">Support the server</a>
+          </div>
+        </article>
+
+        <article class="hub-card hub-card-rules">
+          <div class="hub-card-icon" aria-hidden="true">📜</div>
+          <h3 class="hub-card-title">Rules</h3>
+          <p class="hub-card-body">Be kind, respect claims, no griefing — full guidelines live on Discord.</p>
+          <div class="hub-card-actions">
+            <a href="#" class="btn btn-secondary" id="hubRulesBtn">Open rules</a>
+          </div>
+        </article>
+
+        <article class="hub-card hub-card-whatsnew">
+          <div class="hub-card-icon" aria-hidden="true">✨</div>
+          <h3 class="hub-card-title">What’s New</h3>
+          <p class="hub-card-body hub-whats-title" id="hubChangelogTitle">Latest patch notes load here.</p>
+          <p class="hub-card-body hub-whats-date" id="hubChangelogDate" style="opacity:0.45;font-size:0.82rem;"></p>
+          <div class="hub-card-actions">
+            <a href="changelog.html" class="btn btn-secondary" id="hubChangelogBtn">Patch notes</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="hub-modal" id="voteModal" aria-hidden="true" role="dialog" aria-labelledby="voteModalTitle">
+    <div class="hub-modal-backdrop" id="voteModalBackdrop"></div>
+    <div class="hub-modal-panel">
+      <button type="button" class="hub-modal-close" id="voteModalClose" aria-label="Close vote links dialog">✕</button>
+      <h3 id="voteModalTitle">Vote for Cozy Crafters</h3>
+      <ul class="hub-vote-list" id="voteModalLinks"></ul>
+    </div>
+  </div>
+
+  <!-- ============================================
+       DISCORD (compact)
+       ============================================ -->
+  <section class="content-section section-discord-slim" id="discord">
+    <div class="section-inner discord-slim-inner">
+      <p class="discord-slim-text">
+        Still scrolling for more community?
+        <a href="#" class="btn btn-discord discord-slim-btn" id="splashDiscordBtn">
           <svg class="discord-logo" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.947 2.418-2.157 2.418z"/></svg>
-          Join the Discord
+          Join Discord
         </a>
-      </div>
-      <div class="discord-decoration">
-        <div class="deco-card">
-          <div class="deco-header">
-            <div class="deco-dot green"></div>
-            <span>Cozy Crafters SMP</span>
-          </div>
-          <div class="deco-channels">
-            <div class="deco-channel"># general</div>
-            <div class="deco-channel active"># server-chat</div>
-            <div class="deco-channel"># build-showcase</div>
-            <div class="deco-channel"># cursed-screenshots</div>
-            <div class="deco-channel"># the-cozy-chronicles</div>
-          </div>
-          <div class="deco-msg">
-            <div class="deco-avatar">🧀</div>
-            <div>
-              <span class="deco-user">Cheddah</span>
-              <span class="deco-text">who took my diamonds again</span>
-            </div>
-          </div>
-          <div class="deco-msg">
-            <div class="deco-avatar">🐲</div>
-            <div>
-              <span class="deco-user">XDragon</span>
-              <span class="deco-text">couldn't have been me i was definitely somewhere else</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      </p>
     </div>
   </section>
 
   <!-- ============================================
        SUPPORT
        ============================================ -->
-  <section class="content-section" id="support">
-    <div class="section-inner">
+  <section class="content-section section-alt" id="support">
+    <div class="section-inner support-slim-inner">
       <div class="section-eyebrow">✦ Support the Server</div>
       <h2 class="section-headline">Keep the <span class="accent">Lights On</span></h2>
-      <p class="section-subhead">Cozy Crafters is entirely community-funded. Donations go directly to hosting costs — nothing more, nothing less. Completely optional, always appreciated.</p>
-
-      <div class="donation-card" id="donationCard">
-        <div class="donation-bar-wrap">
-          <div class="donation-bar-label">
-            <span class="donation-amounts"><span class="donation-current" id="donCurrent">$0</span> / <span class="donation-goal" id="donGoal">$25</span></span>
-            <span class="donation-bar-tag">Monthly goal</span>
-          </div>
-          <div class="donation-bar-track">
-            <div class="donation-bar-fill" id="donBar" style="width: 0%;"></div>
-          </div>
-        </div>
-        <div class="donation-info">
-          <p class="donation-desc">Covers server hosting, domain, and backups. Every dollar helps keep the world running.</p>
-          <a href="#" class="btn btn-primary donation-btn" id="donateBtn" target="_blank" rel="noopener">💛 Donate via PayPal</a>
-        </div>
-      </div>
+      <p class="section-subhead">Hosting is funded by the community. See costs and donation options on the support page.</p>
+      <a href="support.html" class="btn btn-secondary">Support page →</a>
     </div>
   </section>
 
@@ -315,42 +351,143 @@
       }
     })();
 
-    // Load splash text customizations from the API
-    (async function loadSplashText() {
+    const DEFAULT_VOTE_SITES = [
+      { label: 'Minecraft-ServerList', url: 'https://minecraft-serverlist.com/' },
+      { label: 'MC-Server-List', url: 'https://minecraft-server-list.com/server/519561' },
+      { label: 'Minecraft.buzz', url: 'https://minecraft.buzz/server/20492' },
+    ];
+
+    function formatHubDate(dateStr) {
+      if (!dateStr || typeof dateStr !== 'string') return '';
+      const parts = dateStr.split('-').map(Number);
+      if (parts.length !== 3) return dateStr;
+      return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function pickLatestChangelogEntry(entries) {
+      if (!Array.isArray(entries)) return null;
+      const visible = entries.filter(e => e && e.status !== 'draft');
+      visible.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.date) - new Date(a.date);
+      });
+      return visible[0] || null;
+    }
+
+    function applyHubDonationBars(goal, current) {
+      document.getElementById('hubDonGoal').textContent = '$' + goal;
+      document.getElementById('hubDonCurrent').textContent = '$' + current;
+      const pct = Math.min(100, Math.round((current / goal) * 100));
+      setTimeout(() => { document.getElementById('hubDonBar').style.width = pct + '%'; }, 500);
+    }
+
+    function renderVoteModalLinks(sites) {
+      const ul = document.getElementById('voteModalLinks');
+      ul.innerHTML = (sites || []).map((s) => {
+        const label = ccEscapeHtml(s.label || 'Vote');
+        const safe = ccSafeUrl(s.url, '#');
+        const href = ccEscapeHtml(safe);
+        return `<li><a href="${href}" target="_blank" rel="noopener">${label}</a></li>`;
+      }).join('');
+    }
+
+    function setVoteModalOpen(open) {
+      const modal = document.getElementById('voteModal');
+      if (!modal) return;
+      modal.classList.toggle('open', open);
+      modal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    // Splash text, hub cards, vote sites, changelog peek, Discord widget (via API proxy)
+    (async function loadHomePageSettings() {
+      let t = {};
       try {
         const res = await fetch(`${API_BASE}/api/settings/splashText`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const t = data.value;
-        if (!t || Object.keys(t).length === 0) return;
+        if (res.ok) {
+          const data = await res.json();
+          t = data.value || {};
+        }
+      } catch (e) {}
 
-        if (t.eyebrow) document.getElementById('splashEyebrow').textContent = t.eyebrow;
-        if (t.headline1) document.getElementById('splashHeadline1').textContent = t.headline1;
-        if (t.headline2) document.getElementById('splashHeadline2').textContent = t.headline2;
-        if (t.tagline) document.getElementById('splashTagline').textContent = t.tagline;
-        if (t.btnPrimary) document.getElementById('copyIpText').textContent = t.btnPrimary;
-        if (t.btnSecondary) document.getElementById('splashBtnSecondary').textContent = t.btnSecondary;
-        if (t.btnSecondaryLink) ccSetSafeHref('splashBtnSecondary', t.btnSecondaryLink, 'changelog.html');
-        if (t.stat1Num) document.getElementById('splashStat1Num').textContent = t.stat1Num;
-        if (t.stat1Label) document.getElementById('splashStat1Label').textContent = t.stat1Label;
-        if (t.stat2Num) document.getElementById('splashStat2Num').textContent = t.stat2Num;
-        if (t.stat2Label) document.getElementById('splashStat2Label').textContent = t.stat2Label;
-        if (t.stat3Num) document.getElementById('splashStat3Num').textContent = t.stat3Num;
-        if (t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
-        if (t.discordUrl) ccSetSafeHref('splashDiscordBtn', t.discordUrl);
-        if (t.serverIp) window._serverIp = t.serverIp;
+      const ipDefault = 'play.cozycrafters.net';
+      const ip = (t && t.serverIp) ? t.serverIp : ipDefault;
+      window._serverIp = ip;
+      document.getElementById('hubIpDisplay').textContent = ip;
 
-        // Donation bar
-        if (t.paypalUrl) ccSetSafeHref('donateBtn', t.paypalUrl);
-        const goal = parseFloat(t.donationGoal) || 25;
-        const current = parseFloat(t.donationCurrent) || 0;
-        document.getElementById('donGoal').textContent = '$' + goal;
-        document.getElementById('donCurrent').textContent = '$' + current;
-        const pct = Math.min(100, Math.round((current / goal) * 100));
-        setTimeout(() => { document.getElementById('donBar').style.width = pct + '%'; }, 500);
-      } catch (e) {
-        // No custom text saved, defaults show
+      if (t && t.eyebrow) document.getElementById('splashEyebrow').textContent = t.eyebrow;
+      if (t && t.headline1) document.getElementById('splashHeadline1').textContent = t.headline1;
+      if (t && t.headline2) document.getElementById('splashHeadline2').textContent = t.headline2;
+      if (t && t.tagline) document.getElementById('splashTagline').textContent = t.tagline;
+      if (t && t.btnPrimary) {
+        document.getElementById('copyIpText').textContent = t.btnPrimary;
+        window.__splashPrimaryBtnLabel = t.btnPrimary;
+      } else {
+        window.__splashPrimaryBtnLabel = 'Join the Server →';
       }
+      if (t && t.btnSecondary) document.getElementById('splashBtnSecondary').textContent = t.btnSecondary;
+      if (t && t.btnSecondaryLink) ccSetSafeHref('splashBtnSecondary', t.btnSecondaryLink, 'changelog.html');
+      if (t && t.stat1Num) document.getElementById('splashStat1Num').textContent = t.stat1Num;
+      if (t && t.stat1Label) document.getElementById('splashStat1Label').textContent = t.stat1Label;
+      if (t && t.stat2Num) document.getElementById('splashStat2Num').textContent = t.stat2Num;
+      if (t && t.stat2Label) document.getElementById('splashStat2Label').textContent = t.stat2Label;
+      if (t && t.stat3Num) document.getElementById('splashStat3Num').textContent = t.stat3Num;
+      if (t && t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
+
+      const dUrl = t && t.discordUrl ? t.discordUrl : '';
+      if (dUrl) {
+        ccSetSafeHref('splashDiscordBtn', dUrl);
+        ccSetSafeHref('hubDiscordBtn', dUrl);
+      }
+
+      const goal = parseFloat(t && t.donationGoal) || 25;
+      const current = parseFloat(t && t.donationCurrent) || 0;
+      applyHubDonationBars(goal, current);
+
+      if (t && t.rulesUrl) ccSetSafeHref('hubRulesBtn', t.rulesUrl);
+      else if (dUrl) ccSetSafeHref('hubRulesBtn', dUrl);
+      else ccSetSafeHref('hubRulesBtn', '#');
+
+      let voteSites = DEFAULT_VOTE_SITES;
+      try {
+        const vr = await fetch(`${API_BASE}/api/settings/voteSites`);
+        if (vr.ok) {
+          const vd = await vr.json();
+          const arr = vd.value;
+          if (Array.isArray(arr) && arr.length > 0) {
+            voteSites = arr.filter((x) => x && typeof x.label === 'string' && typeof x.url === 'string');
+            if (voteSites.length === 0) voteSites = DEFAULT_VOTE_SITES;
+          }
+        }
+      } catch (e) {}
+      renderVoteModalLinks(voteSites);
+
+      try {
+        const cr = await fetch(`${API_BASE}/api/settings/changelog`);
+        if (cr.ok) {
+          const cd = await cr.json();
+          const latest = pickLatestChangelogEntry(Array.isArray(cd.value) ? cd.value : []);
+          if (latest) {
+            document.getElementById('hubChangelogTitle').textContent = latest.title || 'Patch notes';
+            document.getElementById('hubChangelogDate').textContent = 'Last updated ' + formatHubDate(latest.date);
+            const chBtn = document.getElementById('hubChangelogBtn');
+            chBtn.href = latest.id != null ? 'changelog.html#' + encodeURIComponent(String(latest.id)) : 'changelog.html';
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const wr = await fetch(`${API_BASE}/api/discord/widget`);
+        if (wr.ok) {
+          const wj = await wr.json();
+          const n = wj.presence_count;
+          if (typeof n === 'number') {
+            const pe = document.getElementById('hubDiscordPresence');
+            pe.textContent = n.toLocaleString() + ' members online';
+            pe.style.display = '';
+          }
+        }
+      } catch (e) {}
     })();
 
     // Hamburger menu
@@ -370,22 +507,38 @@
     // Nav background on scroll
     const nav = document.getElementById('mainNav');
 
-    // Copy server IP
-    function copyIP() {
+    function copyServerIp(btnId, textId, restoreLabel) {
       const ip = window._serverIp || 'play.cozycrafters.net';
-      const btn = document.getElementById('copyIpBtn');
-      const text = document.getElementById('copyIpText');
+      const btn = document.getElementById(btnId);
+      const text = document.getElementById(textId);
+      if (!btn || !text) return;
+      const fallback = restoreLabel != null ? restoreLabel : text.textContent;
       navigator.clipboard.writeText(ip).then(() => {
         text.textContent = 'Copied! — ' + ip;
         btn.style.background = '#A8C77E';
         btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
         setTimeout(() => {
-          text.textContent = window.__splashPrimaryBtnLabel || 'Join the Server →';
+          text.textContent = fallback;
           btn.style.background = '';
           btn.style.boxShadow = '';
         }, 2500);
       });
     }
+
+    function copyIP() {
+      copyServerIp('copyIpBtn', 'copyIpText', window.__splashPrimaryBtnLabel || 'Join the Server →');
+    }
+
+    function copyHubIp() {
+      copyServerIp('hubCopyIpBtn', 'hubCopyIpText', 'Copy IP');
+    }
+
+    document.getElementById('voteModalOpenBtn').addEventListener('click', () => setVoteModalOpen(true));
+    document.getElementById('voteModalClose').addEventListener('click', () => setVoteModalOpen(false));
+    document.getElementById('voteModalBackdrop').addEventListener('click', () => setVoteModalOpen(false));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setVoteModalOpen(false);
+    });
 
     // Live server status
     async function fetchServerStatus() {

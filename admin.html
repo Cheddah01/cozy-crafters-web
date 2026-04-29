@@ -1060,6 +1060,31 @@
             </div>
           </div>
 
+          <div style="border-top: 1px solid rgba(244, 201, 93, 0.1); margin-top: 1rem; padding-top: 1.2rem;">
+            <div class="card-header" style="margin-bottom: 0.8rem;">
+              <span class="card-icon">🧭</span>
+              <h2 class="card-title">Homepage hub</h2>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="txtVoteSitesJson">Vote sites (JSON array)</label>
+              <textarea id="txtVoteSitesJson" rows="8" style="width:100%;min-height:140px;font-family:monospace;font-size:0.85rem;" placeholder='[{"label":"Site name","url":"https://..."}]'></textarea>
+              <p class="field-hint">Shown in the Vote modal on the homepage. Stored under settings key voteSites.</p>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="txtDiscordGuildId">Discord server ID (widget)</label>
+              <input type="text" id="txtDiscordGuildId" placeholder="Numeric guild ID — enables member count when widget is on" />
+              <p class="field-hint">Discord Server Settings → Widget → enable. Alternatively set Worker secret DISCORD_GUILD_ID.</p>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="txtRulesUrl">Rules link URL</label>
+              <input type="text" id="txtRulesUrl" placeholder="Discord rules channel or doc URL" />
+              <p class="field-hint">Rules card on the homepage. Saved with splash text as rulesUrl. Falls back to Discord invite if empty.</p>
+            </div>
+          </div>
+
           <div class="action-row" style="margin-top: 1.5rem;">
             <button class="btn btn-primary" id="saveTextBtn" type="button">💾 Save Text</button>
             <button class="btn btn-danger" id="resetTextBtn" type="button">Reset to Defaults</button>
@@ -2130,10 +2155,16 @@
       paypalUrl: 'txtPaypalUrl',
       donationGoal: 'txtDonationGoal',
       donationCurrent: 'txtDonationCurrent',
+      rulesUrl: 'txtRulesUrl',
     };
+
+    const hubExtraFieldIds = ['txtVoteSitesJson', 'txtDiscordGuildId'];
 
     // Mark unsaved when any text field changes
     Object.values(textFields).forEach(id => {
+      document.getElementById(id).addEventListener('input', markUnsaved);
+    });
+    hubExtraFieldIds.forEach(id => {
       document.getElementById(id).addEventListener('input', markUnsaved);
     });
 
@@ -2155,9 +2186,29 @@
       }
     }
 
+    const DEFAULT_VOTE_SITES_ADMIN = [
+      { label: 'Minecraft-ServerList', url: 'https://minecraft-serverlist.com/' },
+      { label: 'MC-Server-List', url: 'https://minecraft-server-list.com/server/519561' },
+      { label: 'Minecraft.buzz', url: 'https://minecraft.buzz/server/20492' },
+    ];
+
     // Save text
     document.getElementById('saveTextBtn').addEventListener('click', async () => {
       const values = getTextValues();
+      const voteRaw = document.getElementById('txtVoteSitesJson').value.trim();
+      let voteSitesPayload = [];
+      if (voteRaw) {
+        try {
+          const parsed = JSON.parse(voteRaw);
+          if (!Array.isArray(parsed)) throw new Error('not array');
+          voteSitesPayload = parsed.filter((x) => x && typeof x.url === 'string' && typeof x.label === 'string');
+        } catch (e) {
+          showToast('Vote sites must be valid JSON array with label and url on each item.');
+          return;
+        }
+      }
+      const guildVal = document.getElementById('txtDiscordGuildId').value.trim();
+
       try {
         const res = await fetch(`${API_BASE}/api/settings/splashText`, {
           method: 'PUT',
@@ -2174,8 +2225,36 @@
           return;
         }
 
+        const vRes = await fetch(`${API_BASE}/api/settings/voteSites`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: voteSitesPayload }),
+        });
+        if (!vRes.ok) {
+          const err = await vRes.json().catch(() => ({}));
+          showToast(`Splash saved; vote sites failed: ${err.error || vRes.status}`);
+          return;
+        }
+
+        const gRes = await fetch(`${API_BASE}/api/settings/discordGuildId`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({ value: guildVal }),
+        });
+        if (!gRes.ok) {
+          const err = await gRes.json().catch(() => ({}));
+          showToast(`Saved; Discord guild ID failed: ${err.error || gRes.status}`);
+          return;
+        }
+
         markSaved();
-        showToast('Splash text saved!');
+        showToast('Splash text & hub settings saved!');
       } catch (e) {
         showToast('Failed to save — check your connection.');
         console.error(e);
@@ -2211,12 +2290,39 @@
     (async function loadText() {
       try {
         const res = await fetch(`${API_BASE}/api/settings/splashText`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setTextValues(data.value);
+        if (res.ok) {
+          const data = await res.json();
+          setTextValues(data.value);
+        }
+      } catch (e) {}
+
+      try {
+        const vr = await fetch(`${API_BASE}/api/settings/voteSites`);
+        const ta = document.getElementById('txtVoteSitesJson');
+        if (vr.ok) {
+          const vd = await vr.json();
+          const arr = vd.value;
+          if (Array.isArray(arr) && arr.length) {
+            ta.value = JSON.stringify(arr, null, 2);
+          } else {
+            ta.value = JSON.stringify(DEFAULT_VOTE_SITES_ADMIN, null, 2);
+          }
+        } else {
+          ta.value = JSON.stringify(DEFAULT_VOTE_SITES_ADMIN, null, 2);
+        }
       } catch (e) {
-        // No saved text yet, that's fine
+        document.getElementById('txtVoteSitesJson').value = JSON.stringify(DEFAULT_VOTE_SITES_ADMIN, null, 2);
       }
+
+      try {
+        const gr = await fetch(`${API_BASE}/api/settings/discordGuildId`);
+        if (gr.ok) {
+          const gd = await gr.json();
+          const v = gd.value;
+          document.getElementById('txtDiscordGuildId').value =
+            typeof v === 'string' ? v : v != null ? String(v) : '';
+        }
+      } catch (e) {}
     })();
 
 

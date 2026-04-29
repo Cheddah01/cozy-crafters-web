@@ -1034,6 +1034,37 @@ export default {
       }
 
       // ============================================
+      // GET /api/discord/widget — public proxy for Discord widget JSON (presence_count)
+      // ============================================
+      if (request.method === 'GET' && path === '/api/discord/widget') {
+        let guildId = (url.searchParams.get('guild') || '').trim();
+        if (!guildId && env.DISCORD_GUILD_ID) guildId = String(env.DISCORD_GUILD_ID).trim();
+        if (!guildId) {
+          const row = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind('discordGuildId').first();
+          if (row) {
+            try {
+              const v = JSON.parse(row.value);
+              guildId = typeof v === 'string' ? v.trim() : String(v ?? '').trim();
+            } catch (e) {
+              guildId = String(row.value || '').replace(/^"|"$/g, '').trim();
+            }
+          }
+        }
+        if (!guildId) {
+          return new Response(JSON.stringify({ error: 'guild not configured' }), {
+            status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+        const wRes = await fetch(`https://discord.com/api/guilds/${guildId}/widget.json`);
+        const bodyText = await wRes.text();
+        const ct = wRes.headers.get('Content-Type') || 'application/json';
+        return new Response(bodyText, {
+          status: wRes.status,
+          headers: { 'Content-Type': ct, ...corsHeaders },
+        });
+      }
+
+      // ============================================
       // SETTINGS — GET /api/settings/:key (public)
       // ============================================
       if (request.method === 'GET' && path.startsWith('/api/settings/')) {

@@ -33,7 +33,7 @@ The official website for Cozy Crafters SMP, a Minecraft survival server. Built a
 
 ### Auth
 - Discord OAuth via app ID `1495223646283890719`
-- Worker secrets: `AUTH_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `JWT_SECRET`
+- Worker secrets: `AUTH_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `JWT_SECRET`, optional `DISCORD_GUILD_ID` (widget proxy for homepage Discord member count)
 - JWT stored as `ccAuthToken` in localStorage (NOT `ccToken` — this has caused bugs before)
 
 ---
@@ -42,7 +42,7 @@ The official website for Cozy Crafters SMP, a Minecraft survival server. Built a
 
 | File | Public | Description |
 |------|--------|-------------|
-| `index.html` | Yes | Homepage — cycling video backgrounds, splash text, server IP copy, live server status with player heads, anniversary banner, donation section |
+| `index.html` | Yes | Homepage — cycling video backgrounds, splash text, Server Info Hub (connect, Discord, vote modal, donate mini-bar, rules, changelog peek), live server status with player heads, anniversary banner; slim Discord strip + link to support page |
 | `changelog.html` | Yes | Patch notes — structured changes builder, custom tags, emoji reactions (👍🎉❤️🔥😂), share links with deep-linking, Notion-style side panel editor |
 | `chronicles.html` | Yes | Newspaper — Playfair Display masthead, rotating slogans, sections, classifieds, corrections, editor's notes, pull quotes |
 | `gallery.html` | Yes | Community gallery — multi-image posts, tags, Instagram-style lightbox with sidebar comments, external URL support, comment count badges |
@@ -66,7 +66,7 @@ The official website for Cozy Crafters SMP, a Minecraft survival server. Built a
 ## Database Schema
 
 ### Settings (key-value store)
-Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesSections`, `chroniclesConfig`, `supportCosts`, `background`, `discordWebhookPatchNotes`
+Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesSections`, `chroniclesConfig`, `supportCosts`, `background`, `discordWebhookPatchNotes`, **`voteSites`** (JSON array of `{ label, url }` for the homepage Vote modal), **`discordGuildId`** (string; Discord guild ID for widget API — homepage member count via `GET /api/discord/widget`).
 
 ### Users
 `id, discord_id, username, avatar, role, created_at, last_login`
@@ -103,6 +103,9 @@ Used for: `splashText`, `changelog`, `changelogTags`, `chronicles`, `chroniclesS
 - `GET /api/settings/:key` → public read
 - `GET /api/settings` → public read all
 - `PUT /api/settings/:key` → admin write
+
+### Discord (widget proxy)
+- `GET /api/discord/widget` → public proxy for Discord widget JSON (`presence_count`, etc.). Guild ID from query `guild`, Worker secret `DISCORD_GUILD_ID`, or settings key `discordGuildId`.
 
 ### Reactions
 - `GET /api/reactions/:entryId` → counts + user reactions
