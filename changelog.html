@@ -344,10 +344,6 @@
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="chronicles.html">Chronicles</a></li>
       <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="support.html">Support</a></li>
-      <li><a href="year-one.html">Year One</a></li>
-      <li><a href="year-one.html">Year One</a></li>
       <li><a href="support.html">Support</a></li>
       <li><a href="wiki.html">Staff</a></li>
     </ul>
@@ -385,6 +381,7 @@
     </div>
   </footer>
 
+  <script src="security.js"></script>
   <script>
     const API_BASE = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 
@@ -438,9 +435,7 @@
 
     // Bold and italic
     function formatInline(text) {
-      return text
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+      return ccFormatInline(text);
     }
 
     // Share link copy
@@ -473,7 +468,7 @@
       const bar = document.getElementById('filterBar');
       let html = '<button class="filter-chip active" data-filter="all">All</button>';
       for (const tag of tags) {
-        html += `<button class="filter-chip" data-filter="${tag.id}" style="--tag-color:${tag.color};">${tag.name}</button>`;
+        html += `<button class="filter-chip" data-filter="${ccEscapeHtml(tag.id)}" style="--tag-color:${ccEscapeHtml(tag.color)};">${ccEscapeHtml(tag.name)}</button>`;
       }
       bar.innerHTML = html;
 
@@ -587,11 +582,13 @@
       const tagsHtml = (entry.tags || []).map(tId => {
         const t = getTag(tId);
         if (!t) return '';
-        return `<span class="entry-tag" style="background:${t.color}22; color:${t.color}; border:1px solid ${t.color}55;">${t.name}</span>`;
+        return `<span class="entry-tag" style="background:${ccEscapeHtml(t.color)}22; color:${ccEscapeHtml(t.color)}; border:1px solid ${ccEscapeHtml(t.color)}55;">${ccEscapeHtml(t.name)}</span>`;
       }).join('');
 
-      const versionHtml = entry.version ? `<span class="entry-version">${entry.version}</span>` : '';
-      const imageHtml = entry.image ? `<div class="entry-image"><img src="${entry.image}" alt="" loading="lazy" /></div>` : '';
+      const entryId = ccEscapeHtml(entry.id);
+      const versionHtml = entry.version ? `<span class="entry-version">${ccEscapeHtml(entry.version)}</span>` : '';
+      const imageUrl = ccSafeImageUrl(entry.image);
+      const imageHtml = imageUrl ? `<div class="entry-image"><img src="${ccEscapeHtml(imageUrl)}" alt="" loading="lazy" /></div>` : '';
       const pinBadge = isPinned ? '<div class="entry-pin-badge">📌 Pinned</div>' : '';
 
       // Render body: structured changes or legacy freeform
@@ -601,12 +598,12 @@
         changeCountHtml = `<div class="entry-change-count">${entry.changes.length} change${entry.changes.length !== 1 ? 's' : ''} in this update</div>`;
         bodyHtml = '<div class="entry-changes">' + entry.changes.map(c => {
           const t = c.tag ? getTag(c.tag) : null;
-          const tagChip = t ? `<span class="change-chip" style="background:${t.color}22; color:${t.color}; border:1px solid ${t.color}55;">${t.name}</span>` : '';
+          const tagChip = t ? `<span class="change-chip" style="background:${ccEscapeHtml(t.color)}22; color:${ccEscapeHtml(t.color)}; border:1px solid ${ccEscapeHtml(t.color)}55;">${ccEscapeHtml(t.name)}</span>` : '';
           return `<div class="entry-change-row">
             ${tagChip}
             <div class="entry-change-info">
-              <span class="entry-change-title">${c.title}</span>
-              ${c.description ? `<span class="entry-change-desc">${c.description}</span>` : ''}
+              <span class="entry-change-title">${ccEscapeHtml(c.title)}</span>
+              ${c.description ? `<span class="entry-change-desc">${ccEscapeHtml(c.description)}</span>` : ''}
             </div>
           </div>`;
         }).join('') + '</div>';
@@ -615,20 +612,20 @@
       }
 
       return `
-        <div class="changelog-entry${isPinned ? ' pinned' : ''}" data-entry-id="${entry.id}" id="${entry.id}">
+        <div class="changelog-entry${isPinned ? ' pinned' : ''}" data-entry-id="${entryId}" id="${entryId}">
           <div class="entry-top">
             ${pinBadge}
             <div class="entry-header">
-              <span class="entry-title">${entry.title}</span>
+              <span class="entry-title">${ccEscapeHtml(entry.title)}</span>
               ${versionHtml}
             </div>
             <div class="entry-tags">${tagsHtml}</div>
-            <a href="#${entry.id}" class="share-link" data-id="${entry.id}" style="display:inline-block;font-family:Fredoka,sans-serif;font-size:0.75rem;font-weight:600;color:#F4C95D;opacity:0.5;text-decoration:none;margin-top:0.3rem;">🔗 Copy link</a>
+            <a href="#${entryId}" class="share-link" data-id="${entryId}" style="display:inline-block;font-family:Fredoka,sans-serif;font-size:0.75rem;font-weight:600;color:#F4C95D;opacity:0.5;text-decoration:none;margin-top:0.3rem;">🔗 Copy link</a>
           </div>
           ${imageHtml}
           ${changeCountHtml}
           ${bodyHtml}
-          <div class="reaction-bar" data-reactions-for="${entry.id}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
+          <div class="reaction-bar" data-reactions-for="${entryId}" style="padding:0.8rem 1.8rem 1.2rem;border-top:1px solid rgba(244,201,93,0.06);"></div>
         </div>`;
     }
 

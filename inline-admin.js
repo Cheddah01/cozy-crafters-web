@@ -807,7 +807,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
                   <input class="sp-input sp-edit-title" value="${escape(c.title)}" style="font-weight:600;font-size:0.88rem;" />
                 </div>
                 <div class="sp-field" style="margin-bottom:0.5rem;">
-                  <textarea class="sp-input sp-edit-desc" rows="2" placeholder="Description (optional)">${c.description || ''}</textarea>
+                  <textarea class="sp-input sp-edit-desc" rows="2" placeholder="Description (optional)">${escape(c.description || '')}</textarea>
                 </div>
                 <div style="margin-bottom:0.5rem;">
                   <span style="font-family:Fredoka,sans-serif;font-size:0.7rem;font-weight:600;color:#F4C95D;display:block;margin-bottom:0.25rem;">Tag</span>
@@ -825,8 +825,8 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
             <span class="sp-change-drag">⠿</span>
             ${tagHtml}
             <div class="sp-change-info">
-              <div class="sp-change-title">${c.title}</div>
-              ${c.description ? `<div class="sp-change-desc">${c.description}</div>` : ''}
+              <div class="sp-change-title">${escape(c.title)}</div>
+              ${c.description ? `<div class="sp-change-desc">${escape(c.description)}</div>` : ''}
             </div>
             <button class="sp-change-edit" data-idx="${i}" style="background:none;border:none;color:#F4C95D;opacity:0.3;cursor:pointer;font-size:0.75rem;padding:0.15rem;transition:opacity 0.15s;flex-shrink:0;" title="Edit">✎</button>
             <button class="sp-change-del" data-idx="${i}">✕</button>
@@ -1022,7 +1022,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         </div>
         <div class="im-field">
           <label class="im-label">Body</label>
-          <textarea id="imChrBody" rows="10" placeholder="## The Incident&#10;&#10;It was a Tuesday...&#10;&#10;> This is a pull quote that gets highlighted">${article?.body || ''}</textarea>
+          <textarea id="imChrBody" rows="10" placeholder="## The Incident&#10;&#10;It was a Tuesday...&#10;&#10;> This is a pull quote that gets highlighted">${escape(article?.body || '')}</textarea>
           <div class="im-hint">## for headers, - for bullets, **bold**, *italic*, > for pull quotes</div>
         </div>
         <div class="im-field">
@@ -1169,7 +1169,9 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
     // Shared helpers
     // ============================================
     function escape(str) {
-      return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+      return typeof ccEscapeHtml === 'function'
+        ? ccEscapeHtml(str)
+        : (str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
     function addEditButtons(selector, onClick) {
@@ -1218,12 +1220,12 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       overlay.className = 'inline-modal-overlay';
 
       const btnsHtml = buttons.map(b =>
-        `<button class="im-btn ${b.class}" data-action="${b.action}">${b.label}</button>`
+        `<button class="im-btn ${escape(b.class)}" data-action="${escape(b.action)}">${escape(b.label)}</button>`
       ).join('');
 
       overlay.innerHTML = `
         <div class="inline-modal">
-          <h3>${title}</h3>
+          <h3>${escape(title)}</h3>
           ${bodyHtml}
           <div class="im-actions">${btnsHtml}</div>
         </div>

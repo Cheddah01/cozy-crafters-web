@@ -230,6 +230,7 @@
     </div>
   </footer>
 
+  <script src="security.js"></script>
   <script>
     // ============================================
     // CONFIG
@@ -323,55 +324,20 @@
         if (t.headline1) document.getElementById('splashHeadline1').textContent = t.headline1;
         if (t.headline2) document.getElementById('splashHeadline2').textContent = t.headline2;
         if (t.tagline) document.getElementById('splashTagline').textContent = t.tagline;
-        // Primary CTA: default = copy server IP; optional text + optional link (replaces copy button)
-        (function applyPrimaryCta() {
-          const btn = document.getElementById('copyIpBtn');
-          const span = document.getElementById('copyIpText');
-          if (!btn || !span) return;
-          const defaultLabel = 'Join the Server →';
-          const hasText = t.btnPrimary && String(t.btnPrimary).trim();
-          const link = t.btnPrimaryLink && String(t.btnPrimaryLink).trim();
-          const label = hasText ? String(t.btnPrimary).trim() : defaultLabel;
-
-          if (link && !/^javascript:/i.test(link)) {
-            window.__splashPrimaryBtnLabel = hasText ? label : defaultLabel;
-            const a = document.createElement('a');
-            a.className = btn.className;
-            a.id = 'copyIpBtn';
-            a.setAttribute('href', link);
-            const inner = document.createElement('span');
-            inner.id = 'copyIpText';
-            inner.textContent = label;
-            a.appendChild(inner);
-            btn.replaceWith(a);
-            if (link.startsWith('#')) {
-              const sel = link;
-              a.addEventListener('click', (e) => {
-                const target = document.querySelector(sel);
-                if (target) {
-                  e.preventDefault();
-                  target.scrollIntoView({ behavior: 'smooth' });
-                }
-              });
-            }
-          } else if (hasText) {
-            span.textContent = label;
-            window.__splashPrimaryBtnLabel = label;
-          }
-        })();
+        if (t.btnPrimary) document.getElementById('copyIpText').textContent = t.btnPrimary;
         if (t.btnSecondary) document.getElementById('splashBtnSecondary').textContent = t.btnSecondary;
-        if (t.btnSecondaryLink) document.getElementById('splashBtnSecondary').href = t.btnSecondaryLink;
+        if (t.btnSecondaryLink) ccSetSafeHref('splashBtnSecondary', t.btnSecondaryLink, 'changelog.html');
         if (t.stat1Num) document.getElementById('splashStat1Num').textContent = t.stat1Num;
         if (t.stat1Label) document.getElementById('splashStat1Label').textContent = t.stat1Label;
         if (t.stat2Num) document.getElementById('splashStat2Num').textContent = t.stat2Num;
         if (t.stat2Label) document.getElementById('splashStat2Label').textContent = t.stat2Label;
         if (t.stat3Num) document.getElementById('splashStat3Num').textContent = t.stat3Num;
         if (t.stat3Label) document.getElementById('splashStat3Label').textContent = t.stat3Label;
-        if (t.discordUrl) document.getElementById('splashDiscordBtn').href = t.discordUrl;
+        if (t.discordUrl) ccSetSafeHref('splashDiscordBtn', t.discordUrl);
         if (t.serverIp) window._serverIp = t.serverIp;
 
         // Donation bar
-        if (t.paypalUrl) document.getElementById('donateBtn').href = t.paypalUrl;
+        if (t.paypalUrl) ccSetSafeHref('donateBtn', t.paypalUrl);
         const goal = parseFloat(t.donationGoal) || 25;
         const current = parseFloat(t.donationCurrent) || 0;
         document.getElementById('donGoal').textContent = '$' + goal;
@@ -425,7 +391,7 @@
       const serverIp = window._serverIp || 'play.cozycrafters.net';
 
       try {
-        const res = await fetch(`https://api.mcstatus.io/v2/status/java/${serverIp}`);
+        const res = await fetch(`https://api.mcstatus.io/v2/status/java/${encodeURIComponent(serverIp)}`);
         const data = await res.json();
 
         if (data.online) {
@@ -445,7 +411,8 @@
             headsEl.innerHTML = players.slice(0, 20).map(p => {
               const uuid = p.uuid?.replace(/-/g, '') || '';
               const headUrl = uuid ? `https://mc-heads.net/avatar/${uuid}/28` : '';
-              return headUrl ? `<img class="player-head" src="${headUrl}" alt="${p.name_clean || p.name_raw || ''}" title="${p.name_clean || p.name_raw || ''}" />` : '';
+              const name = ccEscapeHtml(p.name_clean || p.name_raw || '');
+              return headUrl ? `<img class="player-head" src="${headUrl}" alt="${name}" title="${name}" />` : '';
             }).join('');
           } else {
             headsEl.innerHTML = '';
