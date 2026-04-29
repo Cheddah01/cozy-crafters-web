@@ -553,14 +553,23 @@ h1 .accent {
   max-width: 1100px;
 }
 
+.content-section.section-hub {
+  padding-top: 4.5rem;
+}
+
+.section-hub .section-eyebrow {
+  margin-bottom: 0.65rem;
+}
+
 .server-hub-title {
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .server-hub-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
+  align-items: stretch;
 }
 
 .hub-card {
@@ -608,11 +617,13 @@ h1 .accent {
 .hub-ip-value {
   font-family: 'Fredoka', sans-serif;
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: clamp(1.05rem, 1.55vw, 1.25rem);
   color: var(--cream);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   margin-bottom: 0.35rem;
-  word-break: break-all;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .hub-ip-sub {
@@ -625,11 +636,13 @@ h1 .accent {
 
 .hub-mini-track {
   width: 100%;
-  height: 8px;
+  height: 11px;
   background: rgba(255, 244, 220, 0.06);
-  border-radius: 999px;
+  border-radius: 12px 12px 0 0;
   overflow: hidden;
-  margin-bottom: 0.5rem;
+  margin: 0.55rem 0 0;
+  border: 1px solid rgba(244, 201, 93, 0.12);
+  border-bottom: 0;
 }
 
 .hub-mini-fill {
@@ -641,10 +654,15 @@ h1 .accent {
 
 .hub-mini-label {
   font-family: 'Nunito', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--cream);
-  opacity: 0.45;
-  margin-bottom: 0.85rem;
+  opacity: 0.68;
+  margin-bottom: 1rem;
+  padding: 0.48rem 0.65rem 0.55rem;
+  background: rgba(255, 244, 220, 0.035);
+  border: 1px solid rgba(244, 201, 93, 0.12);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
 }
 
 .hub-card-actions {
@@ -747,9 +765,19 @@ h1 .accent {
   background: rgba(244, 201, 93, 0.06);
 }
 
+@media (max-width: 1024px) {
+  .server-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .home-anniversary-slot {
     padding: 1.25rem 1.2rem 0;
+  }
+
+  .content-section.section-hub {
+    padding-top: 3rem;
   }
 
   .server-hub-grid {
