@@ -323,8 +323,42 @@
         if (t.headline1) document.getElementById('splashHeadline1').textContent = t.headline1;
         if (t.headline2) document.getElementById('splashHeadline2').textContent = t.headline2;
         if (t.tagline) document.getElementById('splashTagline').textContent = t.tagline;
-        if (t.btnPrimary) document.getElementById('splashBtnPrimary').textContent = t.btnPrimary;
-        if (t.btnPrimaryLink) document.getElementById('splashBtnPrimary').href = t.btnPrimaryLink;
+        // Primary CTA: default = copy server IP; optional text + optional link (replaces copy button)
+        (function applyPrimaryCta() {
+          const btn = document.getElementById('copyIpBtn');
+          const span = document.getElementById('copyIpText');
+          if (!btn || !span) return;
+          const defaultLabel = 'Join the Server →';
+          const hasText = t.btnPrimary && String(t.btnPrimary).trim();
+          const link = t.btnPrimaryLink && String(t.btnPrimaryLink).trim();
+          const label = hasText ? String(t.btnPrimary).trim() : defaultLabel;
+
+          if (link && !/^javascript:/i.test(link)) {
+            window.__splashPrimaryBtnLabel = hasText ? label : defaultLabel;
+            const a = document.createElement('a');
+            a.className = btn.className;
+            a.id = 'copyIpBtn';
+            a.setAttribute('href', link);
+            const inner = document.createElement('span');
+            inner.id = 'copyIpText';
+            inner.textContent = label;
+            a.appendChild(inner);
+            btn.replaceWith(a);
+            if (link.startsWith('#')) {
+              const sel = link;
+              a.addEventListener('click', (e) => {
+                const target = document.querySelector(sel);
+                if (target) {
+                  e.preventDefault();
+                  target.scrollIntoView({ behavior: 'smooth' });
+                }
+              });
+            }
+          } else if (hasText) {
+            span.textContent = label;
+            window.__splashPrimaryBtnLabel = label;
+          }
+        })();
         if (t.btnSecondary) document.getElementById('splashBtnSecondary').textContent = t.btnSecondary;
         if (t.btnSecondaryLink) document.getElementById('splashBtnSecondary').href = t.btnSecondaryLink;
         if (t.stat1Num) document.getElementById('splashStat1Num').textContent = t.stat1Num;
@@ -376,7 +410,7 @@
         btn.style.background = '#A8C77E';
         btn.style.boxShadow = '0 4px 0 #7A9E5A, 0 8px 24px rgba(168,199,126,0.35)';
         setTimeout(() => {
-          text.textContent = 'Join the Server →';
+          text.textContent = window.__splashPrimaryBtnLabel || 'Join the Server →';
           btn.style.background = '';
           btn.style.boxShadow = '';
         }, 2500);
