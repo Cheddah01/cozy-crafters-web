@@ -678,6 +678,87 @@ h1 .accent {
   padding: 0.72rem 1.25rem;
 }
 
+.hub-drawers {
+  grid-column: 1 / -1;
+  margin-top: 1.25rem;
+}
+
+.hub-drawer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: max-height 0.36s ease, opacity 0.26s ease, transform 0.26s ease;
+}
+
+.hub-drawer.open {
+  max-height: 620px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hub-drawer-inner {
+  background: rgba(255, 244, 220, 0.03);
+  border: 1px solid rgba(244, 201, 93, 0.14);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+.hub-drawer-inner h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: var(--sun);
+  margin-bottom: 0.85rem;
+}
+
+.hub-drawer-list,
+.hub-rules-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hub-drawer-list {
+  list-style: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hub-drawer-list a,
+.hub-rules-list li {
+  display: block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 201, 93, 0.15);
+  background: rgba(255, 244, 220, 0.03);
+}
+
+.hub-drawer-list a {
+  color: var(--sun);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.75rem 0.85rem;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.hub-drawer-list a:hover {
+  border-color: rgba(244, 201, 93, 0.35);
+  background: rgba(244, 201, 93, 0.06);
+  transform: translateY(-1px);
+}
+
+.hub-rules-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-left: 1.15rem;
+}
+
+.hub-rules-list li {
+  color: rgba(255, 244, 220, 0.72);
+  padding: 0.7rem 0.85rem;
+}
+
 .hub-modal {
   position: fixed;
   inset: 0;
@@ -769,6 +850,10 @@ h1 .accent {
   .server-hub-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .hub-drawer-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -781,6 +866,10 @@ h1 .accent {
   }
 
   .server-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-rules-list {
     grid-template-columns: 1fr;
   }
 }

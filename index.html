@@ -178,7 +178,7 @@
           <h3 class="hub-card-title">Vote</h3>
           <p class="hub-card-body">Boost our listings — free support that helps new players find us.</p>
           <div class="hub-card-actions">
-            <button type="button" class="btn btn-secondary" id="voteModalOpenBtn">View vote links</button>
+            <button type="button" class="btn btn-secondary" id="hubVoteBtn" aria-expanded="false" aria-controls="hubVoteDrawer">View vote links</button>
           </div>
         </article>
 
@@ -188,7 +188,7 @@
           <div class="hub-mini-track"><div class="hub-mini-fill" id="hubDonBar" style="width: 0%;"></div></div>
           <div class="hub-mini-label"><span id="hubDonCurrent">$0</span> / <span id="hubDonGoal">$25</span> monthly goal</div>
           <div class="hub-card-actions">
-            <a href="support.html" class="btn btn-primary" id="hubDonateBtn">Support the server</a>
+            <a href="/support.html" class="btn btn-primary" id="hubDonateBtn">Support the server</a>
           </div>
         </article>
 
@@ -197,7 +197,7 @@
           <h3 class="hub-card-title">Rules</h3>
           <p class="hub-card-body">Be kind, respect claims, no griefing — full guidelines live on Discord.</p>
           <div class="hub-card-actions">
-            <a href="#" class="btn btn-secondary" id="hubRulesBtn">Open rules</a>
+            <button type="button" class="btn btn-secondary" id="hubRulesBtn" aria-expanded="false" aria-controls="hubRulesDrawer">Open rules</button>
           </div>
         </article>
 
@@ -207,21 +207,28 @@
           <p class="hub-card-body hub-whats-title" id="hubChangelogTitle">Latest patch notes load here.</p>
           <p class="hub-card-body hub-whats-date" id="hubChangelogDate" style="opacity:0.45;font-size:0.82rem;"></p>
           <div class="hub-card-actions">
-            <a href="changelog.html" class="btn btn-secondary" id="hubChangelogBtn">Patch notes</a>
+            <a href="/changelog.html" class="btn btn-secondary" id="hubChangelogBtn">Patch notes</a>
           </div>
         </article>
       </div>
+
+      <div class="hub-drawers" id="hubDrawers">
+        <div class="hub-drawer" id="hubVoteDrawer" aria-hidden="true">
+          <div class="hub-drawer-inner">
+            <h3>Vote for Cozy Crafters</h3>
+            <ul class="hub-drawer-list" id="hubVoteLinks"></ul>
+          </div>
+        </div>
+
+        <div class="hub-drawer" id="hubRulesDrawer" aria-hidden="true">
+          <div class="hub-drawer-inner">
+            <h3>Server Rules</h3>
+            <ol class="hub-rules-list" id="hubRulesList"></ol>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
-
-  <div class="hub-modal" id="voteModal" aria-hidden="true" role="dialog" aria-labelledby="voteModalTitle">
-    <div class="hub-modal-backdrop" id="voteModalBackdrop"></div>
-    <div class="hub-modal-panel">
-      <button type="button" class="hub-modal-close" id="voteModalClose" aria-label="Close vote links dialog">✕</button>
-      <h3 id="voteModalTitle">Vote for Cozy Crafters</h3>
-      <ul class="hub-vote-list" id="voteModalLinks"></ul>
-    </div>
-  </div>
 
   <!-- ============================================
        DISCORD (compact)
@@ -352,9 +359,20 @@
     })();
 
     const DEFAULT_VOTE_SITES = [
-      { label: 'Minecraft-ServerList', url: 'https://minecraft-serverlist.com/' },
-      { label: 'MC-Server-List', url: 'https://minecraft-server-list.com/server/519561' },
+      { label: 'Minecraft-ServerList', url: 'https://minecraft-serverlist.com/server/4965' },
+      { label: 'MC-Server-List', url: 'https://minecraft-server-list.com/server/519561/' },
       { label: 'Minecraft.buzz', url: 'https://minecraft.buzz/server/20492' },
+    ];
+
+    const HUB_RULES = [
+      'Be respectful and kind to other players.',
+      'No griefing, stealing, or destroying builds that are not yours.',
+      'Respect claims, bases, shops, and clearly marked player areas.',
+      'No cheating, hacked clients, duping, x-ray, or unfair gameplay advantages.',
+      'Keep chat welcoming — no harassment, hate speech, threats, or excessive toxicity.',
+      'Do not spam chat, commands, signs, books, or Discord channels.',
+      'Ask before building very close to someone else’s base or project.',
+      'Use common sense and listen to staff when they step in.',
     ];
 
     function formatHubDate(dateStr) {
@@ -382,8 +400,8 @@
       setTimeout(() => { document.getElementById('hubDonBar').style.width = pct + '%'; }, 500);
     }
 
-    function renderVoteModalLinks(sites) {
-      const ul = document.getElementById('voteModalLinks');
+    function renderHubVoteLinks(sites) {
+      const ul = document.getElementById('hubVoteLinks');
       ul.innerHTML = (sites || []).map((s) => {
         const label = ccEscapeHtml(s.label || 'Vote');
         const safe = ccSafeUrl(s.url, '#');
@@ -392,14 +410,31 @@
       }).join('');
     }
 
-    function setVoteModalOpen(open) {
-      const modal = document.getElementById('voteModal');
-      if (!modal) return;
-      modal.classList.toggle('open', open);
-      modal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    function renderHubRules() {
+      const list = document.getElementById('hubRulesList');
+      list.innerHTML = HUB_RULES.map((rule) => `<li>${ccEscapeHtml(rule)}</li>`).join('');
     }
 
-    // Splash text, hub cards, vote sites, changelog peek, Discord widget (via API proxy)
+    function setHubDrawer(drawerId) {
+      const drawers = document.querySelectorAll('.hub-drawer');
+      const buttons = {
+        hubVoteDrawer: document.getElementById('hubVoteBtn'),
+        hubRulesDrawer: document.getElementById('hubRulesBtn'),
+      };
+      drawers.forEach((drawer) => {
+        const shouldOpen = drawer.id === drawerId && !drawer.classList.contains('open');
+        drawer.classList.toggle('open', shouldOpen);
+        drawer.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+        if (buttons[drawer.id]) {
+          buttons[drawer.id].setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+        }
+      });
+    }
+
+    renderHubVoteLinks(DEFAULT_VOTE_SITES);
+    renderHubRules();
+
+    // Splash text, hub cards, changelog peek, Discord widget (via API proxy)
     (async function loadHomePageSettings() {
       let t = {};
       try {
@@ -444,24 +479,6 @@
       const current = parseFloat(t && t.donationCurrent) || 0;
       applyHubDonationBars(goal, current);
 
-      if (t && t.rulesUrl) ccSetSafeHref('hubRulesBtn', t.rulesUrl);
-      else if (dUrl) ccSetSafeHref('hubRulesBtn', dUrl);
-      else ccSetSafeHref('hubRulesBtn', '#');
-
-      let voteSites = DEFAULT_VOTE_SITES;
-      try {
-        const vr = await fetch(`${API_BASE}/api/settings/voteSites`);
-        if (vr.ok) {
-          const vd = await vr.json();
-          const arr = vd.value;
-          if (Array.isArray(arr) && arr.length > 0) {
-            voteSites = arr.filter((x) => x && typeof x.label === 'string' && typeof x.url === 'string');
-            if (voteSites.length === 0) voteSites = DEFAULT_VOTE_SITES;
-          }
-        }
-      } catch (e) {}
-      renderVoteModalLinks(voteSites);
-
       try {
         const cr = await fetch(`${API_BASE}/api/settings/changelog`);
         if (cr.ok) {
@@ -470,8 +487,6 @@
           if (latest) {
             document.getElementById('hubChangelogTitle').textContent = latest.title || 'Patch notes';
             document.getElementById('hubChangelogDate').textContent = 'Last updated ' + formatHubDate(latest.date);
-            const chBtn = document.getElementById('hubChangelogBtn');
-            chBtn.href = latest.id != null ? 'changelog.html#' + encodeURIComponent(String(latest.id)) : 'changelog.html';
           }
         }
       } catch (e) {}
@@ -533,11 +548,10 @@
       copyServerIp('hubCopyIpBtn', 'hubCopyIpText', 'Copy IP');
     }
 
-    document.getElementById('voteModalOpenBtn').addEventListener('click', () => setVoteModalOpen(true));
-    document.getElementById('voteModalClose').addEventListener('click', () => setVoteModalOpen(false));
-    document.getElementById('voteModalBackdrop').addEventListener('click', () => setVoteModalOpen(false));
+    document.getElementById('hubVoteBtn').addEventListener('click', () => setHubDrawer('hubVoteDrawer'));
+    document.getElementById('hubRulesBtn').addEventListener('click', () => setHubDrawer('hubRulesDrawer'));
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setVoteModalOpen(false);
+      if (e.key === 'Escape') setHubDrawer('');
     });
 
     // Live server status
