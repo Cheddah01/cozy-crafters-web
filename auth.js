@@ -36,9 +36,6 @@ function ccUpdateThemeToggle() {
 }
 
 function ccRenderThemeToggle() {
-  const nav = document.getElementById('mainNav');
-  if (!nav) return;
-
   let toggle = document.getElementById('ccThemeToggle');
   if (!toggle) {
     toggle = document.createElement('button');
@@ -46,22 +43,7 @@ function ccRenderThemeToggle() {
     toggle.className = 'cc-theme-toggle';
     toggle.type = 'button';
     toggle.addEventListener('click', ccToggleTheme);
-    const authEl = document.getElementById('navAuth');
-    const hamburger = nav.querySelector('.nav-hamburger');
-    if (authEl) nav.insertBefore(toggle, authEl);
-    else if (hamburger) nav.insertBefore(toggle, hamburger);
-    else nav.appendChild(toggle);
-  }
-
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (mobileMenu && !document.getElementById('ccMobileThemeToggle')) {
-    const mobileToggle = document.createElement('button');
-    mobileToggle.id = 'ccMobileThemeToggle';
-    mobileToggle.className = 'cc-theme-toggle cc-theme-toggle-mobile';
-    mobileToggle.type = 'button';
-    mobileToggle.addEventListener('click', ccToggleTheme);
-    const list = mobileMenu.querySelector('ul');
-    if (list) list.after(mobileToggle);
+    document.body.appendChild(toggle);
   }
 
   ccUpdateThemeToggle();
