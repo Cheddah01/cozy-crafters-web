@@ -3274,6 +3274,46 @@ body.cc-dark.pastel-theme .content-section.section-hub {
   background: transparent;
 }
 
+body.cc-dark.pastel-theme .page-header {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.07), transparent 65%),
+    var(--bg-secondary);
+  border-bottom-color: var(--border);
+}
+
+body.cc-dark.pastel-theme .filter-bar,
+body.cc-dark.pastel-theme .create-bar {
+  background: rgba(26, 26, 26, 0.94);
+  border-bottom-color: var(--border);
+}
+
+body.cc-dark.pastel-theme .filter-chip,
+body.cc-dark.pastel-theme .tag-filter-chip {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.13);
+  color: var(--text-primary);
+  opacity: 0.82;
+}
+
+body.cc-dark.pastel-theme .filter-chip:hover,
+body.cc-dark.pastel-theme .tag-filter-chip:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+body.cc-dark.pastel-theme .filter-chip.active,
+body.cc-dark.pastel-theme .tag-filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111111;
+  opacity: 1;
+}
+
+body.cc-dark.pastel-theme .create-panel {
+  background: var(--bg-secondary);
+  border-bottom-color: var(--border);
+}
+
 body.cc-dark.pastel-theme .home-activity {
   background:
     radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.05), transparent 65%),

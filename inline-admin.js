@@ -430,6 +430,25 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
           transition: all 0.15s; white-space: nowrap;
         }
         .cl-quickbar-btn:hover { transform: translateY(-1px); }
+        body.cc-dark .cl-quickbar {
+          background: rgba(26, 26, 26, 0.96);
+          border-bottom-color: rgba(255, 255, 255, 0.12);
+        }
+        body.cc-dark .cl-quickbar input {
+          color: #F2F2F2;
+          background: rgba(255, 255, 255, 0.055);
+          border-color: rgba(255, 255, 255, 0.14);
+        }
+        body.cc-dark .cl-quickbar input:focus {
+          border-color: #B8D58A;
+          box-shadow: 0 0 0 3px rgba(184,213,138,0.14);
+        }
+        body.cc-dark .cl-quickbar input::placeholder { color: #C7C7C7; opacity: 0.62; }
+        body.cc-dark #qbAdminBtn {
+          background: rgba(255,255,255,0.055) !important;
+          border-color: rgba(255,255,255,0.14) !important;
+          color: #F2F2F2 !important;
+        }
 
         .cl-sidepanel {
           position: fixed; top: 0; right: -480px; width: 460px; max-width: 90vw;
