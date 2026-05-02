@@ -55,6 +55,48 @@
       color: var(--accent-deep);
     }
 
+    body.support-woodland.cc-dark {
+      --bg-primary: #151B13;
+      --bg-secondary: #1D261A;
+      --bg-tertiary: #263222;
+      --accent: #A8C77E;
+      --accent-deep: #D4E5B5;
+      --accent-soft: #33452B;
+      --text-primary: #F8F0E3;
+      --text-secondary: #C9BCA7;
+      --text-muted: #9E927F;
+      --border: rgba(168, 199, 126, 0.18);
+      --success: #A8C77E;
+      --sun: var(--accent);
+      --sun-deep: #6F8F63;
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(168, 199, 126, 0.13), transparent 55%),
+        radial-gradient(ellipse at 92% 30%, rgba(111, 143, 99, 0.12), transparent 55%),
+        radial-gradient(ellipse at 5% 80%, rgba(211, 190, 158, 0.08), transparent 55%),
+        var(--bg-primary);
+    }
+
+    body.support-woodland.cc-dark nav#mainNav,
+    body.support-woodland.cc-dark nav#mainNav.scrolled {
+      background: rgba(21, 27, 19, 0.9);
+      border-bottom-color: rgba(168, 199, 126, 0.12);
+    }
+
+    body.support-woodland.cc-dark .support-card {
+      background: rgba(248, 240, 227, 0.07);
+      border-color: var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    body.support-woodland.cc-dark .cost-item {
+      background: rgba(248, 240, 227, 0.045);
+      border-color: var(--border);
+    }
+
+    body.support-woodland.cc-dark .support-bar-track {
+      background: rgba(248, 240, 227, 0.08);
+    }
+
     .support-page {
       position: relative; z-index: 10;
       max-width: 640px; margin: 0 auto;

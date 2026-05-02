@@ -5,6 +5,67 @@
 
 const CC_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
 const CC_AUTH_KEY = 'ccAuthToken';
+const CC_THEME_KEY = 'ccTheme';
+
+function ccApplyTheme(theme) {
+  const useDark = theme === 'dark';
+  document.body.classList.toggle('cc-dark', useDark);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', useDark ? '#151B13' : '#6F8F63');
+}
+
+function ccGetTheme() {
+  const stored = localStorage.getItem(CC_THEME_KEY);
+  if (stored === 'dark' || stored === 'light') return stored;
+  return 'light';
+}
+
+function ccToggleTheme() {
+  const next = document.body.classList.contains('cc-dark') ? 'light' : 'dark';
+  localStorage.setItem(CC_THEME_KEY, next);
+  ccApplyTheme(next);
+  ccUpdateThemeToggle();
+}
+
+function ccUpdateThemeToggle() {
+  const isDark = document.body.classList.contains('cc-dark');
+  document.querySelectorAll('.cc-theme-toggle').forEach((btn) => {
+    btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    btn.textContent = isDark ? '☀ Light' : '☾ Dark';
+  });
+}
+
+function ccRenderThemeToggle() {
+  const nav = document.getElementById('mainNav');
+  if (!nav) return;
+
+  let toggle = document.getElementById('ccThemeToggle');
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.id = 'ccThemeToggle';
+    toggle.className = 'cc-theme-toggle';
+    toggle.type = 'button';
+    toggle.addEventListener('click', ccToggleTheme);
+    const authEl = document.getElementById('navAuth');
+    const hamburger = nav.querySelector('.nav-hamburger');
+    if (authEl) nav.insertBefore(toggle, authEl);
+    else if (hamburger) nav.insertBefore(toggle, hamburger);
+    else nav.appendChild(toggle);
+  }
+
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenu && !document.getElementById('ccMobileThemeToggle')) {
+    const mobileToggle = document.createElement('button');
+    mobileToggle.id = 'ccMobileThemeToggle';
+    mobileToggle.className = 'cc-theme-toggle cc-theme-toggle-mobile';
+    mobileToggle.type = 'button';
+    mobileToggle.addEventListener('click', ccToggleTheme);
+    const list = mobileMenu.querySelector('ul');
+    if (list) list.after(mobileToggle);
+  }
+
+  ccUpdateThemeToggle();
+}
 
 function ccAuthEscape(value) {
   return typeof ccEscapeHtml === 'function'
@@ -63,6 +124,9 @@ function ccLogin() {
 
 // Render auth UI in the nav
 function ccRenderAuthNav() {
+  ccApplyTheme(ccGetTheme());
+  ccRenderThemeToggle();
+
   const user = ccGetUser();
   const nav = document.getElementById('mainNav');
   if (!nav) return;
@@ -137,4 +201,7 @@ function ccRenderAuthNav() {
 }
 
 // Auto-run on page load
-document.addEventListener('DOMContentLoaded', ccRenderAuthNav);
+document.addEventListener('DOMContentLoaded', () => {
+  ccApplyTheme(ccGetTheme());
+  ccRenderAuthNav();
+});

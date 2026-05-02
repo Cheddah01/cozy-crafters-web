@@ -3133,6 +3133,217 @@ body.pastel-theme .cc-auth-avatar {
   border-color: rgba(111, 143, 99, 0.36) !important;
 }
 
+/* ============================================
+   USER THEME TOGGLE
+   ============================================ */
+.cc-theme-toggle {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(95, 125, 85, 0.22);
+  background: rgba(255, 252, 245, 0.66);
+  color: var(--text-primary, var(--ink));
+  padding: 0.42rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.cc-theme-toggle:hover {
+  background: rgba(255, 252, 245, 0.9);
+  border-color: rgba(95, 125, 85, 0.36);
+  transform: translateY(-1px);
+}
+
+.cc-theme-toggle-mobile {
+  margin-top: 1.8rem;
+  align-self: center;
+  font-size: 1rem;
+  padding: 0.65rem 1.25rem;
+}
+
+body.cc-dark.pastel-theme,
+body.cc-dark.sunset,
+body.cc-dark.support-woodland {
+  --bg-primary: #151B13;
+  --bg-secondary: #1D261A;
+  --bg-tertiary: #263222;
+  --accent: #A8C77E;
+  --accent-deep: #D4E5B5;
+  --accent-soft: #33452B;
+  --text-primary: #F8F0E3;
+  --text-secondary: #C9BCA7;
+  --text-muted: #9E927F;
+  --border: rgba(168, 199, 126, 0.18);
+  --success: #A8C77E;
+  --butter: var(--bg-primary);
+  --butter-warm: var(--bg-secondary);
+  --butter-deep: var(--bg-tertiary);
+  --butter-soft: var(--bg-secondary);
+  --ink: var(--text-primary);
+  --ink-soft: var(--text-secondary);
+  --sun: var(--accent);
+  --sun-deep: #6F8F63;
+  --pastel-accent: var(--accent);
+  --pastel-accent-strong: var(--accent-deep);
+  --pastel-border: var(--border);
+  --pastel-border-soft: rgba(168, 199, 126, 0.1);
+  --pastel-border-strong: rgba(168, 199, 126, 0.34);
+  --pastel-surface: rgba(248, 240, 227, 0.07);
+  --pastel-surface-soft: rgba(248, 240, 227, 0.045);
+  --pastel-surface-strong: rgba(29, 38, 26, 0.94);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(168, 199, 126, 0.13), transparent 55%),
+    radial-gradient(ellipse at 92% 30%, rgba(111, 143, 99, 0.12), transparent 55%),
+    radial-gradient(ellipse at 5% 80%, rgba(211, 190, 158, 0.08), transparent 55%),
+    var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body.cc-dark.pastel-theme nav#mainNav,
+body.cc-dark.sunset nav#mainNav,
+body.cc-dark.support-woodland nav#mainNav,
+body.cc-dark.pastel-theme nav#mainNav.scrolled,
+body.cc-dark.sunset nav#mainNav.scrolled,
+body.cc-dark.support-woodland nav#mainNav.scrolled {
+  background: rgba(21, 27, 19, 0.9);
+  border-bottom-color: rgba(168, 199, 126, 0.12);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.cc-dark.pastel-theme .brand-mark,
+body.cc-dark.pastel-theme .nav-links a,
+body.cc-dark.sunset .brand-mark,
+body.cc-dark.sunset .nav-links a,
+body.cc-dark.support-woodland .brand-mark,
+body.cc-dark.support-woodland .nav-links a {
+  color: var(--text-primary);
+}
+
+body.cc-dark.pastel-theme .nav-links a:hover,
+body.cc-dark.sunset .nav-links a:hover,
+body.cc-dark.support-woodland .nav-links a:hover {
+  color: var(--accent);
+}
+
+body.cc-dark.pastel-theme .nav-hamburger span,
+body.cc-dark.sunset .nav-hamburger span,
+body.cc-dark.support-woodland .nav-hamburger span {
+  background: var(--text-primary);
+}
+
+body.cc-dark .mobile-menu,
+body.cc-dark.pastel-theme .mobile-menu,
+body.cc-dark.sunset .mobile-menu,
+body.cc-dark.support-woodland .mobile-menu {
+  background: rgba(21, 27, 19, 0.98);
+}
+
+body.cc-dark .mobile-menu a,
+body.cc-dark.pastel-theme .mobile-menu a,
+body.cc-dark.sunset .mobile-menu a,
+body.cc-dark.support-woodland .mobile-menu a {
+  color: var(--text-primary);
+}
+
+body.cc-dark .cc-theme-toggle {
+  background: rgba(248, 240, 227, 0.08);
+  border-color: rgba(168, 199, 126, 0.24);
+  color: var(--text-primary);
+}
+
+body.cc-dark .cc-theme-toggle:hover {
+  background: rgba(168, 199, 126, 0.14);
+  border-color: rgba(168, 199, 126, 0.42);
+}
+
+body.cc-dark.pastel-theme .content-section,
+body.cc-dark.pastel-theme .content-section.section-hub {
+  background: transparent;
+}
+
+body.cc-dark.pastel-theme .home-activity {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(168, 199, 126, 0.1), transparent 65%),
+    var(--bg-secondary);
+}
+
+body.cc-dark.pastel-theme .ha-pill,
+body.cc-dark.pastel-theme .featured-patch-slot .changelog-entry,
+body.cc-dark.pastel-theme .online-mini-card,
+body.cc-dark.pastel-theme .donate-mini-card,
+body.cc-dark.pastel-theme .hub-card,
+body.cc-dark.pastel-theme .gs-card {
+  background: var(--pastel-surface);
+  border-color: var(--pastel-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+}
+
+body.cc-dark.pastel-theme .hub-card:hover,
+body.cc-dark.pastel-theme .donate-mini-card:hover,
+body.cc-dark.pastel-theme .online-mini-card:hover,
+body.cc-dark.pastel-theme .featured-patch-slot .changelog-entry:hover {
+  background: rgba(248, 240, 227, 0.1);
+  border-color: var(--pastel-border-strong);
+}
+
+body.cc-dark.pastel-theme .featured-patch-slot .entry-top,
+body.cc-dark.pastel-theme .changelog-feed .entry-top {
+  background: linear-gradient(135deg, rgba(168, 199, 126, 0.12) 0%, rgba(248, 240, 227, 0.04) 100%);
+}
+
+body.cc-dark.pastel-theme .btn-primary,
+body.cc-dark.sunset .btn-primary,
+body.cc-dark.support-woodland .btn-primary,
+body.cc-dark.pastel-theme .ha-copy {
+  color: #151B13;
+  box-shadow:
+    0 4px 0 #6F8F63,
+    0 8px 22px rgba(0, 0, 0, 0.24);
+}
+
+body.cc-dark.pastel-theme .btn-secondary,
+body.cc-dark.sunset .btn-secondary,
+body.cc-dark.support-woodland .btn-secondary {
+  color: var(--text-primary);
+  border-color: var(--border);
+  background: rgba(248, 240, 227, 0.06);
+}
+
+body.cc-dark.pastel-theme .btn-secondary:hover,
+body.cc-dark.sunset .btn-secondary:hover,
+body.cc-dark.support-woodland .btn-secondary:hover {
+  background: rgba(168, 199, 126, 0.12);
+  border-color: rgba(168, 199, 126, 0.34);
+  color: var(--text-primary);
+}
+
+body.cc-dark.pastel-theme .hub-modal-backdrop {
+  background: rgba(0, 0, 0, 0.52);
+}
+
+body.cc-dark.pastel-theme .hub-modal-panel {
+  background: var(--pastel-surface-strong);
+  border-color: var(--pastel-border);
+}
+
+body.cc-dark .cc-auth-name,
+body.cc-dark .cc-auth-logout {
+  color: var(--text-primary) !important;
+}
+
+body.cc-dark .cc-auth-logout,
+body.cc-dark .cc-auth-admin,
+body.cc-dark .cc-auth-avatar {
+  border-color: rgba(168, 199, 126, 0.34) !important;
+}
+
+body.cc-dark .cc-auth-admin {
+  background: rgba(168, 199, 126, 0.14) !important;
+  color: var(--accent-deep) !important;
+}
+
 /* Admin shell tints — flip dark cards/tabs to light */
 body.sunset .admin-header { border-bottom-color: rgba(232, 155, 107, 0.35); }
 body.sunset .card {
