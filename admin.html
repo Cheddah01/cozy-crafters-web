@@ -664,6 +664,70 @@
     padding: 2.4rem;
   }
 
+  .cl-utility-card {
+    margin-bottom: 0.9rem;
+  }
+
+  .cl-utility-card[open] {
+    margin-bottom: 1.5rem;
+  }
+
+  .cl-utility-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .cl-utility-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cl-utility-summary::after {
+    content: '+';
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    color: var(--sun);
+    background: rgba(232, 155, 107, 0.08);
+    border: 1px solid rgba(232, 155, 107, 0.14);
+  }
+
+  .cl-utility-card[open] .cl-utility-summary {
+    margin-bottom: 1rem;
+  }
+
+  .cl-utility-card[open] .cl-utility-summary::after {
+    content: '-';
+  }
+
+  .cl-utility-summary strong,
+  .cl-utility-summary small {
+    display: block;
+  }
+
+  .cl-utility-summary strong {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    color: var(--cream);
+  }
+
+  .cl-utility-summary small {
+    margin-top: 0.15rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    color: var(--cream);
+    opacity: 0.5;
+  }
+
   .cl-doc-kicker,
   .cl-entry-panel-head {
     display: flex;
@@ -687,7 +751,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   .cl-doc-title-input {
@@ -812,6 +876,17 @@
 
   .cl-doc-details summary:hover {
     opacity: 0.9;
+  }
+
+  .cl-settings-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.65fr);
+    gap: 1.2rem;
+    padding-top: 0.85rem;
+  }
+
+  .cl-settings-grid .cl-doc-block {
+    margin-bottom: 0;
   }
 
   .cl-image-row {
@@ -1053,6 +1128,17 @@
     margin-top: 1.4rem;
   }
 
+  .cl-doc-actions {
+    align-items: center;
+  }
+
+  .cl-save-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    color: var(--cream);
+    opacity: 0.45;
+  }
+
   .cl-entry-panel {
     padding: 1.5rem;
   }
@@ -1100,6 +1186,11 @@
 
     .cl-doc-status {
       justify-content: flex-start;
+    }
+
+    .cl-settings-grid {
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
     }
 
     .cl-change-item {
@@ -1581,14 +1672,20 @@
     <div class="admin-section" id="section-changelog">
     <div>
       <h1 class="admin-title">Patch <span class="accent">Notes</span></h1>
-      <p class="admin-subtitle">Create and manage changelog entries with custom tags, formatting, pinning, and draft/publish control.</p>
+      <p class="admin-subtitle">Write patch notes quickly, then save them when the entry list looks right.</p>
 
-      <div class="card" style="margin-bottom: 1.5rem;">
+      <details class="card cl-utility-card">
+        <summary class="cl-utility-summary">
+          <span>
+            <strong>Discord posting</strong>
+            <small>Webhook and auto-post settings</small>
+          </span>
+        </summary>
         <div class="card-header">
           <span class="card-icon">💬</span>
           <h2 class="card-title">Discord</h2>
         </div>
-        <p class="field-hint" style="margin-bottom: 1rem;">Optional webhook for announcing patch notes. Save this URL before using auto-post or manual post. Auto-post runs only when you use Save All Changes after adding a new published note or publishing a draft.</p>
+        <p class="field-hint" style="margin-bottom: 1rem;">Optional webhook for announcing patch notes. Save this URL before using auto-post or manual post. Auto-post runs when you use Save Patch Notes after adding a new published note or publishing a draft.</p>
         <div class="field">
           <label class="field-label" for="clDiscordWebhookUrl">Discord webhook URL</label>
           <input type="password" id="clDiscordWebhookUrl" placeholder="https://discord.com/api/webhooks/..." autocomplete="off" />
@@ -1601,10 +1698,16 @@
         <div class="action-row">
           <button class="btn btn-primary" id="clDiscordSaveBtn" type="button">💾 Save Discord Settings</button>
         </div>
-      </div>
+      </details>
 
       <!-- Tag manager -->
-      <div class="card" style="margin-bottom: 1.5rem;">
+      <details class="card cl-utility-card">
+        <summary class="cl-utility-summary">
+          <span>
+            <strong>Manage tags</strong>
+            <small>Create reusable labels for entries and individual changes</small>
+          </span>
+        </summary>
         <div class="card-header">
           <span class="card-icon">🏷️</span>
           <h2 class="card-title">Tag Manager</h2>
@@ -1631,7 +1734,7 @@
           <button class="btn btn-primary" id="saveTagsBtn" type="button" style="font-size:0.9rem; padding:0.7rem 1.2rem;">💾 Save Tags</button>
           <button class="btn btn-secondary" id="resetTagsBtn" type="button" style="font-size:0.9rem; padding:0.7rem 1.2rem;">Reset to Defaults</button>
         </div>
-      </div>
+      </details>
 
       <div class="admin-grid cl-notion-grid">
 
@@ -1639,11 +1742,6 @@
         <div class="card cl-editor-card">
           <div class="cl-doc-kicker">
             <span id="clFormTitle">New patch note</span>
-            <div class="cl-doc-status">
-              <button type="button" class="filter-chip cl-status-btn active" data-status="published">Published</button>
-              <button type="button" class="filter-chip cl-status-btn" data-status="draft">Draft</button>
-              <button type="button" class="filter-chip" id="clPinToggle">📌 Pin to top</button>
-            </div>
           </div>
 
           <input type="text" id="clTitle" class="cl-doc-title-input" placeholder="Untitled patch note" />
@@ -1651,7 +1749,7 @@
           <div class="cl-doc-meta">
             <label class="cl-inline-field">
               <span>Date</span>
-              <input type="text" id="clDate" placeholder="2026-04-18" />
+              <input type="date" id="clDate" />
             </label>
             <label class="cl-inline-field">
               <span>Version</span>
@@ -1659,13 +1757,26 @@
             </label>
           </div>
 
-          <div class="cl-doc-block">
-            <div class="cl-doc-block-label">Patch tags</div>
-            <div class="cl-pill-row" id="clTagPicker"></div>
-          </div>
+          <details class="cl-doc-details cl-entry-settings">
+            <summary>Entry settings</summary>
+            <div class="cl-settings-grid">
+              <div class="cl-doc-block">
+                <div class="cl-doc-block-label">Patch tags</div>
+                <div class="cl-pill-row" id="clTagPicker"></div>
+              </div>
+              <div class="cl-doc-block">
+                <div class="cl-doc-block-label">Visibility</div>
+                <div class="cl-doc-status">
+                  <button type="button" class="filter-chip cl-status-btn active" data-status="published">Published</button>
+                  <button type="button" class="filter-chip cl-status-btn" data-status="draft">Draft</button>
+                  <button type="button" class="filter-chip" id="clPinToggle">📌 Pin to top</button>
+                </div>
+              </div>
+            </div>
+          </details>
 
           <details class="cl-doc-details">
-            <summary>Optional image</summary>
+            <summary>Image</summary>
             <div class="cl-image-row">
               <input type="text" id="clImage" placeholder="Paste image URL or upload" />
               <input type="file" id="clImageFile" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;" />
@@ -1693,8 +1804,9 @@
           </div>
 
           <div class="action-row cl-doc-actions">
-            <button class="btn btn-primary" id="clAddBtn" type="button">+ Publish Patch Note</button>
+            <button class="btn btn-primary" id="clAddBtn" type="button">+ Add Patch Note</button>
             <button class="btn btn-secondary" id="clCancelEdit" type="button" style="display:none;">Cancel Edit</button>
+            <span class="cl-save-hint">Adds to the list. Use Save Patch Notes to publish changes.</span>
           </div>
         </div>
 
@@ -1719,7 +1831,7 @@
           </div>
 
           <div class="action-row cl-entry-save-row">
-            <button class="btn btn-primary" id="clSaveBtn" type="button">💾 Save All Changes</button>
+            <button class="btn btn-primary" id="clSaveBtn" type="button">💾 Save Patch Notes</button>
             <button class="btn btn-secondary" id="clPreviewBtn" type="button">👁 Open Changelog</button>
           </div>
         </div>
@@ -3073,7 +3185,7 @@
       clPinToggle.classList.remove('active'); clPinToggle.textContent = '📌 Pin to top';
       document.getElementById('clChangeTitle').value = ''; document.getElementById('clChangeDesc').value = '';
       renderTagPicker(); renderChangeTagPicker(); renderChanges();
-      clEditingIndex = null; clAddBtn.textContent = '+ Publish Patch Note';
+      clEditingIndex = null; clAddBtn.textContent = '+ Add Patch Note';
       clFormTitle.textContent = 'New patch note'; clCancelEdit.style.display = 'none';
     }
 
@@ -3133,7 +3245,7 @@
       if (!date) { showToast('Set a date.'); return; }
       if (clCurrentChanges.length === 0) { showToast('Add at least one change.'); return; }
       const entry = { title, version: clVersion.value.trim() || null, date, tags: [...clSelectedTags], changes: [...clCurrentChanges], image: clImage.value.trim() || null, status: clStatus, pinned: clPinned, id: clEditingIndex !== null ? clEntries[clEditingIndex].id : `cl-${Date.now()}` };
-      if (clEditingIndex !== null) { clEntries[clEditingIndex] = entry; showToast('Updated!'); } else { clEntries.push(entry); showToast('Published!'); }
+      if (clEditingIndex !== null) { clEntries[clEditingIndex] = entry; showToast('Updated locally. Save patch notes when ready.'); } else { clEntries.push(entry); showToast('Added locally. Save patch notes when ready.'); }
       clearClForm(); renderClEntries(); markUnsaved();
     });
 

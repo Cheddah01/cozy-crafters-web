@@ -2614,9 +2614,20 @@ input[type="file"]::file-selector-button:hover {
 }
 
 body.pastel-theme.home {
-  /* Sunset Cozy palette — homepage-only overrides remap legacy butter/ink/pastel-*
+  /* Woodland Cozy palette — homepage-only overrides remap legacy butter/ink/pastel-*
      tokens onto the new --bg-*, --text-*, --accent*, --border vars defined in :root.
      Scoped to .home so changelog.html and gallery.html keep the existing palette. */
+  --bg-primary: #F7F0E4;
+  --bg-secondary: #EFE4D1;
+  --bg-tertiary: #E4D5BE;
+  --accent: #6F8F63;
+  --accent-deep: #496A40;
+  --accent-soft: #DDE8CF;
+  --text-primary: #3D2E20;
+  --text-secondary: #6D5C4A;
+  --text-muted: #9B8977;
+  --border: rgba(95, 125, 85, 0.18);
+  --success: #6F8F63;
   --butter: var(--bg-primary);
   --butter-warm: var(--bg-secondary);
   --butter-deep: var(--bg-tertiary);
@@ -2628,33 +2639,44 @@ body.pastel-theme.home {
   --pastel-accent: var(--accent);
   --pastel-accent-strong: var(--accent-deep);
   --pastel-border: var(--border);
-  --pastel-border-soft: rgba(232, 155, 107, 0.08);
-  --pastel-border-strong: rgba(232, 155, 107, 0.4);
-  --pastel-surface: rgba(255, 245, 235, 0.55);
-  --pastel-surface-soft: rgba(255, 245, 235, 0.4);
-  --pastel-surface-strong: rgba(255, 245, 235, 0.85);
+  --pastel-border-soft: rgba(95, 125, 85, 0.1);
+  --pastel-border-strong: rgba(95, 125, 85, 0.36);
+  --pastel-surface: rgba(255, 252, 245, 0.68);
+  --pastel-surface-soft: rgba(255, 252, 245, 0.48);
+  --pastel-surface-strong: rgba(255, 252, 245, 0.9);
 
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(255, 245, 235, 0.7), transparent 55%),
-    radial-gradient(ellipse at 90% 30%, rgba(232, 155, 107, 0.2), transparent 55%),
-    radial-gradient(ellipse at 5% 80%, rgba(255, 200, 168, 0.18), transparent 55%),
+    radial-gradient(ellipse at 50% -10%, rgba(255, 252, 245, 0.78), transparent 55%),
+    radial-gradient(ellipse at 92% 30%, rgba(160, 184, 138, 0.18), transparent 55%),
+    radial-gradient(ellipse at 5% 80%, rgba(211, 190, 158, 0.16), transparent 55%),
     var(--bg-primary);
   color: var(--text-primary);
 }
 
 body.pastel-theme.home nav#mainNav {
-  background: rgba(255, 245, 235, 0.65);
+  background: rgba(255, 252, 245, 0.68);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
 body.pastel-theme.home nav#mainNav.scrolled {
-  background: rgba(255, 245, 235, 0.92);
+  background: rgba(255, 252, 245, 0.94);
   box-shadow: 0 2px 16px rgba(74, 44, 26, 0.08);
 }
 
 body.pastel-theme {
-  /* Sunset Cozy palette — applies to changelog + gallery (homepage uses .home which
-     overrides this with its own surface tints). All three share the sunset look. */
+  /* Woodland Cozy palette — applies to changelog + gallery (homepage uses .home which
+     overrides this with its own surface tints). All three share the softer look. */
+  --bg-primary: #F7F0E4;
+  --bg-secondary: #EFE4D1;
+  --bg-tertiary: #E4D5BE;
+  --accent: #6F8F63;
+  --accent-deep: #496A40;
+  --accent-soft: #DDE8CF;
+  --text-primary: #3D2E20;
+  --text-secondary: #6D5C4A;
+  --text-muted: #9B8977;
+  --border: rgba(95, 125, 85, 0.18);
+  --success: #6F8F63;
   --butter: var(--bg-primary);
   --butter-warm: var(--bg-secondary);
   --butter-deep: var(--bg-tertiary);
@@ -2666,27 +2688,27 @@ body.pastel-theme {
   --pastel-accent: var(--accent);
   --pastel-accent-strong: var(--accent-deep);
   --pastel-border: var(--border);
-  --pastel-border-soft: rgba(232, 155, 107, 0.08);
-  --pastel-border-strong: rgba(232, 155, 107, 0.4);
-  --pastel-surface: rgba(255, 245, 235, 0.55);
-  --pastel-surface-soft: rgba(255, 245, 235, 0.4);
-  --pastel-surface-strong: rgba(255, 245, 235, 0.85);
+  --pastel-border-soft: rgba(95, 125, 85, 0.1);
+  --pastel-border-strong: rgba(95, 125, 85, 0.36);
+  --pastel-surface: rgba(255, 252, 245, 0.68);
+  --pastel-surface-soft: rgba(255, 252, 245, 0.48);
+  --pastel-surface-strong: rgba(255, 252, 245, 0.9);
 
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(255, 245, 235, 0.7), transparent 55%),
-    radial-gradient(ellipse at 90% 30%, rgba(232, 155, 107, 0.2), transparent 55%),
-    radial-gradient(ellipse at 5% 80%, rgba(255, 200, 168, 0.18), transparent 55%),
+    radial-gradient(ellipse at 50% -10%, rgba(255, 252, 245, 0.78), transparent 55%),
+    radial-gradient(ellipse at 92% 30%, rgba(160, 184, 138, 0.18), transparent 55%),
+    radial-gradient(ellipse at 5% 80%, rgba(211, 190, 158, 0.16), transparent 55%),
     var(--bg-primary);
   color: var(--text-primary);
 }
 
 body.pastel-theme nav#mainNav {
-  background: rgba(255, 245, 235, 0.65);
+  background: rgba(255, 252, 245, 0.68);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--pastel-border-soft);
 }
 body.pastel-theme nav#mainNav.scrolled {
-  background: rgba(255, 245, 235, 0.92);
+  background: rgba(255, 252, 245, 0.94);
   box-shadow: 0 2px 16px rgba(74, 44, 26, 0.08);
 }
 body.pastel-theme .brand-mark,
@@ -2700,7 +2722,7 @@ body.pastel-theme .nav-hamburger span { background: var(--ink); }
 
 body.pastel-theme .home-activity {
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 245, 235, 0.6), transparent 65%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 252, 245, 0.58), transparent 65%),
     var(--bg-secondary);
   border-bottom: 1px solid var(--pastel-border-soft);
 }
@@ -2728,6 +2750,26 @@ body.pastel-theme .section-headline .accent { color: var(--pastel-accent); }
 body.pastel-theme .featured-all { color: var(--pastel-accent); opacity: 1; font-weight: 700; }
 body.pastel-theme .featured-all:hover { color: var(--pastel-accent-strong); }
 
+body.pastel-theme .btn-primary,
+body.pastel-theme .ha-copy {
+  box-shadow:
+    0 4px 0 var(--sun-deep),
+    0 8px 22px rgba(111, 143, 99, 0.24);
+}
+
+body.pastel-theme .btn-primary:hover,
+body.pastel-theme .ha-copy:hover {
+  box-shadow:
+    0 6px 0 var(--sun-deep),
+    0 12px 28px rgba(111, 143, 99, 0.32);
+}
+
+body.pastel-theme .ha-copy:active {
+  box-shadow:
+    0 1px 0 var(--sun-deep),
+    0 4px 12px rgba(111, 143, 99, 0.22);
+}
+
 /* Donate mini card on pastel bg */
 body.pastel-theme .donate-mini-card {
   background: var(--bg-secondary);
@@ -2752,7 +2794,7 @@ body.pastel-theme .online-mini-card {
   border-color: var(--pastel-border);
   box-shadow: 0 6px 24px rgba(74, 44, 26, 0.06);
 }
-body.pastel-theme .om-row:hover { background: rgba(232, 155, 107, 0.18); }
+body.pastel-theme .om-row:hover { background: rgba(111, 143, 99, 0.12); }
 body.pastel-theme .om-head img { border-color: var(--pastel-border); }
 body.pastel-theme .om-head-fallback {
   background: var(--pastel-surface-soft);
@@ -2776,7 +2818,7 @@ body.pastel-theme .featured-patch-slot .changelog-entry:hover {
   border-color: var(--pastel-border-strong);
 }
 body.pastel-theme .featured-patch-slot .entry-top {
-  background: linear-gradient(135deg, rgba(255, 200, 168, 0.28) 0%, rgba(232, 155, 107, 0.18) 100%);
+  background: linear-gradient(135deg, rgba(221, 232, 207, 0.44) 0%, rgba(239, 228, 209, 0.68) 100%);
   border-bottom-color: var(--pastel-border-soft);
   padding: 1rem 1.5rem 0.85rem;
 }
@@ -2818,7 +2860,7 @@ body.pastel-theme .featured-patch-slot .reaction-btn {
   color: var(--ink); opacity: 0.9;
 }
 body.pastel-theme .featured-patch-slot .reaction-btn.active {
-  background: rgba(255, 200, 168, 0.35);
+  background: rgba(221, 232, 207, 0.75);
   border-color: var(--pastel-border-strong);
   color: var(--pastel-accent-strong); opacity: 1;
 }
@@ -2846,7 +2888,7 @@ body.pastel-theme .changelog-feed .changelog-entry.pinned {
   background: var(--bg-tertiary);
 }
 body.pastel-theme .changelog-feed .entry-top {
-  background: linear-gradient(135deg, rgba(255, 200, 168, 0.28) 0%, rgba(232, 155, 107, 0.18) 100%);
+  background: linear-gradient(135deg, rgba(221, 232, 207, 0.44) 0%, rgba(239, 228, 209, 0.68) 100%);
   border-bottom-color: var(--pastel-border-soft);
 }
 body.pastel-theme .changelog-feed .entry-pin-badge {
@@ -2886,7 +2928,7 @@ body.pastel-theme .changelog-feed .reaction-btn:hover {
   opacity: 1;
 }
 body.pastel-theme .changelog-feed .reaction-btn.active {
-  background: rgba(255, 200, 168, 0.35);
+  background: rgba(221, 232, 207, 0.75);
   border-color: var(--pastel-border-strong);
   color: var(--pastel-accent-strong); opacity: 1;
 }
@@ -2904,7 +2946,7 @@ body.pastel-theme .changelog-loading .load-spinner {
 body.pastel-theme .changelog-empty { color: var(--ink-soft); opacity: 0.8; }
 body.pastel-theme .changelog-feed .changelog-entry.highlighted {
   border-color: var(--pastel-accent) !important;
-  box-shadow: 0 0 30px rgba(232, 155, 107, 0.25);
+  box-shadow: 0 0 30px rgba(111, 143, 99, 0.22);
 }
 
 /* Gallery strip on pastel bg */
@@ -2946,7 +2988,7 @@ body.pastel-theme .hub-card-title { color: var(--pastel-accent); }
 body.pastel-theme .hub-card-body { color: var(--ink); opacity: 0.92; }
 body.pastel-theme .hub-ip-value { color: var(--ink); }
 body.pastel-theme .hub-ip-sub { color: var(--ink-soft); opacity: 0.95; }
-body.pastel-theme .hub-mini-track { background: rgba(255, 245, 235, 0.6); border-color: var(--pastel-border); }
+body.pastel-theme .hub-mini-track { background: rgba(255, 252, 245, 0.72); border-color: var(--pastel-border); }
 body.pastel-theme .hub-mini-label { background: var(--pastel-surface); border-color: var(--pastel-border); color: var(--ink); opacity: 1; }
 body.pastel-theme .hub-drawer { background: var(--pastel-surface); border-color: var(--pastel-border); }
 body.pastel-theme .hub-drawer-inner h3 { color: var(--ink); }
@@ -2962,9 +3004,9 @@ body.pastel-theme .fab-chronicles {
   color: var(--ink);
   box-shadow: 0 2px 10px rgba(74, 44, 26, 0.12);
 }
-body.pastel-theme .fab-chronicles:hover { background: rgba(255, 245, 235, 0.95); border-color: var(--pastel-border-strong); }
+body.pastel-theme .fab-chronicles:hover { background: rgba(255, 252, 245, 0.95); border-color: var(--pastel-border-strong); }
 
-body.pastel-theme .mobile-menu { background: rgba(255, 245, 235, 0.97); }
+body.pastel-theme .mobile-menu { background: rgba(255, 252, 245, 0.97); }
 body.pastel-theme .mobile-menu a { color: var(--ink); }
 body.pastel-theme .mobile-menu a:hover { color: var(--pastel-accent-strong); }
 
@@ -3099,6 +3141,15 @@ body.pastel-theme .cc-auth-admin {
 body.sunset .cc-auth-avatar,
 body.pastel-theme .cc-auth-avatar {
   border-color: rgba(232, 155, 107, 0.45) !important;
+}
+
+body.pastel-theme .cc-auth-admin {
+  background: rgba(111, 143, 99, 0.16) !important;
+  border-color: rgba(111, 143, 99, 0.36) !important;
+}
+
+body.pastel-theme .cc-auth-avatar {
+  border-color: rgba(111, 143, 99, 0.36) !important;
 }
 
 /* Admin shell tints — flip dark cards/tabs to light */

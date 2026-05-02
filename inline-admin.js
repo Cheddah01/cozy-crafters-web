@@ -505,38 +505,121 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         .sp-divider { height: 1px; background: rgba(244,201,93,0.08); margin: 1rem 0; }
         .sp-section-label { font-family: 'Fredoka',sans-serif; font-size: 0.9rem; font-weight: 700; color: #FFF4DC; margin-bottom: 0.8rem; }
 
-        /* Change items with drag */
-        .sp-change {
-          display: flex; align-items: flex-start; gap: 0.5rem;
-          padding: 0.6rem 0.5rem; background: rgba(255,244,220,0.03);
-          border: 1px solid rgba(244,201,93,0.06); border-radius: 8px;
-          margin-bottom: 0.4rem; cursor: default; transition: all 0.15s;
+        /* Notion-style inline change rows */
+        .sp-change-row {
+          position: relative;
+          display: grid;
+          grid-template-columns: 1rem auto minmax(0, 1fr);
+          gap: 0.45rem;
+          align-items: start;
+          padding: 0.4rem 1.7rem 0.4rem 0.45rem;
+          background: transparent;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          margin-bottom: 0.15rem;
+          transition: background 0.18s, border-color 0.18s;
         }
-        .sp-change:hover { border-color: rgba(244,201,93,0.15); }
-        .sp-change.dragging { opacity: 0.4; }
-        .sp-change-drag {
-          cursor: grab; color: #FFF4DC; opacity: 0.2; font-size: 0.85rem;
-          padding: 0.15rem 0; user-select: none; flex-shrink: 0;
+        .sp-change-row:hover,
+        .sp-change-row:focus-within {
+          background: rgba(244,201,93,0.04);
+          border-color: rgba(244,201,93,0.1);
         }
-        .sp-change-drag:active { cursor: grabbing; }
-        .sp-change-tag {
-          font-family: 'Nunito',sans-serif; font-size: 0.6rem; font-weight: 700;
-          text-transform: uppercase; letter-spacing: 0.05em;
-          padding: 0.15rem 0.4rem; border-radius: 4px; flex-shrink: 0; margin-top: 0.15rem;
-        }
-        .sp-change-info { flex: 1; min-width: 0; }
-        .sp-change-title { font-family: 'Fredoka',sans-serif; font-size: 0.82rem; font-weight: 600; color: #FFF4DC; }
-        .sp-change-desc { font-family: 'Nunito',sans-serif; font-size: 0.75rem; color: #FFF4DC; opacity: 0.45; line-height: 1.4; }
-        .sp-change-del {
-          background: none; border: none; color: #E89A6E; opacity: 0.3; cursor: pointer;
-          font-size: 0.8rem; padding: 0; transition: opacity 0.15s; flex-shrink: 0;
-        }
-        .sp-change-del:hover { opacity: 1; }
+        .sp-change-row.dragging { opacity: 0.4; }
 
-        .sp-add-change {
-          border: 1px dashed rgba(244,201,93,0.12); border-radius: 8px;
-          padding: 0.8rem; margin-top: 0.5rem;
+        .sp-row-handle {
+          cursor: grab; color: #FFF4DC; opacity: 0; font-size: 0.85rem;
+          user-select: none; padding-top: 0.35rem; line-height: 1; transition: opacity 0.18s;
         }
+        .sp-row-handle:active { cursor: grabbing; }
+        .sp-change-row:hover .sp-row-handle,
+        .sp-change-row:focus-within .sp-row-handle { opacity: 0.3; }
+
+        .sp-row-tag-menu { position: relative; flex-shrink: 0; padding-top: 0.2rem; }
+        .sp-ctag-pill {
+          font-family: 'Nunito',sans-serif; font-size: 0.6rem; font-weight: 800;
+          text-transform: uppercase; letter-spacing: 0.05em;
+          padding: 0.22rem 0.5rem; border-radius: 999px; cursor: pointer;
+          min-width: 3.4rem; text-align: center; white-space: nowrap;
+        }
+        .sp-ctag-pill-empty {
+          background: rgba(255,244,220,0.04);
+          border: 1px solid rgba(244,201,93,0.15);
+          color: rgba(255,244,220,0.4);
+        }
+        .sp-row-tag-options {
+          position: absolute; z-index: 30; top: calc(100% + 0.3rem); left: 0;
+          display: none; flex-wrap: wrap; gap: 0.3rem;
+          width: min(260px, 70vw); padding: 0.5rem;
+          background: #2b1f15; border: 1px solid rgba(244,201,93,0.18);
+          border-radius: 10px; box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+        }
+        .sp-row-tag-menu:hover .sp-row-tag-options,
+        .sp-row-tag-menu:focus-within .sp-row-tag-options { display: flex; }
+        .sp-row-tag-options button {
+          border-radius: 999px; padding: 0.22rem 0.5rem;
+          font-family: 'Nunito',sans-serif; font-size: 0.62rem; font-weight: 800;
+          text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer;
+        }
+
+        .sp-row-fields { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+        .sp-row-title, .sp-row-desc {
+          width: 100%; background: transparent; border: 1px solid transparent;
+          border-radius: 6px; padding: 0.28rem 0.4rem; color: #FFF4DC;
+          font-family: 'Fredoka',sans-serif; font-weight: 600; font-size: 0.88rem;
+          outline: none; box-sizing: border-box;
+          transition: background 0.15s, border-color 0.15s;
+        }
+        .sp-row-desc {
+          font-family: 'Nunito',sans-serif; font-weight: 400; font-size: 0.78rem;
+          line-height: 1.4; resize: none; overflow: hidden; opacity: 0.7;
+          min-height: 1.4rem;
+        }
+        .sp-row-title:hover, .sp-row-title:focus,
+        .sp-row-desc:hover, .sp-row-desc:focus {
+          background: rgba(255,244,220,0.04);
+          border-color: rgba(244,201,93,0.15);
+        }
+        .sp-row-title::placeholder, .sp-row-desc::placeholder { color: rgba(255,244,220,0.25); }
+
+        .sp-row-remove {
+          position: absolute; right: 0.4rem; top: 0.45rem;
+          width: 1.4rem; height: 1.4rem; border: none; border-radius: 6px;
+          background: rgba(232,154,110,0.1); color: #E89A6E; cursor: pointer;
+          font-size: 0.7rem; opacity: 0;
+          display: flex; align-items: center; justify-content: center;
+          transition: opacity 0.18s, background 0.18s;
+        }
+        .sp-change-row:hover .sp-row-remove,
+        .sp-change-row:focus-within .sp-row-remove { opacity: 0.6; }
+        .sp-row-remove:hover { opacity: 1 !important; background: rgba(232,154,110,0.22); }
+
+        .sp-composer-row {
+          margin-top: 0.4rem; padding-top: 0.55rem;
+          border-top: 1px solid rgba(244,201,93,0.08);
+        }
+        .sp-composer-row .sp-row-handle {
+          opacity: 0.45; cursor: default; color: #F4C95D;
+          font-family: 'Fredoka',sans-serif; font-size: 1rem; padding-top: 0.3rem;
+        }
+        .sp-composer-row .sp-row-tag-menu { opacity: 0.55; transition: opacity 0.18s; }
+        .sp-composer-row:hover .sp-row-tag-menu,
+        .sp-composer-row:focus-within .sp-row-tag-menu { opacity: 1; }
+        .sp-composer-row .sp-row-desc {
+          max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0;
+          transition: max-height 0.2s, opacity 0.18s, padding 0.18s;
+        }
+        .sp-composer-row:focus-within .sp-row-desc,
+        .sp-composer-row .sp-row-desc:not(:placeholder-shown) {
+          max-height: 6rem; padding-top: 0.28rem; padding-bottom: 0.28rem; opacity: 0.7;
+        }
+
+        .sp-empty-changes {
+          font-family: 'Nunito',sans-serif; font-size: 0.78rem;
+          color: rgba(255,244,220,0.3); padding: 0.6rem 0.5rem;
+          border-top: 1px dashed rgba(244,201,93,0.08);
+          border-bottom: 1px dashed rgba(244,201,93,0.08);
+        }
+
         .sp-add-btn {
           font-family: 'Fredoka',sans-serif; font-size: 0.82rem; font-weight: 600;
           background: none; border: 1px solid rgba(244,201,93,0.15); color: #FFF4DC;
@@ -669,18 +752,13 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
             <div class="sp-divider"></div>
             <div class="sp-section-label">Changes</div>
             <div id="spChangesList"></div>
-
-            <div class="sp-add-change">
-              <div class="sp-field" style="margin-bottom:0.5rem;">
-                <input class="sp-input" id="spNewChangeTitle" placeholder="Change title" />
+            <div class="sp-change-row sp-composer-row" id="spComposerRow">
+              <span class="sp-row-handle">+</span>
+              <div class="sp-row-tag-menu" id="spComposerTagMenu"></div>
+              <div class="sp-row-fields">
+                <input class="sp-row-title" id="spNewChangeTitle" placeholder="Add a change..." />
+                <textarea class="sp-row-desc" id="spNewChangeDesc" rows="1" placeholder="Optional description"></textarea>
               </div>
-              <div class="sp-field" style="margin-bottom:0.5rem;">
-                <textarea class="sp-input" id="spNewChangeDesc" rows="2" placeholder="Description (optional)"></textarea>
-              </div>
-              <div class="sp-field" style="margin-bottom:0.5rem;">
-                <div class="sp-tags" id="spChangeTagPicker"></div>
-              </div>
-              <button class="sp-add-btn" id="spAddChangeBtn">+ Add Change</button>
             </div>
           </div>
           <div class="cl-panel-footer">
@@ -738,20 +816,36 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         renderChanges();
         renderChangeTagPicker();
 
-        // Add change
-        panel.querySelector('#spAddChangeBtn').addEventListener('click', () => {
-          const t = panel.querySelector('#spNewChangeTitle').value.trim();
-          if (!t) return;
-          panelChanges.push({ title: t, description: panel.querySelector('#spNewChangeDesc').value.trim() || null, tag: panelChangeTag || null });
-          panel.querySelector('#spNewChangeTitle').value = '';
-          panel.querySelector('#spNewChangeDesc').value = '';
+        // Composer: Enter on title commits; ⌘/Ctrl+Enter on desc commits
+        const composerTitle = panel.querySelector('#spNewChangeTitle');
+        const composerDesc = panel.querySelector('#spNewChangeDesc');
+
+        function commitComposer() {
+          const t = composerTitle.value.trim();
+          if (!t) { composerTitle.focus(); return; }
+          panelChanges.push({ title: t, description: composerDesc.value.trim() || null, tag: panelChangeTag || null });
+          composerTitle.value = '';
+          composerDesc.value = '';
+          autoSizeDesc(composerDesc);
           panelChangeTag = '';
           renderChanges();
           renderChangeTagPicker();
+          composerTitle.focus();
+        }
+
+        composerTitle.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commitComposer(); }
         });
+        composerDesc.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); commitComposer(); }
+        });
+        composerDesc.addEventListener('input', () => autoSizeDesc(composerDesc));
 
         // Save
         panel.querySelector('#spSave').addEventListener('click', async () => {
+          // Capture in-progress composer text if any
+          if (composerTitle.value.trim()) commitComposer();
+
           const title = panel.querySelector('#spTitle').value.trim();
           const date = panel.querySelector('#spDate').value.trim();
           if (!title || !date) { showInlineToast('Title and date required.'); return; }
@@ -784,116 +878,84 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         });
       }
 
-      let editingChangeIdx = null;
+      function autoSizeDesc(ta) {
+        if (!ta) return;
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 'px';
+      }
+
+      function tagOptionsHtml() {
+        return [
+          `<button type="button" data-tag="" style="background:rgba(255,244,220,0.05);color:rgba(255,244,220,0.55);border:1px solid rgba(255,244,220,0.12);">None</button>`,
+          ...tags.map(t => `<button type="button" data-tag="${escape(t.id)}" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${escape(t.name)}</button>`),
+        ].join('');
+      }
 
       function renderChanges() {
         const list = panel.querySelector('#spChangesList');
         if (panelChanges.length === 0) {
-          list.innerHTML = '<div style="font-family:Nunito;font-size:0.8rem;color:#FFF4DC;opacity:0.25;padding:0.5rem 0;">No changes yet</div>';
+          list.innerHTML = '<div class="sp-empty-changes">No changes yet — start typing below.</div>';
           return;
         }
         list.innerHTML = panelChanges.map((c, i) => {
           const t = c.tag ? getTagById(c.tag) : null;
-          const tagHtml = t ? `<span class="sp-change-tag" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${t.name}</span>` : '';
-
-          if (editingChangeIdx === i) {
-            // Inline edit mode
-            const editTagsHtml = tags.length > 0 ? tags.map(tg => {
-              const a = c.tag === tg.id;
-              const s = a ? `background:${tg.color};color:#1a1209;border-color:${tg.color};` : `background:rgba(43,31,21,0.6);border:1px solid ${tg.color}55;color:${tg.color};`;
-              return `<button type="button" class="sp-tag sp-edit-ctag" data-tag="${tg.id}" style="${s};font-size:0.68rem;padding:0.25rem 0.5rem;">${tg.name}</button>`;
-            }).join('') : '<span style="font-family:Nunito;font-size:0.75rem;color:#FFF4DC;opacity:0.3;">No tags available</span>';
-
-            return `<div class="sp-change" style="border-color:rgba(244,201,93,0.3);background:rgba(244,201,93,0.04);" data-idx="${i}">
-              <div style="width:100%;">
-                <div class="sp-field" style="margin-bottom:0.5rem;">
-                  <input class="sp-input sp-edit-title" value="${escape(c.title)}" style="font-weight:600;font-size:0.88rem;" />
-                </div>
-                <div class="sp-field" style="margin-bottom:0.5rem;">
-                  <textarea class="sp-input sp-edit-desc" rows="2" placeholder="Description (optional)">${escape(c.description || '')}</textarea>
-                </div>
-                <div style="margin-bottom:0.5rem;">
-                  <span style="font-family:Fredoka,sans-serif;font-size:0.7rem;font-weight:600;color:#F4C95D;display:block;margin-bottom:0.25rem;">Tag</span>
-                  <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">${editTagsHtml}</div>
-                </div>
-                <div style="display:flex;gap:0.4rem;">
-                  <button class="sp-add-btn sp-edit-done" style="padding:0.35rem 0.7rem;font-size:0.78rem;">✓ Done</button>
-                  <button class="sp-add-btn sp-edit-cancel" style="padding:0.35rem 0.7rem;font-size:0.78rem;">Cancel</button>
-                </div>
-              </div>
-            </div>`;
-          }
-
-          return `<div class="sp-change" draggable="true" data-idx="${i}">
-            <span class="sp-change-drag">⠿</span>
-            ${tagHtml}
-            <div class="sp-change-info">
-              <div class="sp-change-title">${escape(c.title)}</div>
-              ${c.description ? `<div class="sp-change-desc">${escape(c.description)}</div>` : ''}
+          const tagBtn = t
+            ? `<button type="button" class="sp-ctag-pill" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${escape(t.name)}</button>`
+            : `<button type="button" class="sp-ctag-pill sp-ctag-pill-empty">Tag</button>`;
+          return `<div class="sp-change-row" draggable="true" data-idx="${i}">
+            <span class="sp-row-handle">⋮⋮</span>
+            <div class="sp-row-tag-menu">
+              ${tagBtn}
+              <div class="sp-row-tag-options">${tagOptionsHtml()}</div>
             </div>
-            <button class="sp-change-edit" data-idx="${i}" style="background:none;border:none;color:#F4C95D;opacity:0.3;cursor:pointer;font-size:0.75rem;padding:0.15rem;transition:opacity 0.15s;flex-shrink:0;" title="Edit">✎</button>
-            <button class="sp-change-del" data-idx="${i}">✕</button>
+            <div class="sp-row-fields">
+              <input class="sp-row-title" data-field="title" value="${escape(c.title || '')}" placeholder="Change title" />
+              <textarea class="sp-row-desc" data-field="description" rows="1" placeholder="Optional description">${escape(c.description || '')}</textarea>
+            </div>
+            <button class="sp-row-remove" data-idx="${i}" title="Remove">✕</button>
           </div>`;
         }).join('');
 
-        // Edit button
-        list.querySelectorAll('.sp-change-edit').forEach(el => {
-          el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            editingChangeIdx = parseInt(el.dataset.idx);
-            renderChanges();
-            const titleInput = list.querySelector('.sp-edit-title');
-            if (titleInput) { titleInput.focus(); titleInput.select(); }
+        // Inline edits — auto-save into panelChanges
+        list.querySelectorAll('.sp-change-row input, .sp-change-row textarea').forEach(input => {
+          if (input.tagName === 'TEXTAREA') autoSizeDesc(input);
+          input.addEventListener('input', () => {
+            const row = input.closest('.sp-change-row');
+            const idx = parseInt(row.dataset.idx);
+            const field = input.dataset.field;
+            if (!panelChanges[idx]) return;
+            panelChanges[idx][field] = field === 'description' ? (input.value.trim() || null) : input.value;
+            if (input.tagName === 'TEXTAREA') autoSizeDesc(input);
           });
         });
 
-        // Edit mode: done / cancel / tag toggle
-        const doneBtn = list.querySelector('.sp-edit-done');
-        const cancelBtn = list.querySelector('.sp-edit-cancel');
-
-        if (doneBtn) {
-          doneBtn.addEventListener('click', () => {
-            const idx = editingChangeIdx;
-            const titleVal = list.querySelector('.sp-edit-title').value.trim();
-            if (!titleVal) return;
-            panelChanges[idx].title = titleVal;
-            panelChanges[idx].description = list.querySelector('.sp-edit-desc').value.trim() || null;
-            editingChangeIdx = null;
-            renderChanges();
-          });
-        }
-
-        if (cancelBtn) {
-          cancelBtn.addEventListener('click', () => {
-            editingChangeIdx = null;
-            renderChanges();
-          });
-        }
-
-        list.querySelectorAll('.sp-edit-ctag').forEach(btn => {
+        // Tag picker
+        list.querySelectorAll('.sp-row-tag-options button').forEach(btn => {
           btn.addEventListener('click', () => {
-            const idx = editingChangeIdx;
-            const tag = btn.dataset.tag;
-            panelChanges[idx].tag = panelChanges[idx].tag === tag ? null : tag;
+            const row = btn.closest('.sp-change-row');
+            const idx = parseInt(row.dataset.idx);
+            if (!panelChanges[idx]) return;
+            panelChanges[idx].tag = btn.dataset.tag || null;
             renderChanges();
           });
         });
 
-        // Delete
-        list.querySelectorAll('.sp-change-del').forEach(btn => {
+        // Remove
+        list.querySelectorAll('.sp-row-remove').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
             panelChanges.splice(parseInt(btn.dataset.idx), 1);
-            if (editingChangeIdx !== null) editingChangeIdx = null;
             renderChanges();
           });
         });
 
-        // Drag reorder (only on non-editing items)
+        // Drag reorder
         let dragIdx = null;
-        list.querySelectorAll('.sp-change[draggable="true"]').forEach(el => {
+        list.querySelectorAll('.sp-change-row').forEach(el => {
+          // Don't initiate drag from inputs/textareas/buttons inside the row
           el.addEventListener('dragstart', (e) => {
+            const tag = (e.target.tagName || '').toUpperCase();
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') { e.preventDefault(); return; }
             dragIdx = parseInt(el.dataset.idx);
             el.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
@@ -914,15 +976,16 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       }
 
       function renderChangeTagPicker() {
-        const container = panel.querySelector('#spChangeTagPicker');
-        container.innerHTML = tags.map(t => {
-          const a = panelChangeTag === t.id;
-          const s = a ? `background:${t.color};color:#1a1209;border-color:${t.color};` : `border-color:${t.color}55;color:${t.color};border:1px solid ${t.color}55;background:transparent;`;
-          return `<button type="button" class="sp-tag sp-ctag" data-tag="${t.id}" style="${s}">${t.name}</button>`;
-        }).join('');
-        container.querySelectorAll('.sp-ctag').forEach(btn => {
+        const container = panel.querySelector('#spComposerTagMenu');
+        if (!container) return;
+        const t = panelChangeTag ? getTagById(panelChangeTag) : null;
+        const tagBtn = t
+          ? `<button type="button" class="sp-ctag-pill" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;">${escape(t.name)}</button>`
+          : `<button type="button" class="sp-ctag-pill sp-ctag-pill-empty">Tag</button>`;
+        container.innerHTML = `${tagBtn}<div class="sp-row-tag-options">${tagOptionsHtml()}</div>`;
+        container.querySelectorAll('.sp-row-tag-options button').forEach(btn => {
           btn.addEventListener('click', () => {
-            panelChangeTag = panelChangeTag === btn.dataset.tag ? '' : btn.dataset.tag;
+            panelChangeTag = btn.dataset.tag || '';
             renderChangeTagPicker();
           });
         });
