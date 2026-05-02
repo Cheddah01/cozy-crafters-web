@@ -411,22 +411,22 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
       panelStyle.textContent = `
         .cl-quickbar {
           position: fixed; top: 56px; left: 0; right: 0; z-index: 90;
-          background: rgba(255, 245, 235, 0.95); backdrop-filter: blur(14px);
-          border-bottom: 1px solid rgba(232, 155, 107, 0.18);
+          background: rgba(255, 252, 245, 0.95); backdrop-filter: blur(14px);
+          border-bottom: 1px solid rgba(95, 125, 85, 0.14);
           padding: 0.6rem 2rem; display: flex; align-items: center;
           gap: 0.8rem; justify-content: center;
         }
         .cl-quickbar input {
-          font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #4A2C1A;
-          background: rgba(255, 245, 235, 0.85); border: 1.5px solid rgba(232, 155, 107, 0.2);
+          font-family: 'Nunito',sans-serif; font-size: 0.88rem; color: #3D2E20;
+          background: rgba(255, 252, 245, 0.85); border: 1.5px solid rgba(95, 125, 85, 0.18);
           border-radius: 10px; padding: 0.55rem 0.85rem; outline: none; transition: all 0.2s;
         }
-        .cl-quickbar input:focus { border-color: #E89B6B; box-shadow: 0 0 0 3px rgba(232,155,107,0.15); }
-        .cl-quickbar input::placeholder { color: #8B6F5C; opacity: 0.65; }
+        .cl-quickbar input:focus { border-color: #6F8F63; box-shadow: 0 0 0 3px rgba(111,143,99,0.15); }
+        .cl-quickbar input::placeholder { color: #6D5C4A; opacity: 0.65; }
         .cl-quickbar-btn {
           font-family: 'Fredoka',sans-serif; font-size: 0.88rem; font-weight: 600;
-          background: #E89B6B; color: #FFF5EB; border: none; padding: 0.55rem 1.2rem;
-          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #D17A4A;
+          background: #6F8F63; color: #FFFCF5; border: none; padding: 0.55rem 1.2rem;
+          border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 #496A40;
           transition: all 0.15s; white-space: nowrap;
         }
         .cl-quickbar-btn:hover { transform: translateY(-1px); }
@@ -654,7 +654,7 @@ const INLINE_API = 'https://cozy-crafters-api.colbysthickey.workers.dev';
         <input type="text" id="qbTitle" placeholder="Patch title..." style="flex:1;min-width:120px;" />
         <input type="text" id="qbVersion" placeholder="v2.0" style="width:70px;" />
         <button class="cl-quickbar-btn" id="qbCreateBtn">+ New Patch Note</button>
-        <button class="cl-quickbar-btn" id="qbAdminBtn" style="background:none;border:1px solid rgba(255,244,220,0.15);color:#FFF4DC;box-shadow:none;">⚙ Admin</button>
+        <button class="cl-quickbar-btn" id="qbAdminBtn" style="background:rgba(255,252,245,0.7);border:1px solid rgba(95,125,85,0.18);color:#3D2E20;box-shadow:none;">⚙ Admin</button>
       `;
       document.body.appendChild(quickbar);
 
