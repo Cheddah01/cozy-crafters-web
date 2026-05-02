@@ -204,7 +204,7 @@
           <h3 class="hub-card-title">Vote</h3>
           <p class="hub-card-body">Boost our listings — free support that helps new players find us.</p>
           <div class="hub-card-actions">
-            <button type="button" class="btn btn-secondary" id="hubVoteBtn" aria-expanded="false" aria-controls="hubVoteDrawer">View vote links</button>
+            <button type="button" class="btn btn-secondary" id="hubVoteBtn" aria-expanded="false" aria-controls="hubModal">View vote links</button>
           </div>
         </article>
 
@@ -223,7 +223,7 @@
           <h3 class="hub-card-title">Rules</h3>
           <p class="hub-card-body">Be kind, respect claims, no griefing — full guidelines live on Discord.</p>
           <div class="hub-card-actions">
-            <button type="button" class="btn btn-secondary" id="hubRulesBtn" aria-expanded="false" aria-controls="hubRulesDrawer">Open rules</button>
+            <button type="button" class="btn btn-secondary" id="hubRulesBtn" aria-expanded="false" aria-controls="hubModal">Open rules</button>
           </div>
         </article>
 
@@ -237,16 +237,16 @@
         </article>
       </div>
 
-      <div class="hub-drawers" id="hubDrawers">
-        <div class="hub-drawer" id="hubVoteDrawer" aria-hidden="true">
-          <div class="hub-drawer-inner">
+      <div class="hub-modal" id="hubModal" aria-hidden="true">
+        <button class="hub-modal-backdrop" id="hubModalBackdrop" type="button" aria-label="Close popup"></button>
+        <div class="hub-modal-panel" role="dialog" aria-modal="true" aria-label="Server info popup">
+          <button class="hub-modal-close" id="hubModalClose" type="button" aria-label="Close popup">✕</button>
+          <div class="hub-modal-view" id="hubVoteDrawer" aria-hidden="true">
             <h3>Vote for Cozy Crafters</h3>
             <ul class="hub-drawer-list" id="hubVoteLinks"></ul>
           </div>
-        </div>
 
-        <div class="hub-drawer" id="hubRulesDrawer" aria-hidden="true">
-          <div class="hub-drawer-inner">
+          <div class="hub-modal-view" id="hubRulesDrawer" aria-hidden="true">
             <h3>Server Rules</h3>
             <ol class="hub-rules-list" id="hubRulesList"></ol>
           </div>
@@ -552,20 +552,30 @@
       setTimeout(() => { document.getElementById('dmBar').style.width = pct + '%'; }, 500);
     }
 
-    function setHubDrawer(drawerId) {
-      const drawers = document.querySelectorAll('.hub-drawer');
+    function setHubModal(viewId) {
+      const modal = document.getElementById('hubModal');
+      const views = document.querySelectorAll('.hub-modal-view');
       const buttons = {
         hubVoteDrawer: document.getElementById('hubVoteBtn'),
         hubRulesDrawer: document.getElementById('hubRulesBtn'),
       };
-      drawers.forEach((drawer) => {
-        const shouldOpen = drawer.id === drawerId && !drawer.classList.contains('open');
-        drawer.classList.toggle('open', shouldOpen);
-        drawer.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
-        if (buttons[drawer.id]) {
-          buttons[drawer.id].setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-        }
+      const isOpen = !!viewId;
+
+      modal.classList.toggle('open', isOpen);
+      modal.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      document.body.classList.toggle('hub-modal-lock', isOpen);
+
+      views.forEach((view) => {
+        const shouldShow = view.id === viewId;
+        view.classList.toggle('open', shouldShow);
+        view.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
       });
+
+      Object.entries(buttons).forEach(([id, button]) => {
+        button.setAttribute('aria-expanded', id === viewId ? 'true' : 'false');
+      });
+
+      if (isOpen) document.getElementById('hubModalClose').focus();
     }
 
     renderHubVoteLinks(DEFAULT_VOTE_SITES);
@@ -689,10 +699,12 @@
     }
     window.copyHubIp = copyHubIp;
 
-    document.getElementById('hubVoteBtn').addEventListener('click', () => setHubDrawer('hubVoteDrawer'));
-    document.getElementById('hubRulesBtn').addEventListener('click', () => setHubDrawer('hubRulesDrawer'));
+    document.getElementById('hubVoteBtn').addEventListener('click', () => setHubModal('hubVoteDrawer'));
+    document.getElementById('hubRulesBtn').addEventListener('click', () => setHubModal('hubRulesDrawer'));
+    document.getElementById('hubModalClose').addEventListener('click', () => setHubModal(''));
+    document.getElementById('hubModalBackdrop').addEventListener('click', () => setHubModal(''));
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setHubDrawer('');
+      if (e.key === 'Escape') setHubModal('');
     });
 
     function renderOnlinePlayers({ status, count, players }) {
