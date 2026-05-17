@@ -3,32 +3,39 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Cozy Crafters · Atlas of Season Two</title>
+<title>Cozy Crafters Atlas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
-     Cozy Crafters Atlas — design tokens
+     Cozy Crafters Atlas — modern design tokens
      ============================================================ */
   :root {
-    --ink:       #0a0a14;
-    --ink-soft:  #14141f;
-    --ink-mid:   #1f1d2e;
-    --ink-line:  #2d2638;
-    --plum:      #5c2a4d;
-    --rose:      #a3434f;
-    --ember:     #e87a5d;
-    --peach:     #f4b785;
-    --cream:     #fff3e0;
-    --gold:      #d89b6e;
-    --sage:      #5BA3A8;
-    --orchid:    #7B538D;
-    --green:     #6BA89E;
-    --crimson:   #c63848;
+    --bg-0:      #0e0e14;
+    --bg-1:      #16161f;
+    --bg-2:      #1d1d2a;
+    --bg-3:      #262635;
+    --border:    #2e2e40;
+    --border-2:  #3a3a4f;
+    --text-0:    #ffffff;
+    --text-1:    #e5e5f0;
+    --text-2:    #a0a0b8;
+    --text-3:    #6e6e85;
+    --accent:    #f4936a;
+    --accent-2:  #f7c08e;
+    --accent-dim:#7d4530;
+    --success:   #5dd6a8;
+    --danger:    #ec5f6a;
+    --info:      #6fa8dc;
 
-    --shadow-soft: 0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
-    --shadow-deep: 0 4px 16px rgba(0,0,0,.5), 0 16px 48px rgba(0,0,0,.4);
+    --radius:    10px;
+    --radius-sm: 6px;
+    --radius-lg: 14px;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow:    0 4px 16px rgba(0,0,0,.4);
+    --shadow-lg: 0 12px 48px rgba(0,0,0,.5);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,401 +43,398 @@
   html, body {
     height: 100vh;
     overflow: hidden;
-    background: var(--ink);
-    color: var(--cream);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Geist', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Subtle parchment grain over everything */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: radial-gradient(circle at 30% 20%, rgba(232,122,93,.04) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 70%, rgba(123,83,141,.04) 0%, transparent 60%);
-    z-index: 0;
-  }
+  button { font: inherit; cursor: pointer; }
+  input  { font: inherit; }
 
   /* ============================================================
-     Layout: 3-column grid (left sidebar, canvas, right detail)
+     LAYOUT
      ============================================================ */
   .app {
     display: grid;
-    grid-template-columns: 320px 1fr 360px;
+    grid-template-columns: 340px 1fr 380px;
     height: 100vh;
-    position: relative;
-    z-index: 1;
   }
 
   /* ============================================================
-     LEFT SIDEBAR
+     SIDEBAR (left)
      ============================================================ */
   .sidebar-left {
-    background: linear-gradient(180deg, var(--ink-soft) 0%, var(--ink) 100%);
-    border-right: 1px solid var(--ink-line);
-    overflow-y: auto;
+    background: var(--bg-1);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    min-height: 0;
   }
 
   .brand {
-    padding: 28px 24px 20px;
-    border-bottom: 1px solid var(--ink-line);
-    position: relative;
-  }
-  .brand::after {
-    content: '';
-    position: absolute;
-    left: 24px; right: 24px; bottom: -1px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--ember), transparent);
-  }
-  .brand-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--rose);
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border);
   }
   .brand-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
     font-weight: 600;
-    font-size: 32px;
+    color: var(--text-0);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .brand-sub {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-3);
+  }
+
+  /* Server stats card */
+  .server-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .ss-cell {
+    background: var(--bg-2);
+    padding: 14px 16px;
+  }
+  .ss-num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-0);
     line-height: 1;
-    letter-spacing: -0.01em;
-    color: var(--cream);
   }
-  .brand-title em {
-    font-style: italic;
-    color: var(--ember);
-    font-weight: 500;
-  }
-  .brand-subtitle {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--peach);
-    opacity: .7;
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
+  .ss-label {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    letter-spacing: 0.01em;
   }
 
   /* Layer toggles */
   .panel {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--ink-line);
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
   }
   .panel-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--rose);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
     text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .panel-title::before {
-    content: ''; width: 6px; height: 6px;
-    background: var(--ember);
-    border-radius: 50%;
   }
 
+  .toggle-list { display: flex; flex-direction: column; gap: 2px; }
   .toggle {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 10px; margin: -2px -10px;
-    border-radius: 6px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 10px; margin: 0 -10px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background .15s;
+    transition: background .12s;
     user-select: none;
   }
-  .toggle:hover { background: rgba(232,122,93,.06); }
-  .toggle input { appearance: none; width: 0; height: 0; opacity: 0; position: absolute; }
-  .toggle-box {
-    width: 16px; height: 16px;
-    border: 1.5px solid var(--ink-line);
-    border-radius: 4px;
-    background: var(--ink);
-    flex-shrink: 0;
+  .toggle:hover { background: var(--bg-2); }
+  .toggle input {
+    appearance: none; width: 0; height: 0;
+    opacity: 0; position: absolute;
+  }
+  .switch {
+    width: 32px; height: 18px;
+    background: var(--bg-3);
+    border-radius: 9px;
     position: relative;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 14px; height: 14px;
+    background: var(--text-2);
+    border-radius: 50%;
     transition: all .15s;
   }
-  .toggle input:checked + .toggle-box {
-    background: var(--ember);
-    border-color: var(--ember);
+  .toggle input:checked + .switch {
+    background: var(--accent);
   }
-  .toggle input:checked + .toggle-box::after {
-    content: '✓';
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--ink);
-    font-size: 11px;
-    font-weight: 700;
+  .toggle input:checked + .switch::after {
+    background: var(--text-0);
+    left: 16px;
   }
-  .toggle-label { font-size: 13px; color: var(--cream); flex: 1; }
+  .toggle-label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-1);
+  }
   .toggle-count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--rose);
-    opacity: .7;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-3);
   }
 
   /* Search */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
   .search {
     width: 100%;
-    background: var(--ink);
-    border: 1px solid var(--ink-line);
-    color: var(--cream);
-    padding: 10px 12px 10px 32px;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 13px;
-    transition: border .15s;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+    padding: 11px 14px 11px 40px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    transition: all .12s;
   }
   .search:focus {
     outline: none;
-    border-color: var(--ember);
+    border-color: var(--accent);
+    background: var(--bg-2);
   }
-  .search::placeholder { color: var(--rose); opacity: .6; }
-  .search-wrap { position: relative; }
+  .search::placeholder { color: var(--text-3); }
   .search-wrap::before {
-    content: '⌕';
+    content: '';
     position: absolute;
-    left: 10px; top: 50%;
+    left: 14px; top: 50%;
     transform: translateY(-50%);
-    color: var(--rose); font-size: 16px;
-    pointer-events: none;
+    width: 16px; height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
   }
 
-  /* Player roster */
+  /* Sort tabs */
+  .sort-tabs {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 0 16px;
+    margin-bottom: 4px;
+  }
+  .sort-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all .12s;
+  }
+  .sort-btn:hover {
+    color: var(--text-1);
+    border-color: var(--border-2);
+  }
+  .sort-btn.active {
+    background: var(--accent);
+    color: #1a0c06;
+    border-color: var(--accent);
+  }
+
+  /* Roster */
   .roster {
     flex: 1;
     overflow-y: auto;
-    padding: 0 8px 16px;
+    padding: 8px 8px 16px;
+    min-height: 0;
   }
-  .roster-sort {
-    padding: 12px 16px;
-    display: flex; gap: 6px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--ink-line);
-    margin-bottom: 8px;
-  }
-  .sort-btn {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 8px;
-    background: transparent;
-    border: 1px solid var(--ink-line);
-    color: var(--peach);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .sort-btn:hover { border-color: var(--rose); color: var(--ember); }
-  .sort-btn.active {
-    background: var(--ember);
-    color: var(--ink);
-    border-color: var(--ember);
-  }
-
   .player-item {
-    padding: 10px 14px;
-    margin: 2px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all .15s;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-left: 2px solid transparent;
+    gap: 12px;
+    padding: 11px 12px;
+    margin: 2px 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .12s;
+    border-left: 3px solid transparent;
   }
-  .player-item:hover {
-    background: rgba(232,122,93,.08);
-    border-left-color: var(--ember);
-  }
+  .player-item:hover { background: var(--bg-2); }
   .player-item.active {
-    background: rgba(232,122,93,.15);
-    border-left-color: var(--ember);
+    background: var(--bg-2);
+    border-left-color: var(--accent);
   }
   .player-rank {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--rose);
-    width: 24px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    color: var(--text-3);
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
   }
   .player-name {
     flex: 1;
+    font-size: 14px;
     font-weight: 500;
-    font-size: 13px;
-    color: var(--cream);
+    color: var(--text-1);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .player-stat {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--peach);
-  }
-  .player-archetype-dot {
-    width: 6px; height: 6px; border-radius: 50%;
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    color: var(--text-2);
     flex-shrink: 0;
   }
-  .arch-Hunter      { background: var(--crimson); }
-  .arch-Miner       { background: var(--gold); }
-  .arch-Survivalist { background: var(--green); }
-  .arch-PvPer       { background: var(--orchid); }
-  .arch-Trader      { background: var(--sage); }
-  .arch-Crafter     { background: var(--ember); }
-  .arch-Veteran     { background: var(--peach); }
-  .arch-Explorer    { background: var(--rose); }
-  .arch-DragonSlayer { background: var(--cream); }
-  .arch-Casual      { background: var(--ink-line); }
-
 
   /* ============================================================
-     CANVAS (the map)
+     MAP CANVAS
      ============================================================ */
   .canvas-wrap {
     position: relative;
-    background: radial-gradient(ellipse at center, var(--ink-mid) 0%, var(--ink) 70%);
+    background: var(--bg-0);
     overflow: hidden;
   }
   #map {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     cursor: grab;
     display: block;
   }
   #map.dragging { cursor: grabbing; }
 
-  .map-overlay {
-    position: absolute;
-    pointer-events: none;
-    z-index: 10;
-  }
-  .map-info {
-    top: 20px; left: 24px;
-    pointer-events: auto;
-  }
-  .map-info-block {
-    background: rgba(20,20,31,.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ink-line);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--peach);
-    line-height: 1.6;
-  }
-  .map-info-block strong { color: var(--cream); font-weight: 500; }
+  /* Floating overlays */
+  .map-overlay { position: absolute; z-index: 10; pointer-events: none; }
+  .map-overlay > * { pointer-events: auto; }
 
-  .map-coords {
-    position: absolute;
-    bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(20,20,31,.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ink-line);
-    border-radius: 20px;
-    padding: 8px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--cream);
-    z-index: 10;
+  .map-toolbar {
+    top: 20px; left: 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .toolbar-card {
+    background: rgba(22, 22, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-1);
+    box-shadow: var(--shadow);
   }
 
   .map-controls {
     position: absolute;
-    top: 20px; right: 20px;
+    top: 20px;
+    right: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     z-index: 10;
   }
   .map-btn {
-    width: 36px; height: 36px;
-    background: rgba(20,20,31,.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ink-line);
-    color: var(--cream);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: 600;
-    transition: all .15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 40px; height: 40px;
+    background: rgba(22, 22, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+    border-radius: var(--radius-sm);
+    transition: all .12s;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
   }
   .map-btn:hover {
-    border-color: var(--ember);
-    color: var(--ember);
+    border-color: var(--accent);
+    color: var(--accent);
   }
+  .map-btn svg { width: 18px; height: 18px; }
 
+  /* Coords */
+  .map-coords {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(22, 22, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    color: var(--text-1);
+    z-index: 10;
+    box-shadow: var(--shadow-sm);
+  }
+  .map-coords .label { color: var(--text-3); margin-right: 4px; }
+
+  /* Legend */
   .map-legend {
     position: absolute;
-    bottom: 20px; right: 20px;
-    background: rgba(20,20,31,.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ink-line);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 11px;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(22, 22, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
     z-index: 10;
-    max-width: 220px;
+    box-shadow: var(--shadow);
   }
   .legend-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    color: var(--rose);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
     text-transform: uppercase;
-    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
   }
   .legend-row {
-    display: flex; align-items: center; gap: 8px;
-    margin: 4px 0;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--peach);
+    display: flex; align-items: center; gap: 10px;
+    margin: 6px 0;
+    font-size: 13px;
+    color: var(--text-1);
   }
   .legend-swatch {
-    width: 12px; height: 12px;
-    border-radius: 2px;
+    width: 14px; height: 14px;
     flex-shrink: 0;
   }
 
-  /* Tooltip on hover */
+  /* Tooltip */
   .tooltip {
-    position: absolute;
+    position: fixed;
     pointer-events: none;
-    background: rgba(20,20,31,.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ember);
-    border-radius: 6px;
+    background: rgba(22, 22, 31, 0.96);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
     padding: 10px 14px;
-    font-size: 12px;
-    color: var(--cream);
+    font-size: 13px;
+    color: var(--text-1);
     z-index: 100;
-    transform: translate(-50%, calc(-100% - 12px));
+    transform: translate(-50%, calc(-100% - 14px));
     white-space: nowrap;
     opacity: 0;
-    transition: opacity .15s;
-    box-shadow: var(--shadow-deep);
+    transition: opacity .12s;
+    box-shadow: var(--shadow-lg);
   }
   .tooltip.visible { opacity: 1; }
-  .tooltip strong { color: var(--ember); }
+  .tooltip-name { font-weight: 600; color: var(--text-0); margin-bottom: 2px; }
+  .tooltip-meta { color: var(--text-2); font-size: 12px; }
   .tooltip-coords {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--peach);
-    opacity: .8;
-    margin-top: 2px;
+    font-family: 'Geist Mono', monospace;
+    color: var(--text-3);
+    font-size: 11px;
+    margin-top: 4px;
   }
 
 
@@ -438,253 +442,213 @@
      RIGHT DETAIL PANEL
      ============================================================ */
   .sidebar-right {
-    background: linear-gradient(180deg, var(--ink) 0%, var(--ink-soft) 100%);
-    border-left: 1px solid var(--ink-line);
+    background: var(--bg-1);
+    border-left: 1px solid var(--border);
     overflow-y: auto;
-    padding: 0;
+    min-height: 0;
   }
 
-  .detail-empty {
-    padding: 60px 32px;
-    text-align: center;
-    color: var(--rose);
-    opacity: .6;
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    line-height: 1.5;
+  /* Empty state (overview) */
+  .overview {
+    padding: 32px 24px;
   }
-  .detail-empty::before {
-    content: '✦';
-    display: block;
-    font-size: 40px;
-    color: var(--plum);
-    margin-bottom: 20px;
-    font-style: normal;
+  .overview h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-0);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .overview p {
+    color: var(--text-2);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .ov-cell {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .ov-num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-0);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .ov-num-sub { color: var(--accent); font-size: 14px; }
+  .ov-label {
+    font-size: 12px;
+    color: var(--text-3);
   }
 
+  .overview-tip {
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .overview-tip strong { color: var(--text-1); }
+
+  /* Detail card */
   .detail-card { padding: 0; }
-
   .detail-header {
-    padding: 28px 28px 20px;
-    border-bottom: 1px solid var(--ink-line);
-    position: relative;
-  }
-  .detail-header::after {
-    content: '';
-    position: absolute;
-    left: 28px; right: 28px; bottom: -1px;
-    height: 1px;
-    background: linear-gradient(90deg, var(--ember), transparent);
+    padding: 28px 24px 22px;
+    border-bottom: 1px solid var(--border);
   }
   .detail-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--rose);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
     text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: 8px;
   }
   .detail-title {
-    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
     font-weight: 600;
-    font-size: 28px;
-    color: var(--cream);
+    color: var(--text-0);
+    letter-spacing: -0.02em;
     line-height: 1.1;
   }
   .detail-sub {
     margin-top: 8px;
-    font-size: 12px;
-    color: var(--peach);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .archetype-pill {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: var(--ink-mid);
-    border: 1px solid var(--ink-line);
-    color: var(--peach);
+    font-size: 13px;
+    color: var(--text-3);
+    font-family: 'Geist Mono', monospace;
   }
 
-  .lore-quote {
-    margin: 20px 28px 16px;
-    padding: 16px 18px;
-    background: linear-gradient(135deg, rgba(232,122,93,.08), rgba(123,83,141,.06));
-    border-left: 2px solid var(--ember);
-    border-radius: 4px;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--cream);
+  .badges {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 14px;
   }
-  .lore-quote::before {
-    content: 'Year One';
-    display: block;
-    font-family: 'JetBrains Mono', monospace;
-    font-style: normal;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 8px;
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--bg-3);
+    color: var(--text-1);
+    border: 1px solid var(--border-2);
+  }
+  .badge-accent {
+    background: var(--accent-dim);
+    color: var(--accent-2);
+    border-color: var(--accent);
   }
 
-  .stats-grid {
+  /* Big stats */
+  .big-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;
-    background: var(--ink-line);
-    margin: 0 20px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 16px;
+    background: var(--border);
+    margin: 0;
+    border-bottom: 1px solid var(--border);
   }
-  .stat-cell {
-    background: var(--ink-soft);
-    padding: 14px 16px;
+  .bs-cell {
+    background: var(--bg-1);
+    padding: 18px 24px;
   }
-  .stat-cell-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--ember);
+  .bs-num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-0);
     line-height: 1;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
-  .stat-cell-label {
-    font-size: 10px;
-    color: var(--peach);
-    opacity: .8;
+  .bs-label {
+    font-size: 12px;
+    color: var(--text-3);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
 
+  /* Sections */
   .detail-section {
-    padding: 20px 28px;
-    border-top: 1px solid var(--ink-line);
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--border);
   }
-  .detail-section-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--rose);
+  .detail-section:last-child { border-bottom: none; }
+  .ds-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
     text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+  .ds-count {
+    font-family: 'Geist Mono', monospace;
+    color: var(--accent);
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
   .kv-row {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--ink-line);
-  }
-  .kv-row:last-child { border-bottom: none; }
-  .kv-key { font-size: 12px; color: var(--peach); opacity: .85; }
-  .kv-val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--cream);
-    font-weight: 500;
-  }
-
-  .trust-list {
-    display: flex; flex-wrap: wrap; gap: 4px;
-    margin-top: 8px;
-  }
-  .trust-chip {
-    font-size: 10px;
-    padding: 3px 8px;
-    background: var(--ink-mid);
-    border: 1px solid var(--ink-line);
-    border-radius: 10px;
-    color: var(--peach);
-    font-family: 'JetBrains Mono', monospace;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .trust-chip:hover { border-color: var(--ember); color: var(--ember); }
-
-  /* Server overview (default detail) */
-  .overview {
-    padding: 28px;
-  }
-  .overview h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 500;
-    font-size: 24px;
-    color: var(--cream);
-    margin-bottom: 8px;
-    line-height: 1.1;
-  }
-  .overview h1 em {
-    font-style: italic;
-    color: var(--ember);
-  }
-  .overview .subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    color: var(--peach);
+    align-items: center;
+    padding: 9px 0;
+    border-top: 1px solid var(--border);
     font-size: 14px;
-    margin-bottom: 24px;
-    opacity: .8;
   }
-  .overview-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+  .kv-row:first-child { border-top: none; padding-top: 0; }
+  .kv-key { color: var(--text-2); }
+  .kv-val {
+    font-family: 'Geist Mono', monospace;
+    color: var(--text-0);
+    font-weight: 500;
   }
-  .ov-cell {
-    background: var(--ink-soft);
-    border: 1px solid var(--ink-line);
-    border-radius: 6px;
-    padding: 14px;
-  }
-  .ov-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--ember);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .ov-label {
-    font-size: 10px;
-    color: var(--peach);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .overview-hint {
-    margin-top: 24px;
-    padding: 14px 16px;
-    border: 1px dashed var(--ink-line);
-    border-radius: 6px;
+
+  /* Trust chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
     font-size: 12px;
-    color: var(--peach);
-    font-style: italic;
-    line-height: 1.5;
-    font-family: 'Cormorant Garamond', serif;
+    padding: 5px 11px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-1);
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent-2);
+    background: var(--bg-3);
   }
 
   /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--rose); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-2); }
 
-  /* Responsive collapse */
-  @media (max-width: 1100px) {
+  /* Responsive */
+  @media (max-width: 1280px) {
+    .app { grid-template-columns: 300px 1fr 340px; }
+  }
+  @media (max-width: 1024px) {
     .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
-    .sidebar-left, .sidebar-right { max-height: 240px; border-right: none; border-left: none; }
-    .sidebar-left { border-bottom: 1px solid var(--ink-line); }
-    .sidebar-right { border-top: 1px solid var(--ink-line); }
+    .sidebar-left, .sidebar-right { max-height: 280px; }
   }
 
 </style>
@@ -699,64 +663,67 @@
   <aside class="sidebar-left">
 
     <div class="brand">
-      <div class="brand-tag">Cozy Crafters · Vol. II</div>
-      <div class="brand-title">Atlas of <em>Season Two</em></div>
-      <div class="brand-subtitle">Every claim, every home, every story</div>
+      <div class="brand-title">
+        <span class="brand-dot"></span>
+        Cozy Crafters
+      </div>
+      <div class="brand-sub">Season 2 · World Atlas</div>
     </div>
 
-    <div class="panel">
-      <div class="panel-title">Layers</div>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-claims" checked />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">Claims</span>
-        <span class="toggle-count" id="ct-claims"></span>
-      </label>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-heatmap" checked />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">Activity heatmap</span>
-        <span class="toggle-count">28d</span>
-      </label>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-beds" checked />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">Bed spawns</span>
-        <span class="toggle-count" id="ct-beds"></span>
-      </label>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-deaths" />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">Last deaths</span>
-        <span class="toggle-count" id="ct-deaths"></span>
-      </label>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-npcs" />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">NPCs (spawn)</span>
-        <span class="toggle-count" id="ct-npcs"></span>
-      </label>
-      <label class="toggle">
-        <input type="checkbox" id="lyr-rings" checked />
-        <span class="toggle-box"></span>
-        <span class="toggle-label">Distance rings</span>
-      </label>
-    </div>
+    <div class="server-stats" id="server-stats"></div>
 
     <div class="panel">
-      <div class="panel-title">Find a player</div>
-      <div class="search-wrap">
-        <input type="text" class="search" id="search" placeholder="search by name..." />
+      <div class="panel-title">Map Layers</div>
+      <div class="toggle-list">
+        <label class="toggle">
+          <input type="checkbox" id="lyr-claims" checked />
+          <span class="switch"></span>
+          <span class="toggle-label">Claims</span>
+          <span class="toggle-count" id="ct-claims"></span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="lyr-heatmap" checked />
+          <span class="switch"></span>
+          <span class="toggle-label">Activity heatmap</span>
+          <span class="toggle-count">28d</span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="lyr-beds" checked />
+          <span class="switch"></span>
+          <span class="toggle-label">Bed spawns</span>
+          <span class="toggle-count" id="ct-beds"></span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="lyr-deaths" />
+          <span class="switch"></span>
+          <span class="toggle-label">Last deaths</span>
+          <span class="toggle-count" id="ct-deaths"></span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="lyr-npcs" />
+          <span class="switch"></span>
+          <span class="toggle-label">NPCs</span>
+          <span class="toggle-count" id="ct-npcs"></span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="lyr-rings" checked />
+          <span class="switch"></span>
+          <span class="toggle-label">Distance rings</span>
+        </label>
       </div>
     </div>
 
-    <div class="roster-sort">
-      <button class="sort-btn active" data-sort="play_hours">Hours</button>
-      <button class="sort-btn" data-sort="claims_owned">Claims</button>
-      <button class="sort-btn" data-sort="mob_kills">Kills</button>
-      <button class="sort-btn" data-sort="money">Wealth</button>
-      <button class="sort-btn" data-sort="tenure_days">Tenure</button>
-      <button class="sort-btn" data-sort="first_played">Joined</button>
+    <div class="panel">
+      <div class="search-wrap">
+        <input type="text" class="search" id="search" placeholder="Search players..." />
+      </div>
+      <div class="sort-tabs" style="padding:0;">
+        <button class="sort-btn active" data-sort="play_hours">Hours</button>
+        <button class="sort-btn" data-sort="claims_owned">Claims</button>
+        <button class="sort-btn" data-sort="mob_kills">Kills</button>
+        <button class="sort-btn" data-sort="money">Wealth</button>
+        <button class="sort-btn" data-sort="tenure_days">Tenure</button>
+      </div>
     </div>
 
     <div class="roster" id="roster"></div>
@@ -770,44 +737,54 @@
   <div class="canvas-wrap">
     <canvas id="map"></canvas>
 
-    <div class="map-overlay map-info">
-      <div class="map-info-block">
-        <strong>Cozy Crafters · Season 2</strong><br />
-        Founded April 16, 2026<br />
-        <span style="color:var(--rose)">spawn at (0, 0)</span>
+    <div class="map-overlay map-toolbar">
+      <div class="toolbar-card">
+        <strong style="color:var(--text-0)">World</strong>
+        <span style="color:var(--text-3); margin: 0 8px;">·</span>
+        <span style="color:var(--text-2);">Overworld</span>
       </div>
     </div>
 
     <div class="map-controls">
-      <button class="map-btn" id="btn-zoom-in" title="Zoom in">+</button>
-      <button class="map-btn" id="btn-zoom-out" title="Zoom out">−</button>
-      <button class="map-btn" id="btn-fit" title="Fit to data">⌖</button>
-      <button class="map-btn" id="btn-spawn" title="Center on spawn">⌂</button>
+      <button class="map-btn" id="btn-zoom-in" title="Zoom in" aria-label="Zoom in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="map-btn" id="btn-zoom-out" title="Zoom out" aria-label="Zoom out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+      </button>
+      <button class="map-btn" id="btn-fit" title="Fit to data" aria-label="Fit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </button>
+      <button class="map-btn" id="btn-spawn" title="Center on spawn" aria-label="Spawn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
     </div>
 
-    <div class="map-coords" id="coords">X: 0 · Z: 0</div>
+    <div class="map-coords" id="coords">
+      <span class="label">X</span><span id="cx">0</span>
+      <span class="label" style="margin-left: 10px;">Z</span><span id="cz">0</span>
+    </div>
 
     <div class="map-legend">
       <div class="legend-title">Legend</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:var(--ember)"></span>Active claim</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:var(--peach); border-radius:50%"></span>Bed (home)</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:var(--crimson)"></span>Last death</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:var(--orchid); border-radius:50%"></span>NPC</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:var(--cream)"></span>Spawn (0,0)</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:var(--accent); border-radius:2px;"></span>Claim (top owner)</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#3a2a35; border-radius:2px;"></span>Claim (other)</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:var(--accent-2); border-radius:50%"></span>Bed home</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:var(--danger); border-radius:50%"></span>Last death</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:var(--info); border-radius:50%"></span>NPC</div>
     </div>
 
-    <div class="tooltip" id="tooltip"></div>
   </div>
 
 
   <!-- ============================================================
        RIGHT DETAIL PANEL
        ============================================================ -->
-  <aside class="sidebar-right" id="detail">
-    <!-- populated by JS -->
-  </aside>
+  <aside class="sidebar-right" id="detail"></aside>
 
 </div>
+
+<div class="tooltip" id="tooltip"></div>
 
 
 <!-- ============================================================
@@ -820,26 +797,18 @@ const DATA = {"meta":{"server_name":"Cozy Crafters SMP","world_name":"Cozy Craft
 // State
 // ============================================================
 const state = {
-  center: { x: 0, z: 0 },        // view center in WORLD coords
-  scale: 0.05,                    // pixels per world block
+  center: { x: 0, z: 0 },
+  scale: 0.05,
   layers: {
-    claims: true,
-    heatmap: true,
-    beds: true,
-    deaths: false,
-    npcs: false,
-    rings: true,
+    claims: true, heatmap: true, beds: true,
+    deaths: false, npcs: false, rings: true,
   },
   selectedPlayer: null,
   selectedClaim: null,
-  hoverItem: null,
   sortBy: 'play_hours',
   searchQuery: '',
 };
 
-// ============================================================
-// Canvas setup
-// ============================================================
 const canvas = document.getElementById('map');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio || 1;
@@ -855,123 +824,92 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// ============================================================
-// Coord transforms
-// ============================================================
 function worldToScreen(x, z) {
-  const w = canvas.width / dpr;
-  const h = canvas.height / dpr;
+  const w = canvas.width / dpr, h = canvas.height / dpr;
   return {
     x: (x - state.center.x) * state.scale + w / 2,
     z: (z - state.center.z) * state.scale + h / 2,
   };
 }
 function screenToWorld(sx, sz) {
-  const w = canvas.width / dpr;
-  const h = canvas.height / dpr;
+  const w = canvas.width / dpr, h = canvas.height / dpr;
   return {
     x: (sx - w / 2) / state.scale + state.center.x,
     z: (sz - h / 2) / state.scale + state.center.z,
   };
 }
 
-// ============================================================
-// Drawing
-// ============================================================
 const COLORS = {
-  ink:    '#0a0a14',
-  inkMid: '#1f1d2e',
-  inkLn:  '#2d2638',
-  plum:   '#5c2a4d',
-  rose:   '#a3434f',
-  ember:  '#e87a5d',
-  peach:  '#f4b785',
-  cream:  '#fff3e0',
-  gold:   '#d89b6e',
-  sage:   '#5BA3A8',
-  orchid: '#7B538D',
-  green:  '#6BA89E',
-  crimson:'#c63848',
+  bg0: '#0e0e14', bg1: '#16161f', bg2: '#1d1d2a',
+  border: '#2e2e40',
+  text0: '#ffffff', text1: '#e5e5f0', text2: '#a0a0b8', text3: '#6e6e85',
+  accent: '#f4936a', accent2: '#f7c08e',
+  danger: '#ec5f6a', success: '#5dd6a8', info: '#6fa8dc',
 };
 
-// Owner color palette for claims
+// Owner color palette
 const OWNER_PALETTE = [
-  '#e87a5d','#f4b785','#C46A87','#7B538D','#5BA3A8','#D89B6E',
-  '#8B7AB8','#E9A878','#5C8DA3','#B85979','#D4886A','#9A6FB0',
-  '#6BA89E','#E2B07A','#A5567B','#7B9CC4','#D69280','#85B597',
-  '#C48868','#F2A05E',
+  '#f4936a','#f7c08e','#d77ca3','#9a6fb0','#5fa8b2','#deaa75',
+  '#9d8fc6','#e9b08e','#7299c1','#c87294','#daa07d','#a682c0',
+  '#7fbaab','#e8b885','#b270a0','#9caec9','#dca495','#94c4a5',
+  '#d49c80','#f3b074',
 ];
 
-// Compute top-20 owners by total area in overworld
+// Build top owners
 const ownerAreas = {};
-const ownerNames = {};
 for (const c of DATA.claims) {
   if (c.world !== 'world' || c.is_subdivision) continue;
   ownerAreas[c.owner_uuid] = (ownerAreas[c.owner_uuid] || 0) + c.area;
-  ownerNames[c.owner_uuid] = c.owner_name;
 }
-const topOwners = Object.entries(ownerAreas)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 20)
-  .map(([uuid]) => uuid);
+const topOwners = Object.entries(ownerAreas).sort((a,b)=>b[1]-a[1]).slice(0,20).map(x=>x[0]);
 const ownerColors = {};
 topOwners.forEach((uuid, i) => { ownerColors[uuid] = OWNER_PALETTE[i % OWNER_PALETTE.length]; });
 
+// ============================================================
+// Drawing
+// ============================================================
 function draw() {
-  const w = canvas.width / dpr;
-  const h = canvas.height / dpr;
+  const w = canvas.width / dpr, h = canvas.height / dpr;
 
-  // Background gradient
-  ctx.fillStyle = COLORS.ink;
+  ctx.fillStyle = COLORS.bg0;
   ctx.fillRect(0, 0, w, h);
 
-  // Distance rings
   if (state.layers.rings) drawRings();
 
-  // Crosshair axes
+  // Light axis lines through origin
   const origin = worldToScreen(0, 0);
-  ctx.strokeStyle = 'rgba(255,243,224,0.04)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   ctx.moveTo(0, origin.z); ctx.lineTo(w, origin.z);
   ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x, h);
   ctx.stroke();
 
-  // Heatmap (under everything)
   if (state.layers.heatmap) drawHeatmap();
-
-  // Claims
   if (state.layers.claims) drawClaims();
-
-  // POIs
   if (state.layers.npcs)   drawNPCs();
   if (state.layers.deaths) drawDeaths();
   if (state.layers.beds)   drawBeds();
 
-  // Spawn star
   drawSpawn();
-
-  // Compass NSEW
   drawCompass();
 }
 
 function drawRings() {
   const origin = worldToScreen(0, 0);
-  ctx.strokeStyle = 'rgba(163,67,79,0.18)';
+  ctx.strokeStyle = 'rgba(244, 147, 106, 0.10)';
   ctx.lineWidth = 0.5;
-  ctx.setLineDash([4, 6]);
+  ctx.setLineDash([3, 6]);
   for (const r of [1000, 5000, 10000, 25000, 50000, 100000]) {
     const radius = r * state.scale;
     if (radius < 30) continue;
     ctx.beginPath();
     ctx.arc(origin.x, origin.z, radius, 0, Math.PI * 2);
     ctx.stroke();
-
-    // Label
     if (radius > 80 && radius < 4000) {
-      ctx.fillStyle = 'rgba(244,183,133,0.4)';
-      ctx.font = '9px JetBrains Mono';
-      ctx.fillText(`${(r/1000).toFixed(0)}k`, origin.x + radius + 4, origin.z - 4);
+      ctx.fillStyle = 'rgba(244,147,106,0.5)';
+      ctx.font = '10px Geist Mono';
+      ctx.fillText(`${(r/1000).toFixed(0)}k`, origin.x + radius + 6, origin.z - 4);
     }
   }
   ctx.setLineDash([]);
@@ -982,26 +920,25 @@ function drawHeatmap() {
     const s1 = worldToScreen(p.x, p.z);
     const s2 = worldToScreen(p.x + 200, p.z + 200);
     const sz = Math.max(2, s2.x - s1.x);
-    const alpha = Math.min(0.65, 0.08 + p.weight * 0.04);
-    ctx.fillStyle = `rgba(232,122,93,${alpha})`;
+    const alpha = Math.min(0.55, 0.06 + p.weight * 0.035);
+    ctx.fillStyle = `rgba(244, 147, 106, ${alpha})`;
     ctx.fillRect(s1.x, s1.z, sz, sz);
   }
 }
 
 function drawClaims() {
-  // Subdivisions first as dotted outlines (under)
+  // Subdivisions
   for (const c of DATA.claims) {
     if (c.world !== 'world' || !c.is_subdivision) continue;
     const tl = worldToScreen(c.x1, c.z1);
     const br = worldToScreen(c.x2, c.z2);
-    ctx.setLineDash([2, 2]);
-    ctx.strokeStyle = 'rgba(255,243,224,0.3)';
+    ctx.setLineDash([2, 3]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
     ctx.lineWidth = 0.5;
     ctx.strokeRect(tl.x, tl.z, br.x - tl.x, br.z - tl.z);
     ctx.setLineDash([]);
   }
 
-  // Sort by area so big claims render first
   const parents = DATA.claims
     .filter(c => c.world === 'world' && !c.is_subdivision)
     .sort((a, b) => b.area - a.area);
@@ -1009,8 +946,7 @@ function drawClaims() {
   for (const c of parents) {
     const tl = worldToScreen(c.x1, c.z1);
     const br = worldToScreen(c.x2, c.z2);
-    const w = br.x - tl.x;
-    const h = br.z - tl.z;
+    const w = br.x - tl.x, h = br.z - tl.z;
     if (w < 0.5 || h < 0.5) continue;
 
     const color = ownerColors[c.owner_uuid] || '#3a2a35';
@@ -1018,24 +954,21 @@ function drawClaims() {
     const isSelected = state.selectedClaim && state.selectedClaim.id === c.id;
     const isOwnedBySelected = state.selectedPlayer && state.selectedPlayer.uuid === c.owner_uuid;
 
-    ctx.globalAlpha = isTop ? 0.55 : 0.4;
+    ctx.globalAlpha = isTop ? 0.5 : 0.35;
     ctx.fillStyle = color;
     ctx.fillRect(tl.x, tl.z, w, h);
 
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = isSelected ? COLORS.cream : (isOwnedBySelected ? COLORS.ember : 'rgba(255,243,224,0.5)');
-    ctx.lineWidth = isSelected ? 2 : (isOwnedBySelected ? 1.5 : 0.6);
+    ctx.strokeStyle = isSelected ? COLORS.text0 : (isOwnedBySelected ? COLORS.accent : 'rgba(255,255,255,0.4)');
+    ctx.lineWidth = isSelected ? 2.5 : (isOwnedBySelected ? 1.8 : 0.6);
     ctx.strokeRect(tl.x, tl.z, w, h);
 
-    // Label if large enough
-    if (w > 60 && h > 30 && isTop) {
-      ctx.fillStyle = 'rgba(255,243,224,0.9)';
-      ctx.font = 'bold 10px Inter';
+    if (w > 70 && h > 32 && isTop) {
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.font = '600 11px Geist';
       const lbl = c.owner_name || '?';
       const tw = ctx.measureText(lbl).width;
-      if (tw < w - 6) {
-        ctx.fillText(lbl, tl.x + 4, tl.z + 12);
-      }
+      if (tw < w - 8) ctx.fillText(lbl, tl.x + 6, tl.z + 14);
     }
   }
 }
@@ -1044,21 +977,24 @@ function drawBeds() {
   for (const b of DATA.beds) {
     if (b.dim !== 'minecraft:overworld') continue;
     const s = worldToScreen(b.x, b.z);
-    if (s.x < -20 || s.x > canvas.width/dpr + 20 || s.z < -20 || s.z > canvas.height/dpr + 20) continue;
+    const W = canvas.width / dpr, H = canvas.height / dpr;
+    if (s.x < -20 || s.x > W+20 || s.z < -20 || s.z > H+20) continue;
 
     // Glow
-    const grd = ctx.createRadialGradient(s.x, s.z, 0, s.x, s.z, 10);
-    grd.addColorStop(0, 'rgba(244,183,133,0.6)');
-    grd.addColorStop(1, 'rgba(244,183,133,0)');
+    const grd = ctx.createRadialGradient(s.x, s.z, 0, s.x, s.z, 11);
+    grd.addColorStop(0, 'rgba(247, 192, 142, 0.55)');
+    grd.addColorStop(1, 'rgba(247, 192, 142, 0)');
     ctx.fillStyle = grd;
-    ctx.fillRect(s.x-10, s.z-10, 20, 20);
+    ctx.fillRect(s.x-11, s.z-11, 22, 22);
 
-    // Bed marker (square)
-    ctx.fillStyle = COLORS.peach;
-    ctx.strokeStyle = COLORS.cream;
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(s.x - 3, s.z - 3, 6, 6);
-    ctx.strokeRect(s.x - 3, s.z - 3, 6, 6);
+    // Dot
+    ctx.fillStyle = COLORS.accent2;
+    ctx.strokeStyle = COLORS.text0;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(s.x, s.z, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
   }
 }
 
@@ -1066,12 +1002,12 @@ function drawDeaths() {
   for (const d of DATA.deaths) {
     if (d.dim !== 'minecraft:overworld') continue;
     const s = worldToScreen(d.x, d.z);
-    ctx.strokeStyle = COLORS.crimson;
-    ctx.lineWidth = 1.6;
-    const sz = 4;
+    ctx.fillStyle = COLORS.danger;
+    ctx.strokeStyle = COLORS.text0;
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(s.x - sz, s.z - sz); ctx.lineTo(s.x + sz, s.z + sz);
-    ctx.moveTo(s.x + sz, s.z - sz); ctx.lineTo(s.x - sz, s.z + sz);
+    ctx.arc(s.x, s.z, 4, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
   }
 }
@@ -1079,13 +1015,12 @@ function drawDeaths() {
 function drawNPCs() {
   for (const n of DATA.npcs) {
     if (!n.dim || !n.dim.includes('spawn')) continue;
-    // NPCs are at spawn island coords — only show when zoomed in close to spawn
     const s = worldToScreen(n.x, n.z);
-    ctx.fillStyle = COLORS.orchid;
-    ctx.strokeStyle = COLORS.cream;
-    ctx.lineWidth = 0.6;
+    ctx.fillStyle = COLORS.info;
+    ctx.strokeStyle = COLORS.text0;
+    ctx.lineWidth = 0.7;
     ctx.beginPath();
-    ctx.arc(s.x, s.z, 3, 0, Math.PI * 2);
+    ctx.arc(s.x, s.z, 4, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
   }
@@ -1093,50 +1028,33 @@ function drawNPCs() {
 
 function drawSpawn() {
   const s = worldToScreen(0, 0);
-  // Glow
-  const grd = ctx.createRadialGradient(s.x, s.z, 0, s.x, s.z, 16);
-  grd.addColorStop(0, 'rgba(255,243,224,0.6)');
-  grd.addColorStop(1, 'rgba(255,243,224,0)');
+  const grd = ctx.createRadialGradient(s.x, s.z, 0, s.x, s.z, 18);
+  grd.addColorStop(0, 'rgba(255,255,255,0.5)');
+  grd.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = grd;
-  ctx.fillRect(s.x-16, s.z-16, 32, 32);
+  ctx.fillRect(s.x-18, s.z-18, 36, 36);
 
-  // Star
-  ctx.fillStyle = COLORS.cream;
-  ctx.strokeStyle = COLORS.rose;
+  ctx.fillStyle = COLORS.text0;
+  ctx.strokeStyle = COLORS.accent;
   ctx.lineWidth = 1.5;
-  drawStar(s.x, s.z, 5, 7, 3.2);
-}
-
-function drawStar(cx, cy, spikes, outerR, innerR) {
-  let rot = -Math.PI / 2;
-  const step = Math.PI / spikes;
   ctx.beginPath();
-  ctx.moveTo(cx, cy - outerR);
-  for (let i = 0; i < spikes; i++) {
-    ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
-    rot += step;
-    ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
-    rot += step;
-  }
-  ctx.closePath();
+  ctx.arc(s.x, s.z, 6, 0, Math.PI * 2);
   ctx.fill();
   ctx.stroke();
 }
 
 function drawCompass() {
-  const w = canvas.width / dpr;
-  const h = canvas.height / dpr;
-  const margin = 50;
-  ctx.fillStyle = COLORS.peach;
-  ctx.font = 'bold 13px JetBrains Mono';
+  const w = canvas.width / dpr, h = canvas.height / dpr;
+  ctx.fillStyle = 'rgba(160, 160, 184, 0.5)';
+  ctx.font = '600 14px Geist Mono';
   ctx.textAlign = 'center';
-  ctx.fillText('N', w/2, margin/2 + 10);
-  ctx.fillText('S', w/2, h - margin/2 + 10);
+  ctx.fillText('N', w/2, 80);
+  ctx.fillText('S', w/2, h - 70);
   ctx.textAlign = 'right';
-  ctx.fillText('W', margin, h/2 + 5);
+  ctx.fillText('W', 70, h/2 + 5);
   ctx.textAlign = 'left';
-  ctx.fillText('E', w - margin, h/2 + 5);
-  ctx.textAlign = 'left'; // reset
+  ctx.fillText('E', w - 70, h/2 + 5);
+  ctx.textAlign = 'left';
 }
 
 
@@ -1146,41 +1064,29 @@ function drawCompass() {
 function hitTest(sx, sz) {
   const world = screenToWorld(sx, sz);
 
-  // Test beds first (small targets, important)
   if (state.layers.beds) {
     for (const b of DATA.beds) {
       if (b.dim !== 'minecraft:overworld') continue;
       const s = worldToScreen(b.x, b.z);
-      if (Math.abs(s.x - sx) < 6 && Math.abs(s.z - sz) < 6) {
-        return { type: 'bed', data: b };
-      }
+      if (Math.abs(s.x - sx) < 7 && Math.abs(s.z - sz) < 7) return { type: 'bed', data: b };
     }
   }
-  // Deaths
   if (state.layers.deaths) {
     for (const d of DATA.deaths) {
       if (d.dim !== 'minecraft:overworld') continue;
       const s = worldToScreen(d.x, d.z);
-      if (Math.abs(s.x - sx) < 6 && Math.abs(s.z - sz) < 6) {
-        return { type: 'death', data: d };
-      }
+      if (Math.abs(s.x - sx) < 7 && Math.abs(s.z - sz) < 7) return { type: 'death', data: d };
     }
   }
-  // NPCs
   if (state.layers.npcs) {
     for (const n of DATA.npcs) {
       const s = worldToScreen(n.x, n.z);
-      if (Math.abs(s.x - sx) < 5 && Math.abs(s.z - sz) < 5) {
-        return { type: 'npc', data: n };
-      }
+      if (Math.abs(s.x - sx) < 6 && Math.abs(s.z - sz) < 6) return { type: 'npc', data: n };
     }
   }
-  // Claims — smallest first (so nested ones are clickable)
   if (state.layers.claims) {
-    const sortedClaims = DATA.claims
-      .filter(c => c.world === 'world')
-      .sort((a, b) => a.area - b.area);
-    for (const c of sortedClaims) {
+    const sorted = DATA.claims.filter(c => c.world === 'world').sort((a,b)=>a.area-b.area);
+    for (const c of sorted) {
       if (world.x >= c.x1 && world.x <= c.x2 && world.z >= c.z1 && world.z <= c.z2) {
         return { type: 'claim', data: c };
       }
@@ -1208,12 +1114,12 @@ window.addEventListener('mouseup', e => {
     const rect = canvas.getBoundingClientRect();
     const dx = (e.clientX - rect.left) - dragStart.x;
     const dy = (e.clientY - rect.top) - dragStart.y;
-    if (Math.abs(dx) < 3 && Math.abs(dy) < 3) {
-      // It was a click, not a drag
-      const sx = e.clientX - rect.left;
-      const sz = e.clientY - rect.top;
-      const hit = hitTest(sx, sz);
-      if (hit) selectItem(hit);
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
+      const sx = e.clientX - rect.left, sz = e.clientY - rect.top;
+      if (sx >= 0 && sx <= rect.width && sz >= 0 && sz <= rect.height) {
+        const hit = hitTest(sx, sz);
+        if (hit) selectItem(hit);
+      }
     }
   }
   isDragging = false;
@@ -1225,8 +1131,8 @@ canvas.addEventListener('mousemove', e => {
   const sx = e.clientX - rect.left;
   const sz = e.clientY - rect.top;
   const world = screenToWorld(sx, sz);
-  document.getElementById('coords').textContent =
-    `X: ${Math.round(world.x).toLocaleString()} · Z: ${Math.round(world.z).toLocaleString()}`;
+  document.getElementById('cx').textContent = Math.round(world.x).toLocaleString();
+  document.getElementById('cz').textContent = Math.round(world.z).toLocaleString();
 
   if (isDragging) {
     const dx = sx - dragStart.x;
@@ -1235,7 +1141,6 @@ canvas.addEventListener('mousemove', e => {
     state.center.z = dragStart.cz - dy / state.scale;
     draw();
   } else {
-    // Hover detection
     const hit = hitTest(sx, sz);
     showTooltip(hit, e.clientX, e.clientY);
   }
@@ -1244,8 +1149,7 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
-  const sx = e.clientX - rect.left;
-  const sz = e.clientY - rect.top;
+  const sx = e.clientX - rect.left, sz = e.clientY - rect.top;
   const before = screenToWorld(sx, sz);
   const factor = e.deltaY < 0 ? 1.2 : 1/1.2;
   state.scale = Math.max(0.0005, Math.min(8, state.scale * factor));
@@ -1254,6 +1158,10 @@ canvas.addEventListener('wheel', e => {
   state.center.z += before.z - after.z;
   draw();
 }, { passive: false });
+
+canvas.addEventListener('mouseleave', () => {
+  document.getElementById('tooltip').classList.remove('visible');
+});
 
 
 // ============================================================
@@ -1267,22 +1175,27 @@ function showTooltip(hit, mx, my) {
   }
   let html = '';
   if (hit.type === 'bed') {
-    html = `<strong>${hit.data.name}</strong><br>Bed spawn<div class="tooltip-coords">(${hit.data.x}, ${hit.data.z})</div>`;
+    html = `<div class="tooltip-name">${hit.data.name}</div>
+            <div class="tooltip-meta">Bed home</div>
+            <div class="tooltip-coords">${hit.data.x.toLocaleString()}, ${hit.data.z.toLocaleString()}</div>`;
   } else if (hit.type === 'death') {
-    html = `<strong>${hit.data.name}</strong><br>Last death<div class="tooltip-coords">(${hit.data.x}, ${hit.data.z})</div>`;
+    html = `<div class="tooltip-name">${hit.data.name}</div>
+            <div class="tooltip-meta">Last death</div>
+            <div class="tooltip-coords">${hit.data.x.toLocaleString()}, ${hit.data.z.toLocaleString()}</div>`;
   } else if (hit.type === 'npc') {
-    html = `<strong>${hit.data.name}</strong><br>NPC`;
+    html = `<div class="tooltip-name">${hit.data.name}</div>
+            <div class="tooltip-meta">NPC</div>`;
   } else if (hit.type === 'claim') {
     const c = hit.data;
-    html = `<strong>${c.owner_name || 'Unknown'}</strong><br>${c.is_subdivision ? 'Subdivision' : 'Claim'} · ${c.area.toLocaleString()} blocks²<div class="tooltip-coords">(${c.x1}, ${c.z1}) → (${c.x2}, ${c.z2})</div>`;
+    html = `<div class="tooltip-name">${c.owner_name || 'Unknown'}</div>
+            <div class="tooltip-meta">${c.is_subdivision ? 'Subdivision' : 'Claim'} · ${c.area.toLocaleString()} blocks²</div>
+            <div class="tooltip-coords">${c.x1.toLocaleString()}, ${c.z1.toLocaleString()} → ${c.x2.toLocaleString()}, ${c.z2.toLocaleString()}</div>`;
   }
   tooltipEl.innerHTML = html;
   tooltipEl.style.left = mx + 'px';
   tooltipEl.style.top = my + 'px';
   tooltipEl.classList.add('visible');
 }
-
-canvas.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
 
 
 // ============================================================
@@ -1328,7 +1241,6 @@ function selectPlayer(player) {
   state.selectedPlayer = player;
   state.selectedClaim = null;
   renderPlayerDetail(player);
-  // Pan to player if they have a location
   const target = player.bed_x !== null && player.bed_x !== undefined ? {x: player.bed_x, z: player.bed_z}
               : player.pos_x !== null && player.pos_x !== undefined ? {x: player.pos_x, z: player.pos_z}
               : (player.homes && player.homes.length > 0 ? {x: player.homes[0].x, z: player.homes[0].z} : null);
@@ -1342,16 +1254,21 @@ function selectPlayer(player) {
 function fmt(n) {
   if (n === null || n === undefined) return '—';
   if (typeof n !== 'number') return n;
+  if (n === 0) return '0';
   return n.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
-function fmtMoney(n) { return '$' + Math.round(n).toLocaleString(); }
+function fmtMoney(n) {
+  if (!n) return '$0';
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
+  return '$' + Math.round(n).toLocaleString();
+}
 function fmtDate(ms) {
   if (!ms) return '—';
-  return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function renderPlayerDetail(p) {
-  const lore = p.s1_lore ? `<div class="lore-quote">${p.s1_lore}</div>` : '';
   const claimsOwned = DATA.claims.filter(c => c.owner_uuid === p.uuid && !c.is_subdivision);
   const trusts = new Set();
   for (const c of DATA.claims) {
@@ -1364,142 +1281,147 @@ function renderPlayerDetail(p) {
   trusts.delete(p.uuid);
   const trustNames = [...trusts].map(uuid => {
     const t = DATA.roster.find(r => r.uuid === uuid);
-    return t ? t.name : uuid.slice(0, 8);
-  }).slice(0, 12);
+    return t ? t.name : null;
+  }).filter(Boolean).slice(0, 16);
 
   const html = `
     <div class="detail-card">
       <div class="detail-header">
-        <div class="detail-eyebrow">Player Profile</div>
+        <div class="detail-eyebrow">Player</div>
         <div class="detail-title">${p.name}</div>
-        <div class="detail-sub">
-          ${p.first_played ? `joined ${fmtDate(p.first_played)}` : 'identity unknown'}
-          ${p.seen_credits ? ' · ⌬ slew the dragon' : ''}
-        </div>
-        ${p.archetype ? `<div class="archetype-pill arch-${p.archetype.replace(' ','')}">${p.archetype}</div>` : ''}
+        <div class="detail-sub">${p.first_played ? `Joined ${fmtDate(p.first_played)}` : 'No join data'}</div>
+        ${p.seen_credits ? '<div class="badges"><span class="badge badge-accent">Dragon slain</span></div>' : ''}
       </div>
 
-      ${lore}
-
-      <div class="stats-grid">
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(p.play_hours)}h</div>
-          <div class="stat-cell-label">played</div>
+      <div class="big-stats">
+        <div class="bs-cell">
+          <div class="bs-num">${fmt(p.play_hours)}h</div>
+          <div class="bs-label">Played</div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(p.mob_kills)}</div>
-          <div class="stat-cell-label">mob kills</div>
+        <div class="bs-cell">
+          <div class="bs-num">${fmt(p.claims_owned)}</div>
+          <div class="bs-label">Claims</div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(p.deaths)}</div>
-          <div class="stat-cell-label">deaths</div>
+        <div class="bs-cell">
+          <div class="bs-num">${fmtMoney(p.money)}</div>
+          <div class="bs-label">Balance</div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(p.claims_owned)}</div>
-          <div class="stat-cell-label">claims owned</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(p.player_kills)}</div>
-          <div class="stat-cell-label">PvP kills</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmtMoney(p.money)}</div>
-          <div class="stat-cell-label">balance</div>
+        <div class="bs-cell">
+          <div class="bs-num">${fmt(p.tenure_days)}d</div>
+          <div class="bs-label">Tenure</div>
         </div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-section-title">Vanilla Stats</div>
+        <div class="ds-title">Combat</div>
+        <div class="kv-row"><span class="kv-key">Mob kills</span><span class="kv-val">${fmt(p.mob_kills)}</span></div>
+        <div class="kv-row"><span class="kv-key">Player kills</span><span class="kv-val">${fmt(p.player_kills)}</span></div>
+        <div class="kv-row"><span class="kv-key">Deaths</span><span class="kv-val">${fmt(p.deaths)}</span></div>
+        ${p.top_mob ? `<div class="kv-row"><span class="kv-key">Most killed</span><span class="kv-val">${p.top_mob}</span></div>` : ''}
+      </div>
+
+      <div class="detail-section">
+        <div class="ds-title">Activity</div>
         <div class="kv-row"><span class="kv-key">Blocks mined</span><span class="kv-val">${fmt(p.blocks_mined)}</span></div>
-        <div class="kv-row"><span class="kv-key">Top block mined</span><span class="kv-val">${p.top_block_mined || '—'}</span></div>
-        <div class="kv-row"><span class="kv-key">Top mob killed</span><span class="kv-val">${p.top_mob || '—'}</span></div>
-        <div class="kv-row"><span class="kv-key">Distance walked</span><span class="kv-val">${fmt(p.walk_km)} km</span></div>
-        <div class="kv-row"><span class="kv-key">Distance flown</span><span class="kv-val">${fmt(p.elytra_km)} km</span></div>
-        <div class="kv-row"><span class="kv-key">Fish caught</span><span class="kv-val">${fmt(p.fish_caught)}</span></div>
-        <div class="kv-row"><span class="kv-key">Villager trades</span><span class="kv-val">${fmt(p.trades)}</span></div>
+        ${p.top_block_mined ? `<div class="kv-row"><span class="kv-key">Top block</span><span class="kv-val">${p.top_block_mined}</span></div>` : ''}
         <div class="kv-row"><span class="kv-key">Chests opened</span><span class="kv-val">${fmt(p.chests_opened)}</span></div>
+        <div class="kv-row"><span class="kv-key">Villager trades</span><span class="kv-val">${fmt(p.trades)}</span></div>
+        <div class="kv-row"><span class="kv-key">Fish caught</span><span class="kv-val">${fmt(p.fish_caught)}</span></div>
         <div class="kv-row"><span class="kv-key">Beds slept</span><span class="kv-val">${fmt(p.sleeps)}</span></div>
         <div class="kv-row"><span class="kv-key">Music discs played</span><span class="kv-val">${fmt(p.music_discs)}</span></div>
       </div>
 
-      ${claimsOwned.length > 0 ? `
       <div class="detail-section">
-        <div class="detail-section-title">Land · ${claimsOwned.length} claims · ${fmt(p.total_claimed_area)} blocks²</div>
-        ${trustNames.length > 0 ? `
-        <div style="font-size:11px;color:var(--peach);opacity:.7;margin-top:8px;">Trusts:</div>
-        <div class="trust-list">
-          ${trustNames.map(n => `<span class="trust-chip" data-name="${n}">${n}</span>`).join('')}
-        </div>` : ''}
+        <div class="ds-title">Travel</div>
+        <div class="kv-row"><span class="kv-key">Walked</span><span class="kv-val">${fmt(p.walk_km)} km</span></div>
+        <div class="kv-row"><span class="kv-key">Elytra</span><span class="kv-val">${fmt(p.elytra_km)} km</span></div>
+        <div class="kv-row"><span class="kv-key">Boat</span><span class="kv-val">${fmt(p.boat_km)} km</span></div>
       </div>
-      ` : ''}
 
       ${p.bed_x !== null && p.bed_x !== undefined ? `
       <div class="detail-section">
-        <div class="detail-section-title">Location</div>
-        <div class="kv-row"><span class="kv-key">Bed spawn</span><span class="kv-val">(${p.bed_x}, ${p.bed_z})</span></div>
-        ${p.pos_x !== null ? `<div class="kv-row"><span class="kv-key">Last position</span><span class="kv-val">(${Math.round(p.pos_x)}, ${Math.round(p.pos_z)})</span></div>` : ''}
-        ${p.death_x !== null && p.death_x !== undefined ? `<div class="kv-row"><span class="kv-key">Last death</span><span class="kv-val">(${p.death_x}, ${p.death_z})</span></div>` : ''}
-      </div>
-      ` : ''}
+        <div class="ds-title">Locations</div>
+        <div class="kv-row"><span class="kv-key">Bed</span><span class="kv-val">${p.bed_x.toLocaleString()}, ${p.bed_z.toLocaleString()}</span></div>
+        ${p.pos_x !== null && p.pos_x !== undefined ? `<div class="kv-row"><span class="kv-key">Last seen</span><span class="kv-val">${Math.round(p.pos_x).toLocaleString()}, ${Math.round(p.pos_z).toLocaleString()}</span></div>` : ''}
+        ${p.death_x !== null && p.death_x !== undefined ? `<div class="kv-row"><span class="kv-key">Last death</span><span class="kv-val">${p.death_x.toLocaleString()}, ${p.death_z.toLocaleString()}</span></div>` : ''}
+      </div>` : ''}
+
+      ${trustNames.length > 0 ? `
+      <div class="detail-section">
+        <div class="ds-title">Trusts <span class="ds-count">${trustNames.length}</span></div>
+        <div class="chips">
+          ${trustNames.map(n => `<span class="chip" data-name="${n}">${n}</span>`).join('')}
+        </div>
+      </div>` : ''}
     </div>
   `;
   document.getElementById('detail').innerHTML = html;
-
-  // Wire trust chips
-  document.querySelectorAll('.trust-chip').forEach(chip => {
-    chip.onclick = () => {
-      const tp = DATA.roster.find(r => r.name === chip.dataset.name);
-      if (tp) selectPlayer(tp);
-    };
-  });
+  wireChips();
 }
 
 function renderClaimDetail(c) {
   const owner = DATA.roster.find(r => r.uuid === c.owner_uuid);
   const trusts = [...new Set([...(c.builders||[]), ...(c.containers||[]), ...(c.managers||[])])];
-  trusts.splice(trusts.indexOf(c.owner_uuid), 1);
+  const ownerIdx = trusts.indexOf(c.owner_uuid);
+  if (ownerIdx >= 0) trusts.splice(ownerIdx, 1);
   const trustNames = trusts.map(uuid => {
     const t = DATA.roster.find(r => r.uuid === uuid);
-    return t ? t.name : uuid.slice(0, 8);
-  });
+    return t ? t.name : null;
+  }).filter(Boolean);
 
   const html = `
     <div class="detail-card">
       <div class="detail-header">
         <div class="detail-eyebrow">${c.is_subdivision ? 'Subdivision' : 'Claim'} #${c.id}</div>
         <div class="detail-title">${c.owner_name || 'Unknown'}</div>
-        <div class="detail-sub">(${c.x1}, ${c.z1}) → (${c.x2}, ${c.z2})</div>
+        <div class="detail-sub">${c.x1.toLocaleString()}, ${c.z1.toLocaleString()} → ${c.x2.toLocaleString()}, ${c.z2.toLocaleString()}</div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-cell">
-          <div class="stat-cell-num">${fmt(c.area)}</div>
-          <div class="stat-cell-label">blocks²</div>
+      <div class="big-stats">
+        <div class="bs-cell">
+          <div class="bs-num">${fmt(c.area)}</div>
+          <div class="bs-label">Blocks²</div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-cell-num">${Math.abs(c.x2-c.x1)}×${Math.abs(c.z2-c.z1)}</div>
-          <div class="stat-cell-label">dimensions</div>
+        <div class="bs-cell">
+          <div class="bs-num">${Math.abs(c.x2-c.x1)}×${Math.abs(c.z2-c.z1)}</div>
+          <div class="bs-label">Dimensions</div>
         </div>
       </div>
-
-      ${trustNames.length > 0 ? `
-      <div class="detail-section">
-        <div class="detail-section-title">Trusted (${trustNames.length})</div>
-        <div class="trust-list">
-          ${trustNames.map(n => `<span class="trust-chip" data-name="${n}">${n}</span>`).join('')}
-        </div>
-      </div>` : ''}
 
       ${owner ? `
       <div class="detail-section">
-        <div class="detail-section-title">Owner</div>
-        <button class="trust-chip" data-name="${owner.name}" style="font-size:12px;padding:6px 12px;">View ${owner.name}'s profile →</button>
+        <div class="ds-title">Owner</div>
+        <span class="chip" data-name="${owner.name}" style="padding: 7px 14px; font-size: 13px;">${owner.name} →</span>
+      </div>` : ''}
+
+      ${trustNames.length > 0 ? `
+      <div class="detail-section">
+        <div class="ds-title">Trusted <span class="ds-count">${trustNames.length}</span></div>
+        <div class="chips">
+          ${trustNames.map(n => `<span class="chip" data-name="${n}">${n}</span>`).join('')}
+        </div>
       </div>` : ''}
     </div>
   `;
   document.getElementById('detail').innerHTML = html;
+  wireChips();
+}
 
-  document.querySelectorAll('.trust-chip').forEach(chip => {
+function renderNpcDetail(n) {
+  const html = `
+    <div class="detail-card">
+      <div class="detail-header">
+        <div class="detail-eyebrow">NPC</div>
+        <div class="detail-title">${n.name}</div>
+        <div class="detail-sub">${n.x.toLocaleString()}, ${n.z.toLocaleString()} · ${n.dim.replace('minecraft:', '')}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('detail').innerHTML = html;
+}
+
+function wireChips() {
+  document.querySelectorAll('.chip').forEach(chip => {
     chip.onclick = () => {
       const tp = DATA.roster.find(r => r.name === chip.dataset.name);
       if (tp) selectPlayer(tp);
@@ -1507,69 +1429,50 @@ function renderClaimDetail(c) {
   });
 }
 
-function renderNpcDetail(n) {
-  const html = `
-    <div class="detail-card">
-      <div class="detail-header">
-        <div class="detail-eyebrow">Citizens NPC</div>
-        <div class="detail-title">${n.name}</div>
-        <div class="detail-sub">(${n.x}, ${n.z}) · ${n.dim.replace('minecraft:', '')}</div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">Note</div>
-        <p style="color:var(--peach);font-size:12px;line-height:1.6;">
-          A standing NPC placed in the world. Likely a shop interface, warp marker, or community landmark.
-        </p>
-      </div>
-    </div>
-  `;
-  document.getElementById('detail').innerHTML = html;
-}
-
 function renderOverview() {
   const t = DATA.meta.totals;
   const html = `
     <div class="overview">
-      <h1>The Cozy Crafters <em>Atlas</em></h1>
-      <div class="subtitle">A living map of every claim, home, and life on Season 2.</div>
+      <h2>Atlas Overview</h2>
+      <p>An interactive map of Cozy Crafters Season 2 — every claim, home, and player tracked.</p>
 
-      <div class="overview-stats">
+      <div class="overview-grid">
         <div class="ov-cell">
           <div class="ov-num">${t.players}</div>
-          <div class="ov-label">players</div>
+          <div class="ov-label">Players tracked</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${fmt(t.total_play_hours)}</div>
-          <div class="ov-label">hours played</div>
+          <div class="ov-label">Hours played</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${fmt(t.total_claims)}</div>
-          <div class="ov-label">claims</div>
+          <div class="ov-label">Land claims</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${fmt(t.total_mob_kills)}</div>
-          <div class="ov-label">mob kills</div>
+          <div class="ov-label">Mob kills</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${fmt(t.total_blocks_mined)}</div>
-          <div class="ov-label">blocks mined</div>
+          <div class="ov-label">Blocks mined</div>
         </div>
         <div class="ov-cell">
-          <div class="ov-num">${fmt(t.total_walk_km + t.total_elytra_km)}km</div>
-          <div class="ov-label">distance traveled</div>
+          <div class="ov-num">${fmt(t.total_walk_km + t.total_elytra_km)}</div>
+          <div class="ov-label">Km traveled</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${t.dragon_slayers}</div>
-          <div class="ov-label">dragon slayers</div>
+          <div class="ov-label">Dragon slayers</div>
         </div>
         <div class="ov-cell">
           <div class="ov-num">${fmt(t.total_beds)}</div>
-          <div class="ov-label">bed homes</div>
+          <div class="ov-label">Bed homes</div>
         </div>
       </div>
 
-      <div class="overview-hint">
-        Click any claim, bed, or player to begin. Drag to pan, scroll to zoom. The data tells the story — every rectangle is someone's plot of land, every glowing dot is a home, every X marks a death someone walked away from.
+      <div class="overview-tip">
+        <strong>How to use:</strong> Drag to pan, scroll to zoom. Click any claim, bed marker, or player name to see details. Use the layer toggles on the left to control what's shown.
       </div>
     </div>
   `;
@@ -1583,27 +1486,21 @@ function renderOverview() {
 function renderRoster() {
   const filtered = DATA.roster
     .filter(p => !state.searchQuery || p.name.toLowerCase().includes(state.searchQuery.toLowerCase()))
-    .sort((a, b) => {
-      const av = a[state.sortBy] || 0;
-      const bv = b[state.sortBy] || 0;
-      return bv - av;
-    });
+    .sort((a, b) => (b[state.sortBy] || 0) - (a[state.sortBy] || 0));
 
-  const showCount = 80; // limit DOM
+  const showCount = 80;
   const html = filtered.slice(0, showCount).map((p, i) => {
     let statText = '';
     switch (state.sortBy) {
-      case 'play_hours': statText = `${p.play_hours}h`; break;
-      case 'claims_owned': statText = `${p.claims_owned}🏛`; break;
-      case 'mob_kills': statText = `${fmt(p.mob_kills)}`; break;
-      case 'money': statText = fmtMoney(p.money); break;
-      case 'tenure_days': statText = `${p.tenure_days}d`; break;
-      case 'first_played': statText = p.first_played ? fmtDate(p.first_played) : '—'; break;
+      case 'play_hours':   statText = `${p.play_hours || 0}h`; break;
+      case 'claims_owned': statText = `${p.claims_owned || 0}`; break;
+      case 'mob_kills':    statText = fmt(p.mob_kills); break;
+      case 'money':        statText = fmtMoney(p.money); break;
+      case 'tenure_days':  statText = `${p.tenure_days || 0}d`; break;
     }
     return `
       <div class="player-item" data-uuid="${p.uuid}">
         <span class="player-rank">${i + 1}</span>
-        <span class="player-archetype-dot arch-${(p.archetype || 'Casual').replace(' ','')}" title="${p.archetype}"></span>
         <span class="player-name">${p.name}</span>
         <span class="player-stat">${statText}</span>
       </div>
@@ -1611,9 +1508,10 @@ function renderRoster() {
   }).join('');
 
   document.getElementById('roster').innerHTML = html
-    + (filtered.length > showCount ? `<div style="text-align:center;color:var(--rose);font-size:11px;padding:12px;opacity:.6;">+ ${filtered.length - showCount} more · refine search</div>` : '');
+    + (filtered.length > showCount
+        ? `<div style="text-align:center;color:var(--text-3);font-size:12px;padding:14px;">+ ${filtered.length - showCount} more</div>`
+        : '');
 
-  // wire clicks
   document.querySelectorAll('.player-item').forEach(el => {
     el.onclick = () => {
       const p = DATA.roster.find(r => r.uuid === el.dataset.uuid);
@@ -1645,17 +1543,41 @@ document.getElementById('search').oninput = e => {
 
 
 // ============================================================
-// Counts in toggle UI
+// Server stats top card
+// ============================================================
+function renderServerStats() {
+  const t = DATA.meta.totals;
+  const html = `
+    <div class="ss-cell">
+      <div class="ss-num">${t.players}</div>
+      <div class="ss-label">Players</div>
+    </div>
+    <div class="ss-cell">
+      <div class="ss-num">${t.total_claims}</div>
+      <div class="ss-label">Claims</div>
+    </div>
+    <div class="ss-cell">
+      <div class="ss-num">${fmt(t.total_play_hours)}</div>
+      <div class="ss-label">Hours played</div>
+    </div>
+    <div class="ss-cell">
+      <div class="ss-num">${fmt(t.total_walk_km + t.total_elytra_km)}km</div>
+      <div class="ss-label">Distance</div>
+    </div>
+  `;
+  document.getElementById('server-stats').innerHTML = html;
+}
+
+
+// ============================================================
+// Init
 // ============================================================
 document.getElementById('ct-claims').textContent = DATA.meta.totals.total_claims;
 document.getElementById('ct-beds').textContent = DATA.meta.totals.total_beds;
 document.getElementById('ct-deaths').textContent = DATA.meta.totals.total_recent_deaths;
 document.getElementById('ct-npcs').textContent = DATA.meta.totals.total_npcs;
 
-
-// ============================================================
-// Init
-// ============================================================
+renderServerStats();
 renderOverview();
 renderRoster();
 resizeCanvas();
