@@ -3,25 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Cozy Crafters SMP — a small Java survival server focused on towns, trading, building, and community." />
+    <meta name="description" content="Cozy Crafters SMP is a small Java survival server focused on towns, trading, building, and community." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Cozy Crafters SMP" />
+    <meta property="og:description" content="A small Java survival server where builds are cozy, towns matter, and the players are somehow worse than the mobs." />
+    <meta name="theme-color" content="#496b3a" />
     <title>Cozy Crafters SMP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="page-shell">
-      <section class="hero-card" aria-labelledby="site-title">
-        <p class="eyebrow">Java Survival SMP</p>
-        <h1 id="site-title">Cozy Crafters SMP</h1>
-        <p class="lede">A small survival server where builds are cozy, towns matter, and the players are somehow worse than the mobs.</p>
-        <div class="actions" aria-label="Primary links">
-          <a class="button button-primary" href="minecraft://?addExternalServer=Cozy%20Crafters%20SMP|play.cozycrafters.net">Join Server</a>
-          <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Join Discord</a>
-        </div>
-        <p class="server-ip">play.cozycrafters.net</p>
-      </section>
-    </main>
+    <div class="page-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="#top" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#join">Join</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero section-card" aria-labelledby="site-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Java Survival SMP</p>
+            <h1 id="site-title">A small Minecraft world, warmly built.</h1>
+            <p class="lede">Cozy Crafters SMP is a community survival server focused on towns, trading, building, and the kind of player drama that somehow becomes server history.</p>
+            <div class="actions" aria-label="Primary actions">
+              <a class="button button-primary" href="minecraft://?addExternalServer=Cozy%20Crafters%20SMP|play.cozycrafters.net">Join Server</a>
+              <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Join Discord</a>
+            </div>
+          </div>
+
+          <aside class="join-card" aria-labelledby="server-ip-label">
+            <p id="server-ip-label" class="mini-label">Server IP</p>
+            <p class="server-ip">play.cozycrafters.net</p>
+            <div class="server-details">
+              <span>Java Edition</span>
+              <span>Paper 1.21</span>
+              <span>No pay-to-win</span>
+            </div>
+          </aside>
+        </section>
+
+        <section id="about" class="intro-grid">
+          <article class="section-card story-card">
+            <p class="eyebrow">What is this?</p>
+            <h2>A cozy SMP with an actual memory.</h2>
+            <p>We are not a giant network, and that is the point. Players build towns, run shops, make questionable decisions, and gradually turn the world into a place with history.</p>
+          </article>
+          <article class="section-card quote-card">
+            <p>“Someone is probably starting political drama in The End.”</p>
+          </article>
+        </section>
+
+        <section id="features" class="features" aria-labelledby="features-title">
+          <div class="section-heading">
+            <p class="eyebrow">Why play here?</p>
+            <h2 id="features-title">Simple survival, with more reasons to care.</h2>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="feature-icon">🏡</span>
+              <h3>Player towns</h3>
+              <p>Build alone, join a town, or slowly become part of the server’s ongoing local politics.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">🌾</span>
+              <h3>Cozy economy</h3>
+              <p>Trade with players, rent market space, use shops, and make money without turning survival into a chore.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">🛡️</span>
+              <h3>Protected builds</h3>
+              <p>Claims keep your home safe while still leaving room for a shared world that feels alive.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon">✨</span>
+              <h3>Custom polish</h3>
+              <p>Custom menus, homes, ranks, markets, towns, goals, and small quality-of-life systems built for this server.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="join" class="join-section section-card" aria-labelledby="join-title">
+          <div>
+            <p class="eyebrow">Ready?</p>
+            <h2 id="join-title">Join the world.</h2>
+            <p>Hop in on Java Edition, then join the Discord to meet the community and see what is currently happening.</p>
+          </div>
+          <div class="join-actions">
+            <p class="server-ip large">play.cozycrafters.net</p>
+            <a class="button button-primary" href="minecraft://?addExternalServer=Cozy%20Crafters%20SMP|play.cozycrafters.net">Add Server</a>
+            <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Discord</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
   </body>
 </html>
