@@ -51,7 +51,7 @@
             <h1 id="site-title">A small Minecraft world, warmly built.</h1>
             <p class="lede">Cozy Crafters SMP is a community survival server focused on towns, trading, building, and the kind of player drama that somehow becomes server history.</p>
             <div class="actions" aria-label="Primary actions">
-              <a class="button button-primary" href="minecraft://?addExternalServer=Cozy%20Crafters%20SMP|play.cozycrafters.net">Join Server</a>
+              <button class="button button-primary" type="button" data-copy-ip>Join Server</button>
               <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Join Discord</a>
             </div>
           </div>
@@ -115,7 +115,7 @@
           </div>
           <div class="join-actions">
             <p class="server-ip large">play.cozycrafters.net</p>
-            <a class="button button-primary" href="minecraft://?addExternalServer=Cozy%20Crafters%20SMP|play.cozycrafters.net">Add Server</a>
+            <button class="button button-primary" type="button" data-copy-ip>Add Server</button>
             <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Discord</a>
           </div>
         </section>
@@ -125,5 +125,48 @@
         <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
       </footer>
     </div>
+
+    <script>
+      (() => {
+        const serverIp = 'play.cozycrafters.net';
+        const copyButtons = document.querySelectorAll('[data-copy-ip]');
+
+        const copyText = async (text) => {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return;
+          }
+
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          textarea.remove();
+        };
+
+        copyButtons.forEach((button) => {
+          const originalText = button.textContent;
+
+          button.addEventListener('click', async () => {
+            try {
+              await copyText(serverIp);
+              button.textContent = 'Copied IP!';
+              window.setTimeout(() => {
+                button.textContent = originalText;
+              }, 1600);
+            } catch (error) {
+              button.textContent = 'Copy failed';
+              window.setTimeout(() => {
+                button.textContent = originalText;
+              }, 1600);
+            }
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
