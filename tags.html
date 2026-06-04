@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cozy Crafters · Tag Maker</title>
+<meta name="description" content="Design your own custom chat tag for the Cozy Crafters Minecraft server.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=VT323&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root {
+    /* Modrinth-inspired light palette, tuned to Cozy pink */
+    --bg:           #f4f4f7;
+    --bg-card:      #ffffff;
+    --bg-card-2:    #fafafc;
+    --bg-input:     #f1f1f5;
+    --bg-input-2:   #e8e8ed;
+    --border:       #e2e2e8;
+    --border-2:     #c9c9d2;
+    --border-focus: #ff5577;
+
+    --text:         #1c1c22;
+    --text-dim:     #5d5e68;
+    --text-faint:   #8a8b94;
+
+    --accent:        #ff5577;
+    --accent-hover:  #e84368;
+    --accent-press:  #c8325a;
+    --accent-soft:   rgba(255, 85, 119, 0.10);
+    --accent-soft-2: rgba(255, 85, 119, 0.05);
+
+    --success: #15b85a;
+    --warn:    #d99a2b;
+    --error:   #d93545;
+
+    /* Lighter checker so preview area still reads as checkered, but bright */
+    --checker-a: #d8d8df;
+    --checker-b: #ebebf1;
+
+    --radius-sm: 4px;
+    --radius:    6px;
+    --radius-lg: 10px;
+    --radius-xl: 14px;
+
+    --shadow-sm: 0 1px 2px rgba(20, 22, 30, 0.05);
+    --shadow:    0 4px 12px rgba(20, 22, 30, 0.08);
+    --shadow-lg: 0 12px 32px rgba(20, 22, 30, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-image:
+      radial-gradient(900px 450px at 85% -120px, rgba(255, 85, 119, 0.10), transparent 60%),
+      radial-gradient(700px 350px at 0% 200px, rgba(255, 85, 119, 0.06), transparent 70%);
+    background-attachment: fixed;
+  }
+
+  .app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ============ HEADER ============ */
+  header.page-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+  }
+  .page-header .logo {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    display: grid;
+    place-items: center;
+    font-family: 'VT323', monospace;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+  }
+  .page-header .meta { flex: 1; min-width: 0; }
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .page-header h1 .accent { color: var(--accent); }
+  .page-header .subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .page-header .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  /* ============ INTRO CARD ============ */
+  .intro {
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+  .intro .icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .intro strong { color: var(--text); font-weight: 600; }
+  .intro .step-num {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    background: var(--bg-input);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  /* ============ TABS (pill style) ============ */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    padding: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: fit-content;
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); background: var(--bg-input); }
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  .tab.active:hover { background: var(--accent-hover); }
+
+  /* ============ MODE PANELS ============ */
+  .mode { display: none; }
+  .mode.active { display: block; }
+
+  /* ============ SINGLE MODE LAYOUT ============ */
+  .single-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(380px, 1.3fr);
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .single-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ============ CARDS / SECTIONS ============ */
+  .section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 14px;
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.01em;
+  }
+  .section h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .section h2 .badge {
+    margin-left: auto;
+  }
+
+  /* ============ FORM CONTROLS ============ */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .field:last-child { margin-bottom: 0; }
+  .field > label {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .field-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .field-row .field { flex: 1; margin-bottom: 0; min-width: 80px; }
+
+  input[type=text], input[type=number], select, textarea {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 11px;
+    border-radius: var(--radius);
+    width: 100%;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  input[type=text]:hover, input[type=number]:hover, select:hover, textarea:hover {
+    background: var(--bg-input-2);
+  }
+  input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    background: var(--bg-input);
+  }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%235d5e68' d='M6 8L2 4h8z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
+  input[type=color] {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    width: 100%;
+    height: 36px;
+    padding: 3px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: border-color 0.15s;
+  }
+  input[type=color]:hover { border-color: var(--border-2); }
+  input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type=color]::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+  input[type=number] { font-variant-numeric: tabular-nums; }
+
+  input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    padding: 6px 0;
+    user-select: none;
+  }
+  .toggle:hover { color: var(--text); }
+  .toggle + .toggle { margin-top: 2px; }
+
+  /* ============ BUTTONS ============ */
+  button.btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.12s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  button.btn:hover {
+    background: var(--bg-input-2);
+    border-color: var(--border-2);
+  }
+  button.btn:active { transform: translateY(1px); }
+  button.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  button.btn.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 85, 119, 0.25);
+  }
+  button.btn.primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    box-shadow: 0 4px 14px rgba(255, 85, 119, 0.35);
+  }
+  button.btn.primary:active { background: var(--accent-press); }
+
+  button.btn.small { padding: 5px 11px; font-size: 12px; }
+  button.btn.icon {
+    padding: 6px 9px;
+    background: transparent;
+  }
+  button.btn.icon:hover { color: var(--accent); border-color: var(--accent); }
+  button.btn.danger:hover {
+    color: var(--error);
+    border-color: var(--error);
+    background: rgba(255, 85, 102, 0.08);
+  }
+
+  /* ============ COLOR STOPS ============ */
+  .color-stops { display: flex; flex-direction: column; gap: 8px; }
+  .color-stop {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .color-stop .swatch-num {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-align: center;
+    background: var(--bg-input);
+    padding: 6px 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .color-stop input[type=color] { height: 30px; }
+
+  .gradient-preview {
+    height: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  /* ============ PRESETS ============ */
+  .presets-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .preset-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 9px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .preset-btn:hover {
+    border-color: var(--accent);
+    background: var(--bg-input-2);
+    color: var(--text);
+  }
+  .preset-swatch {
+    width: 28px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.4);
+  }
+
+  /* ============ PREVIEW PANEL ============ */
+  .preview-stack { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
+  @media (max-width: 900px) { .preview-stack { position: static; } }
+
+  .preview-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .preview-box h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .preview-box h3 .scale {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .preview-canvas-wrap {
+    background:
+      linear-gradient(45deg, var(--checker-a) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--checker-a) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--checker-a) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--checker-a) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+    background-color: var(--checker-b);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    overflow: auto;
+  }
+  canvas.preview-canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+  }
+  .preview-meta {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    background: var(--bg-input);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .preview-meta .key { color: var(--text-faint); margin-right: 4px; }
+
+  /* ============ DOWNLOAD CARD ============ */
+  .download-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .download-card .download-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .download-card .download-row .btn { flex: 1; justify-content: center; min-width: 120px; }
+  .download-card .download-row .btn.primary { flex: 2; }
+  .submit-hint {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--accent-soft-2);
+    border: 1px solid var(--accent-soft);
+    border-radius: var(--radius);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .submit-hint strong { color: var(--accent); font-weight: 600; }
+
+  /* ============ BULK MODE ============ */
+  .bulk-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .bulk-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .bulk-table th, .bulk-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .bulk-table th {
+    background: var(--bg-card-2);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .bulk-table tr:last-child td { border-bottom: none; }
+  .bulk-table tr:hover td { background: var(--accent-soft-2); }
+  .bulk-table td.preview-cell { width: 220px; }
+  .bulk-table td.preview-cell canvas {
+    image-rendering: pixelated;
+    border: 1px solid rgba(0,0,0,0.4);
+    border-radius: 2px;
+  }
+  .bulk-table td.actions-cell {
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+  }
+  .bulk-table td.actions-cell button { margin-left: 4px; }
+  .bulk-table input[type=text] {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px 8px;
+    font-size: 13px;
+    border-radius: var(--radius);
+  }
+  .bulk-table input[type=text]:hover { border-color: var(--border); background: var(--bg-input); }
+  .bulk-table input[type=text]:focus { border-color: var(--accent); background: var(--bg-input); }
+
+  .swatch-row { display: flex; gap: 3px; }
+  .mini-swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(0,0,0,0.4);
+    border-radius: 3px;
+  }
+
+  .empty-state {
+    padding: 56px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    background: var(--bg-card);
+    border: 1px dashed var(--border-2);
+    border-radius: var(--radius-lg);
+  }
+  .empty-state .icon {
+    font-family: 'VT323', monospace;
+    font-size: 56px;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+  .empty-state .title { color: var(--text); font-weight: 600; margin-bottom: 4px; }
+
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 42, 52, 0.45);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 22px;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  .modal textarea {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    min-height: 240px;
+    width: 100%;
+    line-height: 1.5;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: flex-end;
+  }
+
+  /* ============ UTILS ============ */
+  .hint {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 8px;
+    line-height: 1.55;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 999px;
+    line-height: 1.5;
+  }
+  .badge.neutral {
+    background: var(--bg-input);
+    color: var(--text-dim);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-2);
+    border-radius: 999px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* Focus visible */
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Footer */
+  .page-footer {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .page-footer a { color: var(--text-dim); text-decoration: none; }
+  .page-footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="page-header">
+    <div class="logo">C</div>
+    <div class="meta">
+      <h1>Cozy Crafters <span class="accent">·</span> Tag Maker <span class="tag-pill">●  SMP</span></h1>
+      <div class="subtitle">Design your own pixel-art chat tag for the server.</div>
+    </div>
+  </header>
+
+  <div class="intro">
+    <div class="icon">i</div>
+    <div>
+      <span class="step-num">1</span> <strong>Type your tag</strong> (up to 20 letters/numbers).
+      <span class="step-num">2</span> <strong>Pick colors</strong> or use a preset.
+      <span class="step-num">3</span> <strong>Tweak the frame</strong> if you want.
+      <span class="step-num">4</span> <strong>Download the PNG</strong> and send it to Colby — it'll show up next to your name in chat once approved.
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-mode="single">Designer</button>
+    <button class="tab" data-mode="bulk">Bulk list</button>
+  </nav>
+
+  <!-- ========= SINGLE MODE ========= -->
+  <section id="mode-single" class="mode active">
+    <div class="single-layout">
+
+      <!-- Controls -->
+      <div>
+        <div class="section">
+          <h2>Text</h2>
+          <div class="field">
+            <label for="text-input">Your tag</label>
+            <input type="text" id="text-input" value="NETHERITE" maxlength="20" autocomplete="off" placeholder="UPPERCASE ONLY">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="font-select">Font</label>
+              <select id="font-select">
+                <option value="5x5">Regular (5×5)</option>
+                <option value="7x5">Tall (7×5)</option>
+              </select>
+            </div>
+            <div class="field" style="max-width: 110px;">
+              <label for="text-color">Text color</label>
+              <input type="color" id="text-color" value="#ffffff">
+            </div>
+          </div>
+          <label class="toggle" style="margin-top:10px;">
+            <input type="checkbox" id="auto-contrast" checked>
+            <span>Auto-contrast text against background</span>
+          </label>
+        </div>
+
+        <div class="section">
+          <h2>Background</h2>
+          <div class="field">
+            <label>Gradient stops</label>
+            <div class="color-stops" id="color-stops"></div>
+            <div class="gradient-preview" id="gradient-preview"></div>
+            <button class="btn small" id="add-stop" style="margin-top:10px;">+ Add color stop</button>
+            <div class="presets-label">Presets</div>
+            <div class="presets" id="presets"></div>
+          </div>
+          <div class="field-row" style="margin-top:14px;">
+            <div class="field">
+              <label for="grad-direction">Direction</label>
+              <select id="grad-direction">
+                <option value="horizontal">Horizontal →</option>
+                <option value="vertical">Vertical ↓</option>
+                <option value="diagonal">Diagonal ↘</option>
+                <option value="diagonal-up">Diagonal ↗</option>
+                <option value="radial">Radial ◉</option>
+              </select>
+            </div>
+            <label class="toggle" style="align-self: flex-end; padding-bottom: 9px;">
+              <input type="checkbox" id="hard-stops">
+              <span>Hard stops</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Frame</h2>
+          <div class="field-row">
+            <label class="toggle" style="flex: 0 0 auto;">
+              <input type="checkbox" id="border-on" checked>
+              <span>Border</span>
+            </label>
+            <div class="field" style="max-width: 100px;">
+              <label for="border-color">Color</label>
+              <input type="color" id="border-color" value="#000000">
+            </div>
+            <div class="field" style="max-width: 90px;">
+              <label for="border-width">Width</label>
+              <input type="number" id="border-width" value="1" min="0" max="3">
+            </div>
+          </div>
+          <div class="field-row" style="margin-top:10px;">
+            <div class="field">
+              <label for="corner">Corner</label>
+              <input type="number" id="corner" value="2" min="0" max="4">
+            </div>
+            <div class="field">
+              <label for="pad-x">Pad-X</label>
+              <input type="number" id="pad-x" value="2" min="0" max="6">
+            </div>
+            <div class="field">
+              <label for="pad-top">Pad-top</label>
+              <input type="number" id="pad-top" value="0" min="0" max="4">
+            </div>
+            <div class="field">
+              <label for="pad-bot">Pad-btm</label>
+              <input type="number" id="pad-bot" value="1" min="0" max="4">
+            </div>
+          </div>
+          <div class="hint">Default settings produce a clean 8px-tall tag — ideal for chat. Most players don't need to change these.</div>
+        </div>
+
+        <div class="section">
+          <h2>Effects <span class="badge neutral">Optional</span></h2>
+          <label class="toggle">
+            <input type="checkbox" id="shadow-on">
+            <span>Drop shadow (1px below)</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="outline-on">
+            <span>Outline around text (1px)</span>
+          </label>
+          <div class="field-row" style="margin-top:10px;">
+            <div class="field" style="max-width: 130px;">
+              <label for="outline-color">Outline color</label>
+              <input type="color" id="outline-color" value="#000000">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-stack">
+        <div class="preview-box">
+          <h3>Preview <span class="scale">8×</span></h3>
+          <div class="preview-canvas-wrap">
+            <canvas id="preview-scaled" class="preview-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="preview-box">
+          <h3>Actual size <span class="scale">1×</span></h3>
+          <div class="preview-canvas-wrap">
+            <canvas id="preview-actual" class="preview-canvas"></canvas>
+          </div>
+          <div class="preview-meta">
+            <span><span class="key">size:</span><span id="meta-size">0×0</span></span>
+            <span><span class="key">text:</span><span id="meta-text">0×0</span></span>
+            <span><span class="key">stops:</span><span id="meta-stops">0</span></span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="download-row">
+            <button class="btn primary" id="dl-single">↓ Download PNG</button>
+            <button class="btn" id="dl-scaled">↓ Download 6×</button>
+            <button class="btn" id="add-to-bulk">+ Add to bulk</button>
+          </div>
+          <div class="submit-hint">
+            <strong>Almost done!</strong> Download the PNG, then send it to Colby with the name you'd like it attached to. Once it's added to the resource pack, your tag will appear in chat.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========= BULK MODE ========= -->
+  <section id="mode-bulk" class="mode">
+    <div class="section">
+      <h2>Tag list <span id="bulk-count" class="badge">0</span></h2>
+      <div class="bulk-controls">
+        <button class="btn" id="bulk-add">+ Add tag</button>
+        <button class="btn" id="bulk-import">↑ Import JSON</button>
+        <button class="btn" id="bulk-export">↓ Export JSON</button>
+        <button class="btn danger" id="bulk-clear">✕ Clear all</button>
+        <div style="flex:1"></div>
+        <button class="btn primary" id="bulk-download">↓ Download all as ZIP</button>
+      </div>
+
+      <div id="bulk-list-wrap">
+        <table class="bulk-table" id="bulk-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Colors</th>
+              <th>Preview (6×)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="bulk-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="bulk-empty">
+          <div class="icon">▢ ▢ ▢</div>
+          <div class="title">No tags in the list yet</div>
+          <div>Add one above, or design a tag in the Designer tab and click <em>Add to bulk</em>.</div>
+        </div>
+      </div>
+
+      <div class="hint" style="margin-top:14px;">
+        Bulk inherits the current Designer settings as shared defaults (font, border, corners, padding, effects). Each row keeps its own text + gradient.
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    Made for <a href="https://cozycrafters.net" target="_blank" rel="noopener">Cozy Crafters</a> · <code>play.cozycrafters.net</code>
+  </footer>
+
+</div>
+
+<!-- Modal for JSON import/export -->
+<div class="modal-backdrop" id="modal-bg">
+  <div class="modal">
+    <h2 id="modal-title">Import JSON</h2>
+    <textarea id="modal-textarea" spellcheck="false"></textarea>
+    <div class="modal-actions">
+      <button class="btn" id="modal-cancel">Cancel</button>
+      <button class="btn primary" id="modal-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ==============================================================
+   PIXEL FONTS
+   ============================================================== */
+const FONT_5x5 = {
+  ' ':['000','000','000','000','000'],
+  '-':['000','000','111','000','000'],
+  '.':['0','0','0','0','1'],
+  '!':['1','1','1','0','1'],
+  "'":['1','1','0','0','0'],
+  '?':['110','001','010','000','010'],
+  'A':['01110','10001','11111','10001','10001'],
+  'B':['11110','10001','11110','10001','11110'],
+  'C':['01110','10001','10000','10001','01110'],
+  'D':['11110','10001','10001','10001','11110'],
+  'E':['11111','10000','11100','10000','11111'],
+  'F':['11111','10000','11100','10000','10000'],
+  'G':['01111','10000','10111','10001','01110'],
+  'H':['10001','10001','11111','10001','10001'],
+  'I':['11111','00100','00100','00100','11111'],
+  'J':['00111','00001','00001','10001','01110'],
+  'K':['10001','10010','11100','10010','10001'],
+  'L':['10000','10000','10000','10000','11111'],
+  'M':['10001','11011','10101','10001','10001'],
+  'N':['10001','11001','10101','10011','10001'],
+  'O':['01110','10001','10001','10001','01110'],
+  'P':['11110','10001','11110','10000','10000'],
+  'Q':['01110','10001','10101','10010','01101'],
+  'R':['11110','10001','11110','10001','10001'],
+  'S':['01111','10000','01110','00001','11110'],
+  'T':['11111','00100','00100','00100','00100'],
+  'U':['10001','10001','10001','10001','01110'],
+  'V':['10001','10001','10001','01010','00100'],
+  'W':['10001','10001','10101','11011','10001'],
+  'X':['10001','01010','00100','01010','10001'],
+  'Y':['10001','01010','00100','00100','00100'],
+  'Z':['11111','00010','00100','01000','11111'],
+  '0':['01110','10011','10101','11001','01110'],
+  '1':['00100','01100','00100','00100','01110'],
+  '2':['01110','10001','00110','01000','11111'],
+  '3':['11110','00001','01110','00001','11110'],
+  '4':['10001','10001','11111','00001','00001'],
+  '5':['11111','10000','11110','00001','11110'],
+  '6':['01110','10000','11110','10001','01110'],
+  '7':['11111','00001','00010','00100','00100'],
+  '8':['01110','10001','01110','10001','01110'],
+  '9':['01110','10001','01111','00001','01110'],
+  '\u2744':['01010','00100','11111','00100','01010'],
+};
+
+const FONT_7x5 = {
+  ' ':['000','000','000','000','000','000','000'],
+  '-':['000','000','000','111','000','000','000'],
+  '.':['0','0','0','0','0','0','1'],
+  '!':['1','1','1','1','1','0','1'],
+  "'":['1','1','0','0','0','0','0'],
+  '?':['01110','10001','00001','00010','00100','00000','00100'],
+  'A':['01110','10001','10001','11111','10001','10001','10001'],
+  'B':['11110','10001','10001','11110','10001','10001','11110'],
+  'C':['01110','10001','10000','10000','10000','10001','01110'],
+  'D':['11110','10001','10001','10001','10001','10001','11110'],
+  'E':['11111','10000','10000','11110','10000','10000','11111'],
+  'F':['11111','10000','10000','11110','10000','10000','10000'],
+  'G':['01110','10001','10000','10111','10001','10001','01110'],
+  'H':['10001','10001','10001','11111','10001','10001','10001'],
+  'I':['11111','00100','00100','00100','00100','00100','11111'],
+  'J':['11111','00010','00010','00010','00010','10010','01100'],
+  'K':['10001','10010','10100','11000','10100','10010','10001'],
+  'L':['10000','10000','10000','10000','10000','10000','11111'],
+  'M':['10001','11011','10101','10001','10001','10001','10001'],
+  'N':['10001','11001','10101','10101','10101','10011','10001'],
+  'O':['01110','10001','10001','10001','10001','10001','01110'],
+  'P':['11110','10001','10001','11110','10000','10000','10000'],
+  'Q':['01110','10001','10001','10001','10101','10010','01101'],
+  'R':['11110','10001','10001','11110','10100','10010','10001'],
+  'S':['01111','10000','10000','01110','00001','00001','11110'],
+  'T':['11111','00100','00100','00100','00100','00100','00100'],
+  'U':['10001','10001','10001','10001','10001','10001','01110'],
+  'V':['10001','10001','10001','10001','10001','01010','00100'],
+  'W':['10001','10001','10001','10001','10101','11011','10001'],
+  'X':['10001','10001','01010','00100','01010','10001','10001'],
+  'Y':['10001','10001','01010','00100','00100','00100','00100'],
+  'Z':['11111','00001','00010','00100','01000','10000','11111'],
+  '0':['01110','10001','10011','10101','11001','10001','01110'],
+  '1':['00100','01100','00100','00100','00100','00100','01110'],
+  '2':['01110','10001','00001','00010','00100','01000','11111'],
+  '3':['11110','00001','00001','01110','00001','00001','11110'],
+  '4':['00010','00110','01010','10010','11111','00010','00010'],
+  '5':['11111','10000','11110','00001','00001','10001','01110'],
+  '6':['00110','01000','10000','11110','10001','10001','01110'],
+  '7':['11111','00001','00010','00100','01000','01000','01000'],
+  '8':['01110','10001','10001','01110','10001','10001','01110'],
+  '9':['01110','10001','10001','01111','00001','00010','01100'],
+  '\u2744':['00000','00100','10101','01110','10101','00100','00000'],
+};
+
+const FONTS = { '5x5': FONT_5x5, '7x5': FONT_7x5 };
+
+/* ==============================================================
+   PRESETS
+   ============================================================== */
+const PRESETS = [
+  { name: 'Netherite', colors: ['#FF5577', '#C11757'] },
+  { name: 'Diamond',   colors: ['#5CDFFF', '#1F8BD8'] },
+  { name: 'Gold',      colors: ['#FFD966', '#B26F2A'] },
+  { name: 'Iron',      colors: ['#E8E8E8', '#8B8B8B'] },
+  { name: 'Emerald',   colors: ['#50C878', '#1C7C45'] },
+  { name: 'Ruby',      colors: ['#FF3B3B', '#8A0000'] },
+  { name: 'Aurora',    colors: ['#88158A', '#766E7E', '#5BF36B'] },
+  { name: 'Sunset',    colors: ['#FFD166', '#FF8F00', '#FF5000'] },
+  { name: 'Ocean',     colors: ['#9BE7FF', '#3C92BE', '#2981B1'] },
+  { name: 'Lavender',  colors: ['#E0BBFF', '#924FFF'] },
+  { name: 'Mono',      colors: ['#3a3f50', '#1d2233'] },
+  { name: 'Cozy',      colors: ['#486778', '#5B60A2', '#6E58CD', '#8151F7'] },
+];
+
+/* ==============================================================
+   RENDERING
+   ============================================================== */
+function hexToRgb(h) {
+  const n = parseInt(h.replace('#',''), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function rgbStr(rgb) { return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`; }
+function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+function darken(rgb, amt) { return rgb.map(c => Math.max(0, Math.round(c * (1 - amt)))); }
+function luminance(rgb) { return (0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]) / 255; }
+function avgLuminance(colors) {
+  if (!colors.length) return 0.5;
+  return colors.reduce((s, c) => s + luminance(c), 0) / colors.length;
+}
+
+function gradientAt(stopsRgb, t, hard) {
+  if (stopsRgb.length === 1) return stopsRgb[0];
+  t = Math.max(0, Math.min(1, t));
+  const n = stopsRgb.length - 1;
+  const seg = Math.min(Math.floor(t * n), n - 1);
+  const local = t * n - seg;
+  if (hard) return stopsRgb[Math.round(t * n)];
+  const a = stopsRgb[seg], b = stopsRgb[seg + 1];
+  return [lerp(a[0], b[0], local), lerp(a[1], b[1], local), lerp(a[2], b[2], local)];
+}
+
+function inRoundedRect(x, y, w, h, r) {
+  if (x < 0 || y < 0 || x >= w || y >= h) return false;
+  if (r <= 0) return true;
+  const cx = x + 0.5, cy = y + 0.5;
+  const corners = [[0,0],[w,0],[0,h],[w,h]];
+  for (const [ox, oy] of corners) {
+    if ((ox === 0 && cx > r) || (ox === w && cx < w - r)) continue;
+    if ((oy === 0 && cy > r) || (oy === h && cy < h - r)) continue;
+    const dx = cx - ox, dy = cy - oy;
+    if (dx*dx + dy*dy < r*r) return false;
+  }
+  return true;
+}
+
+function textWidth(text, font) {
+  if (!text) return 0;
+  let w = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const g = font[ch] || font[' '];
+    w += g[0].length;
+    if (i < text.length - 1) w += 1;
+  }
+  return w;
+}
+
+function computeGradT(x, y, w, h, dir, bd, padL, padT, innerW, innerH) {
+  // map x,y (in interior) to t in [0,1]
+  const ix = x - bd, iy = y - bd;
+  switch (dir) {
+    case 'horizontal':
+      return innerW > 1 ? ix / (innerW - 1) : 0;
+    case 'vertical':
+      return innerH > 1 ? iy / (innerH - 1) : 0;
+    case 'diagonal':
+      return (ix + iy) / (innerW + innerH - 2);
+    case 'diagonal-up':
+      return (ix + (innerH - 1 - iy)) / (innerW + innerH - 2);
+    case 'radial': {
+      const cx = (innerW - 1) / 2, cy = (innerH - 1) / 2;
+      const maxD = Math.sqrt(cx*cx + cy*cy);
+      const d = Math.sqrt((ix - cx)**2 + (iy - cy)**2);
+      return d / (maxD || 1);
+    }
+  }
+  return 0;
+}
+
+function renderTag(canvas, cfg) {
+  const font = FONTS[cfg.font] || FONT_5x5;
+  const text = (cfg.text || '').toUpperCase();
+  const stopsRgb = cfg.colors.map(hexToRgb);
+  if (stopsRgb.length === 0) stopsRgb.push([255, 85, 119]);
+  if (stopsRgb.length === 1) stopsRgb.push(stopsRgb[0]);
+
+  const tw = textWidth(text, font);
+  const th = font['A'].length;
+  const padX = cfg.padX, padT = cfg.padTop, padB = cfg.padBot;
+  const bd = cfg.borderOn ? cfg.borderWidth : 0;
+
+  const innerW = tw + 2 * padX;
+  const innerH = th + padT + padB;
+  const badgeW = innerW + 2 * bd;
+  const badgeH = innerH + 2 * bd;
+
+  const shadowOff = cfg.shadowOn ? 1 : 0;
+  const fullW = badgeW + shadowOff;
+  const fullH = badgeH + shadowOff;
+
+  canvas.width = fullW;
+  canvas.height = fullH;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, fullW, fullH);
+
+  // Auto-contrast
+  let textColor = cfg.textColor;
+  if (cfg.autoContrast) {
+    textColor = avgLuminance(stopsRgb) > 0.62 ? '#23232d' : '#ffffff';
+  }
+
+  // Shadow
+  if (cfg.shadowOn) {
+    const mid = stopsRgb[Math.floor(stopsRgb.length / 2)];
+    const sc = darken(mid, 0.5);
+    for (let y = 0; y < badgeH; y++) {
+      for (let x = 0; x < badgeW; x++) {
+        if (inRoundedRect(x, y, badgeW, badgeH, cfg.corner)) {
+          const sx = x + shadowOff, sy = y + shadowOff;
+          ctx.fillStyle = `rgba(${sc[0]},${sc[1]},${sc[2]},0.45)`;
+          ctx.fillRect(sx, sy, 1, 1);
+        }
+      }
+    }
+  }
+
+  // Badge body
+  for (let y = 0; y < badgeH; y++) {
+    for (let x = 0; x < badgeW; x++) {
+      if (!inRoundedRect(x, y, badgeW, badgeH, cfg.corner)) continue;
+      // Edge check
+      let isEdge = false;
+      if (bd > 0) {
+        for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+          if (!inRoundedRect(x+dx, y+dy, badgeW, badgeH, cfg.corner)) {
+            isEdge = true; break;
+          }
+        }
+      }
+      if (isEdge) {
+        ctx.fillStyle = cfg.borderColor;
+        ctx.fillRect(x, y, 1, 1);
+      } else {
+        const t = computeGradT(x, y, badgeW, badgeH, cfg.direction, bd, padX, padT, innerW, innerH);
+        ctx.fillStyle = rgbStr(gradientAt(stopsRgb, t, cfg.hardStops));
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+  }
+
+  // Text
+  const startX = bd + padX;
+  const startY = bd + padT;
+  let cx = startX;
+  for (const ch of text) {
+    const g = font[ch] || font[' '];
+    const gw = g[0].length;
+    // Outline pass first
+    if (cfg.outlineOn) {
+      for (let r = 0; r < g.length; r++) {
+        for (let c = 0; c < gw; c++) {
+          if (g[r][c] === '1') {
+            const xp = cx + c, yp = startY + r;
+            for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+              const nx = xp + dx, ny = yp + dy;
+              if (nx >= 0 && nx < fullW && ny >= 0 && ny < fullH) {
+                // only draw outline if not already a text pixel
+                ctx.fillStyle = cfg.outlineColor;
+                ctx.fillRect(nx, ny, 1, 1);
+              }
+            }
+          }
+        }
+      }
+    }
+    cx += gw + 1;
+  }
+  // text pass
+  cx = startX;
+  for (const ch of text) {
+    const g = font[ch] || font[' '];
+    const gw = g[0].length;
+    for (let r = 0; r < g.length; r++) {
+      for (let c = 0; c < gw; c++) {
+        if (g[r][c] === '1') {
+          const xp = cx + c, yp = startY + r;
+          if (xp >= 0 && xp < fullW && yp >= 0 && yp < fullH) {
+            ctx.fillStyle = textColor;
+            ctx.fillRect(xp, yp, 1, 1);
+          }
+        }
+      }
+    }
+    cx += gw + 1;
+  }
+}
+
+function renderToOffscreen(cfg, scale = 1) {
+  const c = document.createElement('canvas');
+  renderTag(c, cfg);
+  if (scale === 1) return c;
+  const out = document.createElement('canvas');
+  out.width = c.width * scale;
+  out.height = c.height * scale;
+  const ctx = out.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(c, 0, 0, out.width, out.height);
+  return out;
+}
+
+/* ==============================================================
+   STATE
+   ============================================================== */
+const state = {
+  text: 'NETHERITE',
+  font: '5x5',
+  colors: ['#FF5577', '#C11757'],
+  direction: 'horizontal',
+  hardStops: false,
+  borderOn: true,
+  borderColor: '#000000',
+  borderWidth: 1,
+  corner: 2,
+  padX: 2,
+  padTop: 0,
+  padBot: 1,
+  textColor: '#ffffff',
+  autoContrast: true,
+  shadowOn: false,
+  outlineOn: false,
+  outlineColor: '#000000',
+};
+
+let bulkTags = [];
+
+/* ==============================================================
+   PERSIST
+   ============================================================== */
+const STATE_KEY = 'cozy.tags.state.v1';
+const BULK_KEY = 'cozy.tags.bulk.v1';
+
+function saveState() {
+  try {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    localStorage.setItem(BULK_KEY, JSON.stringify(bulkTags));
+  } catch (e) { /* ignore */ }
+}
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
+    if (s) Object.assign(state, s);
+    const b = JSON.parse(localStorage.getItem(BULK_KEY) || '[]');
+    if (Array.isArray(b)) bulkTags = b;
+  } catch (e) { /* ignore */ }
+}
+
+/* ==============================================================
+   UI WIRING — SINGLE MODE
+   ============================================================== */
+const $ = id => document.getElementById(id);
+
+function syncUIFromState() {
+  $('text-input').value = state.text;
+  $('font-select').value = state.font;
+  $('text-color').value = state.textColor;
+  $('auto-contrast').checked = state.autoContrast;
+  $('grad-direction').value = state.direction;
+  $('hard-stops').checked = state.hardStops;
+  $('border-on').checked = state.borderOn;
+  $('border-color').value = state.borderColor;
+  $('border-width').value = state.borderWidth;
+  $('corner').value = state.corner;
+  $('pad-x').value = state.padX;
+  $('pad-top').value = state.padTop;
+  $('pad-bot').value = state.padBot;
+  $('shadow-on').checked = state.shadowOn;
+  $('outline-on').checked = state.outlineOn;
+  $('outline-color').value = state.outlineColor;
+  renderColorStops();
+}
+
+function renderColorStops() {
+  const wrap = $('color-stops');
+  wrap.innerHTML = '';
+  state.colors.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'color-stop';
+    row.innerHTML = `
+      <div class="swatch-num">${i + 1}</div>
+      <input type="color" value="${c}" data-idx="${i}">
+      <button class="btn icon danger small" data-remove="${i}" ${state.colors.length <= 1 ? 'disabled' : ''}>✕</button>
+    `;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input[type=color]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      state.colors[+inp.dataset.idx] = e.target.value;
+      refresh();
+    });
+  });
+  wrap.querySelectorAll('button[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = +btn.dataset.remove;
+      if (state.colors.length > 1) {
+        state.colors.splice(idx, 1);
+        renderColorStops();
+        refresh();
+      }
+    });
+  });
+  // Gradient preview bar
+  const css = state.colors.length === 1
+    ? state.colors[0]
+    : `linear-gradient(to right, ${state.colors.join(', ')})`;
+  $('gradient-preview').style.background = css;
+}
+
+function renderPresets() {
+  const wrap = $('presets');
+  wrap.innerHTML = '';
+  PRESETS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn';
+    const grad = p.colors.length === 1 ? p.colors[0]
+                : `linear-gradient(to right, ${p.colors.join(', ')})`;
+    btn.innerHTML = `<span class="preset-swatch" style="background:${grad}"></span>${p.name}`;
+    btn.addEventListener('click', () => {
+      state.colors = [...p.colors];
+      renderColorStops();
+      refresh();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function readControlsToState() {
+  state.text = $('text-input').value;
+  state.font = $('font-select').value;
+  state.textColor = $('text-color').value;
+  state.autoContrast = $('auto-contrast').checked;
+  state.direction = $('grad-direction').value;
+  state.hardStops = $('hard-stops').checked;
+  state.borderOn = $('border-on').checked;
+  state.borderColor = $('border-color').value;
+  state.borderWidth = clamp(+$('border-width').value, 0, 3);
+  state.corner = clamp(+$('corner').value, 0, 4);
+  state.padX = clamp(+$('pad-x').value, 0, 6);
+  state.padTop = clamp(+$('pad-top').value, 0, 4);
+  state.padBot = clamp(+$('pad-bot').value, 0, 4);
+  state.shadowOn = $('shadow-on').checked;
+  state.outlineOn = $('outline-on').checked;
+  state.outlineColor = $('outline-color').value;
+}
+
+function clamp(n, lo, hi) {
+  if (isNaN(n)) return lo;
+  return Math.max(lo, Math.min(hi, n));
+}
+
+function refresh() {
+  readControlsToState();
+  const c1 = $('preview-actual');
+  const c2 = $('preview-scaled');
+  renderTag(c1, state);
+  // Scaled 8×
+  c2.width = c1.width * 8;
+  c2.height = c1.height * 8;
+  const ctx = c2.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, c2.width, c2.height);
+  ctx.drawImage(c1, 0, 0, c2.width, c2.height);
+  // Meta
+  const font = FONTS[state.font] || FONT_5x5;
+  const tw = textWidth(state.text.toUpperCase(), font);
+  const th = font['A'].length;
+  $('meta-size').textContent = `${c1.width}×${c1.height}`;
+  $('meta-text').textContent = `${tw}×${th}`;
+  $('meta-stops').textContent = String(state.colors.length);
+  saveState();
+}
+
+/* ==============================================================
+   DOWNLOAD
+   ============================================================== */
+function downloadCanvas(canvas, filename) {
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+}
+
+function safeName(text) {
+  return (text || 'tag').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'tag';
+}
+
+$('dl-single').addEventListener('click', () => {
+  const c = renderToOffscreen(state, 1);
+  downloadCanvas(c, safeName(state.text) + '.png');
+});
+$('dl-scaled').addEventListener('click', () => {
+  const c = renderToOffscreen(state, 6);
+  downloadCanvas(c, safeName(state.text) + '_6x.png');
+});
+
+/* ==============================================================
+   BULK MODE
+   ============================================================== */
+function tagFromState(text, colors) {
+  return {
+    text: text || state.text,
+    colors: colors || [...state.colors],
+  };
+}
+
+function mergedConfig(tag) {
+  // Each bulk tag carries only text + colors. Everything else comes from current state defaults.
+  return {
+    ...state,
+    text: tag.text,
+    colors: tag.colors,
+  };
+}
+
+function renderBulkTable() {
+  const tbody = $('bulk-tbody');
+  tbody.innerHTML = '';
+  $('bulk-count').textContent = String(bulkTags.length);
+  if (bulkTags.length === 0) {
+    $('bulk-table').style.display = 'none';
+    $('bulk-empty').style.display = 'block';
+    return;
+  }
+  $('bulk-table').style.display = '';
+  $('bulk-empty').style.display = 'none';
+
+  bulkTags.forEach((tag, idx) => {
+    const tr = document.createElement('tr');
+    const swatches = tag.colors.map(c => `<span class="mini-swatch" style="background:${c}"></span>`).join('');
+    tr.innerHTML = `
+      <td><input type="text" value="${tag.text.replace(/"/g,'&quot;')}" data-bulk-text="${idx}" maxlength="20"></td>
+      <td><div class="swatch-row">${swatches}</div></td>
+      <td class="preview-cell"></td>
+      <td class="actions-cell">
+        <button class="btn small" data-bulk-edit="${idx}">Edit</button>
+        <button class="btn small icon danger" data-bulk-remove="${idx}">✕</button>
+      </td>
+    `;
+    // Insert preview canvas
+    const cell = tr.querySelector('.preview-cell');
+    const canvas = renderToOffscreen(mergedConfig(tag), 6);
+    cell.appendChild(canvas);
+    tbody.appendChild(tr);
+  });
+
+  // Wire events
+  tbody.querySelectorAll('input[data-bulk-text]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = +inp.dataset.bulkText;
+      bulkTags[i].text = e.target.value;
+      renderBulkTable();
+      saveState();
+    });
+  });
+  tbody.querySelectorAll('button[data-bulk-edit]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = +btn.dataset.bulkEdit;
+      // Load this tag into single-mode for editing
+      state.text = bulkTags[i].text;
+      state.colors = [...bulkTags[i].colors];
+      syncUIFromState();
+      refresh();
+      switchTab('single');
+      // Replace this bulk row when user clicks "Update bulk #i" (we re-use add-to-bulk button as update)
+      window._editingBulkIdx = i;
+      $('add-to-bulk').textContent = `↺ Update bulk #${i + 1}`;
+    });
+  });
+  tbody.querySelectorAll('button[data-bulk-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = +btn.dataset.bulkRemove;
+      bulkTags.splice(i, 1);
+      renderBulkTable();
+      saveState();
+    });
+  });
+}
+
+$('bulk-add').addEventListener('click', () => {
+  bulkTags.push(tagFromState('NEWTAG', ['#888888', '#444444']));
+  renderBulkTable();
+  saveState();
+});
+$('add-to-bulk').addEventListener('click', () => {
+  if (typeof window._editingBulkIdx === 'number') {
+    bulkTags[window._editingBulkIdx] = tagFromState();
+    window._editingBulkIdx = undefined;
+    $('add-to-bulk').textContent = '＋ Add to bulk list';
+  } else {
+    bulkTags.push(tagFromState());
+  }
+  renderBulkTable();
+  saveState();
+  switchTab('bulk');
+});
+$('bulk-clear').addEventListener('click', () => {
+  if (bulkTags.length && confirm(`Remove all ${bulkTags.length} tags from the list?`)) {
+    bulkTags = [];
+    renderBulkTable();
+    saveState();
+  }
+});
+
+/* ZIP download */
+function canvasToBlob(canvas) {
+  return new Promise(resolve => canvas.toBlob(resolve));
+}
+$('bulk-download').addEventListener('click', async () => {
+  if (bulkTags.length === 0) { alert('No tags to export.'); return; }
+  const btn = $('bulk-download');
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = `Building ZIP… (0/${bulkTags.length})`;
+  try {
+    const zip = new JSZip();
+    const seenNames = new Set();
+    for (let i = 0; i < bulkTags.length; i++) {
+      const tag = bulkTags[i];
+      const canvas = renderToOffscreen(mergedConfig(tag), 1);
+      const blob = await canvasToBlob(canvas);
+      let name = safeName(tag.text);
+      let suffix = 1;
+      while (seenNames.has(name)) { name = safeName(tag.text) + '_' + (++suffix); }
+      seenNames.add(name);
+      zip.file(`${name}.png`, blob);
+      btn.textContent = `Building ZIP… (${i + 1}/${bulkTags.length})`;
+    }
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'cozy_tags.zip';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    alert('ZIP build failed: ' + err.message);
+  }
+  btn.disabled = false; btn.textContent = orig;
+});
+
+/* JSON import/export */
+const modalBg = $('modal-bg'), modalTitle = $('modal-title'), modalTxt = $('modal-textarea');
+let modalMode = null;
+function openModal(mode) {
+  modalMode = mode;
+  modalTitle.textContent = mode === 'import' ? 'Import JSON' : 'Export JSON';
+  if (mode === 'export') {
+    modalTxt.value = JSON.stringify(bulkTags, null, 2);
+    modalTxt.readOnly = true;
+  } else {
+    modalTxt.value = '';
+    modalTxt.readOnly = false;
+    modalTxt.placeholder = 'Paste JSON array of { "text": "...", "colors": ["#...", "#..."] }';
+  }
+  modalBg.classList.add('show');
+}
+function closeModal() { modalBg.classList.remove('show'); }
+$('bulk-import').addEventListener('click', () => openModal('import'));
+$('bulk-export').addEventListener('click', () => openModal('export'));
+$('modal-cancel').addEventListener('click', closeModal);
+$('modal-ok').addEventListener('click', () => {
+  if (modalMode === 'export') {
+    navigator.clipboard.writeText(modalTxt.value).then(() => {
+      closeModal();
+    }).catch(closeModal);
+  } else {
+    try {
+      const parsed = JSON.parse(modalTxt.value);
+      if (!Array.isArray(parsed)) throw new Error('not an array');
+      const valid = parsed
+        .filter(t => t && typeof t.text === 'string' && Array.isArray(t.colors))
+        .map(t => ({ text: String(t.text), colors: t.colors.map(String) }));
+      if (!valid.length) throw new Error('no valid entries');
+      bulkTags = valid;
+      renderBulkTable();
+      saveState();
+      closeModal();
+    } catch (e) { alert('Could not parse: ' + e.message); }
+  }
+});
+modalBg.addEventListener('click', e => { if (e.target === modalBg) closeModal(); });
+
+/* ==============================================================
+   TAB SWITCH
+   ============================================================== */
+function switchTab(mode) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === mode);
+  });
+  document.querySelectorAll('.mode').forEach(m => {
+    m.classList.toggle('active', m.id === 'mode-' + mode);
+  });
+  if (mode === 'bulk') renderBulkTable();
+}
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => switchTab(t.dataset.mode));
+});
+
+/* ==============================================================
+   GLOBAL EVENTS
+   ============================================================== */
+['input', 'change'].forEach(evt => {
+  document.querySelectorAll('input, select').forEach(el => {
+    if (el.closest('#color-stops') || el.closest('.bulk-table') || el.closest('.modal')) return;
+    el.addEventListener(evt, refresh);
+  });
+});
+$('add-stop').addEventListener('click', () => {
+  if (state.colors.length >= 8) return;
+  state.colors.push(state.colors[state.colors.length - 1] || '#ffffff');
+  renderColorStops();
+  refresh();
+});
+
+/* ==============================================================
+   BOOT
+   ============================================================== */
+loadState();
+renderPresets();
+syncUIFromState();
+refresh();
+renderBulkTable();
+</script>
+</body>
+</html>
