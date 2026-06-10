@@ -712,6 +712,73 @@
   /* Focus visible */
   button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+  /* ============ NEW: MC CHAT PREVIEW ============ */
+  .mc-chat {
+    background: #1a1a1f;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-2);
+    padding: 12px 14px;
+    font-family: 'VT323', monospace;
+    font-size: 19px;
+    line-height: 1.5;
+    color: #fff;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+    overflow-x: auto;
+  }
+  .mc-chat .line { margin: 2px 0; white-space: nowrap; }
+  .mc-chat .dim { color: #aaa; }
+  .mc-chat canvas { image-rendering: pixelated; vertical-align: middle; margin-right: 5px; margin-top: -3px; }
+  .mc-chat .ign { color: #ffd166; }
+
+  /* ============ NEW: CHAR WARNING ============ */
+  .char-warn {
+    display: none;
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(217, 154, 43, 0.10);
+    border: 1px solid rgba(217, 154, 43, 0.35);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: #8a6512;
+  }
+  .char-warn.show { display: block; }
+  .char-warn code { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+  /* ============ NEW: HEX INPUT IN STOPS ============ */
+  .color-stop input.hex-in {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    padding: 6px 8px;
+  }
+  .color-stop input.hex-in.bad { border-color: var(--error); }
+
+  /* ============ NEW: ORAXEN EXPORT ============ */
+  .oraxen-card {
+    background: var(--bg-card-2);
+    border: 1px dashed var(--border-2);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .oraxen-card .ox-title {
+    font-size: 12px; font-weight: 600; color: var(--text);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .oraxen-card .field-row .field { min-width: 110px; }
+
+  /* ============ NEW: TOAST ============ */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg-card); border: 1px solid var(--accent);
+    color: var(--text); padding: 10px 18px; border-radius: var(--radius-lg);
+    font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg);
+    opacity: 0; transition: transform .25s, opacity .25s;
+    pointer-events: none; z-index: 200;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
   /* Footer */
   .page-footer {
     margin-top: 28px;
@@ -761,7 +828,8 @@
           <h2>Text</h2>
           <div class="field">
             <label for="text-input">Your tag</label>
-            <input type="text" id="text-input" value="NETHERITE" maxlength="20" autocomplete="off" placeholder="UPPERCASE ONLY">
+            <input type="text" id="text-input" value="NETHERITE" maxlength="20" autocomplete="off" placeholder="LETTERS · NUMBERS · ★ ♥ ◆ ⚡ → ←">
+            <div class="char-warn" id="char-warn"></div>
           </div>
           <div class="field-row">
             <div class="field">
@@ -887,14 +955,28 @@
           </div>
         </div>
 
+        <div class="preview-box">
+          <h3>In chat <span class="scale">2×</span></h3>
+          <div class="mc-chat">
+            <div class="line dim">[Server] Daily restart complete.</div>
+            <div class="line dim">Qajaq joined the game</div>
+            <div class="line"><span id="chat-tag-slot"></span><span class="ign" id="chat-name">Cheddah</span>: this tag is so cozy</div>
+          </div>
+          <div class="field" style="margin-top:10px;">
+            <label for="ign-input">Name shown in preview</label>
+            <input type="text" id="ign-input" value="Cheddah" maxlength="16" autocomplete="off">
+          </div>
+        </div>
+
         <div class="download-card">
           <div class="download-row">
             <button class="btn primary" id="dl-single">↓ Download PNG</button>
             <button class="btn" id="dl-scaled">↓ Download 6×</button>
             <button class="btn" id="add-to-bulk">+ Add to bulk</button>
+            <button class="btn" id="share-link">🔗 Copy share link</button>
           </div>
           <div class="submit-hint">
-            <strong>Almost done!</strong> Download the PNG, then send it to Cheddah with the name you'd like it attached to. Once it's added to the resource pack, your tag will appear in chat.
+            <strong>Almost done!</strong> Easiest route: hit <strong>Copy share link</strong> and send the link to Cheddah — it carries your exact design. Or download the PNG yourself. Once it's added to the resource pack, your tag will appear in chat.
           </div>
         </div>
       </div>
@@ -913,6 +995,26 @@
         <button class="btn danger" id="bulk-clear">✕ Clear all</button>
         <div style="flex:1"></div>
         <button class="btn primary" id="bulk-download">↓ Download all as ZIP</button>
+      </div>
+
+      <div class="oraxen-card">
+        <div class="ox-title">Oraxen glyph export <span class="badge">auto-generated YAML</span></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="glyph-start">Codepoint start (hex)</label>
+            <input type="text" id="glyph-start" value="E100" maxlength="6" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="glyph-folder">Texture folder</label>
+            <input type="text" id="glyph-folder" value="tags" spellcheck="false">
+          </div>
+          <label class="toggle" style="align-self: flex-end; padding-bottom: 9px; flex: 0 0 auto;">
+            <input type="checkbox" id="glyph-perm">
+            <span>Permission nodes</span>
+          </label>
+          <button class="btn" id="glyph-preview" style="align-self: flex-end;">Preview YAML</button>
+        </div>
+        <div class="hint">The ZIP now includes <code>tags_glyphs.yml</code> — drop it in <code>plugins/Oraxen/glyphs/</code> and the PNGs in your pack under <code>textures/&lt;folder&gt;/</code>. Codepoints auto-increment from the start value; placeholders come out as <code>:tag_name:</code>.</div>
       </div>
 
       <div id="bulk-list-wrap">
@@ -957,6 +1059,8 @@
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast">Copied</div>
 
 <script>
 'use strict';
@@ -1008,6 +1112,13 @@ const FONT_5x5 = {
   '8':['01110','10001','01110','10001','01110'],
   '9':['01110','10001','01111','00001','01110'],
   '\u2744':['01010','00100','11111','00100','01010'],
+  '★':['00100','11111','01110','01010','10001'],
+  '♥':['01010','11111','11111','01110','00100'],
+  '◆':['00100','01110','11111','01110','00100'],
+  '⚡':['00110','01100','11111','00110','01100'],
+  '→':['00100','00010','11111','00010','00100'],
+  '←':['00100','01000','11111','01000','00100'],
+  '+':['00100','00100','11111','00100','00100'],
 };
 
 const FONT_7x5 = {
@@ -1054,6 +1165,13 @@ const FONT_7x5 = {
   '8':['01110','10001','10001','01110','10001','10001','01110'],
   '9':['01110','10001','10001','01111','00001','00010','01100'],
   '\u2744':['00000','00100','10101','01110','10101','00100','00000'],
+  '★':['00000','00100','11111','01110','01010','10001','00000'],
+  '♥':['00000','01010','11111','11111','01110','00100','00000'],
+  '◆':['00000','00100','01110','11111','01110','00100','00000'],
+  '⚡':['00000','00110','01100','11111','00110','01100','00000'],
+  '→':['00000','00100','00010','11111','00010','00100','00000'],
+  '←':['00000','00100','01000','11111','01000','00100','00000'],
+  '+':['00000','00100','00100','11111','00100','00100','00000'],
 };
 
 const FONTS = { '5x5': FONT_5x5, '7x5': FONT_7x5 };
@@ -1079,8 +1197,16 @@ const PRESETS = [
 /* ==============================================================
    RENDERING
    ============================================================== */
+function normHex(h) {
+  if (typeof h !== 'string') return null;
+  let s = h.trim().replace(/^#/, '');
+  if (/^[0-9a-fA-F]{3}$/.test(s)) s = s.split('').map(c => c + c).join('');
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return '#' + s.toLowerCase();
+}
 function hexToRgb(h) {
-  const n = parseInt(h.replace('#',''), 16);
+  const safe = normHex(h) || '#888888';
+  const n = parseInt(safe.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 function rgbStr(rgb) { return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`; }
@@ -1203,14 +1329,12 @@ function renderTag(canvas, cfg) {
   for (let y = 0; y < badgeH; y++) {
     for (let x = 0; x < badgeW; x++) {
       if (!inRoundedRect(x, y, badgeW, badgeH, cfg.corner)) continue;
-      // Edge check
+      // Border check: pixel is border if it falls outside the inner rounded rect
+      // shrunk by the border width (so widths 2–3 actually render).
       let isEdge = false;
       if (bd > 0) {
-        for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
-          if (!inRoundedRect(x+dx, y+dy, badgeW, badgeH, cfg.corner)) {
-            isEdge = true; break;
-          }
-        }
+        const innerR = Math.max(0, cfg.corner - bd);
+        isEdge = !inRoundedRect(x - bd, y - bd, badgeW - 2 * bd, badgeH - 2 * bd, innerR);
       }
       if (isEdge) {
         ctx.fillStyle = cfg.borderColor;
@@ -1238,8 +1362,8 @@ function renderTag(canvas, cfg) {
             const xp = cx + c, yp = startY + r;
             for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
               const nx = xp + dx, ny = yp + dy;
-              if (nx >= 0 && nx < fullW && ny >= 0 && ny < fullH) {
-                // only draw outline if not already a text pixel
+              if (nx >= 0 && nx < fullW && ny >= 0 && ny < fullH &&
+                  inRoundedRect(nx, ny, badgeW, badgeH, cfg.corner)) {
                 ctx.fillStyle = cfg.outlineColor;
                 ctx.fillRect(nx, ny, 1, 1);
               }
@@ -1304,6 +1428,10 @@ const state = {
   shadowOn: false,
   outlineOn: false,
   outlineColor: '#000000',
+  ign: 'Cheddah',
+  glyphStart: 'E100',
+  glyphFolder: 'tags',
+  glyphPerm: false,
 };
 
 let bulkTags = [];
@@ -1351,6 +1479,10 @@ function syncUIFromState() {
   $('shadow-on').checked = state.shadowOn;
   $('outline-on').checked = state.outlineOn;
   $('outline-color').value = state.outlineColor;
+  $('ign-input').value = state.ign || 'Cheddah';
+  $('glyph-start').value = state.glyphStart || 'E100';
+  $('glyph-folder').value = state.glyphFolder || 'tags';
+  $('glyph-perm').checked = !!state.glyphPerm;
   renderColorStops();
 }
 
@@ -1360,17 +1492,45 @@ function renderColorStops() {
   state.colors.forEach((c, i) => {
     const row = document.createElement('div');
     row.className = 'color-stop';
+    row.style.gridTemplateColumns = '28px 1fr 92px auto';
     row.innerHTML = `
       <div class="swatch-num">${i + 1}</div>
-      <input type="color" value="${c}" data-idx="${i}">
+      <input type="color" value="${normHex(c) || '#888888'}" data-idx="${i}" aria-label="Stop ${i + 1} color">
+      <input type="text" class="hex-in" value="${normHex(c) || c}" data-hexidx="${i}" maxlength="7" spellcheck="false" aria-label="Stop ${i + 1} hex">
       <button class="btn icon danger small" data-remove="${i}" ${state.colors.length <= 1 ? 'disabled' : ''}>✕</button>
     `;
     wrap.appendChild(row);
   });
+  function paintBar() {
+    const css = state.colors.length === 1
+      ? state.colors[0]
+      : `linear-gradient(to right, ${state.colors.join(', ')})`;
+    $('gradient-preview').style.background = css;
+  }
   wrap.querySelectorAll('input[type=color]').forEach(inp => {
     inp.addEventListener('input', e => {
-      state.colors[+inp.dataset.idx] = e.target.value;
+      const i = +inp.dataset.idx;
+      state.colors[i] = e.target.value;
+      const hex = wrap.querySelector(`input[data-hexidx="${i}"]`);
+      if (hex) { hex.value = e.target.value.toUpperCase(); hex.classList.remove('bad'); }
+      paintBar();
       refresh();
+    });
+  });
+  wrap.querySelectorAll('input.hex-in').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const i = +inp.dataset.hexidx;
+      const n = normHex(inp.value);
+      if (n) {
+        inp.classList.remove('bad');
+        state.colors[i] = n;
+        const picker = wrap.querySelector(`input[type=color][data-idx="${i}"]`);
+        if (picker) picker.value = n;
+        paintBar();
+        refresh();
+      } else {
+        inp.classList.add('bad');
+      }
     });
   });
   wrap.querySelectorAll('button[data-remove]').forEach(btn => {
@@ -1383,11 +1543,7 @@ function renderColorStops() {
       }
     });
   });
-  // Gradient preview bar
-  const css = state.colors.length === 1
-    ? state.colors[0]
-    : `linear-gradient(to right, ${state.colors.join(', ')})`;
-  $('gradient-preview').style.background = css;
+  paintBar();
 }
 
 function renderPresets() {
@@ -1425,6 +1581,10 @@ function readControlsToState() {
   state.shadowOn = $('shadow-on').checked;
   state.outlineOn = $('outline-on').checked;
   state.outlineColor = $('outline-color').value;
+  state.ign = $('ign-input').value;
+  state.glyphStart = $('glyph-start').value;
+  state.glyphFolder = $('glyph-folder').value;
+  state.glyphPerm = $('glyph-perm').checked;
 }
 
 function clamp(n, lo, hi) {
@@ -1451,6 +1611,22 @@ function refresh() {
   $('meta-size').textContent = `${c1.width}×${c1.height}`;
   $('meta-text').textContent = `${tw}×${th}`;
   $('meta-stops').textContent = String(state.colors.length);
+
+  // In-chat preview (2×)
+  $('chat-tag-slot').replaceChildren(renderToOffscreen(state, 2));
+  $('chat-name').textContent = (state.ign || '').trim() || 'Steve';
+
+  // Unsupported character warning
+  const up = state.text.toUpperCase();
+  const missing = [...new Set([...up].filter(ch => ch !== ' ' && !(ch in font)))];
+  const warn = $('char-warn');
+  if (missing.length) {
+    warn.innerHTML = 'Not in the pixel font (renders blank): ' +
+      missing.map(c => '<code>' + c.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</code>').join(' ');
+    warn.classList.add('show');
+  } else {
+    warn.classList.remove('show');
+  }
   saveState();
 }
 
@@ -1513,50 +1689,59 @@ function renderBulkTable() {
 
   bulkTags.forEach((tag, idx) => {
     const tr = document.createElement('tr');
-    const swatches = tag.colors.map(c => `<span class="mini-swatch" style="background:${c}"></span>`).join('');
-    tr.innerHTML = `
-      <td><input type="text" value="${tag.text.replace(/"/g,'&quot;')}" data-bulk-text="${idx}" maxlength="20"></td>
-      <td><div class="swatch-row">${swatches}</div></td>
-      <td class="preview-cell"></td>
-      <td class="actions-cell">
-        <button class="btn small" data-bulk-edit="${idx}">Edit</button>
-        <button class="btn small icon danger" data-bulk-remove="${idx}">✕</button>
-      </td>
-    `;
-    // Insert preview canvas
-    const cell = tr.querySelector('.preview-cell');
-    const canvas = renderToOffscreen(mergedConfig(tag), 6);
-    cell.appendChild(canvas);
-    tbody.appendChild(tr);
-  });
 
-  // Wire events
-  tbody.querySelectorAll('input[data-bulk-text]').forEach(inp => {
-    inp.addEventListener('input', e => {
-      const i = +inp.dataset.bulkText;
-      bulkTags[i].text = e.target.value;
-      renderBulkTable();
+    const tdName = document.createElement('td');
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.value = tag.text;
+    inp.maxLength = 20;
+    tdName.appendChild(inp);
+
+    const tdColors = document.createElement('td');
+    const swRow = document.createElement('div');
+    swRow.className = 'swatch-row';
+    tag.colors.forEach(c => {
+      const sw = document.createElement('span');
+      sw.className = 'mini-swatch';
+      sw.style.background = normHex(c) || '#888888';
+      swRow.appendChild(sw);
+    });
+    tdColors.appendChild(swRow);
+
+    const tdPrev = document.createElement('td');
+    tdPrev.className = 'preview-cell';
+    tdPrev.appendChild(renderToOffscreen(mergedConfig(tag), 6));
+
+    const tdActions = document.createElement('td');
+    tdActions.className = 'actions-cell';
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn small';
+    editBtn.textContent = 'Edit';
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'btn small icon danger';
+    rmBtn.textContent = '✕';
+    tdActions.append(editBtn, rmBtn);
+
+    tr.append(tdName, tdColors, tdPrev, tdActions);
+    tbody.appendChild(tr);
+
+    // Update text + preview in place — no table rebuild, so focus survives typing
+    inp.addEventListener('input', () => {
+      bulkTags[idx].text = inp.value;
+      tdPrev.replaceChildren(renderToOffscreen(mergedConfig(bulkTags[idx]), 6));
       saveState();
     });
-  });
-  tbody.querySelectorAll('button[data-bulk-edit]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = +btn.dataset.bulkEdit;
-      // Load this tag into single-mode for editing
-      state.text = bulkTags[i].text;
-      state.colors = [...bulkTags[i].colors];
+    editBtn.addEventListener('click', () => {
+      state.text = bulkTags[idx].text;
+      state.colors = [...bulkTags[idx].colors];
       syncUIFromState();
       refresh();
       switchTab('single');
-      // Replace this bulk row when user clicks "Update bulk #i" (we re-use add-to-bulk button as update)
-      window._editingBulkIdx = i;
-      $('add-to-bulk').textContent = `↺ Update bulk #${i + 1}`;
+      window._editingBulkIdx = idx;
+      $('add-to-bulk').textContent = `↺ Update bulk #${idx + 1}`;
     });
-  });
-  tbody.querySelectorAll('button[data-bulk-remove]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = +btn.dataset.bulkRemove;
-      bulkTags.splice(i, 1);
+    rmBtn.addEventListener('click', () => {
+      bulkTags.splice(idx, 1);
       renderBulkTable();
       saveState();
     });
@@ -1592,6 +1777,54 @@ $('bulk-clear').addEventListener('click', () => {
 function canvasToBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve));
 }
+
+/* Shared name assignment so ZIP filenames and YAML always agree */
+function namedBulkTags() {
+  const seen = new Set();
+  return bulkTags.map(tag => {
+    let name = safeName(tag.text);
+    let suffix = 1;
+    while (seen.has(name)) { name = safeName(tag.text) + '_' + (++suffix); }
+    seen.add(name);
+    return { name, tag };
+  });
+}
+
+function buildGlyphYaml() {
+  readControlsToState();
+  let code = parseInt((state.glyphStart || 'E100').replace(/^0x/i, ''), 16);
+  if (isNaN(code)) code = 0xE100;
+  const folder = (state.glyphFolder || 'tags').replace(/^\/+|\/+$/g, '') || 'tags';
+  const lines = [
+    '# Generated by Cozy Crafters Tag Maker',
+    '# Place this file in plugins/Oraxen/glyphs/',
+    '# Place the PNGs in your resource pack under textures/' + folder + '/',
+    '',
+  ];
+  for (const { name, tag } of namedBulkTags()) {
+    const canvas = renderToOffscreen(mergedConfig(tag), 1);
+    const h = canvas.height;
+    lines.push(
+      `tag_${name}:`,
+      `  texture: ${folder}/${name}.png`,
+      `  ascent: ${Math.min(h - 1, 7)}`,
+      `  height: ${h}`,
+      `  code: ${code++}`,
+      `  chat:`,
+      `    placeholders:`,
+      `      - ":tag_${name}:"`,
+    );
+    if (state.glyphPerm) lines.push(`    permission: "cozycrafters.tag.${name}"`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+$('glyph-preview').addEventListener('click', () => {
+  if (bulkTags.length === 0) { alert('Add some tags to the list first.'); return; }
+  openModal('yaml');
+});
+
 $('bulk-download').addEventListener('click', async () => {
   if (bulkTags.length === 0) { alert('No tags to export.'); return; }
   const btn = $('bulk-download');
@@ -1599,18 +1832,15 @@ $('bulk-download').addEventListener('click', async () => {
   btn.disabled = true; btn.textContent = `Building ZIP… (0/${bulkTags.length})`;
   try {
     const zip = new JSZip();
-    const seenNames = new Set();
-    for (let i = 0; i < bulkTags.length; i++) {
-      const tag = bulkTags[i];
+    const named = namedBulkTags();
+    for (let i = 0; i < named.length; i++) {
+      const { name, tag } = named[i];
       const canvas = renderToOffscreen(mergedConfig(tag), 1);
       const blob = await canvasToBlob(canvas);
-      let name = safeName(tag.text);
-      let suffix = 1;
-      while (seenNames.has(name)) { name = safeName(tag.text) + '_' + (++suffix); }
-      seenNames.add(name);
       zip.file(`${name}.png`, blob);
-      btn.textContent = `Building ZIP… (${i + 1}/${bulkTags.length})`;
+      btn.textContent = `Building ZIP… (${i + 1}/${named.length})`;
     }
+    zip.file('tags_glyphs.yml', buildGlyphYaml());
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(zipBlob);
     const a = document.createElement('a');
@@ -1628,9 +1858,14 @@ const modalBg = $('modal-bg'), modalTitle = $('modal-title'), modalTxt = $('moda
 let modalMode = null;
 function openModal(mode) {
   modalMode = mode;
-  modalTitle.textContent = mode === 'import' ? 'Import JSON' : 'Export JSON';
+  modalTitle.textContent = mode === 'import' ? 'Import JSON'
+    : mode === 'yaml' ? 'Oraxen glyphs YAML'
+    : 'Export JSON';
   if (mode === 'export') {
     modalTxt.value = JSON.stringify(bulkTags, null, 2);
+    modalTxt.readOnly = true;
+  } else if (mode === 'yaml') {
+    modalTxt.value = buildGlyphYaml();
     modalTxt.readOnly = true;
   } else {
     modalTxt.value = '';
@@ -1644,8 +1879,9 @@ $('bulk-import').addEventListener('click', () => openModal('import'));
 $('bulk-export').addEventListener('click', () => openModal('export'));
 $('modal-cancel').addEventListener('click', closeModal);
 $('modal-ok').addEventListener('click', () => {
-  if (modalMode === 'export') {
+  if (modalMode === 'export' || modalMode === 'yaml') {
     navigator.clipboard.writeText(modalTxt.value).then(() => {
+      toast(modalMode === 'yaml' ? 'YAML copied' : 'JSON copied');
       closeModal();
     }).catch(closeModal);
   } else {
@@ -1654,8 +1890,12 @@ $('modal-ok').addEventListener('click', () => {
       if (!Array.isArray(parsed)) throw new Error('not an array');
       const valid = parsed
         .filter(t => t && typeof t.text === 'string' && Array.isArray(t.colors))
-        .map(t => ({ text: String(t.text), colors: t.colors.map(String) }));
-      if (!valid.length) throw new Error('no valid entries');
+        .map(t => ({
+          text: String(t.text).slice(0, 20),
+          colors: t.colors.map(normHex).filter(Boolean),
+        }))
+        .filter(t => t.colors.length > 0);
+      if (!valid.length) throw new Error('no valid entries (check that colors are 6-digit hex)');
       bulkTags = valid;
       renderBulkTable();
       saveState();
@@ -1698,13 +1938,66 @@ $('add-stop').addEventListener('click', () => {
 });
 
 /* ==============================================================
+   TOAST
+   ============================================================== */
+let _toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ==============================================================
+   SHARE LINKS — design state encoded in the URL hash
+   ============================================================== */
+function encodeDesign() {
+  readControlsToState();
+  const json = JSON.stringify(state);
+  const bytes = new TextEncoder().encode(json);
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeDesign(payload) {
+  const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64);
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function applySharedDesign() {
+  const m = location.hash.match(/^#d=([A-Za-z0-9_-]+)/);
+  if (!m) return false;
+  try {
+    const shared = decodeDesign(m[1]);
+    if (shared && typeof shared === 'object') {
+      // Don't let a shared link override this browser's Oraxen export settings
+      delete shared.glyphStart; delete shared.glyphFolder; delete shared.glyphPerm;
+      Object.assign(state, shared);
+      return true;
+    }
+  } catch (e) { /* malformed link — ignore */ }
+  return false;
+}
+$('share-link').addEventListener('click', () => {
+  const url = location.origin + location.pathname + '#d=' + encodeDesign();
+  navigator.clipboard.writeText(url).then(
+    () => toast('Share link copied — send it to Cheddah!'),
+    () => prompt('Copy this link:', url)
+  );
+});
+
+/* ==============================================================
    BOOT
    ============================================================== */
 loadState();
+const fromLink = applySharedDesign();
 renderPresets();
 syncUIFromState();
 refresh();
 renderBulkTable();
+if (fromLink) toast('Loaded a shared tag design');
 </script>
 </body>
 </html>
