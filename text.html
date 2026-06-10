@@ -1,567 +1,896 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minecraft Text Converter</title>
-  <style>
-    :root {
-      --bg: #101418;
-      --panel: #171d23;
-      --panel-2: #1d252d;
-      --text: #eef3f7;
-      --muted: #9facba;
-      --border: #2c3844;
-      --accent: #86d47a;
-      --accent-2: #f4c95d;
-      --danger: #ff7676;
-      --shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
-      --radius: 18px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradient Forge — Minecraft Gradient Generator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='0' y='4' width='4' height='8' fill='%2355ffaa'/><rect x='4' y='4' width='4' height='8' fill='%2355aaff'/><rect x='8' y='4' width='4' height='8' fill='%23aa55ff'/><rect x='12' y='4' width='4' height='8' fill='%23ff55aa'/></svg>">
+<style>
+@font-face {
+  font-family: 'Monocraft';
+  src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft.ttf') format('truetype');
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
 
-    * {
-      box-sizing: border-box;
-    }
+:root {
+  --bg: #0d1117;
+  --panel: #161c24;
+  --panel-2: #1c242e;
+  --border: #2a3441;
+  --text: #e6edf3;
+  --muted: #8b98a5;
+  --accent: #55ffaa;
+  --danger: #ff6b6b;
+  --radius: 10px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --pixel: 'Monocraft', 'Courier New', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scrollbar-color: var(--border) var(--bg); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(85,255,170,0.06), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 110%, rgba(170,85,255,0.05), transparent);
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(134, 212, 122, 0.12), transparent 34rem),
-        radial-gradient(circle at top right, rgba(244, 201, 93, 0.10), transparent 30rem),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-    }
+header { margin-bottom: 28px; }
+.eyebrow {
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+#liveTitle {
+  font-family: var(--pixel);
+  font-size: clamp(28px, 5vw, 52px);
+  line-height: 1.1;
+  word-break: break-word;
+  text-shadow: 0 4px 0 rgba(0,0,0,0.45);
+  user-select: none;
+}
+header p.sub { color: var(--muted); margin-top: 8px; font-size: 14px; max-width: 60ch; }
 
-    .wrap {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 42px 0 56px;
-    }
+.grid { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
-    header {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.card + .card { margin-top: 16px; }
+.card h2 {
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; font-weight: 500;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
 
-    .eyebrow {
-      width: fit-content;
-      color: #102018;
-      background: var(--accent);
-      border-radius: 999px;
-      padding: 5px 11px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+label.field-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+input[type=text] {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 15px;
+  font-family: inherit;
+}
+input[type=text]:focus, button:focus-visible, .stop input:focus {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 4.4rem);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
-    }
+.charmeter { display:flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+.charmeter .over { color: var(--danger); font-weight: 700; }
 
-    .subtitle {
-      margin: 0;
-      max-width: 780px;
-      color: var(--muted);
-      font-size: 1.05rem;
-    }
+/* Gradient bar + stops */
+.gbar {
+  height: 34px; border-radius: 8px; border: 1px solid var(--border);
+  margin: 14px 0 10px; position: relative; cursor: copy;
+}
+.stops { display: flex; flex-direction: column; gap: 8px; }
+.stop {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 8px;
+}
+.stop input[type=color] {
+  width: 36px; height: 30px; border: none; background: none; cursor: pointer; border-radius: 6px;
+}
+.stop input[type=text] {
+  width: 92px; padding: 6px 8px; font-family: var(--mono); font-size: 13px; text-transform: uppercase;
+}
+.stop .spacer { flex: 1; }
+.iconbtn {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 14px; line-height: 1;
+}
+.iconbtn:hover { color: var(--danger); border-color: var(--danger); }
+.iconbtn.up:hover, .iconbtn.down:hover { color: var(--accent); border-color: var(--accent); }
 
-    .translator {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin: 24px 0;
-    }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+button.btn {
+  background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer;
+  font-family: inherit; transition: border-color .15s, transform .05s;
+}
+button.btn:hover { border-color: var(--accent); }
+button.btn:active { transform: translateY(1px); }
+button.btn.primary { background: var(--accent); color: #06281a; border-color: var(--accent); font-weight: 700; }
+button.btn.primary:hover { filter: brightness(1.08); }
 
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)), var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
+/* toggles */
+.toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+.tg {
+  border: 1px solid var(--border); background: var(--panel-2); color: var(--muted);
+  border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 14px; font-family: inherit;
+}
+.tg[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: rgba(85,255,170,0.08); }
+.tg b { font-weight: 700; } .tg i { font-style: italic; } .tg u { text-decoration: underline; }
+.tg s { text-decoration: line-through; }
 
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 15px 16px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.025);
-    }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg button {
+  background: var(--panel-2); border: none; color: var(--muted); padding: 7px 12px;
+  font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.seg button[aria-pressed="true"] { background: rgba(85,255,170,0.12); color: var(--accent); }
 
-    .card-title {
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
+/* presets */
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.preset {
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer;
+  background: var(--panel-2); padding: 0; text-align: left; font-family: inherit;
+}
+.preset:hover { border-color: var(--accent); }
+.preset .sw { height: 22px; }
+.preset .nm { font-size: 11px; color: var(--muted); padding: 5px 8px; display: block; }
 
-    textarea {
-      width: 100%;
-      min-height: 230px;
-      resize: vertical;
-      border: 0;
-      outline: none;
-      padding: 18px;
-      background: transparent;
-      color: var(--text);
-      font: 1.2rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
+/* saved */
+.saved-list { display: flex; flex-direction: column; gap: 8px; }
+.saved {
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--border);
+  background: var(--panel-2); border-radius: 8px; padding: 8px 10px;
+}
+.saved .sw { width: 70px; height: 22px; border-radius: 5px; flex-shrink: 0; }
+.saved .nm { font-size: 13px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.saved .nm:hover { color: var(--accent); }
+.empty { color: var(--muted); font-size: 13px; font-style: italic; }
+.storage-note { font-size: 11px; color: var(--muted); margin-top: 10px; }
 
-    textarea::placeholder {
-      color: #6f7d8b;
-    }
+/* Minecraft chat preview */
+.mcwindow {
+  background:
+    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+    repeating-conic-gradient(#3b6e2f 0% 25%, #45813a 0% 50%) 0 0 / 56px 56px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 18px 18px 14px;
+  overflow: hidden;
+}
+.mcchat {
+  background: rgba(0,0,0,0.56);
+  padding: 10px 12px;
+  font-family: var(--pixel);
+  font-size: 19px;
+  line-height: 1.45;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  min-height: 120px;
+  word-break: break-word;
+}
+.mcchat .dim { color: #aaaaaa; }
+.mcchat .line { margin: 1px 0; }
+.mcbar {
+  margin-top: 12px; background: rgba(0,0,0,0.56); border: 1px solid rgba(255,255,255,0.25);
+  padding: 7px 10px; font-family: var(--pixel); font-size: 17px; color: #ddd;
+  display: flex; align-items: center; gap: 2px;
+}
+.cursor { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      border-top: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.14);
-    }
+/* outputs */
+.out { margin-top: 14px; }
+.out-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; gap: 10px; }
+.out-head .t { font-size: 13px; font-weight: 700; }
+.out-head .d { font-size: 11px; color: var(--muted); flex: 1; }
+.codebox {
+  position: relative; background: #0a0e13; border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 88px 10px 12px;
+  font-family: var(--mono); font-size: 12.5px; color: #9fd8bb;
+  word-break: break-all; max-height: 110px; overflow-y: auto; line-height: 1.5;
+}
+.copybtn {
+  position: absolute; top: 7px; right: 7px;
+  background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.copybtn:hover { border-color: var(--accent); color: var(--accent); }
+.copybtn.ok { border-color: var(--accent); color: var(--accent); }
 
-    .select-wrap {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--panel-2); border: 1px solid var(--accent); color: var(--text);
+  padding: 10px 18px; border-radius: 10px; font-size: 14px; opacity: 0;
+  transition: transform .25s, opacity .25s; pointer-events: none; z-index: 50;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    select,
-    button {
-      border: 1px solid var(--border);
-      background: var(--panel-2);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font: inherit;
-    }
+/* tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.tab {
+  background: none; border: none; color: var(--muted); font-family: inherit;
+  font-size: 14px; padding: 10px 16px; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+.tabpane { display: none; }
+.tabpane.active { display: block; }
 
-    select {
-      min-width: 190px;
-      cursor: pointer;
-    }
+/* small caps converter */
+textarea.sc-input {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 15px;
+  font-family: inherit; resize: vertical; min-height: 90px;
+}
+textarea.sc-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .sc-grid { grid-template-columns: 1fr; } }
+.sc-out {
+  background: #0a0e13; border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; font-size: 16px; min-height: 90px; word-break: break-word;
+  position: relative; padding-right: 88px; line-height: 1.6;
+}
+.alpha-map {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px;
+}
+.alpha-map .pair {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+  text-align: center; padding: 6px 0; font-size: 13px;
+}
+.alpha-map .pair span { color: var(--muted); }
+.alpha-map .pair b { color: var(--accent); font-weight: 400; margin-left: 4px; }
 
-    button {
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      border-color: rgba(134, 212, 122, 0.65);
-    }
-
-    .primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #102018;
-    }
-
-    .ghost {
-      color: var(--muted);
-    }
-
-    .outputs {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .output-row {
-      display: grid;
-      grid-template-columns: 190px 1fr auto;
-      align-items: center;
-      gap: 12px;
-      padding: 14px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-    }
-
-    .style-name {
-      display: grid;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    .style-name strong {
-      font-size: 0.98rem;
-    }
-
-    .style-name span {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
-    .converted {
-      min-width: 0;
-      padding: 10px 12px;
-      background: rgba(0, 0, 0, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.055);
-      border-radius: 12px;
-      overflow-wrap: anywhere;
-      font-size: 1.05rem;
-    }
-
-    .note-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      margin-top: 22px;
-    }
-
-    .note {
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--muted);
-    }
-
-    .note h2 {
-      margin: 0 0 8px;
-      color: var(--text);
-      font-size: 1rem;
-    }
-
-    .note p {
-      margin: 0 0 10px;
-    }
-
-    .note p:last-child {
-      margin-bottom: 0;
-    }
-
-    code {
-      color: var(--accent-2);
-      background: rgba(244, 201, 93, 0.08);
-      border: 1px solid rgba(244, 201, 93, 0.15);
-      border-radius: 7px;
-      padding: 1px 5px;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(120%);
-      background: #eaf8e8;
-      color: #102018;
-      border-radius: 999px;
-      padding: 10px 16px;
-      box-shadow: var(--shadow);
-      font-weight: 800;
-      opacity: 0;
-      transition: 0.2s ease;
-      z-index: 50;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 860px) {
-      .translator,
-      .note-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .output-row {
-        grid-template-columns: 1fr;
-      }
-
-      .output-row button {
-        width: 100%;
-      }
-    }
-  </style>
+footer { margin-top: 36px; color: var(--muted); font-size: 12px; text-align: center; }
+footer code { font-family: var(--mono); }
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <div class="eyebrow">Minecraft Unicode Tool</div>
-      <h1>Text Style Converter</h1>
-      <p class="subtitle">
-        Convert normal text into Minecraft-friendly Unicode styles for GUI titles, lore, chat messages, server MOTDs, tags, menus, and config files.
-      </p>
-    </header>
+<div class="wrap">
 
-    <section class="translator">
-      <article class="card">
-        <div class="card-head">
-          <p class="card-title">Normal text</p>
-          <button class="ghost" id="clearBtn" type="button">Clear</button>
+<header>
+  <div class="eyebrow">PaperMC · Legacy &amp; codes · MiniMessage</div>
+  <div id="liveTitle">Gradient Forge</div>
+  <p class="sub">Type your text, shape the gradient, and grab it in whatever format your plugin wants. The title above is your live gradient — this whole page is the preview.</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tabBtnGradient" role="tab" aria-selected="true" aria-controls="paneGradient">Gradient</button>
+  <button class="tab" id="tabBtnSmallCaps" role="tab" aria-selected="false" aria-controls="paneSmallCaps">ѕᴍᴀʟʟ ᴄᴀᴘѕ</button>
+</div>
+
+<div class="tabpane active" id="paneGradient" role="tabpanel">
+<div class="grid">
+  <!-- LEFT: controls -->
+  <div>
+    <div class="card">
+      <h2>Text</h2>
+      <input type="text" id="inputText" value="Welcome to Cozy Crafters!" maxlength="256" spellcheck="false" aria-label="Text to colorize">
+      <div class="charmeter">
+        <span id="charCount"></span>
+        <span id="byteCount" title="Legacy hex codes cost ~14 characters per letter. Chat input caps at 256."></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Gradient stops
+        <span class="seg" role="group" aria-label="Interpolation mode">
+          <button id="modeRGB" aria-pressed="true" title="Straight-line blend">RGB</button>
+          <button id="modeHSL" aria-pressed="false" title="Travels around the color wheel — better for rainbow-style blends">HSL</button>
+        </span>
+      </h2>
+      <div class="gbar" id="gbar" title="Click to copy CSS gradient"></div>
+      <div class="stops" id="stops"></div>
+      <div class="btnrow">
+        <button class="btn" id="addStop">+ Add stop</button>
+        <button class="btn" id="reverseStops">⇄ Reverse</button>
+        <button class="btn" id="randomize">🎲 Surprise me</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Formatting</h2>
+      <div class="toggles">
+        <button class="tg" data-fmt="l" aria-pressed="false"><b>Bold</b></button>
+        <button class="tg" data-fmt="o" aria-pressed="false"><i>Italic</i></button>
+        <button class="tg" data-fmt="n" aria-pressed="false"><u>Underline</u></button>
+        <button class="tg" data-fmt="m" aria-pressed="false"><s>Strike</s></button>
+        <button class="tg" data-fmt="k" aria-pressed="false">Obfuscated</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Presets</h2>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <div class="card">
+      <h2>Saved gradients</h2>
+      <div class="saved-list" id="savedList"></div>
+      <div class="btnrow">
+        <button class="btn primary" id="saveBtn">Save current gradient</button>
+      </div>
+      <div class="storage-note" id="storageNote"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: preview + outputs -->
+  <div>
+    <div class="card">
+      <h2>In-game preview</h2>
+      <div class="mcwindow">
+        <div class="mcchat" id="mcchat">
+          <div class="line dim">[Server] Daily restart complete.</div>
+          <div class="line dim">Qajaq joined the game</div>
+          <div class="line" id="previewLine"></div>
         </div>
-        <textarea id="input" spellcheck="false" placeholder="Type something like: Cozy Market"></textarea>
-      </article>
+        <div class="mcbar"><span id="barText"></span><span class="cursor">_</span></div>
+      </div>
+    </div>
 
-      <article class="card">
-        <div class="card-head">
-          <p class="card-title">Selected style</p>
-          <button class="primary" id="copySelectedBtn" type="button">Copy</button>
+    <div class="card">
+      <h2>Output formats</h2>
+
+      <div class="out">
+        <div class="out-head"><span class="t">&amp; legacy hex</span><span class="d">Bukkit/Bungee style — works in most Paper configs, EssentialsX, DeluxeMenus, etc.</span></div>
+        <div class="codebox"><span id="outAmp"></span><button class="copybtn" data-copy="outAmp">Copy</button></div>
+      </div>
+
+      <div class="out">
+        <div class="out-head"><span class="t">§ section codes</span><span class="d">Raw section-sign form — pasting directly into some configs or anvil/NBT contexts.</span></div>
+        <div class="codebox"><span id="outSec"></span><button class="copybtn" data-copy="outSec">Copy</button></div>
+      </div>
+
+      <div class="out">
+        <div class="out-head"><span class="t">MiniMessage</span><span class="d">Adventure format — Paper-native. Tiny, readable, and the server interpolates for you.</span></div>
+        <div class="codebox"><span id="outMM"></span><button class="copybtn" data-copy="outMM">Copy</button></div>
+      </div>
+
+      <div class="out">
+        <div class="out-head"><span class="t">&amp;#RRGGBB</span><span class="d">CMI / some chat &amp; tab plugins that take inline hex without the &amp;x prefix.</span></div>
+        <div class="codebox"><span id="outHash"></span><button class="copybtn" data-copy="outHash">Copy</button></div>
+      </div>
+
+      <div class="out">
+        <div class="out-head"><span class="t">JSON tellraw</span><span class="d">Vanilla command form — <code>/tellraw @a …</code> straight from console.</span></div>
+        <div class="codebox"><span id="outJson"></span><button class="copybtn" data-copy="outJson">Copy</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /paneGradient -->
+
+<div class="tabpane" id="paneSmallCaps" role="tabpanel">
+  <div class="sc-grid">
+    <div>
+      <div class="card">
+        <h2>Regular text in</h2>
+        <textarea class="sc-input" id="scInput" spellcheck="false" placeholder="Type something… e.g. Welcome to Cozy Crafters">Welcome to Cozy Crafters</textarea>
+        <div class="btnrow">
+          <button class="btn primary" id="scSend">Send to gradient tab →</button>
+          <button class="btn" id="scClear">Clear</button>
         </div>
-        <textarea id="selectedOutput" spellcheck="false" readonly></textarea>
-        <div class="controls">
-          <label class="select-wrap">
-            Style
-            <select id="styleSelect"></select>
-          </label>
-          <button id="swapBtn" type="button">Use output as input</button>
-        </div>
-      </article>
-    </section>
-
-    <section class="outputs" id="allOutputs" aria-label="All converted styles"></section>
-
-    <section class="note-grid">
-      <article class="note">
-        <h2>Best styles for Minecraft</h2>
-        <p>
-          <code>Mini caps</code>, <code>fullwidth</code>, and <code>circled</code> are usually the most useful for Minecraft menus.
-          Fancy math/cursive/fraktur symbols can be inconsistent across clients, fonts, and resource packs.
-        </p>
-        <p>
-          Unicode styles are not real fonts. They are different characters, so some letters may not have perfect replacements.
-        </p>
-      </article>
-
-      <article class="note">
-        <h2>Config tip</h2>
-        <p>
-          Paste the generated text directly into YAML strings, lore lines, DeluxeMenus, Oraxen GUI names, or plugin message files.
-        </p>
-        <p>
-          For color, keep using Minecraft codes like <code>&6ᴄᴏᴢʏ ᴍᴀʀᴋᴇᴛ</code>.
-        </p>
-      </article>
-    </section>
-  </main>
-
-  <div class="toast" id="toast">Copied</div>
-
-  <script>
-    const styles = [
-      {
-        id: "smallCaps",
-        name: "Mini caps",
-        hint: "Best for GUI labels",
-        map: {
-          a: "ᴀ", b: "ʙ", c: "ᴄ", d: "ᴅ", e: "ᴇ", f: "ꜰ", g: "ɢ", h: "ʜ", i: "ɪ", j: "ᴊ", k: "ᴋ", l: "ʟ", m: "ᴍ",
-          n: "ɴ", o: "ᴏ", p: "ᴘ", q: "Q", r: "ʀ", s: "ꜱ", t: "ᴛ", u: "ᴜ", v: "ᴠ", w: "ᴡ", x: "x", y: "ʏ", z: "ᴢ"
-        }
-      },
-      {
-        id: "superscript",
-        name: "Superscript",
-        hint: "Tiny raised text",
-        map: {
-          a: "ᵃ", b: "ᵇ", c: "ᶜ", d: "ᵈ", e: "ᵉ", f: "ᶠ", g: "ᵍ", h: "ʰ", i: "ⁱ", j: "ʲ", k: "ᵏ", l: "ˡ", m: "ᵐ",
-          n: "ⁿ", o: "ᵒ", p: "ᵖ", q: "q", r: "ʳ", s: "ˢ", t: "ᵗ", u: "ᵘ", v: "ᵛ", w: "ʷ", x: "ˣ", y: "ʸ", z: "ᶻ",
-          "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
-          "+": "⁺", "-": "⁻", "=": "⁼", "(": "⁽", ")": "⁾"
-        }
-      },
-      {
-        id: "subscript",
-        name: "Subscript",
-        hint: "Incomplete alphabet",
-        map: {
-          a: "ₐ", b: "b", c: "c", d: "d", e: "ₑ", f: "f", g: "g", h: "ₕ", i: "ᵢ", j: "ⱼ", k: "ₖ", l: "ₗ", m: "ₘ",
-          n: "ₙ", o: "ₒ", p: "ₚ", q: "q", r: "ᵣ", s: "ₛ", t: "ₜ", u: "ᵤ", v: "ᵥ", w: "w", x: "ₓ", y: "y", z: "z",
-          "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄", "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
-          "+": "₊", "-": "₋", "=": "₌", "(": "₍", ")": "₎"
-        }
-      },
-      {
-        id: "fullwidth",
-        name: "Fullwidth",
-        hint: "Wide blocky text",
-        transform: char => {
-          const code = char.charCodeAt(0);
-          if (code === 32) return "　";
-          if (code >= 33 && code <= 126) return String.fromCharCode(code + 65248);
-          return char;
-        }
-      },
-      {
-        id: "circled",
-        name: "Circled",
-        hint: "Good for badges",
-        map: {
-          A: "Ⓐ", B: "Ⓑ", C: "Ⓒ", D: "Ⓓ", E: "Ⓔ", F: "Ⓕ", G: "Ⓖ", H: "Ⓗ", I: "Ⓘ", J: "Ⓙ", K: "Ⓚ", L: "Ⓛ", M: "Ⓜ",
-          N: "Ⓝ", O: "Ⓞ", P: "Ⓟ", Q: "Ⓠ", R: "Ⓡ", S: "Ⓢ", T: "Ⓣ", U: "Ⓤ", V: "Ⓥ", W: "Ⓦ", X: "Ⓧ", Y: "Ⓨ", Z: "Ⓩ",
-          a: "ⓐ", b: "ⓑ", c: "ⓒ", d: "ⓓ", e: "ⓔ", f: "ⓕ", g: "ⓖ", h: "ⓗ", i: "ⓘ", j: "ⓙ", k: "ⓚ", l: "ⓛ", m: "ⓜ",
-          n: "ⓝ", o: "ⓞ", p: "ⓟ", q: "ⓠ", r: "ⓡ", s: "ⓢ", t: "ⓣ", u: "ⓤ", v: "ⓥ", w: "ⓦ", x: "ⓧ", y: "ⓨ", z: "ⓩ",
-          "0": "⓪", "1": "①", "2": "②", "3": "③", "4": "④", "5": "⑤", "6": "⑥", "7": "⑦", "8": "⑧", "9": "⑨"
-        }
-      },
-      {
-        id: "squared",
-        name: "Squared",
-        hint: "Heavy label style",
-        map: {
-          A: "🄰", B: "🄱", C: "🄲", D: "🄳", E: "🄴", F: "🄵", G: "🄶", H: "🄷", I: "🄸", J: "🄹", K: "🄺", L: "🄻", M: "🄼",
-          N: "🄽", O: "🄾", P: "🄿", Q: "🅀", R: "🅁", S: "🅂", T: "🅃", U: "🅄", V: "🅅", W: "🅆", X: "🅇", Y: "🅈", Z: "🅉"
-        }
-      },
-      {
-        id: "boldMath",
-        name: "Bold math",
-        hint: "Can render inconsistently",
-        map: {
-          A: "𝐀", B: "𝐁", C: "𝐂", D: "𝐃", E: "𝐄", F: "𝐅", G: "𝐆", H: "𝐇", I: "𝐈", J: "𝐉", K: "𝐊", L: "𝐋", M: "𝐌",
-          N: "𝐍", O: "𝐎", P: "𝐏", Q: "𝐐", R: "𝐑", S: "𝐒", T: "𝐓", U: "𝐔", V: "𝐕", W: "𝐖", X: "𝐗", Y: "𝐘", Z: "𝐙",
-          a: "𝐚", b: "𝐛", c: "𝐜", d: "𝐝", e: "𝐞", f: "𝐟", g: "𝐠", h: "𝐡", i: "𝐢", j: "𝐣", k: "𝐤", l: "𝐥", m: "𝐦",
-          n: "𝐧", o: "𝐨", p: "𝐩", q: "𝐪", r: "𝐫", s: "𝐬", t: "𝐭", u: "𝐮", v: "𝐯", w: "𝐰", x: "𝐱", y: "𝐲", z: "𝐳",
-          "0": "𝟎", "1": "𝟏", "2": "𝟐", "3": "𝟑", "4": "𝟒", "5": "𝟓", "6": "𝟔", "7": "𝟕", "8": "𝟖", "9": "𝟗"
-        }
-      },
-      {
-        id: "script",
-        name: "Script",
-        hint: "Fancy, less readable",
-        map: {
-          A: "𝓐", B: "𝓑", C: "𝓒", D: "𝓓", E: "𝓔", F: "𝓕", G: "𝓖", H: "𝓗", I: "𝓘", J: "𝓙", K: "𝓚", L: "𝓛", M: "𝓜",
-          N: "𝓝", O: "𝓞", P: "𝓟", Q: "𝓠", R: "𝓡", S: "𝓢", T: "𝓣", U: "𝓤", V: "𝓥", W: "𝓦", X: "𝓧", Y: "𝓨", Z: "𝓩",
-          a: "𝓪", b: "𝓫", c: "𝓬", d: "𝓭", e: "𝓮", f: "𝓯", g: "𝓰", h: "𝓱", i: "𝓲", j: "𝓳", k: "𝓴", l: "𝓵", m: "𝓶",
-          n: "𝓷", o: "𝓸", p: "𝓹", q: "𝓺", r: "𝓻", s: "𝓼", t: "𝓽", u: "𝓾", v: "𝓿", w: "𝔀", x: "𝔁", y: "𝔂", z: "𝔃"
-        }
-      },
-      {
-        id: "fraktur",
-        name: "Fraktur",
-        hint: "Medieval style",
-        map: {
-          A: "𝔄", B: "𝔅", C: "ℭ", D: "𝔇", E: "𝔈", F: "𝔉", G: "𝔊", H: "ℌ", I: "ℑ", J: "𝔍", K: "𝔎", L: "𝔏", M: "𝔐",
-          N: "𝔑", O: "𝔒", P: "𝔓", Q: "𝔔", R: "ℜ", S: "𝔖", T: "𝔗", U: "𝔘", V: "𝔙", W: "𝔚", X: "𝔛", Y: "𝔜", Z: "ℨ",
-          a: "𝔞", b: "𝔟", c: "𝔠", d: "𝔡", e: "𝔢", f: "𝔣", g: "𝔤", h: "𝔥", i: "𝔦", j: "𝔧", k: "𝔨", l: "𝔩", m: "𝔪",
-          n: "𝔫", o: "𝔬", p: "𝔭", q: "𝔮", r: "𝔯", s: "𝔰", t: "𝔱", u: "𝔲", v: "𝔳", w: "𝔴", x: "𝔵", y: "𝔶", z: "𝔷"
-        }
-      }
-    ];
-
-    const input = document.getElementById("input");
-    const selectedOutput = document.getElementById("selectedOutput");
-    const styleSelect = document.getElementById("styleSelect");
-    const allOutputs = document.getElementById("allOutputs");
-    const toast = document.getElementById("toast");
-
-    function convertWithStyle(text, style) {
-      return Array.from(text).map(char => {
-        if (style.transform) return style.transform(char);
-        return style.map[char] ?? style.map[char.toLowerCase()] ?? char;
-      }).join("");
-    }
-
-    function getSelectedStyle() {
-      return styles.find(style => style.id === styleSelect.value) || styles[0];
-    }
-
-    function update() {
-      const text = input.value || "";
-      const selected = getSelectedStyle();
-      selectedOutput.value = convertWithStyle(text, selected);
-
-      allOutputs.innerHTML = "";
-      styles.forEach(style => {
-        const converted = convertWithStyle(text, style);
-        const row = document.createElement("article");
-        row.className = "output-row";
-        row.innerHTML = `
-          <div class="style-name">
-            <strong>${escapeHtml(style.name)}</strong>
-            <span>${escapeHtml(style.hint)}</span>
+      </div>
+      <div class="card">
+        <h2>Character map</h2>
+        <div class="alpha-map" id="alphaMap"></div>
+        <div class="storage-note">Lowercase and uppercase letters both convert. Numbers, punctuation, and anything unmapped pass through unchanged. These are real Unicode glyphs, so they work in chat, MOTDs, item names, holograms — anywhere Minecraft renders text.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2>ѕᴍᴀʟʟ ᴄᴀᴘѕ out</h2>
+        <div class="sc-out"><span id="scOutput"></span><button class="copybtn" data-copy="scOutput">Copy</button></div>
+      </div>
+      <div class="card">
+        <h2>In-game preview</h2>
+        <div class="mcwindow">
+          <div class="mcchat">
+            <div class="line dim">[Server] Daily restart complete.</div>
+            <div class="line" id="scPreview" style="color:#FFFFFF"></div>
           </div>
-          <div class="converted">${escapeHtml(converted || "Converted text will appear here")}</div>
-          <button type="button" data-copy="${escapeHtml(converted)}">Copy</button>
-        `;
-        allOutputs.appendChild(row);
-      });
-    }
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /paneSmallCaps -->
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+<footer>Single-file tool · saves locally in your browser · drop it in a GitHub Pages repo and go</footer>
+</div>
 
-    async function copyText(text) {
-      if (!text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {
-        const temp = document.createElement("textarea");
-        temp.value = text;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        temp.remove();
-      }
-      showToast("Copied");
-    }
+<div class="toast" id="toast">Copied</div>
 
-    let toastTimer;
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 1100);
-    }
+<script>
+(function(){
+"use strict";
 
-    styles.forEach(style => {
-      const option = document.createElement("option");
-      option.value = style.id;
-      option.textContent = style.name;
-      styleSelect.appendChild(option);
+/* ---------- safe storage (works even where localStorage is blocked) ---------- */
+const mem = {};
+const store = {
+  ok: (function(){ try { localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return true; } catch(e){ return false; } })(),
+  get(k){ try { return this.ok ? localStorage.getItem(k) : (mem[k] ?? null); } catch(e){ return mem[k] ?? null; } },
+  set(k,v){ try { if(this.ok) localStorage.setItem(k,v); else mem[k]=v; } catch(e){ mem[k]=v; } }
+};
+
+/* ---------- state ---------- */
+let stops = ["#55FFAA", "#55AAFF", "#AA55FF"];
+let mode = "RGB";
+let formats = { l:false, o:false, n:false, m:false, k:false };
+let text = "Welcome to Cozy Crafters!";
+
+const PRESETS = [
+  ["Aurora",      ["#1DF7A4","#3FB8F0","#9D5CFF"]],
+  ["Midnight Sun",["#FFD56B","#FF8E53","#C44BC9"]],
+  ["Tundra Ice",  ["#E8FBFF","#8FD8FF","#3D7BD9"]],
+  ["Nether",      ["#FF5555","#A0260B","#3B0A0A"]],
+  ["The End",     ["#C586F0","#7B2FBF","#2A0A40"]],
+  ["Emerald",     ["#A7F3D0","#34D399","#065F46"]],
+  ["Gold Rush",   ["#FFF3B0","#FFD700","#B8860B"]],
+  ["Lava Lamp",   ["#FF2E63","#FF9A3D","#FFE15D"]],
+  ["Ocean",       ["#A8EDEA","#3EC1D3","#0F4C75"]],
+  ["Cotton Candy",["#FFB3DE","#C9B6FF","#9AE3FF"]],
+  ["Redstone",    ["#FF6B6B","#D32F2F","#7F0000"]],
+  ["Monochrome",  ["#FFFFFF","#888888","#222222"]],
+];
+
+/* ---------- color math ---------- */
+function clamp(n,a,b){ return Math.min(b, Math.max(a,n)); }
+function normHex(h){
+  if(!h) return null;
+  h = h.trim().replace(/^#/,"");
+  if(/^[0-9a-fA-F]{3}$/.test(h)) h = h.split("").map(c=>c+c).join("");
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  return "#" + h.toUpperCase();
+}
+function hexToRgb(h){ h=h.replace("#",""); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+function rgbToHex(r,g,b){ return "#" + [r,g,b].map(v=>clamp(Math.round(v),0,255).toString(16).padStart(2,"0")).join("").toUpperCase(); }
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b); let h,s,l=(max+min)/2;
+  if(max===min){ h=s=0; }
+  else {
+    const d=max-min;
+    s = l>0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max){
+      case r: h=(g-b)/d + (g<b?6:0); break;
+      case g: h=(b-r)/d + 2; break;
+      default: h=(r-g)/d + 4;
+    }
+    h/=6;
+  }
+  return [h,s,l];
+}
+function hslToRgb(h,s,l){
+  if(s===0){ const v=l*255; return [v,v,v]; }
+  const q = l<0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+  const f = t => { t=(t%1+1)%1;
+    if(t<1/6) return p+(q-p)*6*t;
+    if(t<1/2) return q;
+    if(t<2/3) return p+(q-p)*(2/3-t)*6;
+    return p; };
+  return [f(h+1/3)*255, f(h)*255, f(h-1/3)*255];
+}
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+function sampleGradient(t){
+  const s = stops.map(normHex).filter(Boolean);
+  if(s.length===0) return "#FFFFFF";
+  if(s.length===1) return s[0];
+  t = clamp(t,0,1);
+  const seg = t * (s.length-1);
+  const i = Math.min(Math.floor(seg), s.length-2);
+  const f = seg - i;
+  const a = hexToRgb(s[i]), b = hexToRgb(s[i+1]);
+  if(mode==="HSL"){
+    const ha = rgbToHsl(...a), hb = rgbToHsl(...b);
+    let dh = hb[0]-ha[0];
+    if(Math.abs(dh) > 0.5) dh -= Math.sign(dh); // shortest path around the wheel
+    const rgb = hslToRgb(ha[0]+dh*f, lerp(ha[1],hb[1],f), lerp(ha[2],hb[2],f));
+    return rgbToHex(...rgb);
+  }
+  return rgbToHex(lerp(a[0],b[0],f), lerp(a[1],b[1],f), lerp(a[2],b[2],f));
+}
+
+/* per-character colors: spaces inherit but don't consume a step */
+function charColors(str){
+  const idx = [];
+  for(let i=0;i<str.length;i++) if(str[i] !== " ") idx.push(i);
+  const n = idx.length;
+  const out = new Array(str.length).fill(null);
+  idx.forEach((pos,k)=>{ out[pos] = sampleGradient(n<=1 ? 0 : k/(n-1)); });
+  return out;
+}
+
+/* ---------- output builders ---------- */
+function fmtCodes(prefix){
+  let s = "";
+  if(formats.k) s += prefix+"k";
+  if(formats.l) s += prefix+"l";
+  if(formats.m) s += prefix+"m";
+  if(formats.n) s += prefix+"n";
+  if(formats.o) s += prefix+"o";
+  return s;
+}
+function legacyHex(prefix){
+  const colors = charColors(text);
+  const f = fmtCodes(prefix);
+  let out = "";
+  for(let i=0;i<text.length;i++){
+    const ch = text[i];
+    if(ch === " "){ out += " "; continue; }
+    const hex = colors[i].slice(1);
+    out += prefix+"x" + hex.split("").map(c=>prefix+c.toLowerCase()).join("") + f + ch;
+  }
+  return out;
+}
+function hashHex(){
+  const colors = charColors(text);
+  const f = fmtCodes("&");
+  let out = "";
+  for(let i=0;i<text.length;i++){
+    const ch = text[i];
+    if(ch === " "){ out += " "; continue; }
+    out += "&" + colors[i] + f + ch;
+  }
+  return out;
+}
+function miniMessage(){
+  const s = stops.map(normHex).filter(Boolean);
+  const grad = "<gradient:" + s.map(h=>h.toLowerCase()).join(":") + ">";
+  let open = "", close = "";
+  const wrap = tag => { open += "<"+tag+">"; close = "</"+tag+">" + close; };
+  if(formats.l) wrap("bold");
+  if(formats.o) wrap("italic");
+  if(formats.n) wrap("underlined");
+  if(formats.m) wrap("strikethrough");
+  if(formats.k) wrap("obfuscated");
+  return open + grad + text + "</gradient>" + close;
+}
+function tellrawJson(){
+  const colors = charColors(text);
+  const parts = [];
+  let buf = "", cur = null;
+  const flush = () => { if(buf){ const o = { text: buf }; if(cur) o.color = cur.toLowerCase();
+    if(formats.l) o.bold = true; if(formats.o) o.italic = true;
+    if(formats.n) o.underlined = true; if(formats.m) o.strikethrough = true;
+    if(formats.k) o.obfuscated = true;
+    parts.push(o); buf=""; } };
+  for(let i=0;i<text.length;i++){
+    const c = colors[i];
+    if(c !== cur && text[i] !== " "){ flush(); cur = c; }
+    buf += text[i];
+  }
+  flush();
+  return "/tellraw @a " + JSON.stringify(parts);
+}
+
+/* ---------- rendering ---------- */
+const $ = id => document.getElementById(id);
+const OBF_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?";
+let obfSpans = [];
+
+function styleSpan(span){
+  let deco = [];
+  if(formats.n) deco.push("underline");
+  if(formats.m) deco.push("line-through");
+  span.style.textDecoration = deco.join(" ");
+  span.style.fontWeight = formats.l ? "700" : "400";
+  span.style.fontStyle = formats.o ? "italic" : "normal";
+}
+
+function renderPreview(){
+  const colors = charColors(text);
+  const frag = document.createDocumentFragment();
+  obfSpans = [];
+  for(let i=0;i<text.length;i++){
+    const sp = document.createElement("span");
+    sp.textContent = text[i];
+    if(colors[i]) sp.style.color = colors[i];
+    styleSpan(sp);
+    if(formats.k && text[i] !== " "){ sp.dataset.obf = "1"; obfSpans.push(sp); }
+    frag.appendChild(sp);
+  }
+  const line = $("previewLine");
+  line.replaceChildren(frag);
+  // header title mirrors the gradient too
+  const t = $("liveTitle");
+  const titleText = text.trim() || "Gradient Forge";
+  const tcolors = charColors(titleText);
+  const tfrag = document.createDocumentFragment();
+  for(let i=0;i<titleText.length;i++){
+    const sp = document.createElement("span");
+    sp.textContent = titleText[i];
+    if(tcolors[i]) sp.style.color = tcolors[i];
+    tfrag.appendChild(sp);
+  }
+  t.replaceChildren(tfrag);
+  $("barText").textContent = "/broadcast " + text.slice(0, 40) + (text.length > 40 ? "…" : "");
+}
+
+let reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+setInterval(()=>{
+  if(reduceMotion || !formats.k || obfSpans.length===0) return;
+  for(const sp of obfSpans){
+    sp.textContent = OBF_CHARS[Math.floor(Math.random()*OBF_CHARS.length)];
+  }
+}, 80);
+
+function renderGBar(){
+  const s = stops.map(normHex).filter(Boolean);
+  const css = s.length>1
+    ? `linear-gradient(90deg, ${s.join(", ")})`
+    : (s[0] || "#FFFFFF");
+  $("gbar").style.background = css;
+  $("gbar").dataset.css = css;
+}
+
+function renderStops(){
+  const box = $("stops");
+  box.replaceChildren();
+  stops.forEach((hex, i)=>{
+    const row = document.createElement("div");
+    row.className = "stop";
+
+    const picker = document.createElement("input");
+    picker.type = "color";
+    picker.value = normHex(hex) || "#FFFFFF";
+    picker.setAttribute("aria-label", "Stop "+(i+1)+" color picker");
+    picker.addEventListener("input", ()=>{ stops[i] = picker.value.toUpperCase(); txt.value = stops[i]; update(false); });
+
+    const txt = document.createElement("input");
+    txt.type = "text";
+    txt.value = normHex(hex) || hex;
+    txt.maxLength = 7;
+    txt.setAttribute("aria-label", "Stop "+(i+1)+" hex value");
+    txt.addEventListener("input", ()=>{
+      const n = normHex(txt.value);
+      if(n){ stops[i] = n; picker.value = n; update(false); }
     });
 
-    input.value = "Cozy Market";
-    styleSelect.value = "smallCaps";
+    const spacer = document.createElement("div");
+    spacer.className = "spacer";
 
-    input.addEventListener("input", update);
-    styleSelect.addEventListener("change", update);
+    const up = document.createElement("button");
+    up.className = "iconbtn up"; up.textContent = "↑"; up.title = "Move up";
+    up.disabled = i===0;
+    up.addEventListener("click", ()=>{ [stops[i-1],stops[i]]=[stops[i],stops[i-1]]; update(); });
 
-    document.getElementById("copySelectedBtn").addEventListener("click", () => {
-      copyText(selectedOutput.value);
-    });
+    const down = document.createElement("button");
+    down.className = "iconbtn down"; down.textContent = "↓"; down.title = "Move down";
+    down.disabled = i===stops.length-1;
+    down.addEventListener("click", ()=>{ [stops[i+1],stops[i]]=[stops[i],stops[i+1]]; update(); });
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      input.value = "";
-      input.focus();
+    const del = document.createElement("button");
+    del.className = "iconbtn"; del.textContent = "✕"; del.title = "Remove stop";
+    del.disabled = stops.length<=2;
+    del.addEventListener("click", ()=>{ stops.splice(i,1); update(); });
+
+    row.append(picker, txt, spacer, up, down, del);
+    box.appendChild(row);
+  });
+}
+
+function renderOutputs(){
+  const amp = legacyHex("&");
+  $("outAmp").textContent = amp;
+  $("outSec").textContent = legacyHex("§");
+  $("outMM").textContent = miniMessage();
+  $("outHash").textContent = hashHex();
+  $("outJson").textContent = tellrawJson();
+  $("charCount").textContent = text.length + " / 256 characters";
+  const over = amp.length > 256;
+  $("byteCount").innerHTML = "legacy output: <span class='"+(over?"over":"")+"'>" + amp.length + "</span> chars" + (over ? " — too long for chat input; use MiniMessage or a config field" : "");
+}
+
+function update(rebuildStops = true){
+  if(rebuildStops) renderStops();
+  renderGBar();
+  renderPreview();
+  renderOutputs();
+}
+
+/* ---------- presets ---------- */
+function renderPresets(){
+  const box = $("presets");
+  PRESETS.forEach(([name, cols])=>{
+    const b = document.createElement("button");
+    b.className = "preset";
+    b.innerHTML = `<div class="sw" style="background: linear-gradient(90deg, ${cols.join(",")})"></div><span class="nm">${name}</span>`;
+    b.addEventListener("click", ()=>{ stops = cols.slice(); update(); });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- saved gradients ---------- */
+const SKEY = "gradientForge.saved.v1";
+function loadSaved(){ try { return JSON.parse(store.get(SKEY) || "[]"); } catch(e){ return []; } }
+function persistSaved(list){ store.set(SKEY, JSON.stringify(list)); }
+
+function renderSaved(){
+  const list = loadSaved();
+  const box = $("savedList");
+  box.replaceChildren();
+  if(list.length===0){
+    const e = document.createElement("div");
+    e.className = "empty";
+    e.textContent = "Nothing saved yet. Forge something good and stash it here.";
+    box.appendChild(e);
+    return;
+  }
+  list.forEach((g, i)=>{
+    const row = document.createElement("div");
+    row.className = "saved";
+    const sw = document.createElement("div");
+    sw.className = "sw";
+    sw.style.background = g.stops.length>1 ? `linear-gradient(90deg, ${g.stops.join(",")})` : g.stops[0];
+    const nm = document.createElement("span");
+    nm.className = "nm";
+    nm.textContent = g.name;
+    nm.title = "Load this gradient";
+    nm.addEventListener("click", ()=>{
+      stops = g.stops.slice();
+      if(g.mode){ mode = g.mode; syncModeButtons(); }
       update();
+      toast("Loaded “" + g.name + "”");
     });
-
-    document.getElementById("swapBtn").addEventListener("click", () => {
-      input.value = selectedOutput.value;
-      input.focus();
-      update();
+    const del = document.createElement("button");
+    del.className = "iconbtn"; del.textContent = "✕"; del.title = "Delete";
+    del.addEventListener("click", ()=>{
+      const l = loadSaved(); l.splice(i,1); persistSaved(l); renderSaved();
     });
+    row.append(sw, nm, del);
+    box.appendChild(row);
+  });
+}
 
-    allOutputs.addEventListener("click", event => {
-      const button = event.target.closest("button[data-copy]");
-      if (!button) return;
-      copyText(button.dataset.copy);
-    });
+$("saveBtn").addEventListener("click", ()=>{
+  const name = prompt("Name this gradient:", stops.map(normHex).filter(Boolean).join(" → "));
+  if(name === null) return;
+  const list = loadSaved();
+  list.unshift({ name: name.trim() || "Untitled", stops: stops.map(normHex).filter(Boolean), mode });
+  persistSaved(list);
+  renderSaved();
+  toast("Saved");
+});
 
-    update();
-  </script>
+$("storageNote").textContent = store.ok
+  ? "Saved gradients live in this browser's local storage — they'll be here next visit."
+  : "Heads up: storage is blocked in this preview, so saves last only for this session. They'll persist once the file is hosted (e.g., GitHub Pages).";
+
+/* ---------- events ---------- */
+$("inputText").addEventListener("input", e=>{ text = e.target.value; update(false); });
+
+$("addStop").addEventListener("click", ()=>{
+  if(stops.length >= 10){ toast("10 stops is plenty, chief"); return; }
+  stops.push(sampleGradient(1));
+  update();
+});
+$("reverseStops").addEventListener("click", ()=>{ stops.reverse(); update(); });
+$("randomize").addEventListener("click", ()=>{
+  const n = 2 + Math.floor(Math.random()*3);
+  const baseH = Math.random();
+  stops = Array.from({length:n}, (_,i)=>{
+    const h = (baseH + i*(0.08 + Math.random()*0.22)) % 1;
+    const rgb = hslToRgb(h, 0.65 + Math.random()*0.35, 0.5 + Math.random()*0.25);
+    return rgbToHex(...rgb);
+  });
+  update();
+});
+
+function syncModeButtons(){
+  $("modeRGB").setAttribute("aria-pressed", mode==="RGB");
+  $("modeHSL").setAttribute("aria-pressed", mode==="HSL");
+}
+$("modeRGB").addEventListener("click", ()=>{ mode="RGB"; syncModeButtons(); update(false); });
+$("modeHSL").addEventListener("click", ()=>{ mode="HSL"; syncModeButtons(); update(false); });
+
+document.querySelectorAll(".tg").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const f = b.dataset.fmt;
+    formats[f] = !formats[f];
+    b.setAttribute("aria-pressed", formats[f]);
+    update(false);
+  });
+});
+
+document.querySelectorAll(".copybtn").forEach(b=>{
+  b.addEventListener("click", async ()=>{
+    const val = $(b.dataset.copy).textContent;
+    try { await navigator.clipboard.writeText(val); }
+    catch(e){
+      const ta = document.createElement("textarea");
+      ta.value = val; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    b.textContent = "Copied!";
+    b.classList.add("ok");
+    setTimeout(()=>{ b.textContent = "Copy"; b.classList.remove("ok"); }, 1200);
+  });
+});
+
+$("gbar").addEventListener("click", async ()=>{
+  const css = "background: " + $("gbar").dataset.css + ";";
+  try { await navigator.clipboard.writeText(css); toast("CSS gradient copied"); } catch(e){}
+});
+
+let toastTimer;
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+/* ---------- tabs ---------- */
+const panes = { gradient: $("paneGradient"), smallcaps: $("paneSmallCaps") };
+const tabBtns = { gradient: $("tabBtnGradient"), smallcaps: $("tabBtnSmallCaps") };
+function switchTab(name){
+  for(const k of Object.keys(panes)){
+    panes[k].classList.toggle("active", k===name);
+    tabBtns[k].setAttribute("aria-selected", k===name);
+  }
+}
+tabBtns.gradient.addEventListener("click", ()=>switchTab("gradient"));
+tabBtns.smallcaps.addEventListener("click", ()=>switchTab("smallcaps"));
+
+/* ---------- small caps converter ---------- */
+const SC_MAP = {
+  a:"ᴀ", b:"ʙ", c:"ᴄ", d:"ᴅ", e:"ᴇ", f:"ꜰ", g:"ɢ", h:"ʜ", i:"ɪ",
+  j:"ᴊ", k:"ᴋ", l:"ʟ", m:"ᴍ", n:"ɴ", o:"ᴏ", p:"ᴘ", q:"ǫ", r:"ʀ",
+  s:"ѕ", t:"ᴛ", u:"ᴜ", v:"ᴠ", w:"ᴡ", x:"х", y:"ʏ", z:"ᴢ"
+};
+function toSmallCaps(str){
+  let out = "";
+  for(const ch of str){
+    const lower = ch.toLowerCase();
+    out += SC_MAP[lower] ?? ch;
+  }
+  return out;
+}
+function renderSC(){
+  const converted = toSmallCaps($("scInput").value);
+  $("scOutput").textContent = converted;
+  $("scPreview").textContent = converted;
+}
+$("scInput").addEventListener("input", renderSC);
+$("scClear").addEventListener("click", ()=>{ $("scInput").value = ""; renderSC(); });
+$("scSend").addEventListener("click", ()=>{
+  const converted = toSmallCaps($("scInput").value).slice(0, 256);
+  if(!converted.trim()){ toast("Nothing to send yet"); return; }
+  text = converted;
+  $("inputText").value = converted;
+  update(false);
+  switchTab("gradient");
+  toast("Sent to gradient tab");
+});
+(function buildAlphaMap(){
+  const box = $("alphaMap");
+  for(const [k,v] of Object.entries(SC_MAP)){
+    const d = document.createElement("div");
+    d.className = "pair";
+    d.innerHTML = `<span>${k}</span><b>${v}</b>`;
+    box.appendChild(d);
+  }
+})();
+
+/* ---------- init ---------- */
+renderPresets();
+renderSaved();
+update();
+renderSC();
+})();
+</script>
 </body>
 </html>
