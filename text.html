@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft Text Converter</title>
+  <style>
+    :root {
+      --bg: #101418;
+      --panel: #171d23;
+      --panel-2: #1d252d;
+      --text: #eef3f7;
+      --muted: #9facba;
+      --border: #2c3844;
+      --accent: #86d47a;
+      --accent-2: #f4c95d;
+      --danger: #ff7676;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(134, 212, 122, 0.12), transparent 34rem),
+        radial-gradient(circle at top right, rgba(244, 201, 93, 0.10), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 56px;
+    }
+
+    header {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      color: #102018;
+      background: var(--accent);
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .translator {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 24px 0;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .card-title {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 230px;
+      resize: vertical;
+      border: 0;
+      outline: none;
+      padding: 18px;
+      background: transparent;
+      color: var(--text);
+      font: 1.2rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    textarea::placeholder {
+      color: #6f7d8b;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.14);
+    }
+
+    .select-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    select,
+    button {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    select {
+      min-width: 190px;
+      cursor: pointer;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(134, 212, 122, 0.65);
+    }
+
+    .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #102018;
+    }
+
+    .ghost {
+      color: var(--muted);
+    }
+
+    .outputs {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .output-row {
+      display: grid;
+      grid-template-columns: 190px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .style-name {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .style-name strong {
+      font-size: 0.98rem;
+    }
+
+    .style-name span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .converted {
+      min-width: 0;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.055);
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+      font-size: 1.05rem;
+    }
+
+    .note-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .note {
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+    }
+
+    .note h2 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .note p {
+      margin: 0 0 10px;
+    }
+
+    .note p:last-child {
+      margin-bottom: 0;
+    }
+
+    code {
+      color: var(--accent-2);
+      background: rgba(244, 201, 93, 0.08);
+      border: 1px solid rgba(244, 201, 93, 0.15);
+      border-radius: 7px;
+      padding: 1px 5px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(120%);
+      background: #eaf8e8;
+      color: #102018;
+      border-radius: 999px;
+      padding: 10px 16px;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      opacity: 0;
+      transition: 0.2s ease;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .translator,
+      .note-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .output-row {
+        grid-template-columns: 1fr;
+      }
+
+      .output-row button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="eyebrow">Minecraft Unicode Tool</div>
+      <h1>Text Style Converter</h1>
+      <p class="subtitle">
+        Convert normal text into Minecraft-friendly Unicode styles for GUI titles, lore, chat messages, server MOTDs, tags, menus, and config files.
+      </p>
+    </header>
+
+    <section class="translator">
+      <article class="card">
+        <div class="card-head">
+          <p class="card-title">Normal text</p>
+          <button class="ghost" id="clearBtn" type="button">Clear</button>
+        </div>
+        <textarea id="input" spellcheck="false" placeholder="Type something like: Cozy Market"></textarea>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <p class="card-title">Selected style</p>
+          <button class="primary" id="copySelectedBtn" type="button">Copy</button>
+        </div>
+        <textarea id="selectedOutput" spellcheck="false" readonly></textarea>
+        <div class="controls">
+          <label class="select-wrap">
+            Style
+            <select id="styleSelect"></select>
+          </label>
+          <button id="swapBtn" type="button">Use output as input</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="outputs" id="allOutputs" aria-label="All converted styles"></section>
+
+    <section class="note-grid">
+      <article class="note">
+        <h2>Best styles for Minecraft</h2>
+        <p>
+          <code>Mini caps</code>, <code>fullwidth</code>, and <code>circled</code> are usually the most useful for Minecraft menus.
+          Fancy math/cursive/fraktur symbols can be inconsistent across clients, fonts, and resource packs.
+        </p>
+        <p>
+          Unicode styles are not real fonts. They are different characters, so some letters may not have perfect replacements.
+        </p>
+      </article>
+
+      <article class="note">
+        <h2>Config tip</h2>
+        <p>
+          Paste the generated text directly into YAML strings, lore lines, DeluxeMenus, Oraxen GUI names, or plugin message files.
+        </p>
+        <p>
+          For color, keep using Minecraft codes like <code>&6ᴄᴏᴢʏ ᴍᴀʀᴋᴇᴛ</code>.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+    const styles = [
+      {
+        id: "smallCaps",
+        name: "Mini caps",
+        hint: "Best for GUI labels",
+        map: {
+          a: "ᴀ", b: "ʙ", c: "ᴄ", d: "ᴅ", e: "ᴇ", f: "ꜰ", g: "ɢ", h: "ʜ", i: "ɪ", j: "ᴊ", k: "ᴋ", l: "ʟ", m: "ᴍ",
+          n: "ɴ", o: "ᴏ", p: "ᴘ", q: "Q", r: "ʀ", s: "ꜱ", t: "ᴛ", u: "ᴜ", v: "ᴠ", w: "ᴡ", x: "x", y: "ʏ", z: "ᴢ"
+        }
+      },
+      {
+        id: "superscript",
+        name: "Superscript",
+        hint: "Tiny raised text",
+        map: {
+          a: "ᵃ", b: "ᵇ", c: "ᶜ", d: "ᵈ", e: "ᵉ", f: "ᶠ", g: "ᵍ", h: "ʰ", i: "ⁱ", j: "ʲ", k: "ᵏ", l: "ˡ", m: "ᵐ",
+          n: "ⁿ", o: "ᵒ", p: "ᵖ", q: "q", r: "ʳ", s: "ˢ", t: "ᵗ", u: "ᵘ", v: "ᵛ", w: "ʷ", x: "ˣ", y: "ʸ", z: "ᶻ",
+          "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
+          "+": "⁺", "-": "⁻", "=": "⁼", "(": "⁽", ")": "⁾"
+        }
+      },
+      {
+        id: "subscript",
+        name: "Subscript",
+        hint: "Incomplete alphabet",
+        map: {
+          a: "ₐ", b: "b", c: "c", d: "d", e: "ₑ", f: "f", g: "g", h: "ₕ", i: "ᵢ", j: "ⱼ", k: "ₖ", l: "ₗ", m: "ₘ",
+          n: "ₙ", o: "ₒ", p: "ₚ", q: "q", r: "ᵣ", s: "ₛ", t: "ₜ", u: "ᵤ", v: "ᵥ", w: "w", x: "ₓ", y: "y", z: "z",
+          "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄", "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
+          "+": "₊", "-": "₋", "=": "₌", "(": "₍", ")": "₎"
+        }
+      },
+      {
+        id: "fullwidth",
+        name: "Fullwidth",
+        hint: "Wide blocky text",
+        transform: char => {
+          const code = char.charCodeAt(0);
+          if (code === 32) return "　";
+          if (code >= 33 && code <= 126) return String.fromCharCode(code + 65248);
+          return char;
+        }
+      },
+      {
+        id: "circled",
+        name: "Circled",
+        hint: "Good for badges",
+        map: {
+          A: "Ⓐ", B: "Ⓑ", C: "Ⓒ", D: "Ⓓ", E: "Ⓔ", F: "Ⓕ", G: "Ⓖ", H: "Ⓗ", I: "Ⓘ", J: "Ⓙ", K: "Ⓚ", L: "Ⓛ", M: "Ⓜ",
+          N: "Ⓝ", O: "Ⓞ", P: "Ⓟ", Q: "Ⓠ", R: "Ⓡ", S: "Ⓢ", T: "Ⓣ", U: "Ⓤ", V: "Ⓥ", W: "Ⓦ", X: "Ⓧ", Y: "Ⓨ", Z: "Ⓩ",
+          a: "ⓐ", b: "ⓑ", c: "ⓒ", d: "ⓓ", e: "ⓔ", f: "ⓕ", g: "ⓖ", h: "ⓗ", i: "ⓘ", j: "ⓙ", k: "ⓚ", l: "ⓛ", m: "ⓜ",
+          n: "ⓝ", o: "ⓞ", p: "ⓟ", q: "ⓠ", r: "ⓡ", s: "ⓢ", t: "ⓣ", u: "ⓤ", v: "ⓥ", w: "ⓦ", x: "ⓧ", y: "ⓨ", z: "ⓩ",
+          "0": "⓪", "1": "①", "2": "②", "3": "③", "4": "④", "5": "⑤", "6": "⑥", "7": "⑦", "8": "⑧", "9": "⑨"
+        }
+      },
+      {
+        id: "squared",
+        name: "Squared",
+        hint: "Heavy label style",
+        map: {
+          A: "🄰", B: "🄱", C: "🄲", D: "🄳", E: "🄴", F: "🄵", G: "🄶", H: "🄷", I: "🄸", J: "🄹", K: "🄺", L: "🄻", M: "🄼",
+          N: "🄽", O: "🄾", P: "🄿", Q: "🅀", R: "🅁", S: "🅂", T: "🅃", U: "🅄", V: "🅅", W: "🅆", X: "🅇", Y: "🅈", Z: "🅉"
+        }
+      },
+      {
+        id: "boldMath",
+        name: "Bold math",
+        hint: "Can render inconsistently",
+        map: {
+          A: "𝐀", B: "𝐁", C: "𝐂", D: "𝐃", E: "𝐄", F: "𝐅", G: "𝐆", H: "𝐇", I: "𝐈", J: "𝐉", K: "𝐊", L: "𝐋", M: "𝐌",
+          N: "𝐍", O: "𝐎", P: "𝐏", Q: "𝐐", R: "𝐑", S: "𝐒", T: "𝐓", U: "𝐔", V: "𝐕", W: "𝐖", X: "𝐗", Y: "𝐘", Z: "𝐙",
+          a: "𝐚", b: "𝐛", c: "𝐜", d: "𝐝", e: "𝐞", f: "𝐟", g: "𝐠", h: "𝐡", i: "𝐢", j: "𝐣", k: "𝐤", l: "𝐥", m: "𝐦",
+          n: "𝐧", o: "𝐨", p: "𝐩", q: "𝐪", r: "𝐫", s: "𝐬", t: "𝐭", u: "𝐮", v: "𝐯", w: "𝐰", x: "𝐱", y: "𝐲", z: "𝐳",
+          "0": "𝟎", "1": "𝟏", "2": "𝟐", "3": "𝟑", "4": "𝟒", "5": "𝟓", "6": "𝟔", "7": "𝟕", "8": "𝟖", "9": "𝟗"
+        }
+      },
+      {
+        id: "script",
+        name: "Script",
+        hint: "Fancy, less readable",
+        map: {
+          A: "𝓐", B: "𝓑", C: "𝓒", D: "𝓓", E: "𝓔", F: "𝓕", G: "𝓖", H: "𝓗", I: "𝓘", J: "𝓙", K: "𝓚", L: "𝓛", M: "𝓜",
+          N: "𝓝", O: "𝓞", P: "𝓟", Q: "𝓠", R: "𝓡", S: "𝓢", T: "𝓣", U: "𝓤", V: "𝓥", W: "𝓦", X: "𝓧", Y: "𝓨", Z: "𝓩",
+          a: "𝓪", b: "𝓫", c: "𝓬", d: "𝓭", e: "𝓮", f: "𝓯", g: "𝓰", h: "𝓱", i: "𝓲", j: "𝓳", k: "𝓴", l: "𝓵", m: "𝓶",
+          n: "𝓷", o: "𝓸", p: "𝓹", q: "𝓺", r: "𝓻", s: "𝓼", t: "𝓽", u: "𝓾", v: "𝓿", w: "𝔀", x: "𝔁", y: "𝔂", z: "𝔃"
+        }
+      },
+      {
+        id: "fraktur",
+        name: "Fraktur",
+        hint: "Medieval style",
+        map: {
+          A: "𝔄", B: "𝔅", C: "ℭ", D: "𝔇", E: "𝔈", F: "𝔉", G: "𝔊", H: "ℌ", I: "ℑ", J: "𝔍", K: "𝔎", L: "𝔏", M: "𝔐",
+          N: "𝔑", O: "𝔒", P: "𝔓", Q: "𝔔", R: "ℜ", S: "𝔖", T: "𝔗", U: "𝔘", V: "𝔙", W: "𝔚", X: "𝔛", Y: "𝔜", Z: "ℨ",
+          a: "𝔞", b: "𝔟", c: "𝔠", d: "𝔡", e: "𝔢", f: "𝔣", g: "𝔤", h: "𝔥", i: "𝔦", j: "𝔧", k: "𝔨", l: "𝔩", m: "𝔪",
+          n: "𝔫", o: "𝔬", p: "𝔭", q: "𝔮", r: "𝔯", s: "𝔰", t: "𝔱", u: "𝔲", v: "𝔳", w: "𝔴", x: "𝔵", y: "𝔶", z: "𝔷"
+        }
+      }
+    ];
+
+    const input = document.getElementById("input");
+    const selectedOutput = document.getElementById("selectedOutput");
+    const styleSelect = document.getElementById("styleSelect");
+    const allOutputs = document.getElementById("allOutputs");
+    const toast = document.getElementById("toast");
+
+    function convertWithStyle(text, style) {
+      return Array.from(text).map(char => {
+        if (style.transform) return style.transform(char);
+        return style.map[char] ?? style.map[char.toLowerCase()] ?? char;
+      }).join("");
+    }
+
+    function getSelectedStyle() {
+      return styles.find(style => style.id === styleSelect.value) || styles[0];
+    }
+
+    function update() {
+      const text = input.value || "";
+      const selected = getSelectedStyle();
+      selectedOutput.value = convertWithStyle(text, selected);
+
+      allOutputs.innerHTML = "";
+      styles.forEach(style => {
+        const converted = convertWithStyle(text, style);
+        const row = document.createElement("article");
+        row.className = "output-row";
+        row.innerHTML = `
+          <div class="style-name">
+            <strong>${escapeHtml(style.name)}</strong>
+            <span>${escapeHtml(style.hint)}</span>
+          </div>
+          <div class="converted">${escapeHtml(converted || "Converted text will appear here")}</div>
+          <button type="button" data-copy="${escapeHtml(converted)}">Copy</button>
+        `;
+        allOutputs.appendChild(row);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function copyText(text) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+      }
+      showToast("Copied");
+    }
+
+    let toastTimer;
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1100);
+    }
+
+    styles.forEach(style => {
+      const option = document.createElement("option");
+      option.value = style.id;
+      option.textContent = style.name;
+      styleSelect.appendChild(option);
+    });
+
+    input.value = "Cozy Market";
+    styleSelect.value = "smallCaps";
+
+    input.addEventListener("input", update);
+    styleSelect.addEventListener("change", update);
+
+    document.getElementById("copySelectedBtn").addEventListener("click", () => {
+      copyText(selectedOutput.value);
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      input.value = "";
+      input.focus();
+      update();
+    });
+
+    document.getElementById("swapBtn").addEventListener("click", () => {
+      input.value = selectedOutput.value;
+      input.focus();
+      update();
+    });
+
+    allOutputs.addEventListener("click", event => {
+      const button = event.target.closest("button[data-copy]");
+      if (!button) return;
+      copyText(button.dataset.copy);
+    });
+
+    update();
+  </script>
+</body>
+</html>
