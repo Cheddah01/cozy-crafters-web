@@ -1165,6 +1165,10 @@
                 <option value="both">Both sides</option>
               </select>
             </div>
+            <div class="field">
+              <label for="icon-gap">Pad-icon</label>
+              <input type="number" id="icon-gap" value="1" min="0" max="6">
+            </div>
           </div>
           <div class="hint">Decorations render behind the letters. For readable chat tags, use corners or sides before trying dense patterns.</div>
           </div>
@@ -1626,15 +1630,15 @@ const DECORATION_PALETTES = {
 };
 
 const ICON_SPRITES = {
-  coffee:   { rows: ['0WW00','WBBWH','WBBWH','0WWW0','0SSS0'], colors: { W:'#fff0cc', B:'#8b572a', H:'#ff78b2', S:'#b6782f' } },
-  heart:    { rows: ['P0P0P','PPPPP','PPPPP','0PPP0','00P00'], colors: { P:'#ff669e' } },
-  flower:   { rows: ['0P0P0','PCDCP','0DCP0','0L0L0'], colors: { P:'#ff9fc5', D:'#eb6da5', C:'#ffd86b', L:'#73b957' } },
-  crown:    { rows: ['Y0Y0Y','YYYYY','YCYCY','YYYYY','0YYY0'], colors: { Y:'#f5bd31', C:'#ff76ad' } },
-  gem:      { rows: ['00A00','0APA0','APCPA','0ADA0','00A00'], colors: { A:'#70e6df', P:'#c982ff', C:'#fff4c8', D:'#5b49bc' } },
-  star:     { rows: ['00Y00','0YYY0','YYYYY','0YYY0','00Y00'], colors: { Y:'#ffd95a' } },
-  bee:      { rows: ['0W0W0','YKYK0','0YKY0','00L00'], colors: { W:'#ffffff', Y:'#ffd64f', K:'#33251b', L:'#66b96b' } },
-  mushroom: { rows: ['0RRR0','RWRWR','0BBB0','0BLB0'], colors: { R:'#ec5d7a', W:'#fff3e0', B:'#f0d2a7', L:'#6ead58' } },
-  sparkle:  { rows: ['00W00','00W00','WWCWW','00W00','00W00'], colors: { W:'#fff6d8', C:'#ffd95a' } },
+  coffee:   { rows: ['0H0H0','0WWW0','WBBBW','WWWWW','0WWW0'], colors: { W:'#fff3d6', B:'#7a4a25', H:'#ff8fc0' } },
+  heart:    { rows: ['0P0P0','PPPPP','PPPPP','0PPP0','00P00'], colors: { P:'#ff5e96' } },
+  flower:   { rows: ['0PPP0','PPCPP','0PPP0','00L00','0L00L'], colors: { P:'#ff8fbe', C:'#ffd25a', L:'#5fb15c' } },
+  crown:    { rows: ['Y0Y0Y','YGYGY','YYYYY','YYYYY','0WWW0'], colors: { Y:'#f5bd31', G:'#ff6fa6', W:'#caa033' } },
+  gem:      { rows: ['0HHH0','HWCCH','HCCCH','0HCH0','00H00'], colors: { H:'#67e0d8', C:'#b06bff', W:'#ffffff' } },
+  star:     { rows: ['00Y00','0YYY0','YYWYY','0YYY0','0Y0Y0'], colors: { Y:'#ffd14f', W:'#fff2bf' } },
+  bee:      { rows: ['0W0W0','YKYKY','KYKYK','YKYKY','00L00'], colors: { W:'#e8f4ff', Y:'#ffcf3f', K:'#2b2018', L:'#5fb15c' } },
+  mushroom: { rows: ['0RRR0','RWRWR','RRRRR','0WBW0','0WWW0'], colors: { R:'#e8536f', W:'#fff3e0', B:'#e7c79a' } },
+  sparkle:  { rows: ['00Y00','00W00','YWWWY','00W00','00Y00'], colors: { Y:'#ffd95a', W:'#fff6d8' } },
 };
 
 
@@ -1735,6 +1739,11 @@ function iconWidth(name) {
   const spr = iconSprite(name);
   return spr ? spr.rows[0].length : 0;
 }
+function iconGap(cfg) {
+  // Pixels of space between an icon and the text. Defaults to 1.
+  const g = cfg.iconGap ?? 1;
+  return Math.max(0, g);
+}
 function hasLeftIcon(cfg) {
   return cfg.icon && cfg.icon !== 'none' && (cfg.iconPlacement === 'left' || cfg.iconPlacement === 'both');
 }
@@ -1744,8 +1753,9 @@ function hasRightIcon(cfg) {
 function contentWidth(text, font, cfg) {
   let w = textWidth(text, font);
   const iw = iconWidth(cfg.icon);
-  if (hasLeftIcon(cfg)) w += iw + (text ? 1 : 0);
-  if (hasRightIcon(cfg)) w += iw + (text ? 1 : 0);
+  const gap = iconGap(cfg);
+  if (hasLeftIcon(cfg)) w += iw + (text ? gap : 0);
+  if (hasRightIcon(cfg)) w += iw + (text ? gap : 0);
   return Math.max(1, w);
 }
 function effectiveTextColor(cfg, stopsRgb) {
@@ -1946,13 +1956,14 @@ function drawContentIcons(ctx, cfg, x, y, fontHeight, text, font) {
   if (!spr) return;
   const iw = spr.rows[0].length;
   const ih = spr.rows.length;
+  const gap = iconGap(cfg);
   const iy = y + Math.max(0, Math.floor((fontHeight - ih) / 2));
   let textX = x;
   if (hasLeftIcon(cfg)) {
     drawPixelSprite(ctx, spr, x, iy, spr.colors);
-    textX += iw + (text ? 1 : 0);
+    textX += iw + (text ? gap : 0);
   }
-  const rightX = textX + textWidth(text, font) + (text && hasRightIcon(cfg) ? 1 : 0);
+  const rightX = textX + textWidth(text, font) + (text && hasRightIcon(cfg) ? gap : 0);
   if (hasRightIcon(cfg)) drawPixelSprite(ctx, spr, rightX, iy, spr.colors);
 }
 
@@ -2026,7 +2037,7 @@ function renderTag(canvas, cfg) {
   // Layout for foreground content
   const startX = bd + padX;
   const startY = bd + padT;
-  const leftIconW = hasLeftIcon(cfg) ? iconWidth(cfg.icon) + (text ? 1 : 0) : 0;
+  const leftIconW = hasLeftIcon(cfg) ? iconWidth(cfg.icon) + (text ? iconGap(cfg) : 0) : 0;
   const textX = startX + leftIconW;
   const textRect = { x: textX, y: startY, w: textOnlyW, h: th };
 
@@ -2104,6 +2115,7 @@ const state = {
   decorationIntensity: 'subtle',
   icon: 'none',
   iconPlacement: 'left',
+  iconGap: 1,
   ign: 'Cheddah',
   glyphStart: 'E100',
   glyphFolder: 'tags',
@@ -2157,6 +2169,7 @@ function syncUIFromState() {
   $('decoration-intensity').value = state.decorationIntensity || 'subtle';
   $('icon-select').value = state.icon || 'none';
   $('icon-placement').value = state.iconPlacement || 'left';
+  $('icon-gap').value = state.iconGap ?? 1;
   $('pad-x').value = state.padX;
   $('pad-top').value = state.padTop;
   $('pad-bot').value = state.padBot;
@@ -2299,6 +2312,7 @@ function readControlsToState() {
   state.decorationIntensity = $('decoration-intensity').value;
   state.icon = $('icon-select').value;
   state.iconPlacement = $('icon-placement').value;
+  state.iconGap = clamp(+$('icon-gap').value, 0, 6);
   state.padX = clamp(+$('pad-x').value, 0, 6);
   state.padTop = clamp(+$('pad-top').value, 0, 4);
   state.padBot = clamp(+$('pad-bot').value, 0, 4);
