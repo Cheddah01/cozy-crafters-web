@@ -142,12 +142,19 @@
   }
   #bar.transparent-bg .bar-inner { background: none !important; }
 
-  .top-rules { position: absolute; top: 0; left: 0; right: 0; z-index: 3; }
-  .bottom-rules { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; }
-  .rule-thick { height: 8px; background: var(--ink); }
-  .rule-gap { height: 5px; }
-  .rule-thin { height: 3px; background: var(--ink); }
-  #bar.torn .bottom-rules { display: none; }
+  /* full double-rule frame — thick outer, gap, thin inner, all four sides */
+  .frame-outer {
+    position: absolute; inset: 0; z-index: 3;
+    border: 8px solid var(--ink);
+    pointer-events: none;
+  }
+  .frame-inner {
+    position: absolute; inset: 13px; z-index: 3;
+    border: 3px solid var(--ink);
+    pointer-events: none;
+  }
+  #bar.torn .frame-outer { border-bottom: none; }
+  #bar.torn .frame-inner { border-bottom: none; }
 
   /* torn paper bottom edge (SVG injected) */
   .torn-edge {
@@ -409,16 +416,8 @@
             </div>
           </div>
 
-          <div class="top-rules">
-            <div class="rule-thick"></div>
-            <div class="rule-gap"></div>
-            <div class="rule-thin"></div>
-          </div>
-          <div class="bottom-rules">
-            <div class="rule-thin"></div>
-            <div class="rule-gap"></div>
-            <div class="rule-thick"></div>
-          </div>
+          <div class="frame-outer"></div>
+          <div class="frame-inner"></div>
 
           <svg class="torn-edge" id="tornEdge" preserveAspectRatio="none" viewBox="0 0 1600 26"></svg>
 
@@ -462,18 +461,29 @@
     c.width = 1600; c.height = 400;
     const ctx = c.getContext('2d');
     const folds = [
-      [180, -40, 420, 460, 'rgba(0,0,0,0.030)'],
-      [520, 480, 760, -60, 'rgba(255,255,255,0.35)'],
-      [900, -80, 1080, 480, 'rgba(0,0,0,0.024)'],
-      [1250, 460, 1420, -40, 'rgba(0,0,0,0.028)'],
-      [1420, -40, 1560, 460, 'rgba(255,255,255,0.30)']
+      [300, -40, 460, 460, 'rgba(70,60,45,0.045)'],
+      [980, -80, 1100, 480, 'rgba(70,60,45,0.035)'],
+      [1330, 460, 1440, -40, 'rgba(70,60,45,0.040)']
     ];
     folds.forEach(([x1, y1, x2, y2, color]) => {
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
-      g.addColorStop(0.46, 'rgba(0,0,0,0)');
+      g.addColorStop(0.488, 'rgba(0,0,0,0)');
       g.addColorStop(0.5, color);
-      g.addColorStop(0.54, 'rgba(0,0,0,0)');
+      g.addColorStop(0.512, 'rgba(0,0,0,0)');
       ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 1600, 400);
+    });
+    // soft uneven toning — like paper that's absorbed light differently over time
+    const blotches = [
+      [260, 120, 380, 'rgba(120,105,80,0.030)'],
+      [850, 320, 460, 'rgba(120,105,80,0.024)'],
+      [1400, 90, 420, 'rgba(120,105,80,0.028)']
+    ];
+    blotches.forEach(([x, y, r, color]) => {
+      const b = ctx.createRadialGradient(x, y, 0, x, y, r);
+      b.addColorStop(0, color);
+      b.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = b;
       ctx.fillRect(0, 0, 1600, 400);
     });
     // gentle vignette so edges feel aged
