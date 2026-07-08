@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cozy Chronicles — Headline Bar Generator</title>
+<title>Cozy Chronicles — Headline Card Generator</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Roboto+Condensed:wght@400;700&display=swap');
 
@@ -126,9 +126,9 @@
     padding: 30px 20px;
   }
 
-  /* ====== EXPORTED GRAPHIC — fixed 1600×400 ====== */
+  /* ====== EXPORTED GRAPHIC — stacked card, 1100×620 ====== */
   #bar {
-    width: 1600px; height: 400px; flex-shrink: 0;
+    width: 1100px; height: 620px; flex-shrink: 0;
     position: relative;
     font-family: 'Playfair Display', serif;
     transform-origin: center center;
@@ -137,8 +137,6 @@
   .bar-inner {
     position: absolute; inset: 0;
     background-color: var(--paper);
-    /* crumple folds — noise grain layered on top via JS data-URL */
-    display: flex; flex-direction: column;
   }
   #bar.transparent-bg .bar-inner { background: none !important; }
 
@@ -156,7 +154,7 @@
   #bar.torn .frame-outer { border-bottom: none; }
   #bar.torn .frame-inner { border-bottom: none; }
 
-  /* torn paper bottom edge (SVG injected) */
+  /* torn paper bottom edge */
   .torn-edge {
     position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
     display: none; z-index: 2;
@@ -164,46 +162,56 @@
   #bar.torn:not(.transparent-bg) .torn-edge { display: block; }
   #bar.torn:not(.transparent-bg) .bar-inner { bottom: 22px; }
 
+  /* ---- stacked content ---- */
   .bar-content {
-    display: flex; align-items: stretch; height: 100%;
-    padding: 40px 0 46px;
-    position: relative; z-index: 2;
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 52px 58px 96px;
+    z-index: 2;
   }
 
-  /* the stacked black tag with the beveled double border, matching the masthead boxes */
+  .top-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px;
+  }
+
+  /* compact tag chip — small rectangle, same beveled treatment scaled down */
   .tag {
     background: var(--panel);
     color: var(--paper);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 0 42px;
-    margin: 0 42px 0 48px;
-    box-shadow:
-      inset 0 0 0 3px var(--panel),
-      inset 0 0 0 6px var(--paper),
-      inset 0 0 0 10px var(--panel),
-      4px 5px 0 rgba(28,26,23,0.25);
-    min-width: 300px;
     font-style: italic; font-weight: 700;
-    letter-spacing: 3px; text-transform: uppercase;
-    line-height: 1.08;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 30px;
+    line-height: 1;
+    padding: 15px 26px 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 62%;
+    box-shadow:
+      inset 0 0 0 2px var(--panel),
+      inset 0 0 0 4px var(--paper),
+      inset 0 0 0 7px var(--panel),
+      3px 4px 0 rgba(28,26,23,0.22);
+    text-shadow: 1px 1px 0 rgba(0,0,0,.5);
   }
-  .tag .tag-line { font-size: 44px; text-shadow: 1px 1px 0 rgba(0,0,0,.5); }
-  #bar.tag-hidden .tag { display: none; }
+  #bar.tag-hidden .tag { visibility: hidden; }
 
-  .headline-block {
-    flex: 1; display: flex; flex-direction: column; justify-content: center;
-    padding-right: 60px; min-width: 0;
+  .masthead-mini {
+    font-family: 'UnifrakturCook', cursive;
+    font-size: 32px; color: var(--ink); opacity: .5;
+    white-space: nowrap;
+    display: none;
   }
-  #bar.tag-hidden .headline-block { padding-left: 56px; }
+  #bar.masthead-on .masthead-mini { display: block; }
 
   .eyebrow {
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 700; text-transform: uppercase;
-    letter-spacing: 7px; font-size: 25px;
+    letter-spacing: 7px; font-size: 24px;
     color: var(--ink); opacity: .6;
-    margin-bottom: 10px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 34px;
+    white-space: nowrap; overflow: hidden;
     display: flex; align-items: center; gap: 18px;
   }
   .eyebrow::after {
@@ -212,28 +220,34 @@
   }
   #bar.eyebrow-hidden .eyebrow { display: none; }
 
+  .headline-area {
+    flex: 1; min-height: 0;
+    display: flex; align-items: center;
+    margin-top: 10px;
+    overflow: hidden;
+  }
   .headline {
     font-weight: 900; color: var(--ink);
     text-transform: uppercase;
-    line-height: .94; letter-spacing: -.5px;
-    white-space: nowrap;
-    /* letterpress ink feel */
+    line-height: .96; letter-spacing: -1px;
+    width: 100%;
+    overflow-wrap: break-word;
     text-shadow:
       0 1px 0 rgba(255,255,255,.35),
       0 0 1px rgba(28,26,23,.35);
   }
 
-  /* red ink stamp */
+  /* red ink stamp — bottom-left corner */
   .stamp {
     position: absolute;
-    top: 44px; right: 64px;
-    transform: rotate(-7deg);
+    left: 54px; bottom: 34px;
+    transform: rotate(-6deg);
     border: 5px solid var(--stampred);
     box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 4px var(--stampred);
     color: var(--stampred);
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 700; text-transform: uppercase;
-    letter-spacing: 5px; font-size: 30px;
+    letter-spacing: 5px; font-size: 28px;
     padding: 8px 20px 7px;
     opacity: .82;
     z-index: 4;
@@ -242,33 +256,24 @@
   }
   #bar.stamp-on .stamp { display: block; }
   #bar.transparent-bg .stamp { mix-blend-mode: normal; box-shadow: none; }
+  #bar.torn .stamp { bottom: 52px; }
 
-  /* date chip — matches the black date banner with asterisks */
+  /* date chip — bottom-right */
   .datechip {
     position: absolute;
-    right: 54px; bottom: 26px;
+    right: 46px; bottom: 34px;
     background: var(--panel);
     color: var(--paper);
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 700; letter-spacing: 5px; text-transform: uppercase;
-    font-size: 21px;
-    padding: 8px 20px;
+    font-size: 20px;
+    padding: 9px 20px;
     z-index: 4;
     display: none;
   }
   #bar.date-on .datechip { display: block; }
-  #bar.torn .datechip { bottom: 44px; }
+  #bar.torn .datechip { bottom: 52px; }
   .datechip .ast { opacity: .75; padding: 0 10px; font-weight: 400; }
-
-  .masthead-mini {
-    position: absolute; top: 24px; right: 56px;
-    font-family: 'UnifrakturCook', cursive;
-    font-size: 30px; color: var(--ink); opacity: .5;
-    z-index: 4; display: none;
-  }
-  #bar.masthead-on .masthead-mini { display: block; }
-  /* masthead and stamp share the corner — nudge stamp down if both on */
-  #bar.masthead-on.stamp-on .stamp { top: 74px; }
 
   footer {
     text-align: center; color: #6d675c; font-size: 12px;
@@ -286,7 +291,7 @@
 
   <div class="page-title">
     <h1>The Cozy Chronicles</h1>
-    <p>Headline Bar Generator</p>
+    <p>Headline Card Generator</p>
   </div>
 
   <div class="workspace">
@@ -305,7 +310,7 @@
       <h2>Compose</h2>
 
       <div class="field">
-        <label for="eyebrowInput">Tag label (the black box)</label>
+        <label for="eyebrowInput">Tag label (the black chip)</label>
         <input type="text" id="eyebrowInput" value="BREAKING NEWS" maxlength="24" autocomplete="off">
       </div>
 
@@ -356,13 +361,13 @@
       <div class="toggle-row">
         <span>Date chip</span>
         <div class="seg" id="dateSeg">
-          <button data-v="off" class="active">Off</button>
-          <button data-v="on">On</button>
+          <button data-v="on" class="active">On</button>
+          <button data-v="off">Off</button>
         </div>
       </div>
 
       <div class="toggle-row">
-        <span>Tag box</span>
+        <span>Tag chip</span>
         <div class="seg" id="tagSeg">
           <button data-v="on" class="active">On</button>
           <button data-v="off">Off</button>
@@ -380,50 +385,49 @@
       <div class="toggle-row">
         <span>Corner masthead</span>
         <div class="seg" id="mastheadSeg">
-          <button data-v="off" class="active">Off</button>
-          <button data-v="on">On</button>
+          <button data-v="on" class="active">On</button>
+          <button data-v="off">Off</button>
         </div>
       </div>
 
       <div class="field">
         <label for="scaleSelect">Export resolution</label>
         <select id="scaleSelect">
-          <option value="1">1600 × 400 (1×)</option>
-          <option value="2" selected>3200 × 800 (2× — crisp)</option>
-          <option value="3">4800 × 1200 (3× — max)</option>
+          <option value="1">1100 × 620 (1×)</option>
+          <option value="2" selected>2200 × 1240 (2× — crisp)</option>
+          <option value="3">3300 × 1860 (3× — max)</option>
         </select>
       </div>
 
       <button class="export-btn" id="exportBtn">Export PNG</button>
-      <p class="hint">Transparent mode drops the paper and torn edge so the type and boxes float clean over footage. Paper mode gives the full aged-newsprint strip.</p>
+      <p class="hint">Stacked card sized for vertical video — drop it at ~90% width on a 1080×1920 timeline and the headline reads big. Transparent mode floats the type clean over footage.</p>
     </div>
 
     <!-- PREVIEW -->
     <div class="preview-wrap">
       <div class="preview-label">Live Preview — transparency shown as checkerboard</div>
       <div class="stage" id="stage">
-        <div id="bar" class="date-on">
-          <div class="bar-inner" id="barInner">
-            <div class="bar-content">
-              <div class="tag">
-                <div class="tag-line" id="tagLine1">BREAKING</div>
-                <div class="tag-line" id="tagLine2">NEWS</div>
-              </div>
-              <div class="headline-block">
-                <div class="eyebrow" id="eyebrowOut">SERVER DISPATCH</div>
-                <div class="headline" id="headlineOut">A ONE-DAY LEGACY</div>
-              </div>
+        <div id="bar" class="date-on masthead-on">
+          <div class="bar-inner" id="barInner"></div>
+
+          <div class="bar-content">
+            <div class="top-row">
+              <div class="tag" id="tagOut">BREAKING NEWS</div>
+              <div class="masthead-mini">The Cozy Chronicles</div>
+            </div>
+            <div class="eyebrow" id="eyebrowOut">SERVER DISPATCH</div>
+            <div class="headline-area" id="headlineArea">
+              <div class="headline" id="headlineOut">A ONE-DAY LEGACY</div>
             </div>
           </div>
 
           <div class="frame-outer"></div>
           <div class="frame-inner"></div>
 
-          <svg class="torn-edge" id="tornEdge" preserveAspectRatio="none" viewBox="0 0 1600 26"></svg>
+          <svg class="torn-edge" id="tornEdge" preserveAspectRatio="none" viewBox="0 0 1100 26"></svg>
 
           <div class="stamp" id="stampOut">EXCLUSIVE</div>
           <div class="datechip" id="dateOut"><span class="ast">✱</span>JULY 7, 2026<span class="ast">✱</span></div>
-          <div class="masthead-mini">The Cozy Chronicles</div>
         </div>
       </div>
     </div>
@@ -431,7 +435,7 @@
 
   <footer>
     <strong>Workflow:</strong> pick a desk preset → tweak the headline → export PNG → drop into CapCut.<br>
-    Same footage underneath every episode; only this bar changes.
+    Same footage underneath every episode; only this card changes.
   </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -439,31 +443,32 @@
   const $ = id => document.getElementById(id);
   const bar = $('bar');
   const stage = $('stage');
+  const W = 1100, H = 620;
 
-  /* ---------- paper texture: grain + crumple folds, baked as data-URLs ---------- */
+  /* ---------- paper texture: grain + faint creases + aged toning ---------- */
   function makeGrain() {
     const c = document.createElement('canvas');
     c.width = c.height = 160;
     const ctx = c.getContext('2d');
     const img = ctx.createImageData(160, 160);
     for (let i = 0; i < img.data.length; i += 4) {
-      const v = 118 + Math.random() * 20;          // grey speck
+      const v = 118 + Math.random() * 20;
       img.data[i] = img.data[i+1] = img.data[i+2] = v;
-      img.data[i+3] = Math.random() < 0.5 ? 10 : 4; // very low alpha
+      img.data[i+3] = Math.random() < 0.5 ? 10 : 4;
     }
     ctx.putImageData(img, 0, 0);
     return c.toDataURL();
   }
 
   function makeCrumple() {
-    // soft diagonal fold shadows/highlights, pre-rendered once
     const c = document.createElement('canvas');
-    c.width = 1600; c.height = 400;
+    c.width = W; c.height = H;
     const ctx = c.getContext('2d');
+    // faint diagonal creases — shadows only, no shine
     const folds = [
-      [300, -40, 460, 460, 'rgba(70,60,45,0.045)'],
-      [980, -80, 1100, 480, 'rgba(70,60,45,0.035)'],
-      [1330, 460, 1440, -40, 'rgba(70,60,45,0.040)']
+      [240, -40, 380, H + 60, 'rgba(70,60,45,0.045)'],
+      [660, -80, 760, H + 80, 'rgba(70,60,45,0.035)'],
+      [920, H + 60, 1010, -40, 'rgba(70,60,45,0.040)']
     ];
     folds.forEach(([x1, y1, x2, y2, color]) => {
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
@@ -471,43 +476,43 @@
       g.addColorStop(0.5, color);
       g.addColorStop(0.512, 'rgba(0,0,0,0)');
       ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 1600, 400);
+      ctx.fillRect(0, 0, W, H);
     });
-    // soft uneven toning — like paper that's absorbed light differently over time
+    // soft uneven toning
     const blotches = [
-      [260, 120, 380, 'rgba(120,105,80,0.030)'],
-      [850, 320, 460, 'rgba(120,105,80,0.024)'],
-      [1400, 90, 420, 'rgba(120,105,80,0.028)']
+      [200, 160, 320, 'rgba(120,105,80,0.030)'],
+      [620, 460, 380, 'rgba(120,105,80,0.024)'],
+      [950, 140, 340, 'rgba(120,105,80,0.028)']
     ];
     blotches.forEach(([x, y, r, color]) => {
       const b = ctx.createRadialGradient(x, y, 0, x, y, r);
       b.addColorStop(0, color);
       b.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = b;
-      ctx.fillRect(0, 0, 1600, 400);
+      ctx.fillRect(0, 0, W, H);
     });
-    // gentle vignette so edges feel aged
-    const v = ctx.createRadialGradient(800, 200, 300, 800, 200, 1000);
+    // gentle vignette
+    const v = ctx.createRadialGradient(W/2, H/2, 250, W/2, H/2, 800);
     v.addColorStop(0, 'rgba(0,0,0,0)');
     v.addColorStop(1, 'rgba(60,50,35,0.05)');
     ctx.fillStyle = v;
-    ctx.fillRect(0, 0, 1600, 400);
+    ctx.fillRect(0, 0, W, H);
     return c.toDataURL();
   }
 
   $('barInner').style.backgroundImage = `url(${makeGrain()}), url(${makeCrumple()})`;
 
-  /* ---------- torn edge path (randomized once per load) ---------- */
+  /* ---------- torn edge path ---------- */
   (function buildTorn() {
     let d = 'M0,0 ';
     let x = 0;
-    while (x < 1600) {
+    while (x < W) {
       const step = 14 + Math.random() * 30;
-      x = Math.min(1600, x + step);
+      x = Math.min(W, x + step);
       const y = 4 + Math.random() * 18;
       d += `L${x.toFixed(0)},${y.toFixed(0)} `;
     }
-    d += 'L1600,0 Z';
+    d += `L${W},0 Z`;
     const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     p.setAttribute('d', d);
     p.setAttribute('fill', '#f2efe6');
@@ -521,34 +526,37 @@
   const stampInput = $('stampInput');
   const dateInput = $('dateInput');
 
-  function splitTag(text) {
-    const words = text.trim().split(/\s+/);
-    if (words.length === 1) return [words[0], ''];
-    if (words.length === 2) return [words[0], words[1]];
-    return [words[0], words.slice(1).join(' ')];
+  function fitTag() {
+    const el = $('tagOut');
+    let size = 30;
+    el.style.fontSize = size + 'px';
+    while (el.scrollWidth > el.clientWidth && size > 18) {
+      size -= 1;
+      el.style.fontSize = size + 'px';
+    }
   }
 
   function fitHeadline() {
     const el = $('headlineOut');
-    const block = el.parentElement;
-    const maxWidth = block.clientWidth;
-    let size = 96;
+    const area = $('headlineArea');
+    const maxW = area.clientWidth;
+    const maxH = area.clientHeight;
+    let size = 150;
     el.style.fontSize = size + 'px';
-    while (el.scrollWidth > maxWidth && size > 40) {
-      size -= 2;
+    // shrink until it fits both width (with wrapping) and height (max ~2 lines)
+    while ((el.scrollHeight > maxH || el.scrollWidth > maxW) && size > 44) {
+      size -= 3;
       el.style.fontSize = size + 'px';
     }
   }
 
   function render() {
-    const [t1, t2] = splitTag(eyebrowInput.value || 'BREAKING NEWS');
-    $('tagLine1').textContent = t1;
-    $('tagLine2').textContent = t2;
-    $('tagLine2').style.display = t2 ? 'block' : 'none';
+    $('tagOut').textContent = (eyebrowInput.value || 'BREAKING NEWS').toUpperCase();
     $('eyebrowOut').textContent = kickerInput.value;
     $('headlineOut').textContent = headlineInput.value || ' ';
     $('stampOut').textContent = stampInput.value || 'EXCLUSIVE';
     $('dateOut').innerHTML = `<span class="ast">✱</span>${(dateInput.value || '').toUpperCase()}<span class="ast">✱</span>`;
+    fitTag();
     fitHeadline();
   }
   [eyebrowInput, kickerInput, headlineInput, stampInput, dateInput]
@@ -562,7 +570,7 @@
         seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         apply(btn.dataset.v);
-        fitHeadline();
+        render();
       });
     });
   }
@@ -582,12 +590,12 @@
 
   /* ---------- desk presets ---------- */
   const PRESETS = {
-    breaking:  { tag: 'BREAKING NEWS', kicker: 'SERVER DISPATCH',   stamp: false, stampText: 'EXCLUSIVE' },
-    memoriam:  { tag: 'IN MEMORIAM',   kicker: 'GONE TOO SOON',     stamp: false, stampText: 'RIP' },
-    market:    { tag: 'MARKET WATCH',  kicker: 'SPAWN ECONOMY DESK',stamp: true,  stampText: 'COLLAPSE' },
-    exclusive: { tag: 'BREAKING NEWS', kicker: 'CHRONICLES EXCLUSIVE', stamp: true, stampText: 'EXCLUSIVE' },
-    weather:   { tag: 'WEATHER ALERT', kicker: 'OVERWORLD FORECAST',stamp: false, stampText: 'SEVERE' },
-    sports:    { tag: 'SPORTS DESK',   kicker: 'ARENA COVERAGE',    stamp: false, stampText: 'UPSET' }
+    breaking:  { tag: 'BREAKING NEWS', kicker: 'SERVER DISPATCH',       stamp: false, stampText: 'EXCLUSIVE' },
+    memoriam:  { tag: 'IN MEMORIAM',   kicker: 'GONE TOO SOON',         stamp: false, stampText: 'RIP' },
+    market:    { tag: 'MARKET WATCH',  kicker: 'SPAWN ECONOMY DESK',    stamp: true,  stampText: 'COLLAPSE' },
+    exclusive: { tag: 'BREAKING NEWS', kicker: 'CHRONICLES EXCLUSIVE',  stamp: true,  stampText: 'EXCLUSIVE' },
+    weather:   { tag: 'WEATHER ALERT', kicker: 'OVERWORLD FORECAST',    stamp: false, stampText: 'SEVERE' },
+    sports:    { tag: 'SPORTS DESK',   kicker: 'ARENA COVERAGE',        stamp: false, stampText: 'UPSET' }
   };
   $('presets').querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -604,16 +612,15 @@
   /* ---------- preview scaling ---------- */
   function scalePreview() {
     const avail = stage.clientWidth - 40;
-    const scale = Math.min(1, avail / 1600);
+    const scale = Math.min(1, avail / W);
     bar.style.transform = `scale(${scale})`;
-    stage.style.height = (400 * scale + 60) + 'px';
+    stage.style.height = (H * scale + 60) + 'px';
   }
-  window.addEventListener('resize', scalePreview);
+  window.addEventListener('resize', () => { scalePreview(); render(); });
 
   /* ---------- export ---------- */
   $('exportBtn').addEventListener('click', async () => {
     const scaleFactor = parseInt($('scaleSelect').value, 10);
-    const isTransparent = bar.classList.contains('transparent-bg');
 
     const prevTransform = bar.style.transform;
     bar.style.transform = 'none';
@@ -621,8 +628,8 @@
     const canvas = await html2canvas(bar, {
       backgroundColor: null,
       scale: scaleFactor,
-      width: 1600,
-      height: 400,
+      width: W,
+      height: H,
       logging: false,
       useCORS: true
     });
@@ -632,7 +639,7 @@
     const link = document.createElement('a');
     const slug = (headlineInput.value || 'headline')
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
-    link.download = `cozy-chronicles-${slug || 'bar'}.png`;
+    link.download = `cozy-chronicles-${slug || 'card'}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   });
