@@ -132,10 +132,10 @@ a {
   gap: 1rem;
   margin-bottom: 1.25rem;
   padding: 0.75rem 0.9rem;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 0.9rem;
   background: rgba(255, 253, 248, 0.78);
-  box-shadow: 0 12px 34px rgba(38, 84, 128, 0.18);
+  box-shadow: 0 8px 22px rgba(38, 84, 128, 0.14);
   backdrop-filter: blur(14px);
 }
 
@@ -170,7 +170,7 @@ a {
 
 .nav-links a {
   padding: 0.65rem 0.9rem;
-  border-radius: 999px;
+  border-radius: 0.6rem;
   color: var(--muted);
   font-weight: 900;
   text-decoration: none;
@@ -191,12 +191,10 @@ main {
 
 .section-card,
 .feature-card {
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
   background: linear-gradient(180deg, rgba(255, 253, 248, 0.92), rgba(243, 250, 255, 0.86));
-  box-shadow:
-    0 24px 55px var(--shadow),
-    inset 0 -8px 0 rgba(142, 205, 247, 0.18);
+  box-shadow: 0 10px 30px rgba(38, 84, 128, 0.16);
   backdrop-filter: blur(6px);
 }
 
@@ -274,29 +272,40 @@ h3 {
   align-items: center;
   justify-content: center;
   min-width: 10rem;
-  padding: 0.92rem 1.3rem;
-  border: 3px solid var(--dirt-dark);
-  border-radius: 999px;
+  padding: 0.85rem 1.3rem;
+  border: 2px solid;
+  border-radius: 0.65rem;
   color: #fffdf8;
   font-weight: 900;
+  font-size: 1rem;
+  font-family: inherit;
   text-decoration: none;
-  box-shadow: 0 6px 0 var(--dirt-dark);
-  transform: translateY(0);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16);
+  transition: filter 0.15s ease;
 }
 
 .button:hover,
 .button:focus-visible {
-  box-shadow: 0 8px 0 var(--dirt-dark);
-  transform: translateY(-2px);
+  filter: brightness(1.07);
+}
+
+.button:active {
+  box-shadow:
+    inset 0 -2px 0 rgba(255, 255, 255, 0.16),
+    inset 0 3px 0 rgba(0, 0, 0, 0.16);
 }
 
 .button-primary {
   background: linear-gradient(180deg, var(--grass), var(--grass-dark));
+  border-color: var(--grass-deep);
 }
 
 .button-secondary {
   background: linear-gradient(180deg, #a06a3f, var(--dirt));
+  border-color: var(--dirt-dark);
 }
 
 /* ---------- Join card ---------- */
@@ -304,10 +313,10 @@ h3 {
 .join-card {
   position: relative;
   padding: 1.25rem;
-  border: 2px solid rgba(142, 205, 247, 0.6);
-  border-radius: 1.6rem;
+  border: 1px solid rgba(142, 205, 247, 0.6);
+  border-radius: 0.9rem;
   background: linear-gradient(180deg, #ffffff, #e9f6ff);
-  box-shadow: inset 0 -8px 0 rgba(142, 205, 247, 0.25);
+  box-shadow: 0 6px 18px rgba(38, 84, 128, 0.12);
 }
 
 .join-card::before {
@@ -431,11 +440,10 @@ h3 {
   height: 3rem;
   margin-bottom: 1rem;
   place-items: center;
-  border: 2px solid rgba(62, 118, 165, 0.45);
-  border-radius: 1rem;
+  border: 1px solid rgba(62, 118, 165, 0.4);
+  border-radius: 0.6rem;
   background: linear-gradient(180deg, #eaf7ff, #cfeaff);
   font-size: 1.5rem;
-  box-shadow: inset 0 -5px 0 rgba(142, 205, 247, 0.4);
 }
 
 .join-section {
@@ -453,15 +461,29 @@ h3 {
 /* ---------- Footer: a little strip of grass ---------- */
 
 .site-footer {
+  position: relative;
+  overflow: hidden;
   margin-top: 1.25rem;
-  padding: 1.4rem 1rem 1.2rem;
-  border-radius: 1.4rem;
-  border-top: 8px solid var(--grass);
-  background: linear-gradient(180deg, var(--dirt), var(--dirt-dark));
+  padding: calc(1.3rem + 20px) 1rem 1.3rem;
+  border-radius: 0.9rem;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect x='6' y='12' width='4' height='4' fill='%239a6a3f'/%3E%3Crect x='30' y='7' width='4' height='4' fill='%235c3a1e'/%3E%3Crect x='18' y='27' width='4' height='4' fill='%23a3743f'/%3E%3Crect x='38' y='35' width='4' height='4' fill='%236b4526'/%3E%3Crect x='4' y='39' width='4' height='4' fill='%239a6a3f'/%3E%3Crect x='26' y='20' width='4' height='4' fill='%23744c29'/%3E%3C/svg%3E") repeat,
+    linear-gradient(180deg, var(--dirt), var(--dirt-dark));
   color: #ffeeda;
   text-align: center;
   font-weight: 800;
-  box-shadow: 0 18px 40px var(--shadow);
+  box-shadow: 0 10px 26px rgba(38, 84, 128, 0.18);
+}
+
+/* Pixel grass overhang: solid turf rows with jagged teeth hanging into the dirt */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Crect width='40' height='8' fill='%235cb544'/%3E%3Crect width='8' height='4' fill='%236cc84f'/%3E%3Crect x='16' width='12' height='4' fill='%236cc84f'/%3E%3Crect x='32' width='4' height='4' fill='%236cc84f'/%3E%3Crect x='8' y='4' width='4' height='4' fill='%234a9c38'/%3E%3Crect x='28' y='4' width='8' height='4' fill='%234a9c38'/%3E%3Crect y='8' width='4' height='8' fill='%235cb544'/%3E%3Crect x='8' y='8' width='8' height='4' fill='%234a9c38'/%3E%3Crect x='20' y='8' width='4' height='8' fill='%234a9c38'/%3E%3Crect x='32' y='8' width='8' height='4' fill='%235cb544'/%3E%3C/svg%3E") repeat-x;
 }
 
 .site-footer p {
