@@ -1,18 +1,20 @@
 :root {
-  --leaf: #496b3a;
-  --leaf-dark: #2f4728;
-  --moss: #78945b;
-  --moss-soft: #d9e5bd;
-  --wood: #7a5434;
-  --wood-dark: #4f321f;
-  --soil: #2f2218;
-  --cream: #fff3dc;
-  --paper: #f6dfb8;
-  --paper-deep: #e4bf83;
-  --ink: #2a2018;
-  --muted: #6e5844;
-  --line: rgba(63, 43, 29, 0.22);
-  --shadow: rgba(45, 30, 18, 0.22);
+  --sky-top: #5eaae8;
+  --sky-mid: #8ecdf7;
+  --sky-low: #c8e9ff;
+  --cloud: #ffffff;
+  --cloud-shade: #d9ecfb;
+  --grass: #62bd47;
+  --grass-dark: #3e8a2e;
+  --grass-deep: #2f6b22;
+  --dirt: #8a5a33;
+  --dirt-dark: #5c3a1e;
+  --card: #fffdf8;
+  --card-soft: #f3faff;
+  --ink: #1f3a54;
+  --muted: #4f6b82;
+  --line: rgba(70, 125, 175, 0.25);
+  --shadow: rgba(38, 84, 128, 0.22);
 }
 
 * {
@@ -27,40 +29,94 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: "Nunito", system-ui, sans-serif;
-  background:
-    radial-gradient(circle at 8% 12%, rgba(120, 148, 91, 0.35), transparent 28rem),
-    radial-gradient(circle at 88% 6%, rgba(228, 191, 131, 0.5), transparent 26rem),
-    radial-gradient(circle at 50% 92%, rgba(73, 107, 58, 0.18), transparent 34rem),
-    linear-gradient(135deg, #d9e5bd 0%, #f5e4c4 48%, #c9d6a8 100%);
-}
-
-body::before {
-  content: "🍃";
-  position: fixed;
-  top: 7rem;
-  left: clamp(1rem, 4vw, 4rem);
-  z-index: -1;
-  font-size: clamp(2rem, 4vw, 4rem);
-  opacity: 0.5;
-  transform: rotate(-14deg);
-}
-
-body::after {
-  content: "🌼";
-  position: fixed;
-  right: clamp(1rem, 5vw, 5rem);
-  bottom: 7rem;
-  z-index: -1;
-  font-size: clamp(2rem, 4vw, 4rem);
-  opacity: 0.45;
-  transform: rotate(12deg);
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-low) 100%);
+  background-attachment: fixed;
 }
 
 a {
   color: inherit;
 }
 
+/* ---------- Sky: square sun + blocky Minecraft clouds ---------- */
+
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mc-sun {
+  position: absolute;
+  top: clamp(2rem, 6vh, 4.5rem);
+  right: clamp(2rem, 8vw, 7rem);
+  width: clamp(64px, 8vw, 96px);
+  height: clamp(64px, 8vw, 96px);
+  background: linear-gradient(180deg, #fff9d6, #ffe98f);
+  box-shadow:
+    0 0 0 6px rgba(255, 244, 190, 0.4),
+    0 0 70px 26px rgba(255, 240, 175, 0.55);
+}
+
+.mc-cloud {
+  --u: 14px;
+  position: absolute;
+  left: -30rem;
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 2);
+  background: var(--cloud);
+  box-shadow: inset 0 calc(var(--u) * -0.6) 0 var(--cloud-shade);
+  animation: cloud-drift linear infinite;
+}
+
+.mc-cloud::before,
+.mc-cloud::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--u) * -1);
+  height: var(--u);
+  background: var(--cloud);
+}
+
+.mc-cloud::before {
+  left: calc(var(--u) * 2);
+  width: calc(var(--u) * 5);
+}
+
+.mc-cloud::after {
+  left: calc(var(--u) * 8);
+  width: calc(var(--u) * 2);
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(100vw + 42rem));
+  }
+}
+
+.mc-cloud.c1 { --u: 16px; top: 6%;  animation-duration: 110s; animation-delay: -8s;   opacity: 0.98; }
+.mc-cloud.c2 { --u: 10px; top: 14%; animation-duration: 160s; animation-delay: -64s;  opacity: 0.8; }
+.mc-cloud.c3 { --u: 20px; top: 24%; animation-duration: 95s;  animation-delay: -30s;  opacity: 1; }
+.mc-cloud.c4 { --u: 8px;  top: 38%; animation-duration: 180s; animation-delay: -126s; opacity: 0.7; }
+.mc-cloud.c5 { --u: 13px; top: 52%; animation-duration: 130s; animation-delay: -92s;  opacity: 0.85; }
+.mc-cloud.c6 { --u: 9px;  top: 68%; animation-duration: 170s; animation-delay: -22s;  opacity: 0.7; }
+.mc-cloud.c7 { --u: 15px; top: 82%; animation-duration: 115s; animation-delay: -76s;  opacity: 0.9; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-cloud {
+    animation-play-state: paused;
+  }
+}
+
+/* ---------- Layout shell ---------- */
+
 .page-shell {
+  position: relative;
+  z-index: 1;
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 1.25rem 0 2rem;
@@ -76,10 +132,10 @@ a {
   gap: 1rem;
   margin-bottom: 1.25rem;
   padding: 0.75rem 0.9rem;
-  border: 2px solid rgba(79, 50, 31, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.7);
   border-radius: 999px;
-  background: rgba(255, 243, 220, 0.82);
-  box-shadow: 0 12px 34px rgba(45, 30, 18, 0.12);
+  background: rgba(255, 253, 248, 0.78);
+  box-shadow: 0 12px 34px rgba(38, 84, 128, 0.18);
   backdrop-filter: blur(14px);
 }
 
@@ -102,10 +158,10 @@ a {
   width: 2.2rem;
   height: 2.2rem;
   place-items: center;
-  border: 2px solid var(--wood-dark);
+  border: 2px solid var(--grass-deep);
   border-radius: 50%;
-  background: var(--paper);
-  box-shadow: inset 0 -4px 0 rgba(122, 84, 52, 0.13);
+  background: linear-gradient(180deg, #eaf7ff, #d3edff);
+  box-shadow: inset 0 -4px 0 rgba(62, 138, 46, 0.18);
 }
 
 .nav-links {
@@ -122,8 +178,8 @@ a {
 
 .nav-links a:hover,
 .nav-links a:focus-visible {
-  background: rgba(73, 107, 58, 0.12);
-  color: var(--leaf-dark);
+  background: rgba(98, 189, 71, 0.16);
+  color: var(--grass-deep);
 }
 
 main {
@@ -131,12 +187,17 @@ main {
   gap: 1.25rem;
 }
 
+/* ---------- Cards ---------- */
+
 .section-card,
 .feature-card {
-  border: 3px solid var(--wood);
+  border: 2px solid rgba(255, 255, 255, 0.85);
   border-radius: 2rem;
-  background: linear-gradient(180deg, var(--cream), var(--paper));
-  box-shadow: 0 22px 50px var(--shadow), inset 0 -8px 0 rgba(122, 84, 52, 0.1);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.92), rgba(243, 250, 255, 0.86));
+  box-shadow:
+    0 24px 55px var(--shadow),
+    inset 0 -8px 0 rgba(142, 205, 247, 0.18);
+  backdrop-filter: blur(6px);
 }
 
 .hero {
@@ -150,7 +211,7 @@ main {
 
 .eyebrow {
   margin: 0 0 0.75rem;
-  color: var(--leaf-dark);
+  color: var(--grass-dark);
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -166,7 +227,7 @@ p {
 h1,
 h2,
 h3 {
-  color: var(--soil);
+  color: var(--ink);
   font-family: "Fredoka", system-ui, sans-serif;
   letter-spacing: -0.025em;
 }
@@ -198,6 +259,8 @@ h3 {
   line-height: 1.55;
 }
 
+/* ---------- Buttons: grass block on top, dirt below ---------- */
+
 .actions,
 .join-actions {
   display: flex;
@@ -212,43 +275,43 @@ h3 {
   justify-content: center;
   min-width: 10rem;
   padding: 0.92rem 1.3rem;
-  border: 3px solid var(--soil);
+  border: 3px solid var(--dirt-dark);
   border-radius: 999px;
-  color: var(--cream);
+  color: #fffdf8;
   font-weight: 900;
   text-decoration: none;
-  box-shadow: 0 6px 0 var(--soil);
+  box-shadow: 0 6px 0 var(--dirt-dark);
   transform: translateY(0);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .button:hover,
 .button:focus-visible {
-  box-shadow: 0 8px 0 var(--soil);
+  box-shadow: 0 8px 0 var(--dirt-dark);
   transform: translateY(-2px);
 }
 
 .button-primary {
-  background: var(--leaf);
+  background: linear-gradient(180deg, var(--grass), var(--grass-dark));
 }
 
 .button-secondary {
-  background: var(--wood);
+  background: linear-gradient(180deg, #a06a3f, var(--dirt));
 }
+
+/* ---------- Join card ---------- */
 
 .join-card {
   position: relative;
   padding: 1.25rem;
-  border: 3px solid var(--wood-dark);
+  border: 2px solid rgba(142, 205, 247, 0.6);
   border-radius: 1.6rem;
-  background:
-    linear-gradient(180deg, rgba(255, 243, 220, 0.9), rgba(228, 191, 131, 0.66)),
-    var(--paper);
-  box-shadow: inset 0 -8px 0 rgba(122, 84, 52, 0.12);
+  background: linear-gradient(180deg, #ffffff, #e9f6ff);
+  box-shadow: inset 0 -8px 0 rgba(142, 205, 247, 0.25);
 }
 
 .join-card::before {
-  content: "🌲";
+  content: "⛅";
   position: absolute;
   right: 1rem;
   top: -1.25rem;
@@ -257,7 +320,7 @@ h3 {
 
 .mini-label {
   margin-bottom: 0.35rem;
-  color: var(--leaf-dark);
+  color: var(--grass-dark);
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -267,9 +330,9 @@ h3 {
   display: inline-block;
   margin: 0;
   padding: 0.75rem 1rem;
-  border: 2px dashed rgba(63, 43, 29, 0.42);
+  border: 2px dashed rgba(62, 118, 165, 0.5);
   border-radius: 0.9rem;
-  background: rgba(255, 243, 220, 0.7);
+  background: rgba(234, 247, 255, 0.85);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: 900;
@@ -291,10 +354,12 @@ h3 {
   padding: 0.7rem 0.85rem;
   border: 1px solid var(--line);
   border-radius: 0.85rem;
-  background: rgba(255, 243, 220, 0.54);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--muted);
   font-weight: 900;
 }
+
+/* ---------- Sections ---------- */
 
 .intro-grid {
   display: grid;
@@ -317,8 +382,8 @@ h3 {
 .quote-card {
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, var(--leaf), var(--leaf-dark));
-  color: var(--cream);
+  background: linear-gradient(180deg, #35619c, #22406e);
+  color: #f0f7ff;
 }
 
 .quote-card p {
@@ -332,6 +397,11 @@ h3 {
 
 .features {
   padding: clamp(1.5rem, 4vw, 3rem) 0;
+}
+
+.features .eyebrow,
+.features h2 {
+  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65);
 }
 
 .section-heading {
@@ -361,11 +431,11 @@ h3 {
   height: 3rem;
   margin-bottom: 1rem;
   place-items: center;
-  border: 2px solid var(--wood-dark);
+  border: 2px solid rgba(62, 118, 165, 0.45);
   border-radius: 1rem;
-  background: var(--paper-deep);
+  background: linear-gradient(180deg, #eaf7ff, #cfeaff);
   font-size: 1.5rem;
-  box-shadow: inset 0 -5px 0 rgba(122, 84, 52, 0.14);
+  box-shadow: inset 0 -5px 0 rgba(142, 205, 247, 0.4);
 }
 
 .join-section {
@@ -380,12 +450,25 @@ h3 {
   margin-top: 0;
 }
 
+/* ---------- Footer: a little strip of grass ---------- */
+
 .site-footer {
-  padding: 2rem 0 0.5rem;
-  color: var(--muted);
+  margin-top: 1.25rem;
+  padding: 1.4rem 1rem 1.2rem;
+  border-radius: 1.4rem;
+  border-top: 8px solid var(--grass);
+  background: linear-gradient(180deg, var(--dirt), var(--dirt-dark));
+  color: #ffeeda;
   text-align: center;
   font-weight: 800;
+  box-shadow: 0 18px 40px var(--shadow);
 }
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ---------- Responsive ---------- */
 
 @media (max-width: 900px) {
   .hero,
