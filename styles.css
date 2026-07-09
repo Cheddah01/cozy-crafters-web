@@ -757,6 +757,61 @@ html.night .features h2 {
   line-height: 1.5;
 }
 
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.swatch {
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--sw, #ffffff);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.swatch:hover {
+  transform: translateY(-2px);
+}
+
+.swatch.active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(98, 189, 71, 0.5);
+}
+
+/* "None" swatch: a diagonal red slash on a white ground */
+.swatch-none {
+  background:
+    linear-gradient(135deg, transparent 44%, #e0574f 44%, #e0574f 56%, transparent 56%),
+    #ffffff;
+}
+
+/* Custom colour swatch wraps a hidden native colour input */
+.swatch-custom {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    conic-gradient(from 0deg, #ff5555, #ffff55, #55ff55, #55ffff, #5555ff, #ff55ff, #ff5555);
+}
+
+.swatch-custom input[type="color"] {
+  position: absolute;
+  inset: -25%;
+  width: 150%;
+  height: 150%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .tool-field {
   display: grid;
   gap: 0.45rem;

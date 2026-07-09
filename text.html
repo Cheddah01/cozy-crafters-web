@@ -86,6 +86,32 @@
             </div>
 
             <div class="tool-field">
+              <span class="mini-label" id="color-label">Colour</span>
+              <div class="swatches" role="group" aria-labelledby="color-label" id="swatches">
+                <button type="button" class="swatch swatch-none active" data-code="" data-hex="" aria-pressed="true" aria-label="No colour" title="None"></button>
+                <button type="button" class="swatch" style="--sw:#000000" data-code="&0" data-hex="#000000" aria-pressed="false" aria-label="Black" title="Black"></button>
+                <button type="button" class="swatch" style="--sw:#0000AA" data-code="&1" data-hex="#0000AA" aria-pressed="false" aria-label="Dark blue" title="Dark blue"></button>
+                <button type="button" class="swatch" style="--sw:#00AA00" data-code="&2" data-hex="#00AA00" aria-pressed="false" aria-label="Dark green" title="Dark green"></button>
+                <button type="button" class="swatch" style="--sw:#00AAAA" data-code="&3" data-hex="#00AAAA" aria-pressed="false" aria-label="Dark aqua" title="Dark aqua"></button>
+                <button type="button" class="swatch" style="--sw:#AA0000" data-code="&4" data-hex="#AA0000" aria-pressed="false" aria-label="Dark red" title="Dark red"></button>
+                <button type="button" class="swatch" style="--sw:#AA00AA" data-code="&5" data-hex="#AA00AA" aria-pressed="false" aria-label="Dark purple" title="Dark purple"></button>
+                <button type="button" class="swatch" style="--sw:#FFAA00" data-code="&6" data-hex="#FFAA00" aria-pressed="false" aria-label="Gold" title="Gold"></button>
+                <button type="button" class="swatch" style="--sw:#AAAAAA" data-code="&7" data-hex="#AAAAAA" aria-pressed="false" aria-label="Gray" title="Gray"></button>
+                <button type="button" class="swatch" style="--sw:#555555" data-code="&8" data-hex="#555555" aria-pressed="false" aria-label="Dark gray" title="Dark gray"></button>
+                <button type="button" class="swatch" style="--sw:#5555FF" data-code="&9" data-hex="#5555FF" aria-pressed="false" aria-label="Blue" title="Blue"></button>
+                <button type="button" class="swatch" style="--sw:#55FF55" data-code="&a" data-hex="#55FF55" aria-pressed="false" aria-label="Green" title="Green"></button>
+                <button type="button" class="swatch" style="--sw:#55FFFF" data-code="&b" data-hex="#55FFFF" aria-pressed="false" aria-label="Aqua" title="Aqua"></button>
+                <button type="button" class="swatch" style="--sw:#FF5555" data-code="&c" data-hex="#FF5555" aria-pressed="false" aria-label="Red" title="Red"></button>
+                <button type="button" class="swatch" style="--sw:#FF55FF" data-code="&d" data-hex="#FF55FF" aria-pressed="false" aria-label="Light purple" title="Light purple"></button>
+                <button type="button" class="swatch" style="--sw:#FFFF55" data-code="&e" data-hex="#FFFF55" aria-pressed="false" aria-label="Yellow" title="Yellow"></button>
+                <button type="button" class="swatch" style="--sw:#FFFFFF" data-code="&f" data-hex="#FFFFFF" aria-pressed="false" aria-label="White" title="White"></button>
+                <label class="swatch swatch-custom" title="Custom hex colour">
+                  <input type="color" id="custom-color" value="#34aeeb" aria-label="Custom hex colour" />
+                </label>
+              </div>
+            </div>
+
+            <div class="tool-field">
               <span class="mini-label">In-game preview</span>
               <div class="chat-preview" id="chat-preview" aria-live="polite">━━━━━ Spawn ━━━━━</div>
             </div>
@@ -167,8 +193,12 @@
         const toolOutput = document.getElementById('tool-output');
         const copyButton = document.getElementById('copy-button');
         const segOptions = document.querySelectorAll('.seg-option');
+        const swatchButtons = document.querySelectorAll('#swatches .swatch');
+        const customColor = document.getElementById('custom-color');
 
         let textStyle = 'normal';
+        let colorCode = '';   // '' = none, or a legacy code like '&d', or hex like '&#34aeeb'
+        let colorHex = '';    // display colour for the preview ('' = default white)
 
         const toSmallCaps = (text) =>
           text.toLowerCase().replace(/[a-z]/g, (ch) => SMALL_CAPS[ch] || ch);
@@ -181,7 +211,16 @@
         const render = () => {
           const word = styledWord();
           chatPreview.textContent = '━━━━━ ' + word + ' ━━━━━';
-          toolOutput.textContent = '&m━━━━━&r ' + word + '&r &m━━━━━&r';
+          chatPreview.style.color = colorHex || '#ffffff';
+          chatPreview.style.fontWeight = colorCode ? '900' : '700';
+
+          if (colorCode) {
+            // Coloured: prefix every segment with the colour and bold the word.
+            toolOutput.textContent =
+              colorCode + '&m━━━━━&r ' + colorCode + '&l' + word + '&r ' + colorCode + '&m━━━━━&r';
+          } else {
+            toolOutput.textContent = '&m━━━━━&r ' + word + '&r &m━━━━━&r';
+          }
         };
 
         segOptions.forEach((option) => {
@@ -195,6 +234,31 @@
             render();
           });
         });
+
+        const markSwatch = (activeEl) => {
+          swatchButtons.forEach((s) => {
+            const active = s === activeEl;
+            s.classList.toggle('active', active);
+            if (s.hasAttribute('aria-pressed')) s.setAttribute('aria-pressed', String(active));
+          });
+        };
+
+        document.querySelectorAll('#swatches .swatch[data-code]').forEach((swatch) => {
+          swatch.addEventListener('click', () => {
+            colorCode = swatch.dataset.code;
+            colorHex = swatch.dataset.hex;
+            markSwatch(swatch);
+            render();
+          });
+        });
+
+        const applyCustomColor = () => {
+          colorHex = customColor.value;
+          colorCode = '&#' + customColor.value.replace('#', '').toLowerCase();
+          markSwatch(customColor.closest('.swatch-custom'));
+          render();
+        };
+        customColor.addEventListener('input', applyCustomColor);
 
         wordInput.addEventListener('input', render);
 
