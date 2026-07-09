@@ -61,6 +61,13 @@
       <main>
         <section class="section-card tool-card" aria-labelledby="tool-title">
           <p class="eyebrow">Server Tools</p>
+
+          <div class="tool-tabs" role="tablist" aria-label="Server tools">
+            <button class="tool-tab active" id="tab-title" type="button" role="tab" aria-selected="true" aria-controls="panel-title">Title Maker</button>
+            <button class="tool-tab" id="tab-small" type="button" role="tab" aria-selected="false" aria-controls="panel-small">Small Caps</button>
+          </div>
+
+          <div id="panel-title" role="tabpanel" aria-labelledby="tab-title">
           <h1 id="tool-title">Title Maker</h1>
           <p class="lede">Type a word and get the server title format, ready to paste in-game.</p>
 
@@ -91,6 +98,28 @@
             <div class="actions tool-actions">
               <button class="button button-primary" type="button" id="copy-button">Copy Title</button>
             </div>
+          </div>
+          </div>
+
+          <div id="panel-small" role="tabpanel" aria-labelledby="tab-small" hidden>
+          <h1>Small Caps</h1>
+          <p class="lede">Type anything and get it in ꜱᴍᴀʟʟ ᴄᴀᴘꜱ, ready to copy.</p>
+
+          <div class="tool-form">
+            <div class="tool-field">
+              <label class="mini-label" for="small-input">Your text</label>
+              <textarea class="tool-input tool-textarea" id="small-input" placeholder="Welcome to spawn!" rows="3" spellcheck="false"></textarea>
+            </div>
+
+            <div class="tool-field">
+              <span class="mini-label">Small caps</span>
+              <output class="tool-output" id="small-output" for="small-input">ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ꜱᴘᴀᴡɴ!</output>
+            </div>
+
+            <div class="actions tool-actions">
+              <button class="button button-primary" type="button" id="small-copy-button">Copy Text</button>
+            </div>
+          </div>
           </div>
         </section>
       </main>
@@ -190,20 +219,64 @@
           textarea.remove();
         };
 
-        const originalCopyLabel = copyButton.textContent;
-        copyButton.addEventListener('click', async () => {
-          try {
-            await copyText(toolOutput.textContent);
-            copyButton.textContent = 'Copied!';
-          } catch (error) {
-            copyButton.textContent = 'Copy failed';
-          }
-          window.setTimeout(() => {
-            copyButton.textContent = originalCopyLabel;
-          }, 1600);
-        });
+        const bindCopy = (button, getText) => {
+          const originalLabel = button.textContent;
+          button.addEventListener('click', async () => {
+            try {
+              await copyText(getText());
+              button.textContent = 'Copied!';
+            } catch (error) {
+              button.textContent = 'Copy failed';
+            }
+            window.setTimeout(() => {
+              button.textContent = originalLabel;
+            }, 1600);
+          });
+        };
+
+        bindCopy(copyButton, () => toolOutput.textContent);
 
         render();
+
+        /* ----- Small caps generator ----- */
+        const smallInput = document.getElementById('small-input');
+        const smallOutput = document.getElementById('small-output');
+
+        const renderSmallCaps = () => {
+          const raw = smallInput.value || smallInput.placeholder;
+          smallOutput.textContent = toSmallCaps(raw);
+        };
+
+        smallInput.addEventListener('input', renderSmallCaps);
+        bindCopy(document.getElementById('small-copy-button'), () => smallOutput.textContent);
+        renderSmallCaps();
+
+        /* ----- Tabs ----- */
+        const tabs = document.querySelectorAll('.tool-tab');
+        const panels = {
+          'tab-title': document.getElementById('panel-title'),
+          'tab-small': document.getElementById('panel-small')
+        };
+
+        const activateTab = (tab) => {
+          tabs.forEach((t) => {
+            const active = t === tab;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-selected', String(active));
+            panels[t.id].hidden = !active;
+          });
+        };
+
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            activateTab(tab);
+            history.replaceState(null, '', tab.id === 'tab-small' ? '#small-caps' : '#title');
+          });
+        });
+
+        if (location.hash === '#small-caps') {
+          activateTab(document.getElementById('tab-small'));
+        }
       })();
     </script>
   </body>
