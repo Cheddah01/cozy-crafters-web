@@ -703,6 +703,102 @@ html.night .features h2 {
   margin-top: 0;
 }
 
+/* ---------- Tool pages ---------- */
+
+.tool-card {
+  padding: clamp(2rem, 5vw, 3.5rem);
+}
+
+.tool-card h1 {
+  max-width: none;
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+}
+
+.tool-form {
+  display: grid;
+  gap: 1.4rem;
+  max-width: 42rem;
+  margin-top: 2rem;
+}
+
+.tool-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.tool-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tool-input:focus {
+  outline: none;
+  border-color: var(--grass);
+  box-shadow: 0 0 0 3px rgba(98, 189, 71, 0.3);
+}
+
+.seg {
+  display: inline-flex;
+  width: fit-content;
+  border: 2px solid var(--line);
+  border-radius: 0.65rem;
+  overflow: hidden;
+  background: var(--chip-bg);
+}
+
+.seg-option {
+  padding: 0.6rem 1.15rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.seg-option.active {
+  background: linear-gradient(180deg, var(--grass), var(--grass-dark));
+  color: #fffdf8;
+}
+
+.chat-preview {
+  padding: 0.95rem 1.15rem;
+  border-radius: 0.65rem;
+  background: rgba(14, 18, 26, 0.9);
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 700;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tool-output {
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px dashed var(--line);
+  border-radius: 0.65rem;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  font-weight: 900;
+  word-break: break-all;
+}
+
+.tool-actions {
+  margin-top: 0.2rem;
+}
+
 /* ---------- Footer: a little strip of grass ---------- */
 
 .site-footer {

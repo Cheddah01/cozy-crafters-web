@@ -167,8 +167,12 @@
 
         const copyText = async (text) => {
           if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(text);
-            return;
+            try {
+              await navigator.clipboard.writeText(text);
+              return;
+            } catch (error) {
+              /* fall through to the textarea fallback */
+            }
           }
 
           const textarea = document.createElement('textarea');
