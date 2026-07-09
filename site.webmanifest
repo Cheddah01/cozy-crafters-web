@@ -1,0 +1,11 @@
+{
+  "name": "Cozy Crafters SMP",
+  "short_name": "Cozy Crafters",
+  "icons": [
+    { "src": "/images/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/images/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
+  "theme_color": "#7cc4f5",
+  "background_color": "#7cc4f5",
+  "display": "standalone"
+}
