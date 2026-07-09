@@ -308,6 +308,12 @@ h3 {
   border-color: var(--dirt-dark);
 }
 
+.button-store {
+  background: linear-gradient(180deg, #ffcf4a, #f0a52c);
+  border-color: #b9740f;
+  color: #4a2e05;
+}
+
 /* ---------- Join card ---------- */
 
 .join-card {
