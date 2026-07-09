@@ -15,6 +15,13 @@
     <meta name="twitter:title" content="Cozy Crafters SMP" />
     <meta name="twitter:description" content="A small Java survival server where builds are cozy, towns matter, and the players are somehow worse than the mobs." />
     <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -32,7 +39,13 @@
   </head>
   <body>
     <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars">
+        <i class="sf sf1"></i>
+        <i class="sf sf2"></i>
+      </div>
       <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
       <div class="mc-cloud c1"></div>
       <div class="mc-cloud c2"></div>
       <div class="mc-cloud c3"></div>
@@ -52,6 +65,10 @@
           <a href="#about">About</a>
           <a href="#features">Features</a>
           <a href="#join">Join</a>
+          <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+            <span class="icon-moon" aria-hidden="true">🌙</span>
+            <span class="icon-sun" aria-hidden="true">☀️</span>
+          </button>
         </nav>
       </header>
 
@@ -159,6 +176,28 @@
           document.execCommand('copy');
           textarea.remove();
         };
+
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
 
         copyButtons.forEach((button) => {
           const originalText = button.textContent;
