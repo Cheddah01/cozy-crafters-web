@@ -116,15 +116,278 @@
         syncTheme();
 
         /* ----- Avatar maker ----- */
+
+        /* --- Canvas composers for chibi styles built from the raw skin --- */
+        const skinCache = {};
+
+        const loadSkin = async (user) => {
+          if (skinCache[user]) return skinCache[user];
+          const response = await fetch(`https://minotar.net/skin/${user}`);
+          if (!response.ok) throw new Error('skin fetch failed');
+          const bitmap = await createImageBitmap(await response.blob());
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(bitmap, 0, 0);
+          const legacy = bitmap.height === 32;
+          let slim = false;
+          try {
+            slim = !legacy && ctx.getImageData(54, 20, 1, 1).data[3] === 0;
+          } catch (error) {}
+          const skin = { ctx: canvas, legacy, slim };
+          skinCache[user] = skin;
+          return skin;
+        };
+
+        const makeCanvas = (w, h) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = false;
+          return [canvas, ctx];
+        };
+
+        /* left-limb source regions (legacy skins reuse the right limb) */
+        const leftArm = (skin) => (skin.legacy ? [44, 20] : [36, 52]);
+        const leftLeg = (skin) => (skin.legacy ? [4, 20] : [20, 52]);
+
+        const drawHead = (ctx, skin, dx, dy) => {
+          ctx.drawImage(skin.ctx, 8, 8, 8, 8, dx, dy, 8, 8);
+          ctx.drawImage(skin.ctx, 40, 8, 8, 8, dx, dy, 8, 8);
+        };
+
+        const addOutline = (ctx, canvas) => {
+          const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const src = new Uint8ClampedArray(img.data);
+          const w = canvas.width;
+          const h = canvas.height;
+          const solid = (px, py) =>
+            px >= 0 && py >= 0 && px < w && py < h && src[(py * w + px) * 4 + 3] > 127;
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              const i = (y * w + x) * 4;
+              if (src[i + 3] <= 127 && (solid(x + 1, y) || solid(x - 1, y) || solid(x, y + 1) || solid(x, y - 1))) {
+                img.data[i] = 0;
+                img.data[i + 1] = 0;
+                img.data[i + 2] = 0;
+                img.data[i + 3] = 255;
+              }
+            }
+          }
+          ctx.putImageData(img, 0, 0);
+        };
+
+        /* PFP: head and shoulders with arm slivers */
+        const composePFP = (skin) => {
+          const [canvas, ctx] = makeCanvas(12, 13);
+          const aw = skin.slim ? 3 : 4;
+          const [lax, lay] = leftArm(skin);
+          ctx.drawImage(skin.ctx, 20, 20, 8, 5, 2, 8, 8, 5);   // torso
+          ctx.drawImage(skin.ctx, 20, 36, 8, 5, 2, 8, 8, 5);   // jacket overlay
+          ctx.drawImage(skin.ctx, 44, 20, 2, 5, 0, 8, 2, 5);   // right arm sliver
+          ctx.drawImage(skin.ctx, lax + (aw - 2), lay, 2, 5, 10, 8, 2, 5); // left arm sliver
+          drawHead(ctx, skin, 2, 0);
+          return canvas;
+        };
+
+        /* Mini: big head, tiny body, black outline */
+        const composeMini = (skin) => {
+          const [canvas, ctx] = makeCanvas(14, 17);
+          const aw = skin.slim ? 3 : 4;
+          const [lax, lay] = leftArm(skin);
+          const [llx, lly] = leftLeg(skin);
+          ctx.drawImage(skin.ctx, 20, 20, 8, 12, 5, 9, 4, 4);        // torso
+          ctx.drawImage(skin.ctx, 44, 20, aw, 12, 4, 9, 1, 3);       // right arm
+          ctx.drawImage(skin.ctx, lax, lay, aw, 12, 9, 9, 1, 3);     // left arm
+          ctx.drawImage(skin.ctx, 4, 20, 4, 12, 5, 13, 2, 3);        // right leg
+          ctx.drawImage(skin.ctx, llx, lly, 4, 12, 7, 13, 2, 3);     // left leg
+          drawHead(ctx, skin, 3, 1);
+          addOutline(ctx, canvas);
+          return canvas;
+        };
+
+        /* Drops Style: chunky 2.5D figure painted chunk-by-chunk on a 28x32 grid.
+           Big squished face + darkened head-side panel for fake depth, tiny
+           squashed body parts, self-coloured darkened outlines, and a full
+           overlay pass (hat, jacket, sleeves, pants). */
+        const composeDrops = (skin) => {
+          const GW = 28;
+          const GH = 32;
+          const sd = skin.ctx.getContext('2d').getImageData(0, 0, 64, 64).data;
+          const legacy = skin.legacy;
+
+          const px = (x, y) => {
+            const i = (y * 64 + x) * 4;
+            return [sd[i], sd[i + 1], sd[i + 2], sd[i + 3]];
+          };
+          const shadePx = (c, f) => [Math.round(c[0] * f), Math.round(c[1] * f), Math.round(c[2] * f), c[3]];
+
+          const [canvas, ctx] = makeCanvas(GW, GH);
+          const out = ctx.createImageData(GW, GH);
+          const setChunk = (cx, cy, c) => {
+            if (cx < 0 || cx >= GW || cy < 0 || cy >= GH) return;
+            const i = (cy * GW + cx) * 4;
+            out.data[i] = c[0];
+            out.data[i + 1] = c[1];
+            out.data[i + 2] = c[2];
+            out.data[i + 3] = c[3];
+          };
+          const getChunk = (cx, cy) => {
+            const i = (cy * GW + cx) * 4;
+            return [out.data[i], out.data[i + 1], out.data[i + 2], out.data[i + 3]];
+          };
+
+          /* nearest-neighbour block fill from a skin region */
+          const fillBase = (c0, r0, c1, r1, sx0, sy0, sx1, sy1, factor = 1, flipX = false) => {
+            const dw = c1 - c0;
+            const dh = r1 - r0;
+            const sw = sx1 - sx0;
+            const sh = sy1 - sy0;
+            for (let dy = 0; dy < dh; dy++) {
+              for (let dx = 0; dx < dw; dx++) {
+                const srcDx = flipX ? dw - 1 - dx : dx;
+                const sx = sx0 + Math.floor((srcDx * sw) / dw);
+                const sy = sy0 + Math.floor((dy * sh) / dh);
+                let p = px(sx, sy);
+                if (factor !== 1) p = shadePx(p, factor);
+                setChunk(c0 + dx, r0 + dy, p);
+              }
+            }
+          };
+
+          /* overlay dominance: non-transparent overlay pixels fully replace the base */
+          const copyOverlay = (c0, r0, c1, r1, sx0, sy0, sx1, sy1, factor = 1, flipX = false) => {
+            const dw = c1 - c0;
+            const dh = r1 - r0;
+            const sw = sx1 - sx0;
+            const sh = sy1 - sy0;
+            for (let dy = 0; dy < dh; dy++) {
+              for (let dx = 0; dx < dw; dx++) {
+                const srcDx = flipX ? dw - 1 - dx : dx;
+                const sx = sx0 + Math.floor((srcDx * sw) / dw);
+                const sy = sy0 + Math.floor((dy * sh) / dh);
+                const p = px(sx, sy);
+                if (p[3] === 0) continue;
+                setChunk(c0 + dx, r0 + dy, factor !== 1 ? shadePx(p, factor) : p);
+              }
+            }
+          };
+
+          /* face squish: 8 source columns spread to widths 2,2,2,1,1,2,2,2 (14 wide) */
+          const fillFaceSquish = (c0, r0, r1, sx0, sy0, overlayMode) => {
+            const colWidths = [2, 2, 2, 1, 1, 2, 2, 2];
+            const dh = r1 - r0;
+            let dx = 0;
+            for (let sxOff = 0; sxOff < 8; sxOff++) {
+              const w = colWidths[sxOff];
+              for (let dy = 0; dy < dh; dy++) {
+                const sy = sy0 + Math.floor((dy * 8) / dh);
+                const p = px(sx0 + sxOff, sy);
+                if (overlayMode && p[3] === 0) continue;
+                for (let i = 0; i < w; i++) setChunk(c0 + dx + i, r0 + dy, p);
+              }
+              dx += w;
+            }
+          };
+
+          /* darken each part's border ring for a soft self-coloured outline */
+          const shadeOutline = (c0, r0, c1, r1, factor = 0.7) => {
+            for (let x = c0; x < c1; x++) {
+              setChunk(x, r0, shadePx(getChunk(x, r0), factor));
+              setChunk(x, r1 - 1, shadePx(getChunk(x, r1 - 1), factor));
+            }
+            for (let y = r0 + 1; y < r1 - 1; y++) {
+              setChunk(c0, y, shadePx(getChunk(c0, y), factor));
+              setChunk(c1 - 1, y, shadePx(getChunk(c1 - 1, y), factor));
+            }
+          };
+
+          /* ── base layers ── */
+          fillFaceSquish(2, 5, 21, 8, 8, false);                 // face
+          fillBase(16, 5, 24, 21, 16, 8, 24, 16, 0.78);          // head side (fake depth)
+          fillBase(6, 21, 17, 25, 20, 20, 28, 32);               // body
+          fillBase(3, 21, 6, 25, 44, 20, 48, 31);                // viewer-left arm
+          fillBase(3, 25, 6, 26, 44, 31, 48, 32);
+          if (legacy) {
+            fillBase(17, 21, 24, 25, 44, 20, 48, 31, 1, true);   // mirrored right arm
+            fillBase(17, 25, 24, 26, 44, 31, 48, 32, 1, true);
+          } else {
+            fillBase(17, 21, 24, 25, 36, 52, 40, 63);            // viewer-right arm
+            fillBase(17, 25, 24, 26, 36, 63, 40, 64);
+          }
+          for (let cy = 21; cy < 26; cy++) {
+            for (let cx = 21; cx < 24; cx++) {
+              setChunk(cx, cy, shadePx(getChunk(cx, cy), 0.88)); // arm depth shade
+            }
+          }
+          fillBase(6, 25, 12, 27, 4, 20, 8, 31);                 // viewer-left leg
+          fillBase(6, 27, 12, 28, 4, 31, 8, 32);
+          if (legacy) {
+            fillBase(12, 25, 17, 27, 4, 20, 8, 31, 1, true);     // mirrored right leg
+            fillBase(12, 27, 17, 28, 4, 31, 8, 32, 1, true);
+          } else {
+            fillBase(12, 25, 17, 27, 20, 52, 24, 63);            // viewer-right leg
+            fillBase(12, 27, 17, 28, 20, 63, 24, 64);
+          }
+          fillBase(17, 26, 19, 27, 4, 20, 8, 31, 0.82);          // leg side depth strip
+          fillBase(17, 27, 19, 28, 4, 31, 8, 32, 0.82);
+
+          shadeOutline(2, 5, 16, 21);
+          shadeOutline(16, 5, 24, 21);
+          shadeOutline(3, 21, 6, 26);
+          shadeOutline(17, 21, 24, 26);
+          shadeOutline(6, 25, 12, 28);
+          shadeOutline(12, 25, 17, 28);
+
+          /* ── overlays on top ── (legacy skins have no limb overlays; those
+             regions read transparent and are skipped by copyOverlay) */
+          fillFaceSquish(2, 5, 21, 40, 8, true);                 // hat front
+          copyOverlay(17, 5, 25, 21, 48, 8, 56, 16, 0.78);       // hat side
+          copyOverlay(6, 21, 17, 25, 20, 36, 28, 48);            // jacket
+          copyOverlay(3, 21, 6, 25, 44, 36, 48, 47);             // viewer-left sleeve
+          copyOverlay(3, 25, 6, 26, 44, 47, 48, 48);
+          if (legacy) {
+            copyOverlay(17, 21, 24, 25, 44, 36, 48, 47, 1, true);
+            copyOverlay(17, 25, 24, 26, 44, 47, 48, 48, 1, true);
+          } else {
+            copyOverlay(17, 21, 24, 25, 52, 52, 56, 63);         // viewer-right sleeve
+            copyOverlay(17, 25, 24, 26, 52, 63, 56, 64);
+          }
+          copyOverlay(6, 25, 12, 27, 4, 36, 8, 47);              // viewer-left pant
+          copyOverlay(6, 27, 12, 28, 4, 47, 8, 48);
+          if (legacy) {
+            copyOverlay(12, 25, 17, 27, 4, 36, 8, 47, 1, true);
+            copyOverlay(12, 27, 17, 28, 4, 47, 8, 48, 1, true);
+          } else {
+            copyOverlay(12, 25, 17, 27, 4, 52, 8, 63);           // viewer-right pant
+            copyOverlay(12, 27, 17, 28, 4, 63, 8, 64);
+          }
+
+          ctx.putImageData(out, 0, 0);
+          return canvas;
+        };
+
+        const upscale = (small, size) => {
+          const scale = Math.max(1, Math.floor(size / Math.max(small.width, small.height)));
+          const [canvas, ctx] = makeCanvas(small.width * scale, small.height * scale);
+          ctx.drawImage(small, 0, 0, canvas.width, canvas.height);
+          return canvas;
+        };
+
         const STYLES = [
-          { key: 'face', label: 'Face', url: (u, s) => `https://minotar.net/avatar/${u}/${s}` },
-          { key: 'helm', label: 'Face + Hat', url: (u, s) => `https://minotar.net/helm/${u}/${s}` },
-          { key: 'head-3d', label: '3D Head', url: (u, s) => `https://mc-heads.net/head/${u}/${s}` },
-          { key: 'cube', label: 'Cube Head', url: (u, s) => `https://minotar.net/cube/${u}/${s}` },
-          { key: 'bust', label: 'Bust', url: (u, s) => `https://minotar.net/bust/${u}/${s}` },
-          { key: 'body-flat', label: 'Flat Body', url: (u, s) => `https://minotar.net/body/${u}/${s}` },
-          { key: 'body-3d', label: '3D Body', url: (u, s) => `https://mc-heads.net/body/${u}/${s}` },
-          { key: 'skin', label: 'Skin File', url: (u) => `https://minotar.net/skin/${u}` }
+          { key: 'face', label: 'Face', kind: 'url', url: (u, s) => `https://minotar.net/avatar/${u}/${s}` },
+          { key: 'helm', label: 'Face + Hat', kind: 'url', url: (u, s) => `https://minotar.net/helm/${u}/${s}` },
+          { key: 'head-3d', label: '3D Head', kind: 'url', url: (u, s) => `https://mc-heads.net/head/${u}/${s}` },
+          { key: 'cube', label: 'Cube Head', kind: 'url', url: (u, s) => `https://minotar.net/cube/${u}/${s}` },
+          { key: 'bust', label: 'Bust', kind: 'url', url: (u, s) => `https://minotar.net/bust/${u}/${s}` },
+          { key: 'pfp', label: 'PFP', kind: 'canvas', compose: composePFP },
+          { key: 'mini', label: 'Mini', kind: 'canvas', compose: composeMini },
+          { key: 'drops', label: 'Drops Style', kind: 'canvas', compose: composeDrops },
+          { key: 'body-flat', label: 'Flat Body', kind: 'url', url: (u, s) => `https://minotar.net/body/${u}/${s}` },
+          { key: 'body-3d', label: '3D Body', kind: 'url', url: (u, s) => `https://mc-heads.net/body/${u}/${s}` },
+          { key: 'skin', label: 'Skin File', kind: 'url', url: (u) => `https://minotar.net/skin/${u}` }
         ];
 
         const nameInput = document.getElementById('name-input');
@@ -211,34 +474,59 @@
           downloadBtn.dataset.label = 'Download';
           downloadBtn.addEventListener('click', () => {
             const user = cleanName();
-            downloadImage(style.url(user, imageSize), `${user}-${style.key}.png`, downloadBtn);
-          });
-
-          const copyBtn = document.createElement('button');
-          copyBtn.type = 'button';
-          copyBtn.className = 'chip-button';
-          copyBtn.textContent = 'Copy URL';
-          copyBtn.dataset.label = 'Copy URL';
-          copyBtn.addEventListener('click', async () => {
-            try {
-              await copyText(style.url(cleanName(), imageSize));
-              flashLabel(copyBtn, 'Copied!');
-            } catch (error) {
-              flashLabel(copyBtn, 'Copy failed');
+            if (style.kind === 'canvas') {
+              // The card image already holds the generated PNG as a data URL.
+              const link = document.createElement('a');
+              link.href = img.src;
+              link.download = `${user}-${style.key}.png`;
+              link.click();
+              flashLabel(downloadBtn, 'Saved!');
+            } else {
+              downloadImage(style.url(user, imageSize), `${user}-${style.key}.png`, downloadBtn);
             }
           });
 
-          row.append(downloadBtn, copyBtn);
+          row.append(downloadBtn);
+
+          if (style.kind === 'url') {
+            const copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
+            copyBtn.className = 'chip-button';
+            copyBtn.textContent = 'Copy URL';
+            copyBtn.dataset.label = 'Copy URL';
+            copyBtn.addEventListener('click', async () => {
+              try {
+                await copyText(style.url(cleanName(), imageSize));
+                flashLabel(copyBtn, 'Copied!');
+              } catch (error) {
+                flashLabel(copyBtn, 'Copy failed');
+              }
+            });
+            row.append(copyBtn);
+          }
+
           card.append(frame, title, row);
           grid.appendChild(card);
           return { style, img };
         });
 
-        const renderAvatars = () => {
+        const renderAvatars = async () => {
           const user = cleanName();
           cards.forEach(({ style, img }) => {
-            img.src = style.url(user, imageSize);
+            if (style.kind === 'url') img.src = style.url(user, imageSize);
           });
+
+          try {
+            const skin = await loadSkin(user);
+            if (cleanName() !== user) return; // input changed while loading
+            cards.forEach(({ style, img }) => {
+              if (style.kind === 'canvas') {
+                img.src = upscale(style.compose(skin), imageSize).toDataURL('image/png');
+              }
+            });
+          } catch (error) {
+            /* skin fetch failed — leave the canvas cards as they are */
+          }
         };
 
         nameInput.addEventListener('input', () => {
