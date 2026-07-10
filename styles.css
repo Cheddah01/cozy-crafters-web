@@ -891,54 +891,123 @@ html.night .features h2 {
   margin-top: 0.2rem;
 }
 
-/* ---------- Avatar maker ---------- */
+/* ---------- Avatar maker workbench ---------- */
 
-.avatar-controls {
-  margin-bottom: 1.75rem;
+.avatar-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 1.75rem;
+  margin-top: 2rem;
 }
 
-.avatar-grid {
+.wb-left,
+.wb-right {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
+  align-content: start;
 }
 
-.avatar-card {
+.style-picker {
   display: grid;
-  gap: 0.55rem;
-  padding: 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.style-thumb {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  padding: 0.6rem 0.4rem 0.5rem;
+  border: 2px solid var(--line);
+  border-radius: 0.65rem;
   background: var(--chip-bg);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  cursor: pointer;
 }
 
-.avatar-card h3 {
-  margin: 0;
-  font-size: 1.02rem;
-  text-align: center;
-}
-
-.avatar-frame {
-  display: grid;
-  place-items: center;
-  height: 190px;
-  border-radius: 0.6rem;
-  background:
-    repeating-conic-gradient(rgba(120, 150, 190, 0.14) 0% 25%, transparent 0% 50%) 0 0 / 22px 22px;
-  overflow: hidden;
-}
-
-.avatar-frame img {
-  max-width: 92%;
-  max-height: 92%;
-  object-fit: contain;
+.style-thumb canvas {
+  width: 72px;
+  height: 72px;
   image-rendering: pixelated;
 }
 
-.avatar-actions {
+.style-thumb:hover:not(.active) {
+  border-color: var(--grass);
+}
+
+.style-thumb.active {
+  border-color: var(--grass-deep);
+  box-shadow: 0 0 0 3px rgba(98, 189, 71, 0.35);
+  color: var(--ink);
+}
+
+.preview-frame {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background:
+    repeating-conic-gradient(rgba(120, 150, 190, 0.14) 0% 25%, transparent 0% 50%) 0 0 / 22px 22px;
+}
+
+#preview-canvas {
+  width: min(320px, 100%);
+  image-rendering: pixelated;
+}
+
+.opt-check {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.opt-check input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--grass-dark);
+}
+
+.opt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tool-select {
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+}
+
+.opt-grid input[type="range"] {
+  width: 100%;
+  accent-color: var(--grass-dark);
+}
+
+.opt-color {
+  width: 3.4rem;
+  height: 2.4rem;
+  padding: 0.2rem;
+  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--chip-bg);
+  cursor: pointer;
+}
+
+.opt-color:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dl-row {
   display: flex;
   gap: 0.5rem;
-  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -996,7 +1065,8 @@ html.night .features h2 {
 @media (max-width: 900px) {
   .hero,
   .intro-grid,
-  .join-section {
+  .join-section,
+  .avatar-workbench {
     grid-template-columns: 1fr;
   }
 
