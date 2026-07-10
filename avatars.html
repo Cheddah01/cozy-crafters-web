@@ -179,16 +179,39 @@
           ctx.putImageData(img, 0, 0);
         };
 
-        /* PFP: head and shoulders with arm slivers */
+        /* PFP: close-cropped 20x20 portrait (MinecraftPFP style) — a 7x7 face
+           crop with head side panel, chest with neck line, and shoulder
+           slivers, plus hat/jacket/sleeve overlays composited on top. */
         const composePFP = (skin) => {
-          const [canvas, ctx] = makeCanvas(12, 13);
-          const aw = skin.slim ? 3 : 4;
-          const [lax, lay] = leftArm(skin);
-          ctx.drawImage(skin.ctx, 20, 20, 8, 5, 2, 8, 8, 5);   // torso
-          ctx.drawImage(skin.ctx, 20, 36, 8, 5, 2, 8, 8, 5);   // jacket overlay
-          ctx.drawImage(skin.ctx, 44, 20, 2, 5, 0, 8, 2, 5);   // right arm sliver
-          ctx.drawImage(skin.ctx, lax + (aw - 2), lay, 2, 5, 10, 8, 2, 5); // left arm sliver
-          drawHead(ctx, skin, 2, 0);
+          const [canvas, ctx] = makeCanvas(20, 20);
+          const s = skin.ctx;
+          if (skin.legacy) {
+            /* base */
+            ctx.drawImage(s, 8, 9, 7, 7, 8, 4, 7, 7);      // face front (cropped)
+            ctx.drawImage(s, 5, 9, 3, 7, 5, 4, 3, 7);      // head right side
+            ctx.drawImage(s, 44, 20, 3, 7, 12, 13, 3, 7);  // right shoulder
+            ctx.drawImage(s, 21, 20, 6, 1, 7, 11, 6, 1);   // chest neck line
+            ctx.drawImage(s, 20, 21, 8, 8, 6, 12, 8, 8);   // chest
+            ctx.drawImage(s, 44, 20, 3, 7, 5, 13, 3, 7);   // left shoulder
+            /* overlays (legacy skins only have the hat) */
+            ctx.drawImage(s, 40, 9, 7, 7, 8, 4, 7, 7);     // hat front
+            ctx.drawImage(s, 33, 9, 3, 7, 5, 4, 3, 7);     // hat side
+          } else {
+            /* base */
+            ctx.drawImage(s, 8, 9, 7, 7, 8, 4, 7, 7);      // face front (cropped)
+            ctx.drawImage(s, 5, 9, 3, 7, 5, 4, 3, 7);      // head right side
+            ctx.drawImage(s, 36, 52, 3, 7, 12, 13, 3, 7);  // right shoulder (left arm)
+            ctx.drawImage(s, 21, 20, 6, 1, 7, 11, 6, 1);   // chest neck line
+            ctx.drawImage(s, 20, 21, 8, 8, 6, 12, 8, 8);   // chest
+            ctx.drawImage(s, 44, 20, 3, 7, 5, 13, 3, 7);   // left shoulder (right arm)
+            /* overlays */
+            ctx.drawImage(s, 40, 9, 7, 7, 8, 4, 7, 7);     // hat front
+            ctx.drawImage(s, 33, 9, 3, 7, 5, 4, 3, 7);     // hat side
+            ctx.drawImage(s, 52, 52, 3, 7, 12, 13, 3, 7);  // right sleeve overlay
+            ctx.drawImage(s, 52, 36, 3, 7, 5, 13, 3, 7);   // left sleeve overlay
+            ctx.drawImage(s, 20, 37, 8, 8, 6, 12, 8, 8);   // jacket
+            ctx.drawImage(s, 21, 36, 6, 1, 7, 11, 6, 1);   // jacket neck line
+          }
           return canvas;
         };
 
