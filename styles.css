@@ -891,6 +891,74 @@ html.night .features h2 {
   margin-top: 0.2rem;
 }
 
+/* ---------- Avatar maker ---------- */
+
+.avatar-controls {
+  margin-bottom: 1.75rem;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+}
+
+.avatar-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--chip-bg);
+}
+
+.avatar-card h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  text-align: center;
+}
+
+.avatar-frame {
+  display: grid;
+  place-items: center;
+  height: 190px;
+  border-radius: 0.6rem;
+  background:
+    repeating-conic-gradient(rgba(120, 150, 190, 0.14) 0% 25%, transparent 0% 50%) 0 0 / 22px 22px;
+  overflow: hidden;
+}
+
+.avatar-frame img {
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.avatar-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chip-button {
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--grass-deep);
+  border-radius: 0.55rem;
+  background: linear-gradient(180deg, var(--grass), var(--grass-dark));
+  color: #fffdf8;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.chip-button:hover,
+.chip-button:focus-visible {
+  filter: brightness(1.07);
+}
+
 /* ---------- Footer: a little strip of grass ---------- */
 
 .site-footer {

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Cozy Crafters SMP avatar maker. Type a Minecraft username and get face, head, bust, and full-body renders ready to download." />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/avatars.html" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Avatar Maker | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars">
+        <i class="sf sf1"></i>
+        <i class="sf sf2"></i>
+      </div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div>
+      <div class="mc-cloud c2"></div>
+      <div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div>
+      <div class="mc-cloud c5"></div>
+      <div class="mc-cloud c6"></div>
+      <div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./text.html">Tools</a>
+          <a href="./avatars.html" aria-current="page">Avatars</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="section-card tool-card" aria-labelledby="tool-title">
+          <p class="eyebrow">Server Tools</p>
+          <h1 id="tool-title">Avatar Maker</h1>
+          <p class="lede">Type a Minecraft username and grab their face, head, bust, or full body — ready to download.</p>
+
+          <div class="tool-form avatar-controls">
+            <div class="tool-field">
+              <label class="mini-label" for="name-input">Minecraft username</label>
+              <input class="tool-input" id="name-input" type="text" placeholder="Notch" autocomplete="off" spellcheck="false" maxlength="16" />
+            </div>
+
+            <div class="tool-field">
+              <span class="mini-label" id="size-label">Image size</span>
+              <div class="seg" role="group" aria-labelledby="size-label">
+                <button type="button" class="seg-option" data-size="128" aria-pressed="false">128</button>
+                <button type="button" class="seg-option active" data-size="256" aria-pressed="true">256</button>
+                <button type="button" class="seg-option" data-size="512" aria-pressed="false">512</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="avatar-grid" id="avatar-grid"></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        /* ----- Night mode toggle (shared with the homepage) ----- */
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
+
+        /* ----- Avatar maker ----- */
+        const STYLES = [
+          { key: 'face', label: 'Face', url: (u, s) => `https://minotar.net/avatar/${u}/${s}` },
+          { key: 'helm', label: 'Face + Hat', url: (u, s) => `https://minotar.net/helm/${u}/${s}` },
+          { key: 'head-3d', label: '3D Head', url: (u, s) => `https://mc-heads.net/head/${u}/${s}` },
+          { key: 'cube', label: 'Cube Head', url: (u, s) => `https://minotar.net/cube/${u}/${s}` },
+          { key: 'bust', label: 'Bust', url: (u, s) => `https://minotar.net/bust/${u}/${s}` },
+          { key: 'body-flat', label: 'Flat Body', url: (u, s) => `https://minotar.net/body/${u}/${s}` },
+          { key: 'body-3d', label: '3D Body', url: (u, s) => `https://mc-heads.net/body/${u}/${s}` },
+          { key: 'skin', label: 'Skin File', url: (u) => `https://minotar.net/skin/${u}` }
+        ];
+
+        const nameInput = document.getElementById('name-input');
+        const grid = document.getElementById('avatar-grid');
+        const sizeOptions = document.querySelectorAll('.seg-option[data-size]');
+
+        let imageSize = 256;
+        let debounceTimer = null;
+
+        const cleanName = () => {
+          const raw = nameInput.value.trim().replace(/[^A-Za-z0-9_]/g, '');
+          return raw || 'Notch';
+        };
+
+        const copyText = async (text) => {
+          if (navigator.clipboard && window.isSecureContext) {
+            try {
+              await navigator.clipboard.writeText(text);
+              return;
+            } catch (error) {
+              /* fall through to the textarea fallback */
+            }
+          }
+
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          textarea.remove();
+        };
+
+        const flashLabel = (button, message) => {
+          const original = button.dataset.label;
+          button.textContent = message;
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1600);
+        };
+
+        const downloadImage = async (url, filename, button) => {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('fetch failed');
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            flashLabel(button, 'Saved!');
+          } catch (error) {
+            window.open(url, '_blank', 'noopener');
+            flashLabel(button, 'Opened');
+          }
+        };
+
+        /* Build one card per style once; update image sources on input */
+        const cards = STYLES.map((style) => {
+          const card = document.createElement('article');
+          card.className = 'avatar-card';
+
+          const frame = document.createElement('div');
+          frame.className = 'avatar-frame';
+          const img = document.createElement('img');
+          img.alt = style.label + ' render';
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          frame.appendChild(img);
+
+          const title = document.createElement('h3');
+          title.textContent = style.label;
+
+          const row = document.createElement('div');
+          row.className = 'avatar-actions';
+
+          const downloadBtn = document.createElement('button');
+          downloadBtn.type = 'button';
+          downloadBtn.className = 'chip-button';
+          downloadBtn.textContent = 'Download';
+          downloadBtn.dataset.label = 'Download';
+          downloadBtn.addEventListener('click', () => {
+            const user = cleanName();
+            downloadImage(style.url(user, imageSize), `${user}-${style.key}.png`, downloadBtn);
+          });
+
+          const copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.className = 'chip-button';
+          copyBtn.textContent = 'Copy URL';
+          copyBtn.dataset.label = 'Copy URL';
+          copyBtn.addEventListener('click', async () => {
+            try {
+              await copyText(style.url(cleanName(), imageSize));
+              flashLabel(copyBtn, 'Copied!');
+            } catch (error) {
+              flashLabel(copyBtn, 'Copy failed');
+            }
+          });
+
+          row.append(downloadBtn, copyBtn);
+          card.append(frame, title, row);
+          grid.appendChild(card);
+          return { style, img };
+        });
+
+        const renderAvatars = () => {
+          const user = cleanName();
+          cards.forEach(({ style, img }) => {
+            img.src = style.url(user, imageSize);
+          });
+        };
+
+        nameInput.addEventListener('input', () => {
+          window.clearTimeout(debounceTimer);
+          debounceTimer = window.setTimeout(renderAvatars, 450);
+        });
+
+        sizeOptions.forEach((option) => {
+          option.addEventListener('click', () => {
+            imageSize = Number(option.dataset.size);
+            sizeOptions.forEach((o) => {
+              const active = o === option;
+              o.classList.toggle('active', active);
+              o.setAttribute('aria-pressed', String(active));
+            });
+            renderAvatars();
+          });
+        });
+
+        renderAvatars();
+      })();
+    </script>
+  </body>
+</html>
