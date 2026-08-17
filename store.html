@@ -148,7 +148,7 @@
           <p class="stripe-note">Ranks do not renew automatically. You’ll need to purchase your rank again after 30 days to keep it active. Payments are securely processed by Stripe.</p>
         </form>
 
-        <dialog class="rank-perks-dialog" id="rank-perks-dialog" aria-labelledby="rank-perks-title" aria-describedby="rank-perks-placeholder">
+        <dialog class="rank-perks-dialog" id="rank-perks-dialog" aria-labelledby="rank-perks-title" aria-describedby="rank-perks-intro">
           <div class="rank-perks-modal">
             <div class="rank-perks-modal-header">
               <div class="rank-perks-modal-identity">
@@ -161,7 +161,12 @@
               <button class="rank-perks-modal-close" type="button" aria-label="Close perks">×</button>
             </div>
             <div class="rank-perks-modal-content">
-              <p id="rank-perks-placeholder">Supporter perk details are coming soon.</p>
+              <p class="rank-perks-intro" id="rank-perks-intro">Your 30-day Supporter rank unlocks:</p>
+              <ul class="rank-perks-list" id="rank-perks-list"></ul>
+              <div class="rank-perks-term" id="rank-perks-term">
+                <strong>$8 USD</strong>
+                <span>30-day access · One-time purchase</span>
+              </div>
             </div>
           </div>
         </dialog>
@@ -201,20 +206,45 @@
             icon: '🧡',
             kicker: 'Supporter rank',
             title: 'Supporter perks',
-            placeholder: 'Supporter perk details are coming soon.'
+            intro: 'Your 30-day Supporter rank unlocks:',
+            price: '$8 USD',
+            perks: [
+              'Supporter chat tag',
+              'Discord role and private channel',
+              'Exclusive profile badge',
+              'Customizable Supporter tag',
+              'Name on the Supporter Wall'
+            ]
           },
           patron: {
             icon: '👑',
             kicker: 'Patron rank',
             title: 'Patron perks',
-            placeholder: 'Patron perk details are coming soon.'
+            intro: 'Your 30-day Patron rank unlocks:',
+            price: '$16 USD',
+            perks: [
+              'Patron chat tag and Discord role',
+              'Private supporter channel',
+              'Exclusive profile badge',
+              'Customizable Patron tag',
+              'Premium /profile frame and sounds',
+              'Custom /profile quote formatting',
+              '/joinmessage cosmetics',
+              'Access to the /skins wardrobe',
+              'Disguise as mobs and players with /dis',
+              'Name on the Patron Wall',
+              'All ranked cosmetics to Netherite V'
+            ],
+            note: 'Cosmetics only — no Netherite gameplay perks.'
           }
         };
         const perksDialog = document.querySelector('#rank-perks-dialog');
         const perksIcon = document.querySelector('#rank-perks-icon');
         const perksKicker = document.querySelector('#rank-perks-kicker');
         const perksTitle = document.querySelector('#rank-perks-title');
-        const perksPlaceholder = document.querySelector('#rank-perks-placeholder');
+        const perksIntro = document.querySelector('#rank-perks-intro');
+        const perksList = document.querySelector('#rank-perks-list');
+        const perksTerm = document.querySelector('#rank-perks-term');
         const perksClose = document.querySelector('.rank-perks-modal-close');
         const perksTriggers = document.querySelectorAll('[data-perks-rank]');
 
@@ -226,7 +256,24 @@
             perksIcon.textContent = content.icon;
             perksKicker.textContent = content.kicker;
             perksTitle.textContent = content.title;
-            perksPlaceholder.textContent = content.placeholder;
+            perksIntro.textContent = content.intro;
+            perksList.replaceChildren(...content.perks.map((perk) => {
+              const item = document.createElement('li');
+              item.textContent = perk;
+              return item;
+            }));
+
+            const price = document.createElement('strong');
+            price.textContent = content.price;
+            const term = document.createElement('span');
+            term.textContent = '30-day access · One-time purchase';
+            perksTerm.replaceChildren(price, term);
+
+            if (content.note) {
+              const note = document.createElement('small');
+              note.textContent = content.note;
+              perksTerm.append(note);
+            }
             rootEl.classList.add('modal-open');
             perksDialog.showModal();
           });
