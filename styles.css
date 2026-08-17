@@ -1068,6 +1068,30 @@ html.night .features h2 {
   margin-top: auto;
 }
 
+.stripe-redirect-note {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  justify-content: center;
+  margin: 0.7rem 0 -0.2rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stripe-wordmark {
+  color: #635bff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+html.night .stripe-wordmark {
+  color: #aaa3ff;
+}
+
 .button:disabled {
   cursor: wait;
   filter: grayscale(0.25);
