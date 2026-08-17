@@ -1013,6 +1013,9 @@ html.night .features h2 {
   --rank-glow: rgba(240, 165, 44, 0.19);
   --rank-start: #d77b24;
   --rank-end: #ffb542;
+  --badge-top: #ffd681;
+  --badge-bottom: #f2a339;
+  --badge-ink: #543004;
 }
 
 .rank-patron {
@@ -1020,6 +1023,60 @@ html.night .features h2 {
   --rank-glow: rgba(255, 213, 91, 0.24);
   --rank-start: #f0a52c;
   --rank-end: #ffe783;
+  --badge-top: #fff3a8;
+  --badge-bottom: #f4c33f;
+  --badge-ink: #4c3500;
+}
+
+.rank-price-badge {
+  position: absolute;
+  top: 1.15rem;
+  right: 1rem;
+  z-index: 2;
+  min-width: 4.45rem;
+  padding: 0.55rem 0.65rem 0.45rem;
+  border: 2px solid var(--rank-border);
+  border-radius: 0.9rem 0.9rem 0.9rem 0.35rem;
+  background: linear-gradient(180deg, var(--badge-top), var(--badge-bottom));
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 5px 0 rgba(104, 60, 4, 0.14),
+    0 8px 18px rgba(65, 38, 3, 0.14);
+  color: var(--badge-ink);
+  text-align: center;
+  transform: rotate(2deg);
+}
+
+.rank-supporter .rank-price-badge {
+  transform: rotate(-2deg);
+}
+
+.rank-price-badge::before {
+  content: "✦";
+  position: absolute;
+  top: -0.55rem;
+  left: -0.45rem;
+  color: var(--rank-end);
+  font-size: 1rem;
+  text-shadow: 0 1px 0 rgba(65, 38, 3, 0.2);
+}
+
+.rank-price-badge strong,
+.rank-price-badge small {
+  display: block;
+}
+
+.rank-price-badge strong {
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 1.45rem;
+  line-height: 0.95;
+}
+
+.rank-price-badge small {
+  margin-top: 0.28rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
 }
 
 .rank-heading {
@@ -1027,6 +1084,7 @@ html.night .features h2 {
   gap: 0.9rem;
   align-items: center;
   margin-bottom: 1.1rem;
+  padding-right: 5.3rem;
 }
 
 .rank-emblem {
