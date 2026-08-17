@@ -122,10 +122,7 @@
                 </div>
               </div>
               <p class="rank-description">A simple way to support the Cozy Crafters server and community.</p>
-              <details class="rank-perks">
-                <summary>View perks</summary>
-                <p>Supporter perk details are coming soon.</p>
-              </details>
+              <button class="rank-perks-trigger" type="button" data-perks-rank="supporter" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
               <button class="button button-secondary" type="submit" data-rank="supporter">Purchase Supporter</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
@@ -139,10 +136,7 @@
                 </div>
               </div>
               <p class="rank-description">An extra-generous way to help support the Cozy Crafters server and community.</p>
-              <details class="rank-perks">
-                <summary>View perks</summary>
-                <p>Patron perk details are coming soon.</p>
-              </details>
+              <button class="rank-perks-trigger" type="button" data-perks-rank="patron" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
               <button class="button button-store" type="submit" data-rank="patron">Purchase Patron</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
@@ -151,6 +145,24 @@
           <p class="checkout-status" id="checkout-status" role="alert" aria-live="polite"></p>
           <p class="stripe-note">Ranks do not renew automatically. You’ll need to purchase your rank again after 30 days to keep it active. Payments are securely processed by Stripe.</p>
         </form>
+
+        <dialog class="rank-perks-dialog" id="rank-perks-dialog" aria-labelledby="rank-perks-title" aria-describedby="rank-perks-placeholder">
+          <div class="rank-perks-modal">
+            <div class="rank-perks-modal-header">
+              <div class="rank-perks-modal-identity">
+                <span class="rank-perks-modal-icon" id="rank-perks-icon" aria-hidden="true">🧡</span>
+                <div>
+                  <p class="rank-kicker" id="rank-perks-kicker">Supporter rank</p>
+                  <h2 id="rank-perks-title">Supporter perks</h2>
+                </div>
+              </div>
+              <button class="rank-perks-modal-close" type="button" aria-label="Close perks">×</button>
+            </div>
+            <div class="rank-perks-modal-content">
+              <p id="rank-perks-placeholder">Supporter perk details are coming soon.</p>
+            </div>
+          </div>
+        </dialog>
       </main>
 
       <footer class="site-footer">
@@ -181,6 +193,50 @@
         }
 
         syncTheme();
+
+        const perkContent = {
+          supporter: {
+            icon: '🧡',
+            kicker: 'Supporter rank',
+            title: 'Supporter perks',
+            placeholder: 'Supporter perk details are coming soon.'
+          },
+          patron: {
+            icon: '👑',
+            kicker: 'Patron rank',
+            title: 'Patron perks',
+            placeholder: 'Patron perk details are coming soon.'
+          }
+        };
+        const perksDialog = document.querySelector('#rank-perks-dialog');
+        const perksIcon = document.querySelector('#rank-perks-icon');
+        const perksKicker = document.querySelector('#rank-perks-kicker');
+        const perksTitle = document.querySelector('#rank-perks-title');
+        const perksPlaceholder = document.querySelector('#rank-perks-placeholder');
+        const perksClose = document.querySelector('.rank-perks-modal-close');
+        const perksTriggers = document.querySelectorAll('[data-perks-rank]');
+
+        perksTriggers.forEach((trigger) => {
+          trigger.addEventListener('click', () => {
+            const content = perkContent[trigger.dataset.perksRank];
+            if (!content || !perksDialog) return;
+
+            perksIcon.textContent = content.icon;
+            perksKicker.textContent = content.kicker;
+            perksTitle.textContent = content.title;
+            perksPlaceholder.textContent = content.placeholder;
+            rootEl.classList.add('modal-open');
+            perksDialog.showModal();
+          });
+        });
+
+        if (perksClose && perksDialog) {
+          perksClose.addEventListener('click', () => perksDialog.close());
+          perksDialog.addEventListener('click', (event) => {
+            if (event.target === perksDialog) perksDialog.close();
+          });
+          perksDialog.addEventListener('close', () => rootEl.classList.remove('modal-open'));
+        }
 
         const checkoutEndpoint = 'https://cozy-store-api.colbysthickey.workers.dev/checkout';
         const usernamePattern = /^[A-Za-z0-9_]{3,16}$/;

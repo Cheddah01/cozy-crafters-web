@@ -1063,46 +1063,164 @@ html.night .features h2 {
   line-height: 1.55;
 }
 
-.rank-perks {
-  margin: 0 0 1.25rem;
-  overflow: hidden;
-  border: 1px solid var(--rank-border);
-  border-radius: 0.7rem;
-  background: var(--chip-bg);
-}
-
-.rank-perks summary {
+.rank-perks-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  width: 100%;
+  margin: 0 0 1.25rem;
   padding: 0.75rem 0.9rem;
+  border: 1px solid var(--rank-border);
+  border-radius: 0.7rem;
+  background: var(--chip-bg);
   color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
   font-weight: 900;
+  text-align: left;
   cursor: pointer;
-  list-style: none;
 }
 
-.rank-perks summary::-webkit-details-marker {
-  display: none;
+.rank-perks-trigger:hover,
+.rank-perks-trigger:focus-visible {
+  border-color: var(--rank-end);
+  filter: brightness(1.05);
 }
 
-.rank-perks summary::after {
-  content: "+";
+.rank-perks-trigger::after {
+  content: "";
+  width: 0.48rem;
+  height: 0.48rem;
+  margin-right: 0.15rem;
+  border-top: 2px solid;
+  border-right: 2px solid;
   color: var(--accent);
-  font-size: 1.35rem;
-  line-height: 0.8;
+  transform: rotate(45deg);
 }
 
-.rank-perks[open] summary::after {
-  content: "−";
+html.modal-open {
+  overflow: hidden;
 }
 
-.rank-perks p {
+.rank-perks-dialog {
+  width: min(580px, calc(100% - 2rem));
+  max-height: min(720px, calc(100vh - 2rem));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--card-line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(3, 12, 28, 0.46);
+}
+
+.rank-perks-dialog[open] {
+  animation: perks-modal-in 0.2s ease-out;
+}
+
+.rank-perks-dialog::backdrop {
+  background: rgba(7, 17, 36, 0.66);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes perks-modal-in {
+  from {
+    transform: translateY(12px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.rank-perks-modal {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.rank-perks-modal-header,
+.rank-perks-modal-identity {
+  display: flex;
+  align-items: center;
+}
+
+.rank-perks-modal-header {
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.rank-perks-modal-identity {
+  min-width: 0;
+  gap: 0.9rem;
+}
+
+.rank-perks-modal-icon {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(210, 157, 21, 0.62);
+  border-radius: 0.75rem;
+  background: var(--chip-bg);
+  font-size: 1.55rem;
+}
+
+.rank-perks-modal-header .rank-kicker {
+  margin-bottom: 0.18rem;
+}
+
+.rank-perks-modal-header h2 {
   margin: 0;
-  padding: 0 0.9rem 0.9rem;
+  font-size: clamp(1.55rem, 5vw, 2.2rem);
+}
+
+.rank-perks-modal-close {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1.65rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rank-perks-modal-close:hover,
+.rank-perks-modal-close:focus-visible {
+  border-color: var(--accent);
+  filter: brightness(1.06);
+}
+
+.rank-perks-modal-content {
+  margin-top: 1.25rem;
+  padding: 1.2rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.8rem;
+  background: var(--chip-bg);
+}
+
+.rank-perks-modal-content p {
+  margin: 0;
   color: var(--muted);
-  line-height: 1.45;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rank-perks-dialog[open] {
+    animation: none;
+  }
 }
 
 .rank-card .button {
