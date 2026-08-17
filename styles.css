@@ -1541,6 +1541,11 @@ html.night .checkout-status.error {
   line-height: 1.65;
 }
 
+.legal-highlight a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+}
+
 .legal-section + .legal-section {
   margin-top: 2rem;
   padding-top: 2rem;
@@ -1616,19 +1621,17 @@ html.night .checkout-status.error {
   line-height: 1.6;
 }
 
-.contact-placeholder {
-  border-style: dashed;
-}
-
-.contact-placeholder-value {
+.contact-email {
   display: inline-block;
   margin-top: 0.8rem;
   padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(62, 138, 46, 0.32);
   border-radius: 0.5rem;
-  background: rgba(215, 123, 36, 0.12);
-  color: var(--ink);
-  font-size: 0.82rem;
+  background: rgba(98, 189, 71, 0.12);
+  color: var(--accent);
+  font-size: 0.9rem;
   font-weight: 900;
+  text-underline-offset: 0.16em;
 }
 
 .legal-safety-note {
