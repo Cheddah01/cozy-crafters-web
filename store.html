@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Support Cozy Crafters SMP with a one-time Supporter or Patron rank purchase." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/store.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Support the Server | Cozy Crafters SMP" />
+    <meta property="og:description" content="Support Cozy Crafters SMP with a one-time Supporter or Patron rank purchase." />
+    <meta property="og:url" content="https://cozycrafters.net/store.html" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Support the Server | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars">
+        <i class="sf sf1"></i>
+        <i class="sf sf2"></i>
+      </div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div>
+      <div class="mc-cloud c2"></div>
+      <div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div>
+      <div class="mc-cloud c5"></div>
+      <div class="mc-cloud c6"></div>
+      <div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html" aria-current="page">Store</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="store-hero section-card" aria-labelledby="store-title">
+          <div>
+            <p class="eyebrow">Cozy Crafters Store</p>
+            <h1 id="store-title">Support the Server</h1>
+            <p class="lede">Choose a rank and help keep Cozy Crafters growing. Supporter and Patron ranks are one-time purchases.</p>
+          </div>
+          <aside class="store-assurance" aria-label="Purchase information">
+            <div class="assurance-item">
+              <span class="assurance-icon" aria-hidden="true">🧡</span>
+              <span>One-time rank purchases</span>
+            </div>
+            <div class="assurance-item">
+              <span class="assurance-icon" aria-hidden="true">🔒</span>
+              <span>Securely processed by Stripe</span>
+            </div>
+          </aside>
+        </section>
+
+        <form class="store-form" id="store-form" novalidate>
+          <section class="username-card section-card" aria-labelledby="username-title">
+            <div>
+              <p class="eyebrow">Step one</p>
+              <h2 id="username-title">Enter your username</h2>
+              <p>We use this to connect the rank purchase to your Minecraft account.</p>
+            </div>
+            <div class="username-field">
+              <label class="mini-label" for="minecraft-username">Minecraft username</label>
+              <input
+                class="tool-input"
+                id="minecraft-username"
+                name="username"
+                type="text"
+                placeholder="MinecraftName"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                minlength="3"
+                maxlength="16"
+                pattern="[A-Za-z0-9_]{3,16}"
+                aria-describedby="username-hint checkout-status"
+                required
+              />
+              <span class="field-hint" id="username-hint">3–16 characters: letters, numbers, and underscores only.</span>
+            </div>
+          </section>
+
+          <div class="rank-grid" aria-label="Available ranks">
+            <article class="rank-card rank-supporter">
+              <div class="rank-heading">
+                <span class="rank-emblem" aria-hidden="true">🧡</span>
+                <div>
+                  <p class="rank-kicker">One-time purchase</p>
+                  <h2>Supporter</h2>
+                </div>
+              </div>
+              <p class="rank-description">A simple way to support the Cozy Crafters server and community.</p>
+              <button class="button button-secondary" type="submit" data-rank="supporter">Purchase Supporter</button>
+            </article>
+
+            <article class="rank-card rank-patron">
+              <div class="rank-heading">
+                <span class="rank-emblem" aria-hidden="true">👑</span>
+                <div>
+                  <p class="rank-kicker">One-time purchase</p>
+                  <h2>Patron</h2>
+                </div>
+              </div>
+              <p class="rank-description">An extra-generous way to help support the Cozy Crafters server and community.</p>
+              <button class="button button-store" type="submit" data-rank="patron">Purchase Patron</button>
+            </article>
+          </div>
+
+          <p class="checkout-status" id="checkout-status" role="alert" aria-live="polite"></p>
+          <p class="stripe-note">You’ll continue to Stripe’s secure checkout to complete your purchase.</p>
+        </form>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
+
+        const checkoutEndpoint = 'https://cozy-store-api.colbysthickey.workers.dev/checkout';
+        const usernamePattern = /^[A-Za-z0-9_]{3,16}$/;
+        const allowedRanks = new Set(['supporter', 'patron']);
+        const form = document.querySelector('#store-form');
+        const usernameInput = document.querySelector('#minecraft-username');
+        const status = document.querySelector('#checkout-status');
+        const purchaseButtons = Array.from(document.querySelectorAll('[data-rank]'));
+        let checkoutPending = false;
+
+        const showStatus = (message, type = '') => {
+          status.textContent = message;
+          status.className = `checkout-status${type ? ` ${type}` : ''}`;
+        };
+
+        const setPending = (pending, activeButton) => {
+          checkoutPending = pending;
+          form.setAttribute('aria-busy', String(pending));
+          purchaseButtons.forEach((button) => {
+            button.disabled = pending;
+            if (!button.dataset.label) button.dataset.label = button.textContent;
+            button.textContent = pending && button === activeButton ? 'Opening checkout…' : button.dataset.label;
+          });
+        };
+
+        usernameInput.addEventListener('input', () => {
+          usernameInput.removeAttribute('aria-invalid');
+          if (status.classList.contains('error')) showStatus('');
+        });
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (checkoutPending) return;
+
+          const activeButton = event.submitter;
+          const rank = activeButton && activeButton.dataset.rank;
+          const username = usernameInput.value.trim();
+
+          if (!usernamePattern.test(username)) {
+            usernameInput.setAttribute('aria-invalid', 'true');
+            showStatus('Enter a valid Minecraft username using 3–16 letters, numbers, or underscores.', 'error');
+            usernameInput.focus();
+            return;
+          }
+
+          if (!allowedRanks.has(rank)) {
+            showStatus('Please choose a valid rank.', 'error');
+            return;
+          }
+
+          usernameInput.value = username;
+          usernameInput.removeAttribute('aria-invalid');
+          showStatus('Connecting to secure checkout…');
+          setPending(true, activeButton);
+          let redirecting = false;
+
+          try {
+            const response = await fetch(checkoutEndpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ username, rank })
+            });
+
+            let result = null;
+            try {
+              result = await response.json();
+            } catch (error) {}
+
+            if (!response.ok) {
+              const message = result && typeof result.error === 'string'
+                ? result.error
+                : 'We couldn’t start checkout. Please try again.';
+              throw new Error(message);
+            }
+
+            if (!result || typeof result.checkoutUrl !== 'string') {
+              throw new Error('Checkout did not return a valid destination. Please try again.');
+            }
+
+            const checkoutUrl = new URL(result.checkoutUrl);
+            if (checkoutUrl.protocol !== 'https:' || checkoutUrl.hostname !== 'checkout.stripe.com') {
+              throw new Error('Checkout returned an unexpected destination. Please try again.');
+            }
+
+            redirecting = true;
+            window.location.assign(checkoutUrl.href);
+          } catch (error) {
+            const message = error instanceof TypeError
+              ? 'We couldn’t connect to checkout. Please check your connection and try again.'
+              : error instanceof Error && error.message
+                ? error.message
+                : 'We couldn’t connect to checkout. Please try again.';
+            showStatus(message, 'error');
+          } finally {
+            if (!redirecting) setPending(false, activeButton);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
