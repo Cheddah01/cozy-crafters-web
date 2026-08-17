@@ -1828,6 +1828,7 @@ html.night .checkout-result-cancelled .checkout-result-mark {
 
   .nav-links a {
     padding-inline: 0.55rem;
+    font-size: 0.9rem;
   }
 
   .hero {
