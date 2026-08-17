@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Free Cozy Crafters community tools, including the Minecraft avatar creator and server title editor." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/tools.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Community Tools | Cozy Crafters SMP" />
+    <meta property="og:description" content="Create Minecraft avatars and polished server titles with free Cozy Crafters tools." />
+    <meta property="og:url" content="https://cozycrafters.net/tools.html" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Community Tools | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars"><i class="sf sf1"></i><i class="sf sf2"></i></div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div><div class="mc-cloud c2"></div><div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div><div class="mc-cloud c5"></div><div class="mc-cloud c6"></div><div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./tools.html" aria-current="page">Tools</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main class="tools-directory-main">
+        <section class="tools-directory-hero section-card" aria-labelledby="tools-title">
+          <div>
+            <p class="eyebrow">Cozy Crafters Workshop</p>
+            <h1 id="tools-title">Tools for the community.</h1>
+            <p class="lede">A growing collection of handy Minecraft utilities, built to feel right at home with Cozy Crafters.</p>
+          </div>
+          <aside class="tools-directory-summary" aria-label="Available tools">
+            <strong>2</strong>
+            <span>tools ready to use</span>
+            <small>Free · Browser based</small>
+          </aside>
+        </section>
+
+        <section class="tools-directory-section" aria-labelledby="choose-tool-title">
+          <div class="section-heading">
+            <p class="eyebrow">Pick a tool</p>
+            <h2 id="choose-tool-title">What are you making?</h2>
+          </div>
+
+          <div class="tools-directory-grid">
+            <a class="tools-directory-card tools-directory-card-title" href="./text.html">
+              <div class="tools-directory-card-top">
+                <span class="tools-directory-icon" aria-hidden="true">✦</span>
+                <span class="tools-directory-badge">Text utility</span>
+              </div>
+              <div>
+                <p class="eyebrow">Title Maker + Small Caps</p>
+                <h3>Title Editor</h3>
+                <p>Create polished Minecraft title lines, choose colours, preview the result, and copy it straight into your project.</p>
+              </div>
+              <div class="tools-directory-preview tools-directory-preview-title" aria-hidden="true">
+                <span>━━━━━ Spawn ━━━━━</span>
+              </div>
+              <span class="tools-directory-open">Open Title Editor <span aria-hidden="true">→</span></span>
+            </a>
+
+            <a class="tools-directory-card tools-directory-card-avatar" href="./avatars.html">
+              <div class="tools-directory-card-top">
+                <span class="tools-directory-icon" aria-hidden="true">🧑</span>
+                <span class="tools-directory-badge">Image utility</span>
+              </div>
+              <div>
+                <p class="eyebrow">Minecraft Skin Creator</p>
+                <h3>Avatar Creator</h3>
+                <p>Load a Minecraft skin, choose a pose and background, add finishing touches, and download a crisp custom avatar.</p>
+              </div>
+              <div class="tools-directory-preview tools-directory-preview-avatar" aria-hidden="true">
+                <span class="pixel-avatar"></span>
+                <span>Made from your Minecraft skin</span>
+              </div>
+              <span class="tools-directory-open">Open Avatar Creator <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
+      })();
+    </script>
+  </body>
+</html>
