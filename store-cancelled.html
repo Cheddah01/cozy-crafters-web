@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Your Cozy Crafters store checkout was cancelled before a purchase was completed." />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/store-cancelled.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Checkout Cancelled | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars">
+        <i class="sf sf1"></i>
+        <i class="sf sf2"></i>
+      </div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div>
+      <div class="mc-cloud c2"></div>
+      <div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div>
+      <div class="mc-cloud c5"></div>
+      <div class="mc-cloud c6"></div>
+      <div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="checkout-result checkout-result-cancelled section-card" aria-labelledby="result-title">
+          <div class="checkout-result-inner">
+            <div class="checkout-result-mark" aria-hidden="true">↩</div>
+            <p class="eyebrow">Cozy Crafters Store</p>
+            <h1 id="result-title">Checkout Cancelled</h1>
+            <p class="lede">Checkout was cancelled before completion. <strong>No purchase was completed.</strong></p>
+
+            <div class="checkout-result-note">
+              <span class="checkout-result-note-icon" aria-hidden="true">🌤️</span>
+              <div>
+                <h2>Nothing went wrong</h2>
+                <p>Your selection has not been submitted for rank delivery. You can return to the store whenever you’re ready.</p>
+              </div>
+            </div>
+
+            <div class="actions checkout-result-actions" aria-label="Next steps">
+              <a class="button button-store" href="./store.html">Back to Store</a>
+              <a class="button button-secondary" href="./index.html">Return to Homepage</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
+      })();
+    </script>
+  </body>
+</html>

@@ -1341,6 +1341,165 @@ html.night .checkout-status.error {
   text-align: center;
 }
 
+/* ---------- Store checkout result pages ---------- */
+
+.checkout-result {
+  position: relative;
+  display: grid;
+  min-height: min(650px, calc(100vh - 8rem));
+  padding: clamp(2rem, 7vw, 5rem);
+  overflow: hidden;
+  place-items: center;
+  text-align: center;
+}
+
+.checkout-result::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  background: linear-gradient(90deg, var(--result-start), var(--result-end));
+}
+
+.checkout-result-success {
+  --result-start: var(--grass-dark);
+  --result-end: #a7ee7f;
+  --result-border: rgba(62, 138, 46, 0.55);
+  --result-glow: rgba(98, 189, 71, 0.2);
+}
+
+.checkout-result-cancelled {
+  --result-start: #d77b24;
+  --result-end: #ffd86b;
+  --result-border: rgba(185, 116, 15, 0.56);
+  --result-glow: rgba(240, 165, 44, 0.2);
+}
+
+.checkout-result-inner {
+  width: min(100%, 760px);
+}
+
+.checkout-result-mark {
+  position: relative;
+  display: grid;
+  width: 5.4rem;
+  height: 5.4rem;
+  margin: 0 auto 1.5rem;
+  place-items: center;
+  border: 2px solid var(--result-border);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.72), transparent 35%),
+    var(--chip-bg);
+  box-shadow:
+    0 0 0 7px var(--result-glow),
+    0 12px 26px rgba(38, 84, 128, 0.18);
+  color: var(--accent);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: rotate(-2deg);
+}
+
+.checkout-result-cancelled .checkout-result-mark {
+  color: #b66b10;
+  transform: rotate(2deg);
+}
+
+html.night .checkout-result-cancelled .checkout-result-mark {
+  color: #ffd36f;
+}
+
+.checkout-result-mark::before,
+.checkout-result-mark::after {
+  content: "✦";
+  position: absolute;
+  color: var(--result-end);
+  font-size: 1.05rem;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.checkout-result-mark::before {
+  top: -0.8rem;
+  right: -0.55rem;
+}
+
+.checkout-result-mark::after {
+  bottom: -0.55rem;
+  left: -0.7rem;
+  font-size: 0.8rem;
+}
+
+.checkout-result h1 {
+  max-width: none;
+  margin-bottom: 1.2rem;
+  font-size: clamp(2.65rem, 6vw, 4.9rem);
+}
+
+.checkout-result .lede {
+  max-width: 43rem;
+  margin: 0 auto;
+}
+
+.checkout-result .lede strong {
+  color: var(--ink);
+}
+
+.checkout-result-note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin: 2rem auto 0;
+  padding: 1.15rem;
+  border: 1px solid var(--result-border);
+  border-radius: 0.9rem;
+  background: var(--chip-bg);
+  text-align: left;
+}
+
+.checkout-result-note-icon {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  border: 1px solid var(--result-border);
+  border-radius: 0.7rem;
+  background: var(--result-glow);
+  font-size: 1.35rem;
+}
+
+.checkout-result-note h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.checkout-result-note p,
+.checkout-result-footnote {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.checkout-result-note p {
+  margin: 0;
+}
+
+.checkout-result-footnote {
+  max-width: 40rem;
+  margin: 1rem auto 0;
+  font-size: 0.92rem;
+}
+
+.checkout-result-actions {
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.checkout-result-actions .button {
+  min-width: 12.5rem;
+}
+
 /* ---------- Avatar maker workbench ---------- */
 
 .avatar-workbench {
