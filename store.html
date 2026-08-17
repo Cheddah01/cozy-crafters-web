@@ -228,11 +228,11 @@
               'Private supporter channel',
               'Exclusive profile badge',
               'Customizable Patron tag',
-              'Premium /profile frame and sounds',
-              'Custom /profile quote formatting',
-              '/joinmessage cosmetics',
-              'Access to the /skins wardrobe',
-              'Disguise as mobs and players with /dis',
+              { title: 'Premium profile frame and sounds', command: '/profile' },
+              { title: 'Custom profile quote formatting', command: '/profile' },
+              { title: 'Join message cosmetics', command: '/joinmessage' },
+              { title: 'Access to the skins wardrobe', command: '/skins' },
+              { title: 'Disguise as mobs and players', command: '/dis' },
               'Name on the Patron Wall',
               '30 homes',
               'All ranked cosmetics to Netherite V'
@@ -261,7 +261,17 @@
             perksIntro.textContent = content.intro;
             perksList.replaceChildren(...content.perks.map((perk) => {
               const item = document.createElement('li');
-              item.textContent = perk;
+              const title = document.createElement('span');
+              title.className = 'rank-perk-title';
+              title.textContent = typeof perk === 'string' ? perk : perk.title;
+              item.append(title);
+
+              if (typeof perk !== 'string' && perk.command) {
+                const command = document.createElement('small');
+                command.className = 'rank-perk-command';
+                command.textContent = `command: ${perk.command}`;
+                item.append(command);
+              }
               return item;
             }));
 

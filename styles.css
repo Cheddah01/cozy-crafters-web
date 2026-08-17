@@ -1316,6 +1316,20 @@ html.modal-open {
   font-weight: 900;
 }
 
+.rank-perk-title,
+.rank-perk-command {
+  display: block;
+}
+
+.rank-perk-command {
+  margin-top: 0.12rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
 .rank-perks-term {
   display: grid;
   grid-template-columns: auto 1fr;
