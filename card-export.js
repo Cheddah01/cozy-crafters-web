@@ -7,9 +7,10 @@
  * scale instead of being resampled.
  *
  * Geometry, fonts and colours are measured from a hidden clone of the live
- * card, so the PNG follows the real markup and the current day/night theme
- * rather than a second hard-coded layout. Only gradients are restated here,
- * because a computed gradient cannot be read back out of the DOM.
+ * card, so the PNG follows the real markup, the selected card theme and the
+ * current day/night mode rather than a second hard-coded layout. Gradients
+ * cannot be read back out of the DOM, so their stops are read from the same
+ * --pc-* custom properties the stylesheet builds them from.
  */
 (() => {
   'use strict';
@@ -22,32 +23,55 @@
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
-  const isNight = () => document.documentElement.classList.contains('night');
+  /* Every colour the card uses lives in a --pc-* custom property (see the
+     "Player card: themes" section of styles.css). Reading them off the clone
+     means each theme is defined exactly once, in CSS. The fallbacks are the
+     Grasslands day palette, in case a variable is ever missing. */
+  const THEME_VARS = {
+    frame: ['--pc-frame', '#3e8a2e'],
+    frameDeep: ['--pc-frame-deep', '#2f6b22'],
+    cardTop: ['--pc-card-top', 'rgba(255, 253, 248, 0.92)'],
+    cardBot: ['--pc-card-bot', 'rgba(243, 250, 255, 0.86)'],
+    cardBase: ['--pc-card-base', '#f2fafe'],
+    cardGlow: ['--pc-card-glow', 'rgba(140, 206, 255, 0.4)'],
+    ring: ['--pc-ring', 'rgba(255, 255, 255, 0.55)'],
+    shadow: ['--pc-shadow', 'rgba(38, 84, 128, 0.28)'],
+    backdrop: ['--pc-backdrop', '#a9dcfa'],
+    renderTop: ['--pc-render-top', 'rgba(160, 214, 255, 0.42)'],
+    renderBot: ['--pc-render-bot', 'rgba(226, 245, 255, 0.28)'],
+    renderBase: ['--pc-render-base', '#e8f5ff'],
+    renderGlow: ['--pc-render-glow', 'rgba(98, 189, 71, 0.35)'],
+    turf: ['--pc-turf', '#5cb544'],
+    turfLight: ['--pc-turf-light', '#6cc84f'],
+    soil: ['--pc-soil', '#744c29'],
+    soilDark: ['--pc-soil-dark', '#5c3a1e'],
+    rankTop: ['--pc-rank-top', '#62bd47'],
+    rankBot: ['--pc-rank-bot', '#3e8a2e']
+  };
 
-  /* Mirrors the gradient fills in the player card section of styles.css. */
-  const PALETTE = {
-    day: {
-      backdrop: '#a9dcfa',
-      cardBase: '#f2fafe',
-      cardGlow: 'rgba(140, 206, 255, 0.4)',
-      frameBase: '#e8f5ff',
-      frameTop: 'rgba(160, 214, 255, 0.42)',
-      frameBottom: 'rgba(226, 245, 255, 0.28)',
-      frameGlow: 'rgba(98, 189, 71, 0.35)',
-      innerRing: 'rgba(255, 255, 255, 0.55)',
-      shadow: 'rgba(38, 84, 128, 0.3)'
-    },
-    night: {
-      backdrop: '#16294a',
-      cardBase: '#101d35',
-      cardGlow: 'rgba(140, 206, 255, 0.4)',
-      frameBase: '#16294a',
-      frameTop: 'rgba(30, 52, 92, 0.6)',
-      frameBottom: 'rgba(18, 32, 60, 0.5)',
-      frameGlow: 'rgba(79, 157, 60, 0.32)',
-      innerRing: 'rgba(120, 150, 200, 0.22)',
-      shadow: 'rgba(4, 12, 28, 0.6)'
+  const readTheme = (styles) => {
+    const theme = {};
+    Object.keys(THEME_VARS).forEach((key) => {
+      const [name, fallback] = THEME_VARS[key];
+      const value = styles.getPropertyValue(name).trim();
+      theme[key] = value || fallback;
+    });
+    return theme;
+  };
+
+  /* Radial glows fade to a fully transparent copy of their own colour, so
+     the falloff never dips through grey on engines that interpolate
+     gradients without premultiplying. */
+  const transparentOf = (color) => {
+    const match = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/.exec(color)
+      || /^rgba?\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(color);
+    if (match) return `rgba(${match[1]}, ${match[2]}, ${match[3]}, 0)`;
+    const hex = /^#([0-9a-f]{6})/i.exec(color);
+    if (hex) {
+      const n = parseInt(hex[1], 16);
+      return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, 0)`;
     }
+    return 'rgba(0, 0, 0, 0)';
   };
 
   /* ----- canvas helpers ----- */
@@ -183,7 +207,7 @@
     return box;
   };
 
-  /* ----- decorative pixel turf, matching the SVG tiles in styles.css ----- */
+  /* ----- decorative pixel turf, matching the gradient tiles in styles.css ----- */
 
   const drawBannerTurf = (ctx, x, y, w, h, color) => {
     const tile = 40;
@@ -203,7 +227,7 @@
     ctx.restore();
   };
 
-  const drawGroundTurf = (ctx, x, y, w, h) => {
+  const drawGroundTurf = (ctx, x, y, w, h, theme) => {
     const tile = 40;
     const unit = h / 14;
     ctx.save();
@@ -211,14 +235,14 @@
     ctx.rect(x, y, w, h);
     ctx.clip();
     for (let tx = x; tx < x + w; tx += tile) {
-      ctx.fillStyle = '#5cb544';
+      ctx.fillStyle = theme.turf;
       ctx.fillRect(tx, y, tile, unit * 6);
-      ctx.fillStyle = '#6cc84f';
+      ctx.fillStyle = theme.turfLight;
       ctx.fillRect(tx, y, unit * 8, unit * 3);
       ctx.fillRect(tx + unit * 16, y, unit * 12, unit * 3);
-      ctx.fillStyle = '#744c29';
+      ctx.fillStyle = theme.soil;
       ctx.fillRect(tx, y + unit * 6, tile, unit * 8);
-      ctx.fillStyle = '#5c3a1e';
+      ctx.fillStyle = theme.soilDark;
       ctx.fillRect(tx + unit * 10, y + unit * 8, unit * 4, unit * 4);
       ctx.fillRect(tx + unit * 30, y + unit * 9, unit * 4, unit * 4);
     }
@@ -280,6 +304,23 @@
       if (document.fonts && typeof document.fonts.ready === 'object') {
         await document.fonts.ready;
       }
+      /* The cloned <img> starts its own fetch (normally answered from cache)
+         and lays out at 0x0 until it arrives, which would leave the render
+         out of the PNG. Wait for it briefly; a slow or failed load falls
+         through and the placeholder logic in paint() takes over. */
+      const cloneImage = clone.querySelector('.pc-render-image');
+      if (cloneImage && !cloneImage.hidden && cloneImage.getAttribute('src') && !cloneImage.complete) {
+        await new Promise((resolve) => {
+          const done = () => {
+            cloneImage.removeEventListener('load', done);
+            cloneImage.removeEventListener('error', done);
+            resolve();
+          };
+          cloneImage.addEventListener('load', done);
+          cloneImage.addEventListener('error', done);
+          setTimeout(done, 1500);
+        });
+      }
       /* Force a layout pass so every measurement below is settled. */
       void clone.getBoundingClientRect().height;
       return await run(clone);
@@ -289,7 +330,6 @@
   };
 
   const paint = (canvas, clone, skinImage) => {
-    const theme = isNight() ? PALETTE.night : PALETTE.day;
     const origin = clone.getBoundingClientRect();
     const width = origin.width;
     const height = origin.height;
@@ -309,10 +349,11 @@
     const pick = (selector) => clone.querySelector(selector);
 
     const cardStyles = getComputedStyle(clone);
+    const theme = readTheme(cardStyles);
     const radius = num(cardStyles.borderTopLeftRadius);
     const border = num(cardStyles.borderTopWidth);
-    const frameDeep = cardStyles.borderTopColor;
-    const frameLight = cardStyles.getPropertyValue('--pc-frame').trim() || frameDeep;
+    const frameDeep = theme.frameDeep;
+    const frameLight = theme.frame;
 
     /* Backdrop behind the card, so the rounded corners are not transparent
        notches when the PNG lands on a light or dark background. */
@@ -335,10 +376,10 @@
     /* Card body background: opaque base, translucent card gradient, glow. */
     ctx.fillStyle = theme.cardBase;
     ctx.fillRect(0, 0, width, height);
-    linearFill(ctx, 0, 0, width, height, cardStyles.getPropertyValue('--card-top').trim(), cardStyles.getPropertyValue('--card-bot').trim());
+    linearFill(ctx, 0, 0, width, height, theme.cardTop, theme.cardBot);
     const glow = ctx.createRadialGradient(width * 0.18, 0, 0, width * 0.18, 0, width * 0.7);
     glow.addColorStop(0, theme.cardGlow);
-    glow.addColorStop(1, 'rgba(140, 206, 255, 0)');
+    glow.addColorStop(1, transparentOf(theme.cardGlow));
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, width, height);
 
@@ -364,12 +405,12 @@
       ctx.save();
       roundRectPath(ctx, box.x, box.y, box.w, box.h, frameRadius);
       ctx.clip();
-      ctx.fillStyle = theme.frameBase;
+      ctx.fillStyle = theme.renderBase;
       ctx.fillRect(box.x, box.y, box.w, box.h);
-      linearFill(ctx, box.x, box.y, box.w, box.h, theme.frameTop, theme.frameBottom);
+      linearFill(ctx, box.x, box.y, box.w, box.h, theme.renderTop, theme.renderBot);
       const ground = ctx.createRadialGradient(box.x + box.w / 2, box.y + box.h, 0, box.x + box.w / 2, box.y + box.h, box.w * 0.8);
-      ground.addColorStop(0, theme.frameGlow);
-      ground.addColorStop(1, 'rgba(98, 189, 71, 0)');
+      ground.addColorStop(0, theme.renderGlow);
+      ground.addColorStop(1, transparentOf(theme.renderGlow));
       ctx.fillStyle = ground;
       ctx.fillRect(box.x, box.y, box.w, box.h);
 
@@ -404,7 +445,7 @@
       }
 
       const turf = num(getComputedStyle(frame, '::after').height) || 14;
-      drawGroundTurf(ctx, box.x, box.y + box.h - turf, box.w, turf);
+      drawGroundTurf(ctx, box.x, box.y + box.h - turf, box.w, turf, theme);
       ctx.restore();
 
       if (frameBorder > 0) {
@@ -425,8 +466,8 @@
       drawPill(ctx, rank, rectOf, ranked
         ? (context, box) => {
             const gradient = context.createLinearGradient(box.x, box.y, box.x, box.y + box.h);
-            gradient.addColorStop(0, cardStyles.getPropertyValue('--grass').trim() || '#62bd47');
-            gradient.addColorStop(1, cardStyles.getPropertyValue('--grass-dark').trim() || '#3e8a2e');
+            gradient.addColorStop(0, theme.rankTop);
+            gradient.addColorStop(1, theme.rankBot);
             context.fillStyle = gradient;
             context.fill();
           }
@@ -467,7 +508,7 @@
     }
     roundRectPath(ctx, border + 1.5, border + 1.5, width - border * 2 - 3, height - border * 2 - 3, Math.max(0, radius - border - 1.5));
     ctx.lineWidth = 3;
-    ctx.strokeStyle = theme.innerRing;
+    ctx.strokeStyle = theme.ring;
     ctx.stroke();
   };
 

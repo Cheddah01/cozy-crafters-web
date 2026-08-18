@@ -104,12 +104,38 @@
           </form>
 
           <p class="checkout-status pc-status" id="pc-status" role="status" aria-live="polite"></p>
+
+          <fieldset class="pc-theme-picker" data-pc-theme-picker>
+            <legend class="mini-label">Theme</legend>
+            <div class="pc-theme-options">
+              <label class="pc-theme-option" data-theme="grasslands">
+                <input type="radio" name="pc-theme" value="grasslands" checked />
+                <span class="pc-theme-swatch" aria-hidden="true"></span>
+                <span>Grasslands</span>
+              </label>
+              <label class="pc-theme-option" data-theme="cherry-grove">
+                <input type="radio" name="pc-theme" value="cherry-grove" />
+                <span class="pc-theme-swatch" aria-hidden="true"></span>
+                <span>Cherry Grove</span>
+              </label>
+              <label class="pc-theme-option" data-theme="nether">
+                <input type="radio" name="pc-theme" value="nether" />
+                <span class="pc-theme-swatch" aria-hidden="true"></span>
+                <span>Nether</span>
+              </label>
+              <label class="pc-theme-option" data-theme="deep-dark">
+                <input type="radio" name="pc-theme" value="deep-dark" />
+                <span class="pc-theme-swatch" aria-hidden="true"></span>
+                <span>Deep Dark</span>
+              </label>
+            </div>
+          </fieldset>
         </section>
 
         <section class="pc-stage" aria-labelledby="pc-card-heading">
           <h2 class="visually-hidden" id="pc-card-heading">Player card</h2>
 
-          <article class="pc-card" data-pc-card data-state="empty" aria-busy="false">
+          <article class="pc-card pc-theme-grasslands" data-pc-card data-state="empty" aria-busy="false">
             <div class="pc-card-banner">
               <span class="pc-card-brand">Cozy Crafters SMP</span>
               <span class="pc-card-badge" data-pc-badge>Example</span>
@@ -243,6 +269,53 @@
         let pending = false;
         let requestToken = 0;
         let hasCard = false;
+
+        /* ----- themes ----- */
+
+        const THEMES = ['grasslands', 'cherry-grove', 'nether', 'deep-dark'];
+        const DEFAULT_THEME = THEMES[0];
+        const themeInputs = Array.from(document.querySelectorAll('[data-pc-theme-picker] input[name="pc-theme"]'));
+        let currentTheme = DEFAULT_THEME;
+
+        const isTheme = (value) => typeof value === 'string' && THEMES.includes(value);
+
+        /* Writes the current player + theme into the address bar so the card
+           on screen is what a copied link reproduces. The default theme is
+           left off the URL to keep plain ?player= links clean. */
+        const syncUrl = (username) => {
+          if (typeof history.replaceState !== 'function') return;
+          try {
+            const url = new URL(window.location.href);
+            if (username) url.searchParams.set('player', username);
+            if (currentTheme === DEFAULT_THEME) {
+              url.searchParams.delete('theme');
+            } else {
+              url.searchParams.set('theme', currentTheme);
+            }
+            history.replaceState(null, '', url);
+          } catch (error) {}
+        };
+
+        /* Themes are pure CSS modifier classes on the card, so switching
+           never touches the profile data or the export state. */
+        const applyTheme = (theme, { updateUrl = true } = {}) => {
+          const next = isTheme(theme) ? theme : DEFAULT_THEME;
+          currentTheme = next;
+          THEMES.forEach((name) => card.classList.toggle(`pc-theme-${name}`, name === next));
+          themeInputs.forEach((input) => {
+            const active = input.value === next;
+            input.checked = active;
+            const option = input.closest('.pc-theme-option');
+            if (option) option.dataset.checked = String(active);
+          });
+          if (updateUrl) syncUrl(hasCard ? out.username.textContent : '');
+        };
+
+        themeInputs.forEach((input) => {
+          input.addEventListener('change', () => {
+            if (input.checked) applyTheme(input.value);
+          });
+        });
 
         /* ----- formatting helpers ----- */
 
@@ -572,13 +645,7 @@
           populateCard(result.profile);
           setStatus('');
 
-          if (updateUrl && typeof history.replaceState === 'function') {
-            try {
-              const url = new URL(window.location.href);
-              url.searchParams.set('player', username);
-              history.replaceState(null, '', url);
-            } catch (error) {}
-          }
+          if (updateUrl) syncUrl(username);
         };
 
         form.addEventListener('submit', (event) => {
@@ -591,8 +658,15 @@
           if (status.classList.contains('error')) setStatus('');
         });
 
-        /* ----- shareable ?player= links (treated as untrusted input) ----- */
-        const requested = new URLSearchParams(window.location.search).get('player');
+        /* ----- shareable ?player=&theme= links (treated as untrusted input) ----- */
+        const params = new URLSearchParams(window.location.search);
+        const requestedTheme = params.get('theme');
+        /* An unknown theme silently falls back to the default; the URL is
+           not rewritten here so a shared link is not altered under someone
+           who has only just opened it. */
+        applyTheme(isTheme(requestedTheme) ? requestedTheme : DEFAULT_THEME, { updateUrl: false });
+
+        const requested = params.get('player');
         if (requested !== null) {
           const candidate = requested.trim();
           if (usernamePattern.test(candidate)) {
