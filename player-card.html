@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Cozy Crafters SMP player card maker. Enter a Minecraft username to build a collectible profile card from real server stats." />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/player-card.html" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Player Card Maker | Cozy Crafters SMP" />
+    <meta property="og:description" content="Build a collectible Cozy Crafters profile card from real server stats." />
+    <meta property="og:url" content="https://cozycrafters.net/player-card.html" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Player Card Maker | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-settings.js"></script>
+    <script src="./server-status.js" defer></script>
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars">
+        <i class="sf sf1"></i>
+        <i class="sf sf2"></i>
+      </div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div>
+      <div class="mc-cloud c2"></div>
+      <div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div>
+      <div class="mc-cloud c5"></div>
+      <div class="mc-cloud c6"></div>
+      <div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header site-header-status" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <div class="server-status" data-server-status data-state="loading" role="status" aria-live="polite">
+          <span class="server-status-dot" aria-hidden="true"></span>
+          <span data-server-status-text>Checking server…</span>
+        </div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./tools.html" aria-current="location">Tools</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main class="pc-main">
+        <section class="section-card tool-card" aria-labelledby="tool-title">
+          <p class="eyebrow">Server Tools</p>
+          <h1 id="tool-title">Player Card Maker</h1>
+          <p class="lede">Type a Minecraft username and we'll build a collectible Cozy Crafters card from that player's real server profile.</p>
+
+          <form class="pc-search" id="pc-form" novalidate>
+            <div class="username-field">
+              <label class="mini-label" for="pc-username">Minecraft username</label>
+              <input
+                class="tool-input"
+                id="pc-username"
+                name="player"
+                type="text"
+                placeholder="Cheddah01"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                minlength="3"
+                maxlength="16"
+                pattern="[A-Za-z0-9_]{3,16}"
+                aria-describedby="pc-username-hint pc-status"
+                required
+              />
+              <span class="field-hint" id="pc-username-hint">3–16 characters: letters, numbers, and underscores only.</span>
+            </div>
+            <button class="button button-primary pc-search-button" id="pc-submit" type="submit">
+              <span data-pc-submit-label>Build card</span>
+            </button>
+          </form>
+
+          <p class="checkout-status pc-status" id="pc-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="pc-stage" aria-labelledby="pc-card-heading">
+          <h2 class="visually-hidden" id="pc-card-heading">Player card</h2>
+
+          <article class="pc-card" data-pc-card data-state="empty" aria-busy="false">
+            <div class="pc-card-banner">
+              <span class="pc-card-brand">Cozy Crafters SMP</span>
+              <span class="pc-card-badge" data-pc-badge>Example</span>
+            </div>
+
+            <div class="pc-card-body">
+              <div class="pc-card-render">
+                <div class="pc-render-frame">
+                  <img class="pc-render-image" data-pc-render alt="" width="180" height="360" hidden />
+                  <span class="pc-render-fallback" data-pc-render-fallback aria-hidden="true"></span>
+                </div>
+              </div>
+
+              <div class="pc-card-info">
+                <!-- Placeholder values: replaced wholesale by the first search. -->
+                <div class="pc-identity">
+                  <p class="pc-username" data-pc-username>Cheddah01</p>
+                  <p class="pc-nickname" data-pc-nickname>&ldquo;Cheddah&rdquo;</p>
+                  <p class="pc-rank" data-pc-rank data-ranked="true">Netherite V</p>
+                </div>
+
+                <dl class="pc-stats">
+                  <div class="pc-stat">
+                    <dt>Balance</dt>
+                    <dd data-pc-balance>$82,430.15</dd>
+                  </div>
+                  <div class="pc-stat">
+                    <dt>Points</dt>
+                    <dd data-pc-points>14,250</dd>
+                  </div>
+                  <div class="pc-stat">
+                    <dt>Town</dt>
+                    <dd data-pc-town>ExampleTown</dd>
+                  </div>
+                  <div class="pc-stat">
+                    <dt>Playtime</dt>
+                    <dd data-pc-playtime>412h 26m</dd>
+                  </div>
+                  <div class="pc-stat pc-stat-wide">
+                    <dt>Joined</dt>
+                    <dd data-pc-joined>May 15, 2025</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <div class="pc-card-footer">
+              <span class="pc-card-ip">play.cozycrafters.net</span>
+              <span class="pc-card-edition">Java Edition</span>
+            </div>
+          </article>
+
+          <p class="pc-card-empty-note" data-pc-empty-note>Example card &mdash; search a username to build a real one.</p>
+          <p class="pc-freshness" data-pc-freshness hidden></p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        /* ----- Night mode toggle (shared with the homepage) ----- */
+        const rootEl = document.documentElement;
+        const modeToggle = document.querySelector('.mode-toggle');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        const syncTheme = () => {
+          const night = rootEl.classList.contains('night');
+          if (themeMeta) themeMeta.content = night ? '#142c52' : '#7cc4f5';
+          if (modeToggle) modeToggle.setAttribute('aria-pressed', String(night));
+        };
+
+        if (modeToggle) {
+          modeToggle.addEventListener('click', () => {
+            rootEl.classList.toggle('night');
+            try {
+              localStorage.setItem('cc-theme', rootEl.classList.contains('night') ? 'night' : 'day');
+            } catch (error) {}
+            syncTheme();
+          });
+        }
+
+        syncTheme();
+
+        /* ================= Player card maker ================= */
+
+        const profileEndpoint = 'https://cozy-profiles-api.colbysthickey.workers.dev/profile/';
+        /* Same username rule the store and avatar maker use. */
+        const usernamePattern = /^[A-Za-z0-9_]{3,16}$/;
+
+        const MESSAGES = {
+          invalid: 'Enter a valid Minecraft username.',
+          notFound: "We couldn't find a synced Cozy Crafters profile for that player.",
+          unavailable: 'Player profiles are temporarily unavailable. Please try again.'
+        };
+
+        const form = document.getElementById('pc-form');
+        const usernameInput = document.getElementById('pc-username');
+        const submitButton = document.getElementById('pc-submit');
+        const submitLabel = document.querySelector('[data-pc-submit-label]');
+        const status = document.getElementById('pc-status');
+        const card = document.querySelector('[data-pc-card]');
+        const emptyNote = document.querySelector('[data-pc-empty-note]');
+        const badge = document.querySelector('[data-pc-badge]');
+        const freshness = document.querySelector('[data-pc-freshness]');
+        const renderImage = document.querySelector('[data-pc-render]');
+        const renderFallback = document.querySelector('[data-pc-render-fallback]');
+
+        const out = {
+          username: document.querySelector('[data-pc-username]'),
+          nickname: document.querySelector('[data-pc-nickname]'),
+          rank: document.querySelector('[data-pc-rank]'),
+          balance: document.querySelector('[data-pc-balance]'),
+          points: document.querySelector('[data-pc-points]'),
+          town: document.querySelector('[data-pc-town]'),
+          playtime: document.querySelector('[data-pc-playtime]'),
+          joined: document.querySelector('[data-pc-joined]')
+        };
+
+        let pending = false;
+        let requestToken = 0;
+        let hasCard = false;
+
+        /* ----- formatting helpers ----- */
+
+        /* Server text can carry legacy section-sign colour codes; strip them
+           so the card shows the readable name rather than "§aCheddah". */
+        const stripFormatting = (value) =>
+          typeof value === 'string' ? value.replace(/§[0-9A-Za-z]/g, '').trim() : '';
+
+        const safeText = (value, max = 48) => {
+          const cleaned = stripFormatting(value);
+          return cleaned.length > max ? `${cleaned.slice(0, max - 1)}…` : cleaned;
+        };
+
+        const formatBalance = (value) => {
+          if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
+          return `$${value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}`;
+        };
+
+        const formatPoints = (value) => {
+          if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
+          return Math.round(value).toLocaleString();
+        };
+
+        const formatPlaytime = (seconds) => {
+          if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) return '—';
+          const totalMinutes = Math.floor(seconds / 60);
+          const hours = Math.floor(totalMinutes / 60);
+          const minutes = totalMinutes % 60;
+          if (hours < 1) return `${totalMinutes}m`;
+          return `${hours.toLocaleString()}h ${minutes}m`;
+        };
+
+        /* Dates are rendered in UTC so the card matches the server record
+           instead of shifting a day for players in far-off time zones. */
+        const formatJoinDate = (value) => {
+          if (typeof value !== 'string' || !value) return '—';
+          const parsed = new Date(value);
+          if (Number.isNaN(parsed.getTime())) return '—';
+          try {
+            return parsed.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              timeZone: 'UTC'
+            });
+          } catch (error) {
+            return '—';
+          }
+        };
+
+        /* syncedAt arrives as "YYYY-MM-DD HH:MM:SS" in UTC. */
+        const formatFreshness = (value) => {
+          if (typeof value !== 'string' || !value) return '';
+          const parsed = new Date(`${value.trim().replace(' ', 'T')}Z`);
+          if (Number.isNaN(parsed.getTime())) return 'Profile updated recently';
+          const hours = (Date.now() - parsed.getTime()) / 3600000;
+          if (!Number.isFinite(hours) || hours < 0) return 'Profile updated recently';
+          if (hours < 2) return 'Profile updated recently';
+          if (hours < 24) return 'Profile updated today';
+          const days = Math.floor(hours / 24);
+          return days === 1 ? 'Profile updated yesterday' : `Profile updated ${days} days ago`;
+        };
+
+        /* ----- skin rendering (same sources as the avatar maker) ----- */
+
+        const renderSources = (user) => [
+          `https://mc-heads.net/body/${encodeURIComponent(user)}/360`,
+          `https://minotar.net/bust/${encodeURIComponent(user)}/256`,
+          `https://minotar.net/helm/${encodeURIComponent(user)}/256`
+        ];
+
+        const showRenderFallback = () => {
+          renderImage.hidden = true;
+          renderImage.removeAttribute('src');
+          renderFallback.hidden = false;
+        };
+
+        /* The card never waits on the skin service: if every render source
+           fails we simply keep the pixel placeholder and move on. */
+        const loadRender = (user) => {
+          const sources = renderSources(user);
+          renderFallback.hidden = true;
+          renderImage.hidden = true;
+
+          const tryNext = (index) => {
+            if (index >= sources.length) {
+              showRenderFallback();
+              return;
+            }
+            const probe = new Image();
+            probe.decoding = 'async';
+            probe.onload = () => {
+              renderImage.src = probe.src;
+              renderImage.alt = `Minecraft skin render for ${user}`;
+              renderImage.hidden = false;
+              renderFallback.hidden = true;
+            };
+            probe.onerror = () => tryNext(index + 1);
+            probe.src = sources[index];
+          };
+
+          tryNext(0);
+        };
+
+        /* ----- card state ----- */
+
+        const setStatus = (message, kind = '') => {
+          status.textContent = message || '';
+          status.className = `checkout-status pc-status${kind ? ` ${kind}` : ''}`;
+        };
+
+        const setCardState = (state) => {
+          card.dataset.state = state;
+          card.setAttribute('aria-busy', String(state === 'loading'));
+          if (emptyNote) emptyNote.hidden = state !== 'empty';
+          if (badge) badge.textContent = state === 'empty' ? 'Example' : 'Player Card';
+        };
+
+        const setPending = (isPending) => {
+          pending = isPending;
+          submitButton.disabled = isPending;
+          usernameInput.disabled = isPending;
+          submitLabel.textContent = isPending ? 'Building…' : 'Build card';
+        };
+
+        const isMeaningfulNickname = (nickname, username) => {
+          const cleaned = stripFormatting(nickname);
+          if (!cleaned) return false;
+          return cleaned.toLowerCase() !== String(username || '').trim().toLowerCase();
+        };
+
+        const populateCard = (profile) => {
+          const username = safeText(profile.username, 16) || 'Unknown';
+
+          /* Every value below goes in via textContent — API text is never
+             allowed to become markup. */
+          out.username.textContent = username;
+
+          if (isMeaningfulNickname(profile.nickname, profile.username)) {
+            out.nickname.textContent = `“${safeText(profile.nickname, 32)}”`;
+            out.nickname.hidden = false;
+          } else {
+            out.nickname.textContent = '';
+            out.nickname.hidden = true;
+          }
+
+          const rank = safeText(profile.rank, 32);
+          out.rank.textContent = rank || 'Unranked';
+          out.rank.dataset.ranked = String(Boolean(rank));
+
+          const town = safeText(profile.town, 32);
+          out.town.textContent = town || 'No Town';
+          out.town.dataset.empty = String(!town);
+
+          out.balance.textContent = formatBalance(profile.balance);
+          out.points.textContent = formatPoints(profile.points);
+          out.playtime.textContent = formatPlaytime(profile.playtimeSeconds);
+          out.joined.textContent = formatJoinDate(profile.joinedAt);
+
+          const freshnessText = formatFreshness(profile.syncedAt);
+          freshness.textContent = freshnessText;
+          freshness.hidden = !freshnessText;
+
+          loadRender(username);
+          hasCard = true;
+          setCardState('ready');
+        };
+
+        /* ----- lookup ----- */
+
+        const fetchProfile = async (username) => {
+          const controller = typeof AbortController === 'function' ? new AbortController() : null;
+          const timeout = controller ? window.setTimeout(() => controller.abort(), 8000) : null;
+
+          try {
+            const response = await fetch(`${profileEndpoint}${encodeURIComponent(username)}`, {
+              method: 'GET',
+              headers: { Accept: 'application/json' },
+              credentials: 'omit',
+              cache: 'no-store',
+              signal: controller ? controller.signal : undefined
+            });
+
+            if (response.status === 400) return { kind: 'invalid' };
+            if (response.status === 404) return { kind: 'notFound' };
+            if (!response.ok) return { kind: 'unavailable' };
+
+            const data = await response.json();
+            if (!data || typeof data !== 'object' || Array.isArray(data) || typeof data.username !== 'string') {
+              return { kind: 'unavailable' };
+            }
+            return { kind: 'ok', profile: data };
+          } catch (error) {
+            /* Network, CORS, timeout and parse failures all look the same to
+               a visitor — no raw error goes to the console or the page. */
+            return { kind: 'unavailable' };
+          } finally {
+            if (timeout !== null) window.clearTimeout(timeout);
+          }
+        };
+
+        const failLookup = (kind) => {
+          setStatus(MESSAGES[kind] || MESSAGES.unavailable, 'error');
+          freshness.hidden = true;
+          freshness.textContent = '';
+          /* Leave the last successful card on screen so a failed follow-up
+             search doesn't wipe out what the visitor was already looking at. */
+          setCardState(hasCard ? 'ready' : 'empty');
+        };
+
+        const lookup = async (rawUsername, { updateUrl = true } = {}) => {
+          const username = String(rawUsername || '').trim();
+
+          if (!usernamePattern.test(username)) {
+            usernameInput.setAttribute('aria-invalid', 'true');
+            failLookup('invalid');
+            return;
+          }
+
+          usernameInput.removeAttribute('aria-invalid');
+          if (pending) return;
+
+          const token = ++requestToken;
+          setPending(true);
+          setStatus('Looking up that profile…');
+          setCardState('loading');
+
+          const result = await fetchProfile(username);
+
+          if (token !== requestToken) return;
+          setPending(false);
+
+          if (result.kind !== 'ok') {
+            failLookup(result.kind);
+            return;
+          }
+
+          populateCard(result.profile);
+          setStatus('');
+
+          if (updateUrl && typeof history.replaceState === 'function') {
+            try {
+              const url = new URL(window.location.href);
+              url.searchParams.set('player', username);
+              history.replaceState(null, '', url);
+            } catch (error) {}
+          }
+        };
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          lookup(usernameInput.value);
+        });
+
+        usernameInput.addEventListener('input', () => {
+          usernameInput.removeAttribute('aria-invalid');
+          if (status.classList.contains('error')) setStatus('');
+        });
+
+        /* ----- shareable ?player= links (treated as untrusted input) ----- */
+        const requested = new URLSearchParams(window.location.search).get('player');
+        if (requested !== null) {
+          const candidate = requested.trim();
+          if (usernamePattern.test(candidate)) {
+            usernameInput.value = candidate;
+            lookup(candidate, { updateUrl: false });
+          } else {
+            setStatus(MESSAGES.invalid, 'error');
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
