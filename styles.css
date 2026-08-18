@@ -289,7 +289,8 @@ html.night .stars {
     animation-play-state: paused;
   }
 
-  .sf {
+  .sf,
+  .server-status-dot {
     animation: none;
   }
 }
@@ -333,6 +334,65 @@ html.night .stars {
   font-size: 1.15rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+.site-header-home .brand {
+  margin-right: 0;
+}
+
+.server-status {
+  display: inline-flex;
+  min-width: 8.5rem;
+  align-items: center;
+  gap: 0.45rem;
+  margin-right: auto;
+  padding: 0.48rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.server-status-dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #8ba0b3;
+  box-shadow: 0 0 0 3px rgba(139, 160, 179, 0.16);
+}
+
+.server-status[data-state="loading"] .server-status-dot {
+  animation: server-status-pulse 1.4s ease-in-out infinite;
+}
+
+.server-status[data-state="online"] {
+  color: var(--grass-deep);
+}
+
+.server-status[data-state="online"] .server-status-dot {
+  background: var(--grass);
+  box-shadow: 0 0 0 3px rgba(98, 189, 71, 0.18);
+}
+
+html.night .server-status[data-state="online"] {
+  color: var(--accent);
+}
+
+.server-status[data-state="offline"] .server-status-dot {
+  background: #d77b24;
+  box-shadow: 0 0 0 3px rgba(215, 123, 36, 0.18);
+}
+
+@keyframes server-status-pulse {
+  50% {
+    opacity: 0.42;
+    transform: scale(0.82);
+  }
 }
 
 .brand-mark {
@@ -2272,6 +2332,39 @@ html.night .checkout-result-cancelled .checkout-result-mark {
     grid-row: 1 / 3;
   }
 
+  .site-header-home {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand toggle"
+      "status status"
+      "nav nav";
+    row-gap: 0.6rem;
+  }
+
+  .site-header-home .brand {
+    grid-area: brand;
+  }
+
+  .site-header-home .server-status {
+    grid-area: status;
+    justify-self: start;
+    margin-right: 0;
+  }
+
+  .site-header-home .nav-links {
+    grid-area: nav;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .site-header-home .mode-toggle {
+    grid-area: toggle;
+    justify-self: end;
+    margin-left: 0;
+  }
+
   .feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2301,6 +2394,13 @@ html.night .checkout-result-cancelled .checkout-result-mark {
     align-items: center;
     row-gap: 0.6rem;
     border-radius: 1.4rem;
+  }
+
+  .site-header-home {
+    grid-template-areas:
+      "brand toggle"
+      "status status"
+      "nav nav";
   }
 
   .brand {
