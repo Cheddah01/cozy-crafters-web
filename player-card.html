@@ -164,6 +164,13 @@
 
           <p class="pc-card-empty-note" data-pc-empty-note>Example card &mdash; search a username to build a real one.</p>
           <p class="pc-freshness" data-pc-freshness hidden></p>
+
+          <div class="pc-card-actions">
+            <button class="button button-secondary pc-download" id="pc-download" type="button" disabled>
+              <span data-pc-download-label>Download PNG</span>
+            </button>
+            <p class="pc-export-status" id="pc-export-status" role="status" aria-live="polite"></p>
+          </div>
         </section>
       </main>
 
@@ -172,6 +179,7 @@
       </footer>
     </div>
 
+    <script src="./card-export.js"></script>
     <script>
       (() => {
         /* ----- Night mode toggle (shared with the homepage) ----- */
@@ -309,38 +317,121 @@
           `https://minotar.net/helm/${encodeURIComponent(user)}/256`
         ];
 
+        /* Whether the displayed render was fetched in CORS mode. Only then can
+           the export read its pixels back without tainting the canvas. */
+        let renderExportable = false;
+
         const showRenderFallback = () => {
           renderImage.hidden = true;
           renderImage.removeAttribute('src');
+          renderImage.removeAttribute('crossorigin');
           renderFallback.hidden = false;
+          renderExportable = false;
+        };
+
+        const showRender = (source, user, exportable) => {
+          renderExportable = exportable;
+          if (exportable) {
+            renderImage.crossOrigin = 'anonymous';
+          } else {
+            renderImage.removeAttribute('crossorigin');
+          }
+          renderImage.src = source;
+          renderImage.alt = `Minecraft skin render for ${user}`;
+          renderImage.hidden = false;
+          renderFallback.hidden = true;
         };
 
         /* The card never waits on the skin service: if every render source
-           fails we simply keep the pixel placeholder and move on. */
+           fails we simply keep the pixel placeholder and move on.
+           Every source is probed in CORS mode first so the PNG export can use
+           it; a host that only answers without CORS is still shown on the
+           card, just flagged as not exportable. */
         const loadRender = (user) => {
           const sources = renderSources(user);
           renderFallback.hidden = true;
           renderImage.hidden = true;
+          renderExportable = false;
 
-          const tryNext = (index) => {
+          const attempt = (index, useCors) => {
             if (index >= sources.length) {
+              if (useCors) {
+                attempt(0, false);
+                return;
+              }
               showRenderFallback();
               return;
             }
             const probe = new Image();
             probe.decoding = 'async';
-            probe.onload = () => {
-              renderImage.src = probe.src;
-              renderImage.alt = `Minecraft skin render for ${user}`;
-              renderImage.hidden = false;
-              renderFallback.hidden = true;
-            };
-            probe.onerror = () => tryNext(index + 1);
+            if (useCors) probe.crossOrigin = 'anonymous';
+            probe.onload = () => showRender(probe.src, user, useCors);
+            probe.onerror = () => attempt(index + 1, useCors);
             probe.src = sources[index];
           };
 
-          tryNext(0);
+          attempt(0, true);
         };
+
+        /* ----- PNG export ----- */
+
+        const downloadButton = document.getElementById('pc-download');
+        const downloadLabel = document.querySelector('[data-pc-download-label]');
+        const exportStatus = document.getElementById('pc-export-status');
+        let exporting = false;
+
+        const setExportStatus = (message, kind = '') => {
+          exportStatus.textContent = message || '';
+          exportStatus.className = `pc-export-status${kind ? ` ${kind}` : ''}`;
+        };
+
+        /* Downloadable only once a real profile is on the card, never for the
+           example shell and never mid-lookup or mid-export. */
+        const syncDownload = () => {
+          const ready = hasCard && card.dataset.state === 'ready' && !pending;
+          downloadButton.disabled = !ready || exporting;
+          downloadLabel.textContent = exporting ? 'Preparing PNG…' : 'Download PNG';
+          downloadButton.setAttribute('aria-busy', String(exporting));
+        };
+
+        const exportFilename = () => {
+          const cleaned = (out.username.textContent || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 16);
+          return `cozy-player-card-${cleaned || 'player'}.png`;
+        };
+
+        const saveBlob = (blob, filename) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
+
+        downloadButton.addEventListener('click', async () => {
+          if (exporting || downloadButton.disabled) return;
+
+          exporting = true;
+          syncDownload();
+          setExportStatus('');
+
+          try {
+            if (!window.cozyCardExport) throw new Error('export unavailable');
+            const blob = await window.cozyCardExport.render(card, {
+              image: renderExportable ? renderImage : null
+            });
+            saveBlob(blob, exportFilename());
+          } catch (error) {
+            /* Canvas and blob failures stay internal; the visitor gets one
+               plain sentence and keeps the card already on screen. */
+            setExportStatus("We couldn't create the PNG right now. Please try again.", 'error');
+          } finally {
+            exporting = false;
+            syncDownload();
+          }
+        });
 
         /* ----- card state ----- */
 
@@ -354,6 +445,7 @@
           card.setAttribute('aria-busy', String(state === 'loading'));
           if (emptyNote) emptyNote.hidden = state !== 'empty';
           if (badge) badge.textContent = state === 'empty' ? 'Example' : 'Player Card';
+          syncDownload();
         };
 
         const setPending = (isPending) => {
@@ -361,6 +453,7 @@
           submitButton.disabled = isPending;
           usernameInput.disabled = isPending;
           submitLabel.textContent = isPending ? 'Building…' : 'Build card';
+          syncDownload();
         };
 
         const isMeaningfulNickname = (nickname, username) => {
@@ -461,6 +554,7 @@
           if (pending) return;
 
           const token = ++requestToken;
+          setExportStatus('');
           setPending(true);
           setStatus('Looking up that profile…');
           setCardState('loading');

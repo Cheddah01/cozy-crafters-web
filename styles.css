@@ -3113,3 +3113,102 @@ html.night .pc-render-frame {
     flex-wrap: wrap;
   }
 }
+
+/* ---------- Player card: PNG export ---------- */
+
+.pc-card-actions {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  margin-top: 0.25rem;
+}
+
+.pc-download[aria-busy="true"] {
+  cursor: wait;
+}
+
+.pc-export-status {
+  min-height: 1.25rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.pc-export-status.error {
+  color: #8f241d;
+}
+
+html.night .pc-export-status.error {
+  color: #ff9b91;
+}
+
+/* Off-screen stage the export rasterises from. It is pinned to the desktop
+   layout — the card's own rules are viewport-driven, so exporting straight
+   from the live element would hand a phone a different image than a desktop. */
+.pc-export-stage {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  z-index: -1;
+  width: 820px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pc-export-stage *,
+.pc-export-stage *::before,
+.pc-export-stage *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.pc-export-stage .pc-card-body {
+  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
+  gap: 1.75rem;
+  padding: 1.75rem;
+}
+
+.pc-export-stage .pc-card-info {
+  gap: 1.25rem;
+}
+
+.pc-export-stage .pc-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pc-export-stage .pc-card-banner {
+  flex-wrap: nowrap;
+}
+
+.pc-export-stage .pc-card-footer {
+  flex-direction: row;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.pc-export-stage .pc-render-frame {
+  min-height: 230px;
+}
+
+.pc-export-stage .pc-render-image {
+  max-height: 260px;
+}
+
+/* Pin the clamp() maxima so exported type never shrinks with the viewport. */
+.pc-export-stage .pc-card-brand {
+  font-size: 1.2rem;
+}
+
+.pc-export-stage .pc-username {
+  font-size: 2.5rem;
+}
+
+.pc-export-stage .pc-nickname {
+  font-size: 1.1rem;
+}
+
+.pc-export-stage .pc-stat dd {
+  font-size: 1.15rem;
+}
