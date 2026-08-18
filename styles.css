@@ -435,6 +435,43 @@ html.night .nav-links a[aria-current] {
   color: var(--accent);
 }
 
+.site-announcement {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin: -0.35rem 0 1.25rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(215, 123, 36, 0.45);
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(90deg, rgba(255, 207, 74, 0.15), transparent 42%),
+    var(--panel);
+  box-shadow: 0 8px 22px rgba(38, 84, 128, 0.13);
+  color: var(--ink);
+  backdrop-filter: blur(10px);
+}
+
+.site-announcement-label {
+  padding: 0.38rem 0.65rem;
+  border: 1px solid rgba(215, 123, 36, 0.46);
+  border-radius: 999px;
+  background: rgba(255, 207, 74, 0.18);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.site-announcement p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .mode-toggle {
   position: relative;
   width: 2.5rem;
@@ -1250,6 +1287,58 @@ html.night .features h2 {
   gap: 1.25rem;
 }
 
+.store-public-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem 1rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(215, 123, 36, 0.42);
+  border-radius: 0.85rem;
+  background: var(--panel);
+  box-shadow: 0 8px 22px rgba(38, 84, 128, 0.12);
+  color: var(--ink);
+  backdrop-filter: blur(8px);
+}
+
+.store-public-notice[hidden] {
+  display: none;
+}
+
+.store-public-notice[data-kind="loading"] {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.store-public-notice[data-kind="maintenance"] {
+  border-color: rgba(215, 123, 36, 0.62);
+  background:
+    linear-gradient(90deg, rgba(240, 165, 44, 0.18), transparent 48%),
+    var(--panel);
+}
+
+.store-public-notice-label {
+  padding: 0.38rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.store-public-notice[data-kind="loading"] .store-public-notice-label {
+  color: var(--muted);
+}
+
+.store-public-notice p {
+  margin: 0;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .username-card {
   display: grid;
   grid-template-columns: minmax(0, 0.75fr) minmax(280px, 1.25fr);
@@ -1276,6 +1365,12 @@ html.night .features h2 {
 .username-field .tool-input[aria-invalid="true"] {
   border-color: #c94235;
   box-shadow: 0 0 0 3px rgba(201, 66, 53, 0.2);
+}
+
+.username-field .tool-input:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.18);
+  opacity: 0.7;
 }
 
 .field-hint {
@@ -1312,6 +1407,16 @@ html.night .features h2 {
   inset: 0 0 auto;
   height: 7px;
   background: linear-gradient(90deg, var(--rank-start), var(--rank-end));
+}
+
+.rank-card.is-unavailable {
+  --rank-glow: rgba(124, 144, 160, 0.13);
+  border-color: rgba(103, 127, 146, 0.42);
+}
+
+.rank-card.is-unavailable .rank-price-badge,
+.rank-card.is-unavailable .rank-emblem {
+  filter: saturate(0.55);
 }
 
 .rank-supporter {
@@ -1703,6 +1808,24 @@ html.modal-open {
   margin-top: auto;
 }
 
+.rank-availability {
+  align-self: flex-start;
+  margin: 0 0 0.65rem;
+  padding: 0.38rem 0.62rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rank-availability[hidden] {
+  display: none;
+}
+
 .stripe-redirect-note {
   display: flex;
   gap: 0.4rem;
@@ -1728,9 +1851,14 @@ html.night .stripe-wordmark {
 }
 
 .button:disabled {
-  cursor: wait;
+  cursor: not-allowed;
   filter: grayscale(0.25);
   opacity: 0.62;
+}
+
+.store-form[data-store-state="loading"] .button:disabled,
+.store-form[aria-busy="true"] .button:disabled {
+  cursor: wait;
 }
 
 .checkout-status {
@@ -2433,6 +2561,17 @@ html.night .checkout-result-cancelled .checkout-result-mark {
 
   .feature-grid {
     grid-template-columns: 1fr;
+  }
+
+  .site-announcement,
+  .store-public-notice {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .site-announcement-label,
+  .store-public-notice-label {
+    justify-self: start;
   }
 
   .rank-grid {

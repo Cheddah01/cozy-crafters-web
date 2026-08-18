@@ -29,6 +29,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
   </head>
   <body>
@@ -90,8 +91,8 @@
           </aside>
         </section>
 
-        <form class="store-form" id="store-form" novalidate>
-          <section class="username-card section-card" aria-labelledby="username-title">
+        <form class="store-form" id="store-form" data-store-state="loading" aria-busy="true" novalidate>
+          <section class="username-card section-card" data-store-username-card aria-labelledby="username-title" aria-busy="true">
             <div>
               <p class="eyebrow">Step one</p>
               <h2 id="username-title">Enter your username</h2>
@@ -112,14 +113,20 @@
                 maxlength="16"
                 pattern="[A-Za-z0-9_]{3,16}"
                 aria-describedby="username-hint checkout-status"
+                disabled
                 required
               />
               <span class="field-hint" id="username-hint">3–16 characters: letters, numbers, and underscores only.</span>
             </div>
           </section>
 
+          <aside class="store-public-notice" data-store-notice data-kind="loading" role="status" aria-live="polite">
+            <span class="store-public-notice-label" data-store-notice-label>Store status</span>
+            <p data-store-notice-text>Checking store availability…</p>
+          </aside>
+
           <div class="rank-grid" aria-label="Available ranks">
-            <article class="rank-card rank-supporter">
+            <article class="rank-card rank-supporter" data-rank-card="supporter">
               <span class="rank-price-badge"><strong>$8</strong> <small>USD</small></span>
               <div class="rank-heading">
                 <span class="rank-emblem" aria-hidden="true">🧡</span>
@@ -130,11 +137,12 @@
               </div>
               <p class="rank-description">A simple way to support the Cozy Crafters server and community.</p>
               <button class="rank-perks-trigger" type="button" data-perks-rank="supporter" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
-              <button class="button button-secondary" type="submit" data-rank="supporter">Purchase Supporter</button>
+              <p class="rank-availability" data-rank-availability="supporter" hidden>Unavailable</p>
+              <button class="button button-secondary" type="submit" data-rank="supporter" data-default-label="Purchase Supporter" disabled>Purchase Supporter</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
 
-            <article class="rank-card rank-patron">
+            <article class="rank-card rank-patron" data-rank-card="patron">
               <span class="rank-price-badge"><strong>$16</strong> <small>USD</small></span>
               <div class="rank-heading">
                 <span class="rank-emblem" aria-hidden="true">👑</span>
@@ -145,7 +153,8 @@
               </div>
               <p class="rank-description">An extra-generous way to help support the Cozy Crafters server and community.</p>
               <button class="rank-perks-trigger" type="button" data-perks-rank="patron" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
-              <button class="button button-store" type="submit" data-rank="patron">Purchase Patron</button>
+              <p class="rank-availability" data-rank-availability="patron" hidden>Unavailable</p>
+              <button class="button button-store" type="submit" data-rank="patron" data-default-label="Purchase Patron" disabled>Purchase Patron</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
           </div>
@@ -322,8 +331,21 @@
         const allowedRanks = new Set(['supporter', 'patron']);
         const form = document.querySelector('#store-form');
         const usernameInput = document.querySelector('#minecraft-username');
+        const usernameCard = document.querySelector('[data-store-username-card]');
         const status = document.querySelector('#checkout-status');
+        const storeNotice = document.querySelector('[data-store-notice]');
+        const storeNoticeLabel = document.querySelector('[data-store-notice-label]');
+        const storeNoticeText = document.querySelector('[data-store-notice-text]');
         const purchaseButtons = Array.from(document.querySelectorAll('[data-rank]'));
+        const rankCards = Object.fromEntries(
+          Array.from(document.querySelectorAll('[data-rank-card]')).map((card) => [card.dataset.rankCard, card])
+        );
+        const rankAvailabilityLabels = Object.fromEntries(
+          Array.from(document.querySelectorAll('[data-rank-availability]')).map((label) => [label.dataset.rankAvailability, label])
+        );
+        const rankAvailability = { supporter: true, patron: true };
+        let storeSettingsResolved = false;
+        let storeEnabled = true;
         let checkoutPending = false;
 
         const showStatus = (message, type = '') => {
@@ -331,15 +353,92 @@
           status.className = `checkout-status${type ? ` ${type}` : ''}`;
         };
 
-        const setPending = (pending, activeButton) => {
-          checkoutPending = pending;
-          form.setAttribute('aria-busy', String(pending));
+        const showStoreNotice = (label, message, kind = 'notice') => {
+          if (!storeNotice || !storeNoticeLabel || !storeNoticeText) return;
+
+          if (!message) {
+            storeNotice.hidden = true;
+            storeNoticeLabel.textContent = '';
+            storeNoticeText.textContent = '';
+            return;
+          }
+
+          storeNotice.dataset.kind = kind;
+          storeNoticeLabel.textContent = label;
+          storeNoticeText.textContent = message;
+          storeNotice.hidden = false;
+        };
+
+        const syncStoreControls = (activeButton = null) => {
+          const settingsLoading = !storeSettingsResolved;
+          const controlsLocked = settingsLoading || checkoutPending || !storeEnabled;
+
+          form.dataset.storeState = settingsLoading ? 'loading' : storeEnabled ? 'ready' : 'unavailable';
+          form.setAttribute('aria-busy', String(settingsLoading || checkoutPending));
+          usernameInput.disabled = controlsLocked;
+          if (usernameCard) usernameCard.setAttribute('aria-busy', String(settingsLoading));
+
           purchaseButtons.forEach((button) => {
-            button.disabled = pending;
-            if (!button.dataset.label) button.dataset.label = button.textContent;
-            button.textContent = pending && button === activeButton ? 'Opening checkout…' : button.dataset.label;
+            const rank = button.dataset.rank;
+            const rankEnabled = storeEnabled && rankAvailability[rank] === true;
+            const rankName = rank === 'patron' ? 'Patron' : 'Supporter';
+            const defaultLabel = button.dataset.defaultLabel || `Purchase ${rankName}`;
+            const unavailable = storeSettingsResolved && !rankEnabled;
+
+            button.disabled = settingsLoading || checkoutPending || !rankEnabled;
+            button.textContent = checkoutPending && button === activeButton
+              ? 'Opening checkout…'
+              : settingsLoading
+                ? 'Checking availability…'
+                : unavailable
+                  ? `${rankName} unavailable`
+                  : defaultLabel;
+
+            if (rankCards[rank]) rankCards[rank].classList.toggle('is-unavailable', unavailable);
+            if (rankAvailabilityLabels[rank]) rankAvailabilityLabels[rank].hidden = !unavailable;
           });
         };
+
+        const applyPublicSettings = (settings) => {
+          storeSettingsResolved = true;
+
+          if (settings) {
+            storeEnabled = settings.storeEnabled;
+            rankAvailability.supporter = settings.supporterEnabled;
+            rankAvailability.patron = settings.patronEnabled;
+
+            if (!storeEnabled) {
+              showStoreNotice(
+                'Store unavailable',
+                settings.storeNotice || 'The store is currently unavailable. Please check back later.',
+                'maintenance'
+              );
+            } else if (settings.storeNotice) {
+              showStoreNotice('Store update', settings.storeNotice);
+            } else {
+              showStoreNotice('', '');
+            }
+          } else {
+            storeEnabled = true;
+            rankAvailability.supporter = true;
+            rankAvailability.patron = true;
+            showStoreNotice('', '');
+          }
+
+          syncStoreControls();
+        };
+
+        const setPending = (pending, activeButton) => {
+          checkoutPending = pending;
+          syncStoreControls(activeButton);
+        };
+
+        const publicSettingsReady = window.cozyPublicSettingsReady;
+        if (publicSettingsReady && typeof publicSettingsReady.then === 'function') {
+          publicSettingsReady.then(applyPublicSettings).catch(() => applyPublicSettings(null));
+        } else {
+          applyPublicSettings(null);
+        }
 
         usernameInput.addEventListener('input', () => {
           usernameInput.removeAttribute('aria-invalid');
@@ -354,6 +453,8 @@
           const rank = activeButton && activeButton.dataset.rank;
           const username = usernameInput.value.trim();
 
+          if (!storeSettingsResolved) return;
+
           if (!usernamePattern.test(username)) {
             usernameInput.setAttribute('aria-invalid', 'true');
             showStatus('Enter a valid Minecraft username using 3–16 letters, numbers, or underscores.', 'error');
@@ -363,6 +464,17 @@
 
           if (!allowedRanks.has(rank)) {
             showStatus('Please choose a valid rank.', 'error');
+            return;
+          }
+
+          if (!storeEnabled) {
+            showStatus('The store is currently unavailable. Please check back later.', 'error');
+            return;
+          }
+
+          if (rankAvailability[rank] !== true) {
+            const rankName = rank === 'patron' ? 'Patron' : 'Supporter';
+            showStatus(`${rankName} purchases are currently unavailable.`, 'error');
             return;
           }
 
