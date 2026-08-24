@@ -116,7 +116,7 @@
             </div>
 
             <div class="archive-auth-view" data-auth-view="logged-out" hidden>
-              <p class="archive-auth-copy">Sign in to prepare for sharing community memories when uploads arrive.</p>
+              <p class="archive-auth-copy">Sign in to share screenshots and memories from the Cozy Crafters world.</p>
               <a class="button archive-discord-button" href="https://cozy-archive.colbysthickey.workers.dev/auth/discord">
                 <span class="archive-discord-mark" aria-hidden="true">✦</span>
                 Login with Discord
@@ -127,10 +127,10 @@
             <div class="archive-auth-view" data-auth-view="logged-in" hidden>
               <p class="archive-signed-in" role="status">Signed in as <strong data-archive-display-name></strong></p>
               <div class="archive-auth-actions">
-                <button class="button button-primary" type="button" disabled>Upload Screenshot</button>
+                <button class="button button-primary" type="button" data-archive-upload-open aria-haspopup="dialog" aria-controls="archive-upload-dialog" disabled>Upload Screenshot</button>
                 <button class="archive-logout-button" type="button" data-archive-logout>Log out</button>
               </div>
-              <p class="archive-coming-soon">Uploads coming next</p>
+              <p class="archive-upload-review-note">Screenshots are reviewed before they appear publicly.</p>
             </div>
 
             <div class="archive-auth-view archive-auth-unavailable" data-auth-view="unavailable" hidden>
@@ -170,6 +170,93 @@
             </div>
           </div>
         </section>
+
+        <dialog class="archive-upload-dialog" id="archive-upload-dialog" aria-labelledby="archive-upload-title" aria-describedby="archive-upload-intro">
+          <div class="archive-upload-modal">
+            <header class="archive-upload-header">
+              <div class="archive-upload-heading">
+                <span class="archive-upload-icon" aria-hidden="true">📷</span>
+                <div>
+                  <p class="eyebrow">Community memories</p>
+                  <h2 id="archive-upload-title">Upload to the Archive</h2>
+                </div>
+              </div>
+              <button class="archive-upload-close" type="button" data-archive-upload-close aria-label="Close screenshot uploader">×</button>
+            </header>
+
+            <div class="archive-upload-view" data-upload-view="form">
+              <p class="archive-upload-intro" id="archive-upload-intro">Share a screenshot from your Cozy Crafters adventures.</p>
+
+              <form class="archive-upload-form" data-archive-upload-form novalidate>
+                <input
+                  class="archive-file-input"
+                  id="archive-screenshot"
+                  name="screenshot"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  aria-label="Screenshot image"
+                  aria-describedby="archive-file-help archive-upload-status"
+                  data-archive-file
+                />
+
+                <div class="archive-drop-zone" data-archive-drop-zone>
+                  <span class="archive-drop-icon" aria-hidden="true">▧</span>
+                  <div>
+                    <strong>Drop a screenshot here</strong>
+                    <span>or</span>
+                  </div>
+                  <button class="archive-choose-button" type="button" data-archive-file-choose>Choose Image</button>
+                  <small id="archive-file-help">PNG, JPEG or WebP · Max 8 MB</small>
+                </div>
+
+                <div class="archive-selected-file" data-archive-selected hidden>
+                  <div class="archive-preview-frame">
+                    <img data-archive-preview alt="Selected screenshot preview" />
+                  </div>
+                  <div class="archive-file-summary">
+                    <span class="archive-file-name" data-archive-file-name></span>
+                    <span data-archive-file-size></span>
+                    <button type="button" data-archive-file-change>Choose a different image</button>
+                  </div>
+                </div>
+
+                <div class="archive-caption-field">
+                  <div class="archive-caption-label-row">
+                    <label for="archive-caption">Caption <span>Optional</span></label>
+                    <span data-archive-caption-count>0 / 240</span>
+                  </div>
+                  <textarea
+                    class="tool-input archive-caption-input"
+                    id="archive-caption"
+                    name="caption"
+                    rows="3"
+                    maxlength="240"
+                    placeholder="What is happening in this memory?"
+                    data-archive-caption
+                  ></textarea>
+                </div>
+
+                <p class="archive-upload-status" id="archive-upload-status" data-archive-upload-status role="status" aria-live="polite" aria-atomic="true"></p>
+
+                <div class="archive-upload-actions">
+                  <button class="archive-cancel-button" type="button" data-archive-upload-cancel>Cancel</button>
+                  <button class="button button-primary archive-submit-button" type="submit" data-archive-upload-submit disabled>
+                    <span class="archive-submit-spinner" aria-hidden="true"></span>
+                    <span data-archive-submit-label>Submit for Review</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="archive-upload-success" data-upload-view="success" role="status" hidden>
+              <span class="archive-success-mark" aria-hidden="true">✓</span>
+              <p class="eyebrow">Submitted for moderation</p>
+              <h3>Screenshot submitted!</h3>
+              <p>Your screenshot is waiting for review. Once approved, it will appear in the Community Archive.</p>
+              <button class="button button-primary" type="button" data-archive-upload-done>Done</button>
+            </div>
+          </div>
+        </dialog>
       </main>
 
       <footer class="site-footer">
