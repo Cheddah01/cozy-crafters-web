@@ -458,56 +458,7 @@
   }
 
 
-  /* ============ THEME / DECORATION CONTROLS ============ */
-  .theme-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
-    gap: 8px;
-  }
-  .theme-btn {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: inherit;
-    text-align: left;
-    padding: 9px 10px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.12s;
-    min-height: 58px;
-  }
-  .theme-btn:hover {
-    border-color: var(--accent);
-    background: var(--bg-input-2);
-    transform: translateY(-1px);
-  }
-  .theme-btn .theme-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .theme-btn .theme-swatch {
-    width: 34px;
-    height: 13px;
-    border: 1px solid rgba(0,0,0,0.35);
-    border-radius: 3px;
-    flex: 0 0 auto;
-  }
-  .theme-btn .theme-desc {
-    margin-top: 5px;
-    color: var(--text-faint);
-    font-size: 11px;
-    line-height: 1.35;
-  }
-  .theme-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
+  /* ============ DECORATION CONTROLS ============ */
   .readability {
     margin-top: 8px;
     padding: 7px 10px;
@@ -606,17 +557,6 @@
   }
   .drawer-body .field { margin-bottom: 10px; }
   .drawer-body .hint { margin-top: 8px; }
-  .theme-grid {
-    grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
-    gap: 6px;
-  }
-  .theme-btn {
-    min-height: 48px;
-    padding: 7px 8px;
-  }
-  .theme-btn .theme-top { font-size: 11.5px; }
-  .theme-btn .theme-desc { display: none; }
-  .theme-btn .theme-swatch { width: 26px; height: 11px; }
   .preview-stack { gap: 10px; }
   .preview-box, .download-card { padding: 14px; }
   .preview-canvas-wrap { min-height: 58px; padding: 14px; }
@@ -976,17 +916,16 @@
     <div class="logo">C</div>
     <div class="meta">
       <h1>Cozy Crafters <span class="accent">·</span> Tag Maker <span class="tag-pill">●  SMP</span></h1>
-      <div class="subtitle">Design your own pixel-art chat tag for the server.</div>
+      <div class="subtitle">Create clean pixel-art chat tags, ready to export.</div>
     </div>
   </header>
 
   <div class="intro">
     <div class="icon">i</div>
     <div>
-      <span class="step-num">1</span> <strong>Type your tag</strong> (up to 20 letters/numbers).
-      <span class="step-num">2</span> <strong>Pick colors</strong> or use a theme.
-      <span class="step-num">3</span> <strong>Open drawers</strong> only when you want advanced tweaks.
-      <span class="step-num">4</span> <strong>Download the PNG</strong> and send it to Cheddah — it'll show up next to your name in chat once approved.
+      <span class="step-num">1</span> <strong>Type your tag</strong> (up to 20 characters).
+      <span class="step-num">2</span> <strong>Choose the colors.</strong>
+      <span class="step-num">3</span> <strong>Download one PNG</strong> or build a bulk ZIP.
     </div>
   </div>
 
@@ -1033,21 +972,7 @@
           </div>
         </details>
 
-        <details class="section drawer" data-drawer="themes" open>
-          <summary class="drawer-summary">
-            <span class="drawer-title">Themes <span class="badge neutral">Quick start</span></span>
-            <span class="drawer-status" id="summary-themes"></span>
-          </summary>
-          <div class="drawer-body">
-            <div class="theme-grid" id="theme-presets"></div>
-          <div class="theme-actions">
-            <button class="btn small" id="random-theme" type="button">🎲 Random cozy tag</button>
-          </div>
-          <div class="hint">Themes set the background, frame, icon, and decoration. They do not change your tag text.</div>
-          </div>
-        </details>
-
-        <details class="section drawer" data-drawer="background">
+        <details class="section drawer" data-drawer="background" open>
           <summary class="drawer-summary">
             <span class="drawer-title">Background</span>
             <span class="drawer-status" id="summary-background"></span>
@@ -1082,7 +1007,7 @@
 
         <details class="section drawer" data-drawer="decoration">
           <summary class="drawer-summary">
-            <span class="drawer-title">Decorations & icons <span class="badge neutral">Style</span></span>
+            <span class="drawer-title">Decorations <span class="badge neutral">Optional</span></span>
             <span class="drawer-status" id="summary-decoration"></span>
           </summary>
           <div class="drawer-body">
@@ -1139,35 +1064,6 @@
                 <option value="normal">Normal</option>
                 <option value="dense">Dense</option>
               </select>
-            </div>
-          </div>
-          <div class="field-row" style="margin-top:10px;">
-            <div class="field">
-              <label for="icon-select">Icon</label>
-              <select id="icon-select">
-                <option value="none">None</option>
-                <option value="coffee">Coffee mug</option>
-                <option value="heart">Heart</option>
-                <option value="flower">Flower</option>
-                <option value="crown">Crown</option>
-                <option value="gem">Gem</option>
-                <option value="star">Star</option>
-                <option value="bee">Bee</option>
-                <option value="mushroom">Mushroom</option>
-                <option value="sparkle">Sparkle</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="icon-placement">Icon placement</label>
-              <select id="icon-placement">
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-                <option value="both">Both sides</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="icon-gap">Pad-icon</label>
-              <input type="number" id="icon-gap" value="1" min="0" max="6">
             </div>
           </div>
           <div class="hint">Decorations render behind the letters. For readable chat tags, use corners or sides before trying dense patterns.</div>
@@ -1377,7 +1273,7 @@
       </div>
 
       <div class="hint" style="margin-top:14px;">
-        Bulk inherits the current Designer settings as shared defaults (font, frame, icons, decorations, padding, and effects). Each row keeps its own text + gradient.
+        Bulk inherits the current Designer settings as shared defaults (font, frame, decorations, padding, and effects). Each row keeps its own text and gradient.
       </div>
     </div>
   </section>
@@ -1534,73 +1430,6 @@ const PRESETS = [
   { name: 'Cozy',      colors: ['#486778', '#5B60A2', '#6E58CD', '#8151F7'] },
 ];
 
-const THEME_PRESETS = [
-  {
-    name: 'Sakura', desc: 'pink flowers · soft blue',
-    values: {
-      colors: ['#7f91d4', '#3f57b7', '#1b2391'], direction: 'vertical', hardStops: false,
-      textColor: '#ffffff', autoContrast: true, borderOn: true, borderColor: '#130c66', borderWidth: 1,
-      corner: 1, frameStyle: 'rounded', decoration: 'sakura', decorationPlacement: 'corners', decorationPalette: 'pink', decorationIntensity: 'normal', icon: 'flower', iconPlacement: 'right'
-    }
-  },
-  {
-    name: 'Daisy', desc: 'white flowers · clean sides',
-    values: {
-      colors: ['#89a7e8', '#4167c9', '#24339e'], direction: 'vertical', hardStops: false,
-      textColor: '#ffffff', autoContrast: true, borderOn: true, borderColor: '#0d0b4e', borderWidth: 1,
-      corner: 1, frameStyle: 'rounded', decoration: 'daisy', decorationPlacement: 'sides', decorationPalette: 'white', decorationIntensity: 'normal', icon: 'flower', iconPlacement: 'left'
-    }
-  },
-  {
-    name: 'Sunflower', desc: 'warm gold · cozy pattern',
-    values: {
-      colors: ['#4456a8', '#2435a1', '#151677'], direction: 'vertical', hardStops: false,
-      textColor: '#ffffff', autoContrast: true, borderOn: true, borderColor: '#08032d', borderWidth: 1,
-      corner: 1, frameStyle: 'square', decoration: 'sunflower', decorationPlacement: 'pattern', decorationPalette: 'yellow', decorationIntensity: 'subtle', icon: 'flower', iconPlacement: 'both'
-    }
-  },
-  {
-    name: 'Patron', desc: 'royal gem · premium',
-    values: {
-      colors: ['#7356bd', '#3b247a', '#1c1145'], direction: 'horizontal', hardStops: false,
-      textColor: '#fff6cf', autoContrast: false, borderOn: true, borderColor: '#d6a12f', borderWidth: 1,
-      corner: 1, frameStyle: 'gem', decoration: 'gems', decorationPlacement: 'corners', decorationPalette: 'patron', decorationIntensity: 'normal', icon: 'crown', iconPlacement: 'left'
-    }
-  },
-  {
-    name: 'Celestial', desc: 'stars · moonlit blue',
-    values: {
-      colors: ['#26346f', '#171b46', '#08091f'], direction: 'diagonal', hardStops: false,
-      textColor: '#f8f6ff', autoContrast: false, borderOn: true, borderColor: '#0a081d', borderWidth: 1,
-      corner: 2, frameStyle: 'rounded', decoration: 'sparkles', decorationPlacement: 'pattern', decorationPalette: 'lavender', decorationIntensity: 'subtle', icon: 'star', iconPlacement: 'both'
-    }
-  },
-  {
-    name: 'Bee Garden', desc: 'bees · tiny leaves',
-    values: {
-      colors: ['#7fa5d8', '#3275b8', '#185088'], direction: 'vertical', hardStops: false,
-      textColor: '#ffffff', autoContrast: true, borderOn: true, borderColor: '#3c2607', borderWidth: 1,
-      corner: 1, frameStyle: 'ticket', decoration: 'bees', decorationPlacement: 'sides', decorationPalette: 'yellow', decorationIntensity: 'normal', icon: 'bee', iconPlacement: 'right'
-    }
-  },
-  {
-    name: 'Mushroom', desc: 'cottagecore · soft red',
-    values: {
-      colors: ['#6f5d81', '#3e4f78', '#233158'], direction: 'diagonal-up', hardStops: false,
-      textColor: '#fff7ea', autoContrast: false, borderOn: true, borderColor: '#2c1534', borderWidth: 1,
-      corner: 1, frameStyle: 'notched', decoration: 'mushrooms', decorationPlacement: 'corners', decorationPalette: 'pink', decorationIntensity: 'subtle', icon: 'mushroom', iconPlacement: 'left'
-    }
-  },
-  {
-    name: 'Winter', desc: 'snowflakes · icy trim',
-    values: {
-      colors: ['#a4d8ff', '#4f87d7', '#203f9c'], direction: 'vertical', hardStops: false,
-      textColor: '#ffffff', autoContrast: true, borderOn: true, borderColor: '#09245f', borderWidth: 1,
-      corner: 2, frameStyle: 'rounded', decoration: 'snowflakes', decorationPlacement: 'border', decorationPalette: 'winter', decorationIntensity: 'subtle', icon: 'sparkle', iconPlacement: 'both'
-    }
-  }
-];
-
 const DECORATION_SPRITES = {
   sakura:    { rows: ['0P0P0','PCDCP','0DCP0','0L0L0'] },
   daisy:     { rows: ['0P0P0','PPCPP','0PCP0','0S0S0','0L0L0'] },
@@ -1628,19 +1457,6 @@ const DECORATION_PALETTES = {
   winter:   { P:'#dff4ff', D:'#91bee7', C:'#ffffff', L:'#80c8d0', S:'#4b8caa', W:'#ffffff', Y:'#f4fbff', K:'#1d3150' },
   patron:   { P:'#ff8fbd', D:'#9a5adb', C:'#ffd866', L:'#62dbc9', S:'#349489', W:'#fff1cc', Y:'#ffd866', K:'#26113f' },
 };
-
-const ICON_SPRITES = {
-  coffee:   { rows: ['0H0H0','0WWW0','WBBBW','WWWWW','0WWW0'], colors: { W:'#fff3d6', B:'#7a4a25', H:'#ff8fc0' } },
-  heart:    { rows: ['0P0P0','PPPPP','PPPPP','0PPP0','00P00'], colors: { P:'#ff5e96' } },
-  flower:   { rows: ['0PPP0','PPCPP','0PPP0','00L00','0L00L'], colors: { P:'#ff8fbe', C:'#ffd25a', L:'#5fb15c' } },
-  crown:    { rows: ['Y0Y0Y','YGYGY','YYYYY','YYYYY','0WWW0'], colors: { Y:'#f5bd31', G:'#ff6fa6', W:'#caa033' } },
-  gem:      { rows: ['0HHH0','HWCCH','HCCCH','0HCH0','00H00'], colors: { H:'#67e0d8', C:'#b06bff', W:'#ffffff' } },
-  star:     { rows: ['00Y00','0YYY0','YYWYY','0YYY0','0Y0Y0'], colors: { Y:'#ffd14f', W:'#fff2bf' } },
-  bee:      { rows: ['0W0W0','YKYKY','KYKYK','YKYKY','00L00'], colors: { W:'#e8f4ff', Y:'#ffcf3f', K:'#2b2018', L:'#5fb15c' } },
-  mushroom: { rows: ['0RRR0','RWRWR','RRRRR','0WBW0','0WWW0'], colors: { R:'#e8536f', W:'#fff3e0', B:'#e7c79a' } },
-  sparkle:  { rows: ['00Y00','00W00','YWWWY','00W00','00Y00'], colors: { Y:'#ffd95a', W:'#fff6d8' } },
-};
-
 
 /* ==============================================================
    RENDERING
@@ -1732,31 +1548,8 @@ function textWidth(text, font) {
   return w;
 }
 
-function iconSprite(name) {
-  return ICON_SPRITES[name] || null;
-}
-function iconWidth(name) {
-  const spr = iconSprite(name);
-  return spr ? spr.rows[0].length : 0;
-}
-function iconGap(cfg) {
-  // Pixels of space between an icon and the text. Defaults to 1.
-  const g = cfg.iconGap ?? 1;
-  return Math.max(0, g);
-}
-function hasLeftIcon(cfg) {
-  return cfg.icon && cfg.icon !== 'none' && (cfg.iconPlacement === 'left' || cfg.iconPlacement === 'both');
-}
-function hasRightIcon(cfg) {
-  return cfg.icon && cfg.icon !== 'none' && (cfg.iconPlacement === 'right' || cfg.iconPlacement === 'both');
-}
-function contentWidth(text, font, cfg) {
-  let w = textWidth(text, font);
-  const iw = iconWidth(cfg.icon);
-  const gap = iconGap(cfg);
-  if (hasLeftIcon(cfg)) w += iw + (text ? gap : 0);
-  if (hasRightIcon(cfg)) w += iw + (text ? gap : 0);
-  return Math.max(1, w);
+function contentWidth(text, font) {
+  return Math.max(1, textWidth(text, font));
 }
 function effectiveTextColor(cfg, stopsRgb) {
   if (cfg.autoContrast) return avgLuminance(stopsRgb) > 0.62 ? '#23232d' : '#ffffff';
@@ -1951,22 +1744,6 @@ function textShadowOffset(direction) {
   }
 }
 
-function drawContentIcons(ctx, cfg, x, y, fontHeight, text, font) {
-  const spr = iconSprite(cfg.icon);
-  if (!spr) return;
-  const iw = spr.rows[0].length;
-  const ih = spr.rows.length;
-  const gap = iconGap(cfg);
-  const iy = y + Math.max(0, Math.floor((fontHeight - ih) / 2));
-  let textX = x;
-  if (hasLeftIcon(cfg)) {
-    drawPixelSprite(ctx, spr, x, iy, spr.colors);
-    textX += iw + (text ? gap : 0);
-  }
-  const rightX = textX + textWidth(text, font) + (text && hasRightIcon(cfg) ? gap : 0);
-  if (hasRightIcon(cfg)) drawPixelSprite(ctx, spr, rightX, iy, spr.colors);
-}
-
 function renderTag(canvas, cfg) {
   const font = FONTS[cfg.font] || FONT_5x5;
   const text = (cfg.text || '').toUpperCase();
@@ -1981,7 +1758,7 @@ function renderTag(canvas, cfg) {
   const shape = cfg.frameStyle || 'rounded';
   const corner = cfg.corner ?? 2;
 
-  const cw = contentWidth(text, font, cfg);
+  const cw = contentWidth(text, font);
   const innerW = cw + 2 * padX;
   const innerH = th + padT + padB;
   const badgeW = innerW + 2 * bd;
@@ -2037,11 +1814,10 @@ function renderTag(canvas, cfg) {
   // Layout for foreground content
   const startX = bd + padX;
   const startY = bd + padT;
-  const leftIconW = hasLeftIcon(cfg) ? iconWidth(cfg.icon) + (text ? iconGap(cfg) : 0) : 0;
-  const textX = startX + leftIconW;
+  const textX = startX;
   const textRect = { x: textX, y: startY, w: textOnlyW, h: th };
 
-  // Background decoration layer sits above the gradient and below all text/icons.
+  // Background decoration layer sits above the gradient and below the text.
   drawDecorations(ctx, cfg, badgeW, badgeH, bd, textRect);
 
   // Text outline
@@ -2066,8 +1842,7 @@ function renderTag(canvas, cfg) {
     );
   }
 
-  // Icons + text
-  drawContentIcons(ctx, cfg, startX, startY, th, text, font);
+  // Text
   drawTextGlyphs(ctx, text, font, textX, startY, textColor, fullW, fullH);
 }
 
@@ -2113,14 +1888,12 @@ const state = {
   decorationPlacement: 'corners',
   decorationPalette: 'auto',
   decorationIntensity: 'subtle',
-  icon: 'none',
-  iconPlacement: 'left',
-  iconGap: 1,
   ign: 'Cheddah',
   glyphStart: 'E100',
   glyphFolder: 'tags',
   glyphPerm: false,
 };
+const STATE_FIELDS = new Set(Object.keys(state));
 
 let bulkTags = [];
 
@@ -2139,7 +1912,9 @@ function saveState() {
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
-    if (s) Object.assign(state, s);
+    if (s) Object.assign(state, Object.fromEntries(
+      Object.entries(s).filter(([key]) => STATE_FIELDS.has(key))
+    ));
     const b = JSON.parse(localStorage.getItem(BULK_KEY) || '[]');
     if (Array.isArray(b)) bulkTags = b;
   } catch (e) { /* ignore */ }
@@ -2167,9 +1942,6 @@ function syncUIFromState() {
   $('decoration-placement').value = state.decorationPlacement || 'corners';
   $('decoration-palette').value = state.decorationPalette || 'auto';
   $('decoration-intensity').value = state.decorationIntensity || 'subtle';
-  $('icon-select').value = state.icon || 'none';
-  $('icon-placement').value = state.iconPlacement || 'left';
-  $('icon-gap').value = state.iconGap ?? 1;
   $('pad-x').value = state.padX;
   $('pad-top').value = state.padTop;
   $('pad-bot').value = state.padBot;
@@ -2264,36 +2036,6 @@ function renderPresets() {
   });
 }
 
-function renderThemePresets() {
-  const wrap = $('theme-presets');
-  wrap.innerHTML = '';
-  THEME_PRESETS.forEach((theme, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'theme-btn';
-    btn.type = 'button';
-    const colors = theme.values.colors || ['#888888'];
-    const grad = colors.length === 1 ? colors[0] : `linear-gradient(to right, ${colors.join(', ')})`;
-    btn.innerHTML = `
-      <span class="theme-top"><span class="theme-swatch" style="background:${grad}"></span>${theme.name}</span>
-      <span class="theme-desc">${theme.desc}</span>
-    `;
-    btn.addEventListener('click', () => applyThemePreset(idx));
-    wrap.appendChild(btn);
-  });
-}
-function applyThemePreset(idx) {
-  const theme = THEME_PRESETS[idx];
-  if (!theme) return;
-  Object.assign(state, JSON.parse(JSON.stringify(theme.values)));
-  syncUIFromState();
-  refresh();
-  toast(`${theme.name} theme applied`);
-}
-function randomTheme() {
-  applyThemePreset(Math.floor(Math.random() * THEME_PRESETS.length));
-}
-
-
 function readControlsToState() {
   state.text = $('text-input').value;
   state.font = $('font-select').value;
@@ -2310,9 +2052,6 @@ function readControlsToState() {
   state.decorationPlacement = $('decoration-placement').value;
   state.decorationPalette = $('decoration-palette').value;
   state.decorationIntensity = $('decoration-intensity').value;
-  state.icon = $('icon-select').value;
-  state.iconPlacement = $('icon-placement').value;
-  state.iconGap = clamp(+$('icon-gap').value, 0, 6);
   state.padX = clamp(+$('pad-x').value, 0, 6);
   state.padTop = clamp(+$('pad-top').value, 0, 4);
   state.padBot = clamp(+$('pad-bot').value, 0, 4);
@@ -2348,7 +2087,6 @@ function updateReadability(canvas, missing) {
   else if (diff < 0.40) warnings.push('borderline text contrast');
   if (canvas.width > 140) warnings.push('very wide tag');
   if (state.decoration !== 'none' && state.decorationPlacement === 'pattern' && state.decorationIntensity === 'dense') warnings.push('dense pattern may clutter chat');
-  if (state.icon !== 'none' && state.text.length > 14) warnings.push('icon plus long text may be wide');
 
   if (issues.length) {
     box.className = 'readability bad';
@@ -2377,19 +2115,12 @@ function updateDrawerSummaries() {
   const fontLabel = state.font === '7x5' ? 'Tall' : 'Regular';
   setDrawerStatus('summary-text', `${text} · ${fontLabel}`);
 
-  const themeDecoration = state.decoration && state.decoration !== 'none' ? labelFromSelect('decoration-select') : 'No art';
-  setDrawerStatus('summary-themes', themeDecoration);
-
   const directionLabel = labelFromSelect('grad-direction') || state.direction;
   const stops = `${state.colors.length} color${state.colors.length === 1 ? '' : 's'}`;
   setDrawerStatus('summary-background', `${stops} · ${directionLabel}`);
 
   const decorationLabel = state.decoration && state.decoration !== 'none' ? labelFromSelect('decoration-select') : 'No art';
-  const iconLabel = state.icon && state.icon !== 'none' ? labelFromSelect('icon-select') : 'No icon';
-  const decoStatus = decorationLabel === 'No art' && iconLabel === 'No icon'
-    ? 'None'
-    : `${decorationLabel}${iconLabel !== 'No icon' ? ' · ' + iconLabel : ''}`;
-  setDrawerStatus('summary-decoration', decoStatus);
+  setDrawerStatus('summary-decoration', decorationLabel);
 
   const frameLabel = labelFromSelect('frame-style') || 'Frame';
   const borderLabel = state.borderOn ? `${state.borderWidth}px border` : 'no border';
@@ -2417,7 +2148,7 @@ function refresh() {
   ctx.drawImage(c1, 0, 0, c2.width, c2.height);
   // Meta
   const font = FONTS[state.font] || FONT_5x5;
-  const tw = contentWidth(state.text.toUpperCase(), font, state);
+  const tw = contentWidth(state.text.toUpperCase(), font);
   const th = font['A'].length;
   $('meta-size').textContent = `${c1.width}×${c1.height}`;
   $('meta-text').textContent = `${tw}×${th}`;
@@ -2742,8 +2473,6 @@ document.querySelectorAll('.tab').forEach(t => {
     el.addEventListener(evt, refresh);
   });
 });
-$('random-theme').addEventListener('click', randomTheme);
-
 $('add-stop').addEventListener('click', () => {
   if (state.colors.length >= 8) return;
   state.colors.push(state.colors[state.colors.length - 1] || '#ffffff');
@@ -2788,7 +2517,9 @@ function applySharedDesign() {
     if (shared && typeof shared === 'object') {
       // Don't let a shared link override this browser's Oraxen export settings
       delete shared.glyphStart; delete shared.glyphFolder; delete shared.glyphPerm;
-      Object.assign(state, shared);
+      Object.assign(state, Object.fromEntries(
+        Object.entries(shared).filter(([key]) => STATE_FIELDS.has(key))
+      ));
       return true;
     }
   } catch (e) { /* malformed link — ignore */ }
@@ -2808,7 +2539,6 @@ $('share-link').addEventListener('click', () => {
 loadState();
 const fromLink = applySharedDesign();
 renderPresets();
-renderThemePresets();
 syncUIFromState();
 refresh();
 renderBulkTable();
