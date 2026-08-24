@@ -1,9 +1,11 @@
 (() => {
   'use strict';
 
+  const ARCHIVE_API = 'https://cozy-archive.colbysthickey.workers.dev';
   const sessionKey = 'cozyArchiveSession';
-  const meEndpoint = 'https://cozy-archive.colbysthickey.workers.dev/api/me';
-  const uploadEndpoint = 'https://cozy-archive.colbysthickey.workers.dev/api/upload';
+  const meEndpoint = `${ARCHIVE_API}/api/me`;
+  const uploadEndpoint = `${ARCHIVE_API}/api/upload`;
+  const galleryEndpoint = `${ARCHIVE_API}/api/gallery`;
   const allowedImageTypes = new Set(['image/png', 'image/jpeg', 'image/webp']);
   const maximumFileSize = 8 * 1024 * 1024;
 
@@ -40,6 +42,22 @@
   const uploadCloseButton = document.querySelector('[data-archive-upload-close]');
   const uploadDoneButton = document.querySelector('[data-archive-upload-done]');
 
+  const gallery = document.querySelector('[data-archive-gallery]');
+  const galleryEmpty = document.querySelector('[data-gallery-empty]');
+  const galleryError = document.querySelector('[data-gallery-error]');
+  const galleryRetryButton = document.querySelector('[data-gallery-retry]');
+  const galleryMoreButton = document.querySelector('[data-gallery-more]');
+  const galleryStatus = document.querySelector('[data-gallery-status]');
+  const lightboxDialog = document.querySelector('#archive-lightbox');
+  const lightboxCloseButton = document.querySelector('[data-lightbox-close]');
+  const lightboxMedia = document.querySelector('[data-lightbox-media]');
+  const lightboxLoading = document.querySelector('[data-lightbox-loading]');
+  const lightboxImage = document.querySelector('[data-lightbox-image]');
+  const lightboxUnavailable = document.querySelector('[data-lightbox-unavailable]');
+  const lightboxCaption = document.querySelector('[data-lightbox-caption]');
+  const lightboxUploader = document.querySelector('[data-lightbox-uploader]');
+  const lightboxDate = document.querySelector('[data-lightbox-date]');
+
   let activeAuthRequest = null;
   let activeUploadRequest = null;
   let selectedFile = null;
@@ -47,6 +65,10 @@
   let restoreUploadFocus = true;
   let uploaderReady = false;
   let closeUploaderForAuthChange = () => {};
+  let activeGalleryRequest = null;
+  let nextGalleryCursor = null;
+  let lightboxTrigger = null;
+  const renderedGalleryIds = new Set();
 
   const syncTheme = () => {
     const night = rootEl.classList.contains('night');
@@ -292,6 +314,349 @@
     }
   };
 
+  const reasonableGalleryText = (value, maximumLength, { optional = false } = {}) => {
+    if (value === null || value === undefined) return optional ? '' : null;
+    if (typeof value !== 'string') return null;
+    const text = value.trim();
+    if (!text) return optional ? '' : null;
+    return text.length <= maximumLength ? text : null;
+  };
+
+  const parseGalleryDate = (value) => {
+    const source = reasonableGalleryText(value, 80);
+    if (!source) return null;
+    const sqliteMatch = source.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/);
+    const normalized = sqliteMatch
+      ? `${sqliteMatch[1]}-${sqliteMatch[2]}-${sqliteMatch[3]}T${sqliteMatch[4]}:${sqliteMatch[5]}:${sqliteMatch[6]}Z`
+      : source;
+    const date = new Date(normalized);
+    if (Number.isNaN(date.getTime())) return null;
+
+    try {
+      return {
+        iso: date.toISOString(),
+        display: new Intl.DateTimeFormat(undefined, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          timeZone: 'UTC'
+        }).format(date)
+      };
+    } catch (error) {
+      return {
+        iso: date.toISOString(),
+        display: date.toISOString().slice(0, 10)
+      };
+    }
+  };
+
+  const getSafeGalleryImageUrl = (value, id) => {
+    if (typeof value !== 'string' || value.length > 1000) return null;
+    try {
+      const url = new URL(value);
+      const expectedPath = `/api/gallery/uploads/${id}/image`;
+      if (
+        url.protocol !== 'https:'
+        || url.origin !== ARCHIVE_API
+        || url.pathname !== expectedPath
+        || url.username
+        || url.password
+        || url.search
+        || url.hash
+      ) return null;
+      return url.href;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const normalizeGalleryUpload = (value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const id = Number(value.id);
+    if (!Number.isSafeInteger(id) || id <= 0) return null;
+    const uploader = reasonableGalleryText(value.uploader, 80);
+    const caption = reasonableGalleryText(value.caption, 240, { optional: true });
+    const date = parseGalleryDate(value.uploadedAt);
+    const imageUrl = getSafeGalleryImageUrl(value.imageUrl, id);
+    if (!uploader || caption === null || !date || !imageUrl) return null;
+    return { id, uploader, caption, date, imageUrl };
+  };
+
+  const createGallerySkeletons = () => {
+    if (!gallery) return;
+    const fragment = document.createDocumentFragment();
+    for (let index = 0; index < 6; index += 1) {
+      const skeleton = document.createElement('div');
+      const image = document.createElement('span');
+      const lineOne = document.createElement('i');
+      const lineTwo = document.createElement('i');
+      skeleton.className = 'archive-gallery-skeleton';
+      skeleton.setAttribute('aria-hidden', 'true');
+      skeleton.append(image, lineOne, lineTwo);
+      fragment.append(skeleton);
+    }
+    gallery.replaceChildren(fragment);
+  };
+
+  const setGalleryStatus = (message = '', state = '') => {
+    if (!galleryStatus) return;
+    galleryStatus.textContent = message;
+    if (state) galleryStatus.dataset.state = state;
+    else delete galleryStatus.dataset.state;
+  };
+
+  const resetLightbox = () => {
+    if (lightboxImage) {
+      lightboxImage.onload = null;
+      lightboxImage.onerror = null;
+      lightboxImage.removeAttribute('src');
+      lightboxImage.alt = '';
+      lightboxImage.hidden = true;
+    }
+    if (lightboxLoading) lightboxLoading.hidden = false;
+    if (lightboxUnavailable) lightboxUnavailable.hidden = true;
+    if (lightboxCaption) {
+      lightboxCaption.textContent = '';
+      lightboxCaption.hidden = true;
+    }
+    if (lightboxUploader) lightboxUploader.textContent = '';
+    if (lightboxDate) {
+      lightboxDate.textContent = '';
+      lightboxDate.removeAttribute('datetime');
+    }
+    if (lightboxMedia) lightboxMedia.dataset.state = 'loading';
+  };
+
+  const closeLightbox = () => {
+    if (lightboxDialog && lightboxDialog.open) lightboxDialog.close();
+  };
+
+  const openLightbox = (memory, trigger) => {
+    if (!lightboxDialog || typeof lightboxDialog.showModal !== 'function' || lightboxDialog.open) return;
+    lightboxTrigger = trigger;
+    resetLightbox();
+
+    const altText = memory.caption
+      ? `${memory.caption} — screenshot shared by ${memory.uploader}`
+      : `Screenshot shared by ${memory.uploader}`;
+    if (lightboxCaption) {
+      lightboxCaption.textContent = memory.caption;
+      lightboxCaption.hidden = !memory.caption;
+    }
+    lightboxUploader.textContent = memory.uploader;
+    lightboxDate.textContent = memory.date.display;
+    lightboxDate.dateTime = memory.date.iso;
+    lightboxImage.alt = altText;
+    lightboxImage.onload = () => {
+      lightboxMedia.dataset.state = 'loaded';
+      lightboxLoading.hidden = true;
+      lightboxUnavailable.hidden = true;
+      lightboxImage.hidden = false;
+    };
+    lightboxImage.onerror = () => {
+      lightboxMedia.dataset.state = 'error';
+      lightboxLoading.hidden = true;
+      lightboxImage.hidden = true;
+      lightboxUnavailable.hidden = false;
+    };
+    lightboxImage.src = memory.imageUrl;
+    rootEl.classList.add('modal-open');
+    lightboxDialog.showModal();
+    window.requestAnimationFrame(() => lightboxCloseButton.focus());
+  };
+
+  const createGalleryCard = (memory, position) => {
+    const article = document.createElement('article');
+    const imageButton = document.createElement('button');
+    const media = document.createElement('span');
+    const loading = document.createElement('span');
+    const image = document.createElement('img');
+    const unavailable = document.createElement('span');
+    const content = document.createElement('div');
+    const sharedBy = document.createElement('p');
+    const uploader = document.createElement('strong');
+    const date = document.createElement('time');
+
+    article.className = `archive-memory-card section-card${memory.caption ? '' : ' has-no-caption'}`;
+    imageButton.className = 'archive-memory-image-button';
+    imageButton.type = 'button';
+    imageButton.setAttribute('aria-haspopup', 'dialog');
+    imageButton.setAttribute('aria-controls', 'archive-lightbox');
+    imageButton.setAttribute(
+      'aria-label',
+      memory.caption
+        ? `View ${memory.caption}, a screenshot shared by ${memory.uploader}`
+        : `View screenshot shared by ${memory.uploader}`
+    );
+    media.className = 'archive-memory-media';
+    loading.className = 'archive-memory-image-loading';
+    loading.textContent = 'Loading screenshot…';
+    unavailable.className = 'archive-memory-image-unavailable';
+    unavailable.textContent = 'Screenshot unavailable.';
+    unavailable.hidden = true;
+
+    image.alt = memory.caption
+      ? `${memory.caption} — screenshot shared by ${memory.uploader}`
+      : `Screenshot shared by ${memory.uploader}`;
+    image.loading = position < 3 ? 'eager' : 'lazy';
+    image.decoding = 'async';
+    image.referrerPolicy = 'no-referrer';
+    image.hidden = true;
+    image.onload = () => {
+      loading.hidden = true;
+      unavailable.hidden = true;
+      image.hidden = false;
+      media.classList.add('is-loaded');
+    };
+    image.onerror = () => {
+      loading.hidden = true;
+      image.hidden = true;
+      unavailable.hidden = false;
+      media.classList.add('has-error');
+    };
+    image.src = memory.imageUrl;
+
+    media.append(loading, image, unavailable);
+    imageButton.append(media);
+    imageButton.addEventListener('click', () => openLightbox(memory, imageButton));
+
+    content.className = 'archive-memory-content';
+    if (memory.caption) {
+      const caption = document.createElement('h3');
+      caption.textContent = memory.caption;
+      content.append(caption);
+    }
+    sharedBy.className = 'archive-memory-uploader';
+    sharedBy.append(document.createTextNode('by '));
+    uploader.textContent = memory.uploader;
+    sharedBy.append(uploader);
+    date.className = 'archive-memory-date';
+    date.dateTime = memory.date.iso;
+    date.textContent = memory.date.display;
+    content.append(sharedBy, date);
+    article.append(imageButton, content);
+    return article;
+  };
+
+  const appendGalleryUploads = (values) => {
+    if (!gallery) return 0;
+    const fragment = document.createDocumentFragment();
+    let appended = 0;
+    values.forEach((value) => {
+      const memory = normalizeGalleryUpload(value);
+      if (!memory || renderedGalleryIds.has(memory.id)) return;
+      const position = renderedGalleryIds.size;
+      renderedGalleryIds.add(memory.id);
+      fragment.append(createGalleryCard(memory, position));
+      appended += 1;
+    });
+    gallery.append(fragment);
+    return appended;
+  };
+
+  const getNextGalleryCursor = (payload, requestedCursor) => {
+    if (!payload || payload.hasMore !== true) return null;
+    if (typeof payload.nextCursor !== 'string' && typeof payload.nextCursor !== 'number') return null;
+    const cursor = String(payload.nextCursor).trim();
+    if (!cursor || cursor.length > 500 || cursor === requestedCursor) return null;
+    return cursor;
+  };
+
+  const setGalleryButtonState = (loadingMore) => {
+    if (!galleryMoreButton) return;
+    galleryMoreButton.disabled = loadingMore;
+    galleryMoreButton.textContent = loadingMore ? 'Loading…' : 'Load More Memories';
+  };
+
+  const loadGallery = async ({ append = false } = {}) => {
+    if (!gallery || !galleryEmpty || !galleryError || !galleryMoreButton) return;
+    if (append && (activeGalleryRequest || !nextGalleryCursor)) return;
+
+    if (!append && activeGalleryRequest) {
+      window.clearTimeout(activeGalleryRequest.timeout);
+      activeGalleryRequest.controller.abort();
+      activeGalleryRequest = null;
+    }
+
+    const requestedCursor = append ? nextGalleryCursor : null;
+    if (!append) {
+      renderedGalleryIds.clear();
+      nextGalleryCursor = null;
+      galleryEmpty.hidden = true;
+      galleryError.hidden = true;
+      galleryMoreButton.hidden = true;
+      createGallerySkeletons();
+      setGalleryStatus('Loading community memories…');
+    } else {
+      setGalleryStatus('Loading more community memories…');
+    }
+
+    const requestUrl = new URL(galleryEndpoint);
+    requestUrl.searchParams.set('limit', '24');
+    if (requestedCursor) requestUrl.searchParams.set('before', requestedCursor);
+
+    const controller = new AbortController();
+    const request = {
+      controller,
+      append,
+      timeout: window.setTimeout(() => controller.abort(), 9000)
+    };
+    activeGalleryRequest = request;
+    gallery.setAttribute('aria-busy', 'true');
+    setGalleryButtonState(append);
+
+    try {
+      const response = await fetch(requestUrl.href, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      const payload = await safeResponseJson(response);
+      if (activeGalleryRequest !== request) return;
+      if (!response.ok || !payload || payload.ok !== true || !Array.isArray(payload.uploads)) {
+        throw new Error('Gallery response unavailable');
+      }
+
+      if (!append) gallery.replaceChildren();
+      const appended = appendGalleryUploads(payload.uploads);
+      nextGalleryCursor = getNextGalleryCursor(payload, requestedCursor);
+      galleryError.hidden = true;
+      galleryEmpty.hidden = renderedGalleryIds.size !== 0;
+      galleryMoreButton.hidden = nextGalleryCursor === null;
+
+      if (renderedGalleryIds.size === 0) {
+        setGalleryStatus('No community memories have been added yet.');
+      } else if (append) {
+        setGalleryStatus(appended
+          ? `${appended} more ${appended === 1 ? 'memory' : 'memories'} added.`
+          : 'The gallery is up to date.');
+      } else {
+        setGalleryStatus(`${renderedGalleryIds.size} community ${renderedGalleryIds.size === 1 ? 'memory' : 'memories'} loaded.`);
+      }
+    } catch (error) {
+      if (activeGalleryRequest !== request) return;
+      if (append) {
+        galleryMoreButton.hidden = false;
+        setGalleryStatus('More memories could not be loaded. Please try again.', 'error');
+      } else {
+        gallery.replaceChildren();
+        galleryEmpty.hidden = true;
+        galleryError.hidden = false;
+        galleryMoreButton.hidden = true;
+        setGalleryStatus('The Community Archive could not be loaded.', 'error');
+      }
+    } finally {
+      window.clearTimeout(request.timeout);
+      if (activeGalleryRequest === request) {
+        activeGalleryRequest = null;
+        gallery.setAttribute('aria-busy', 'false');
+        setGalleryButtonState(false);
+      }
+    }
+  };
+
   const getReasonableBackendError = (payload) => {
     if (!payload || typeof payload.error !== 'string') return '';
     const errorText = payload.error.trim();
@@ -488,6 +853,43 @@
     });
   }
 
+  if (
+    lightboxDialog
+    && lightboxCloseButton
+    && lightboxMedia
+    && lightboxLoading
+    && lightboxImage
+    && lightboxUnavailable
+    && lightboxCaption
+    && lightboxUploader
+    && lightboxDate
+    && typeof lightboxDialog.showModal === 'function'
+  ) {
+    lightboxCloseButton.addEventListener('click', closeLightbox);
+    lightboxDialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeLightbox();
+    });
+    lightboxDialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      closeLightbox();
+    });
+    lightboxDialog.addEventListener('click', (event) => {
+      if (event.target === lightboxDialog) closeLightbox();
+    });
+    lightboxDialog.addEventListener('close', () => {
+      rootEl.classList.remove('modal-open');
+      resetLightbox();
+      const trigger = lightboxTrigger;
+      lightboxTrigger = null;
+      if (trigger && trigger.isConnected) trigger.focus();
+    });
+  }
+
+  if (galleryRetryButton) galleryRetryButton.addEventListener('click', () => loadGallery());
+  if (galleryMoreButton) galleryMoreButton.addEventListener('click', () => loadGallery({ append: true }));
+
   if (logoutButton) {
     logoutButton.addEventListener('click', () => {
       if (activeAuthRequest) {
@@ -502,5 +904,19 @@
 
   if (retryButton) retryButton.addEventListener('click', verifyStoredSession);
 
+  window.addEventListener('pagehide', () => {
+    if (activeGalleryRequest) {
+      window.clearTimeout(activeGalleryRequest.timeout);
+      activeGalleryRequest.controller.abort();
+      activeGalleryRequest = null;
+    }
+    if (lightboxImage) {
+      lightboxImage.onload = null;
+      lightboxImage.onerror = null;
+      lightboxImage.removeAttribute('src');
+    }
+  }, { once: true });
+
+  loadGallery();
   verifyStoredSession();
 })();

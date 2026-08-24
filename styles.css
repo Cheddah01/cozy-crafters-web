@@ -1330,8 +1330,257 @@ html.night .archive-auth-note {
 
 .archive-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+
+.archive-gallery-skeleton {
+  min-width: 0;
+  padding-bottom: 1.15rem;
+  overflow: hidden;
+  border: 1px solid var(--card-line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  box-shadow: 0 10px 26px rgba(38, 84, 128, 0.12);
+}
+
+.archive-gallery-skeleton span,
+.archive-gallery-skeleton i {
+  display: block;
+  overflow: hidden;
+  background:
+    linear-gradient(100deg, transparent 28%, rgba(255, 255, 255, 0.5) 46%, transparent 64%),
+    var(--line);
+  background-size: 220% 100%;
+  animation: archive-gallery-shimmer 1.45s ease-in-out infinite;
+}
+
+html.night .archive-gallery-skeleton span,
+html.night .archive-gallery-skeleton i {
+  background:
+    linear-gradient(100deg, transparent 28%, rgba(255, 255, 255, 0.1) 46%, transparent 64%),
+    var(--line);
+  background-size: 220% 100%;
+}
+
+.archive-gallery-skeleton span {
+  aspect-ratio: 16 / 10;
+  margin-bottom: 1rem;
+}
+
+.archive-gallery-skeleton i {
+  width: calc(100% - 2rem);
+  height: 0.85rem;
+  margin: 0.55rem 1rem 0;
+  border-radius: 999px;
+}
+
+.archive-gallery-skeleton i:last-child {
+  width: 48%;
+}
+
+@keyframes archive-gallery-shimmer {
+  from { background-position: 140% 0; }
+  to { background-position: -80% 0; }
+}
+
+.archive-memory-card {
+  min-width: 0;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.archive-memory-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 34px rgba(38, 84, 128, 0.21);
+}
+
+.archive-memory-image-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.archive-memory-image-button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 4px solid var(--accent);
+  outline-offset: -4px;
+}
+
+.archive-memory-media {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    var(--chip-bg);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+}
+
+.archive-memory-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.archive-memory-media.is-loaded img {
+  opacity: 1;
+}
+
+.archive-memory-image-loading,
+.archive-memory-image-unavailable {
+  display: grid;
+  max-width: 15rem;
+  gap: 0.65rem;
+  justify-items: center;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.archive-memory-image-loading::before {
+  content: "";
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: archive-loader-spin 0.85s linear infinite;
+}
+
+.archive-memory-image-unavailable::before {
+  content: "▧";
+  color: var(--accent);
+  font-size: 2.2rem;
+}
+
+.archive-memory-image-loading[hidden],
+.archive-memory-image-unavailable[hidden],
+.archive-memory-media img[hidden],
+.archive-empty-state[hidden],
+.archive-gallery-error[hidden],
+.archive-gallery-more[hidden],
+.archive-lightbox-loading[hidden],
+.archive-lightbox-unavailable[hidden],
+.archive-lightbox-media img[hidden],
+.archive-lightbox-details h3[hidden] {
+  display: none;
+}
+
+.archive-memory-content {
+  display: grid;
+  min-height: 8.6rem;
+  gap: 0.35rem;
+  align-content: start;
+  padding: 1.1rem 1.15rem 1.2rem;
+}
+
+.archive-memory-content h3 {
+  margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.2;
+}
+
+.archive-memory-card.has-no-caption .archive-memory-content {
+  align-content: center;
+}
+
+.archive-memory-uploader,
+.archive-memory-date {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.archive-memory-uploader strong {
+  color: var(--ink);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.archive-memory-date {
+  font-weight: 800;
+}
+
+.archive-gallery-error {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 1rem;
+  align-items: center;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.archive-gallery-error > span {
+  display: grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--chip-bg);
+  font-size: 1.55rem;
+}
+
+.archive-gallery-error h3,
+.archive-gallery-error p {
+  margin-bottom: 0;
+}
+
+.archive-gallery-error p {
+  margin-top: 0.3rem;
+  color: var(--muted);
+}
+
+.archive-gallery-controls {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  margin-top: 1.1rem;
+}
+
+.archive-gallery-status {
+  min-height: 1.4rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.archive-gallery-status[data-state="error"] {
+  color: #a44416;
+}
+
+html.night .archive-gallery-status[data-state="error"] {
+  color: #ffbd8c;
+}
+
+.archive-gallery-more {
+  min-width: 13rem;
+}
+
+.archive-gallery-more:disabled {
+  cursor: wait;
+  opacity: 0.62;
 }
 
 .archive-empty-state {
@@ -1349,6 +1598,199 @@ html.night .archive-auth-note {
     var(--panel);
   box-shadow: 0 10px 26px rgba(38, 84, 128, 0.12);
   backdrop-filter: blur(8px);
+}
+
+/* ---------- Archive gallery lightbox ---------- */
+
+.archive-lightbox {
+  width: min(1080px, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--card-line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(3, 12, 28, 0.52);
+}
+
+.archive-lightbox[open] {
+  animation: archive-modal-in 0.2s ease-out;
+}
+
+.archive-lightbox::backdrop {
+  background: rgba(7, 17, 36, 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.archive-lightbox-modal {
+  display: flex;
+  max-height: calc(100dvh - 2rem);
+  flex-direction: column;
+}
+
+.archive-lightbox-header {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.archive-lightbox-header .eyebrow {
+  margin-bottom: 0.15rem;
+  font-size: 0.68rem;
+}
+
+.archive-lightbox-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.archive-lightbox-close {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.65rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.archive-lightbox-close:hover,
+.archive-lightbox-close:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.archive-lightbox-media {
+  position: relative;
+  display: grid;
+  min-height: min(58dvh, 34rem);
+  flex: 1 1 auto;
+  place-items: center;
+  overflow: auto;
+  background:
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    var(--chip-bg);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+}
+
+.archive-lightbox-media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(62dvh, 44rem);
+  object-fit: contain;
+}
+
+.archive-lightbox-loading,
+.archive-lightbox-unavailable {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: center;
+  padding: 2rem;
+  color: var(--muted);
+  font-weight: 900;
+  text-align: center;
+}
+
+.archive-lightbox-loading::before {
+  content: "";
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: archive-loader-spin 0.85s linear infinite;
+}
+
+.archive-lightbox-unavailable::before {
+  content: "▧";
+  color: var(--accent);
+  font-size: 2.8rem;
+}
+
+.archive-lightbox-details {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.3rem 1.5rem;
+  align-items: end;
+  padding: 1rem 1.2rem 1.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.archive-lightbox-details h3 {
+  grid-column: 1 / -1;
+  margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+}
+
+.archive-lightbox-details p,
+.archive-lightbox-details time {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.archive-lightbox-details strong {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .archive-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .archive-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-gallery-error {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .archive-gallery-error .button {
+    width: 100%;
+  }
+
+  .archive-lightbox {
+    width: calc(100% - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .archive-lightbox-modal {
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .archive-lightbox-media {
+    min-height: min(52dvh, 25rem);
+  }
+
+  .archive-lightbox-details {
+    grid-template-columns: 1fr;
+  }
 }
 
 .archive-empty-copy h3 {
@@ -2543,10 +2985,15 @@ html.night .archive-admin-status[data-state="error"] {
   }
 
   .archive-submit-spinner,
-  .archive-image-loading::before {
+  .archive-image-loading::before,
+  .archive-gallery-skeleton span,
+  .archive-gallery-skeleton i,
+  .archive-memory-image-loading::before,
+  .archive-lightbox-loading::before {
     animation: none;
   }
 
+  .archive-lightbox[open],
   .archive-reject-dialog[open] {
     animation: none;
   }

@@ -153,27 +153,70 @@
               <p class="eyebrow">From the community</p>
               <h2 id="recent-memories-title">Recent Memories</h2>
             </div>
-            <span class="archive-gallery-badge">Gallery opening soon</span>
+            <span class="archive-gallery-badge">Community scrapbook</span>
           </div>
 
-          <div class="archive-gallery-grid" aria-live="polite">
-            <div class="archive-empty-state">
-              <div class="archive-empty-illustration" aria-hidden="true">
-                <span class="archive-empty-sparkle">✦</span>
-                <span class="archive-photo-frame archive-photo-frame-back"></span>
-                <span class="archive-photo-frame archive-photo-frame-front">
-                  <span class="archive-photo-sun"></span>
-                  <span class="archive-photo-hills"></span>
-                </span>
-              </div>
-              <div class="archive-empty-copy">
-                <p class="eyebrow">The album is ready</p>
-                <h3>No memories have been added yet.</h3>
-                <p>The first screenshots from the Cozy Crafters community will appear here.</p>
-              </div>
+          <div class="archive-gallery-grid" data-archive-gallery aria-busy="true">
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+            <div class="archive-gallery-skeleton" aria-hidden="true"><span></span><i></i><i></i></div>
+          </div>
+
+          <div class="archive-empty-state" data-gallery-empty hidden>
+            <div class="archive-empty-illustration" aria-hidden="true">
+              <span class="archive-empty-sparkle">✦</span>
+              <span class="archive-photo-frame archive-photo-frame-back"></span>
+              <span class="archive-photo-frame archive-photo-frame-front">
+                <span class="archive-photo-sun"></span>
+                <span class="archive-photo-hills"></span>
+              </span>
+            </div>
+            <div class="archive-empty-copy">
+              <p class="eyebrow">The album is ready</p>
+              <h3>No memories have been added yet.</h3>
+              <p>The first screenshots from the Cozy Crafters community will appear here.</p>
             </div>
           </div>
+
+          <div class="archive-gallery-error section-card" data-gallery-error hidden>
+            <span aria-hidden="true">🌧️</span>
+            <div>
+              <h3>The Community Archive couldn't be loaded right now.</h3>
+              <p>The gallery will be ready to try again in a moment.</p>
+            </div>
+            <button class="button button-secondary" type="button" data-gallery-retry>Try Again</button>
+          </div>
+
+          <div class="archive-gallery-controls">
+            <p class="archive-gallery-status" data-gallery-status role="status" aria-live="polite" aria-atomic="true">Loading community memories…</p>
+            <button class="button button-secondary archive-gallery-more" type="button" data-gallery-more hidden>Load More Memories</button>
+          </div>
         </section>
+
+        <dialog class="archive-lightbox" id="archive-lightbox" aria-labelledby="archive-lightbox-title" aria-describedby="archive-lightbox-details">
+          <div class="archive-lightbox-modal">
+            <header class="archive-lightbox-header">
+              <div>
+                <p class="eyebrow">Community memory</p>
+                <h2 id="archive-lightbox-title">Screenshot viewer</h2>
+              </div>
+              <button class="archive-lightbox-close" type="button" data-lightbox-close aria-label="Close screenshot viewer">×</button>
+            </header>
+            <div class="archive-lightbox-media" data-lightbox-media>
+              <span class="archive-lightbox-loading" data-lightbox-loading>Loading screenshot…</span>
+              <img data-lightbox-image alt="" />
+              <span class="archive-lightbox-unavailable" data-lightbox-unavailable hidden>Screenshot unavailable.</span>
+            </div>
+            <div class="archive-lightbox-details" id="archive-lightbox-details">
+              <h3 data-lightbox-caption hidden></h3>
+              <p>Shared by <strong data-lightbox-uploader></strong></p>
+              <time data-lightbox-date></time>
+            </div>
+          </div>
+        </dialog>
 
         <dialog class="archive-upload-dialog" id="archive-upload-dialog" aria-labelledby="archive-upload-title" aria-describedby="archive-upload-intro">
           <div class="archive-upload-modal">
