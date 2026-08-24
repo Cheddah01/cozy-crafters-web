@@ -15,6 +15,7 @@
   const logoutButton = document.querySelector('[data-archive-logout]');
   const retryButton = document.querySelector('[data-archive-retry]');
   const uploadOpenButton = document.querySelector('[data-archive-upload-open]');
+  const adminPanelLink = document.querySelector('[data-archive-admin-link]');
   const rootEl = document.documentElement;
   const modeToggle = document.querySelector('.mode-toggle');
   const themeMeta = document.querySelector('meta[name="theme-color"]');
@@ -88,6 +89,7 @@
     authPanel.dataset.authState = state;
     authPanel.setAttribute('aria-busy', String(state === 'checking'));
     if (uploadOpenButton) uploadOpenButton.disabled = state !== 'logged-in' || !uploaderReady;
+    if (state !== 'logged-in' && adminPanelLink) adminPanelLink.hidden = true;
     if (state !== 'logged-in') closeUploaderForAuthChange();
     if (authNote) authNote.textContent = state === 'logged-out' ? message : '';
     if (liveRegion) liveRegion.textContent = message;
@@ -150,7 +152,8 @@
         return;
       }
 
-      const safeName = getSafeDisplayName(await response.json());
+      const payload = await safeResponseJson(response);
+      const safeName = getSafeDisplayName(payload);
       if (!safeName) {
         setAuthState('unavailable', 'Archive login status is temporarily unavailable.');
         return;
@@ -158,6 +161,7 @@
 
       displayName.textContent = safeName;
       setAuthState('logged-in', `Signed in as ${safeName}.`);
+      if (adminPanelLink) adminPanelLink.hidden = payload.user.isAdmin !== true;
     } catch (error) {
       if (activeAuthRequest !== controller) return;
       setAuthState('unavailable', 'Archive login status is temporarily unavailable.');

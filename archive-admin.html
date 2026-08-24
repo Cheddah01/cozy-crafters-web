@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Authorized moderation for the Cozy Crafters Community Archive." />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="https://cozycrafters.net/archive-admin.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Archive Moderation | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-settings.js"></script>
+    <script src="./server-status.js" defer></script>
+    <script src="./archive-admin.js" defer></script>
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars"><i class="sf sf1"></i><i class="sf sf2"></i></div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div><div class="mc-cloud c2"></div><div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div><div class="mc-cloud c5"></div><div class="mc-cloud c6"></div><div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header site-header-status" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <div class="server-status" data-server-status data-state="loading" role="status" aria-live="polite">
+          <span class="server-status-dot" aria-hidden="true"></span>
+          <span data-server-status-text>Checking server…</span>
+        </div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./tools.html">Tools</a>
+          <a href="./archive.html" aria-current="page">Archive</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main class="archive-admin-main">
+        <section class="archive-admin-hero section-card" aria-labelledby="archive-admin-title">
+          <div>
+            <p class="eyebrow">Community Archive</p>
+            <h1 id="archive-admin-title">Moderation</h1>
+            <p class="lede">Review screenshots submitted by the Cozy Crafters community.</p>
+          </div>
+          <div class="archive-admin-hero-mark" aria-hidden="true">
+            <span>🛡️</span>
+            <small>Review desk</small>
+          </div>
+        </section>
+
+        <section class="archive-admin-access section-card" data-admin-access data-auth-state="checking" aria-labelledby="archive-admin-access-title" aria-busy="true">
+          <h2 class="sr-only" id="archive-admin-access-title">Moderation access</h2>
+
+          <div class="archive-admin-auth-view archive-admin-checking" data-admin-auth-view="checking">
+            <span class="archive-loader" aria-hidden="true"></span>
+            <div>
+              <strong>Checking moderation access…</strong>
+              <p>Confirming your Archive session.</p>
+            </div>
+          </div>
+
+          <div class="archive-admin-auth-view archive-admin-auth-message" data-admin-auth-view="signed-out" hidden>
+            <span class="archive-admin-state-icon" aria-hidden="true">🔐</span>
+            <p class="eyebrow">Authorized access</p>
+            <h2>Sign in to continue</h2>
+            <p>Archive moderation requires an authorized Discord account.</p>
+            <div class="archive-admin-auth-actions">
+              <a class="button archive-discord-button" href="https://cozy-archive.colbysthickey.workers.dev/auth/discord">
+                <span class="archive-discord-mark" aria-hidden="true">✦</span>
+                Login with Discord
+              </a>
+              <a class="button button-secondary" href="./archive.html">Back to Archive</a>
+            </div>
+          </div>
+
+          <div class="archive-admin-auth-view archive-admin-auth-message" data-admin-auth-view="denied" hidden>
+            <span class="archive-admin-state-icon" aria-hidden="true">⛔</span>
+            <p class="eyebrow">Access denied</p>
+            <h2>Moderation permission required</h2>
+            <p>You do not have permission to access Archive moderation.</p>
+            <div class="archive-admin-auth-actions">
+              <a class="button button-secondary" href="./archive.html">Back to Archive</a>
+              <button class="archive-logout-button" type="button" data-admin-logout>Log out</button>
+            </div>
+          </div>
+
+          <div class="archive-admin-auth-view archive-admin-auth-message" data-admin-auth-view="unavailable" hidden>
+            <span class="archive-admin-state-icon" aria-hidden="true">🌧️</span>
+            <p class="eyebrow">Temporary interruption</p>
+            <h2>Archive moderation is temporarily unavailable.</h2>
+            <p>Your session has been kept. Please try checking again.</p>
+            <div class="archive-admin-auth-actions">
+              <button class="button button-primary" type="button" data-admin-auth-retry>Retry</button>
+              <a class="button button-secondary" href="./archive.html">Back to Archive</a>
+            </div>
+          </div>
+
+          <p class="archive-admin-live" data-admin-auth-live role="status" aria-live="polite" aria-atomic="true"></p>
+        </section>
+
+        <section class="archive-admin-dashboard" data-admin-dashboard aria-labelledby="pending-screenshots-title" hidden>
+          <div class="archive-admin-toolbar section-card">
+            <div class="archive-admin-toolbar-copy">
+              <p class="eyebrow">Review queue</p>
+              <h2 id="pending-screenshots-title">Pending screenshots</h2>
+              <p class="archive-admin-identity">Signed in as <strong data-admin-display-name></strong></p>
+            </div>
+            <div class="archive-admin-toolbar-controls">
+              <span class="archive-pending-count" data-admin-count>Pending: 0</span>
+              <button class="button button-secondary archive-admin-refresh" type="button" data-admin-refresh>
+                <span aria-hidden="true">↻</span>
+                <span data-admin-refresh-label>Refresh</span>
+              </button>
+              <button class="archive-logout-button" type="button" data-admin-logout>Log out</button>
+            </div>
+          </div>
+
+          <p class="archive-admin-status" data-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
+          <p class="archive-admin-more-note" data-admin-more hidden>Showing the first 50 pending screenshots.</p>
+
+          <div class="archive-admin-queue" data-admin-queue aria-busy="false"></div>
+
+          <div class="archive-admin-empty section-card" data-admin-empty hidden>
+            <div class="archive-admin-empty-mark" aria-hidden="true">✓</div>
+            <p class="eyebrow">Review desk clear</p>
+            <h3>No screenshots are waiting for review.</h3>
+            <p>You're all caught up.</p>
+          </div>
+        </section>
+
+        <dialog class="archive-reject-dialog" id="archive-reject-dialog" aria-labelledby="archive-reject-title" aria-describedby="archive-reject-copy">
+          <div class="archive-reject-modal">
+            <div class="archive-reject-icon" aria-hidden="true">🗑️</div>
+            <p class="eyebrow">Permanent moderation action</p>
+            <h2 id="archive-reject-title">Reject this screenshot?</h2>
+            <p id="archive-reject-copy">The screenshot will be removed from storage and will not appear in the Community Archive.</p>
+            <p class="archive-reject-context" data-reject-context></p>
+            <div class="archive-reject-actions">
+              <button class="button button-secondary" type="button" data-reject-cancel>Cancel</button>
+              <button class="archive-reject-confirm" type="button" data-reject-confirm>Reject Screenshot</button>
+            </div>
+          </div>
+        </dialog>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+  </body>
+</html>
