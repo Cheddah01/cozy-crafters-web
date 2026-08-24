@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explore screenshots, builds, events, and memories from the Cozy Crafters SMP community." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/archive.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Community Archive | Cozy Crafters SMP" />
+    <meta property="og:description" content="A collection of screenshots, builds, events, and memories from the Cozy Crafters world." />
+    <meta property="og:url" content="https://cozycrafters.net/archive.html" />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+
+      (() => {
+        const sessionKey = 'cozyArchiveSession';
+        const hash = window.location.hash;
+        if (!hash) return;
+
+        const parameters = new URLSearchParams(hash.slice(1));
+        if (!parameters.has('session')) return;
+
+        const token = parameters.get('session');
+        const isReasonableToken = typeof token === 'string'
+          && token.length > 0
+          && token.length <= 4096
+          && /^[A-Za-z0-9._~-]+$/.test(token);
+
+        if (isReasonableToken) {
+          try {
+            sessionStorage.setItem(sessionKey, token);
+          } catch (error) {}
+        }
+
+        try {
+          window.history.replaceState(window.history.state, '', window.location.pathname);
+        } catch (error) {}
+      })();
+    </script>
+    <title>Community Archive | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-settings.js"></script>
+    <script src="./server-status.js" defer></script>
+    <script src="./archive.js" defer></script>
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars"><i class="sf sf1"></i><i class="sf sf2"></i></div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div><div class="mc-cloud c2"></div><div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div><div class="mc-cloud c5"></div><div class="mc-cloud c6"></div><div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header site-header-status" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <div class="server-status" data-server-status data-state="loading" role="status" aria-live="polite">
+          <span class="server-status-dot" aria-hidden="true"></span>
+          <span data-server-status-text>Checking server…</span>
+        </div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./tools.html">Tools</a>
+          <a href="./archive.html" aria-current="page">Archive</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main class="archive-main">
+        <section class="archive-hero section-card" aria-labelledby="archive-title">
+          <div class="archive-hero-copy">
+            <p class="eyebrow">Cozy Crafters</p>
+            <h1 id="archive-title">Community Archive</h1>
+            <p class="lede">A collection of screenshots, builds, events, and memories from our world.</p>
+            <div class="archive-memory-tags" aria-label="Archive collection highlights">
+              <span>Builds</span>
+              <span>Events</span>
+              <span>Adventures</span>
+            </div>
+          </div>
+
+          <aside class="archive-auth-card" data-archive-auth data-auth-state="checking" aria-labelledby="archive-access-title" aria-busy="true">
+            <p class="mini-label" id="archive-access-title">Community access</p>
+
+            <div class="archive-auth-view archive-auth-checking" data-auth-view="checking">
+              <span class="archive-loader" aria-hidden="true"></span>
+              <div>
+                <strong>Checking your archive session…</strong>
+                <p>This will only take a moment.</p>
+              </div>
+            </div>
+
+            <div class="archive-auth-view" data-auth-view="logged-out" hidden>
+              <p class="archive-auth-copy">Sign in to prepare for sharing community memories when uploads arrive.</p>
+              <a class="button archive-discord-button" href="https://cozy-archive.colbysthickey.workers.dev/auth/discord">
+                <span class="archive-discord-mark" aria-hidden="true">✦</span>
+                Login with Discord
+              </a>
+              <p class="archive-auth-note" data-auth-note></p>
+            </div>
+
+            <div class="archive-auth-view" data-auth-view="logged-in" hidden>
+              <p class="archive-signed-in" role="status">Signed in as <strong data-archive-display-name></strong></p>
+              <div class="archive-auth-actions">
+                <button class="button button-primary" type="button" disabled>Upload Screenshot</button>
+                <button class="archive-logout-button" type="button" data-archive-logout>Log out</button>
+              </div>
+              <p class="archive-coming-soon">Uploads coming next</p>
+            </div>
+
+            <div class="archive-auth-view archive-auth-unavailable" data-auth-view="unavailable" hidden>
+              <strong>Archive login status is temporarily unavailable.</strong>
+              <p>Your session has been kept. You can try checking it again.</p>
+              <button class="button button-secondary" type="button" data-archive-retry>Retry</button>
+            </div>
+
+            <p class="archive-auth-live" data-archive-auth-live role="status" aria-live="polite"></p>
+          </aside>
+        </section>
+
+        <section class="archive-gallery-section" aria-labelledby="recent-memories-title">
+          <div class="section-heading archive-section-heading">
+            <div>
+              <p class="eyebrow">From the community</p>
+              <h2 id="recent-memories-title">Recent Memories</h2>
+            </div>
+            <span class="archive-gallery-badge">Gallery opening soon</span>
+          </div>
+
+          <div class="archive-gallery-grid" aria-live="polite">
+            <div class="archive-empty-state">
+              <div class="archive-empty-illustration" aria-hidden="true">
+                <span class="archive-empty-sparkle">✦</span>
+                <span class="archive-photo-frame archive-photo-frame-back"></span>
+                <span class="archive-photo-frame archive-photo-frame-front">
+                  <span class="archive-photo-sun"></span>
+                  <span class="archive-photo-hills"></span>
+                </span>
+              </div>
+              <div class="archive-empty-copy">
+                <p class="eyebrow">The album is ready</p>
+                <h3>No memories have been added yet.</h3>
+                <p>The first screenshots from the Cozy Crafters community will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+  </body>
+</html>
