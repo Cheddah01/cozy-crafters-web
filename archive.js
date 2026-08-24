@@ -6,6 +6,7 @@
   const meEndpoint = `${ARCHIVE_API}/api/me`;
   const uploadEndpoint = `${ARCHIVE_API}/api/upload`;
   const galleryEndpoint = `${ARCHIVE_API}/api/gallery`;
+  const myUploadsEndpoint = `${ARCHIVE_API}/api/my/uploads`;
   const allowedImageTypes = new Set(['image/png', 'image/jpeg', 'image/webp']);
   const maximumFileSize = 8 * 1024 * 1024;
 
@@ -17,6 +18,7 @@
   const logoutButton = document.querySelector('[data-archive-logout]');
   const retryButton = document.querySelector('[data-archive-retry]');
   const uploadOpenButton = document.querySelector('[data-archive-upload-open]');
+  const myUploadsOpenButton = document.querySelector('[data-my-uploads-open]');
   const adminPanelLink = document.querySelector('[data-archive-admin-link]');
   const rootEl = document.documentElement;
   const modeToggle = document.querySelector('.mode-toggle');
@@ -42,6 +44,19 @@
   const uploadCloseButton = document.querySelector('[data-archive-upload-close]');
   const uploadDoneButton = document.querySelector('[data-archive-upload-done]');
 
+  const myUploadsDialog = document.querySelector('#archive-my-uploads-dialog');
+  const myUploadsCloseButton = document.querySelector('[data-my-uploads-close]');
+  const myUploadsRefreshButton = document.querySelector('[data-my-uploads-refresh]');
+  const myUploadsRefreshLabel = document.querySelector('[data-my-uploads-refresh-label]');
+  const myUploadsRetryButton = document.querySelector('[data-my-uploads-retry]');
+  const myUploadsEmptyUploadButton = document.querySelector('[data-my-uploads-empty-upload]');
+  const myUploadsStatus = document.querySelector('[data-my-uploads-status]');
+  const myUploadsLoading = document.querySelector('[data-my-uploads-loading]');
+  const myUploadsError = document.querySelector('[data-my-uploads-error]');
+  const myUploadsEmpty = document.querySelector('[data-my-uploads-empty]');
+  const myUploadsGrid = document.querySelector('[data-my-uploads-grid]');
+  const myUploadsMoreButton = document.querySelector('[data-my-uploads-more]');
+
   const gallery = document.querySelector('[data-archive-gallery]');
   const galleryEmpty = document.querySelector('[data-gallery-empty]');
   const galleryError = document.querySelector('[data-gallery-error]');
@@ -65,10 +80,19 @@
   let restoreUploadFocus = true;
   let uploaderReady = false;
   let closeUploaderForAuthChange = () => {};
+  let myUploadsReady = false;
+  let restoreMyUploadsFocus = true;
+  let closeMyUploadsForAuthChange = () => {};
+  let activeMyUploadsRequest = null;
+  let nextMyUploadsCursor = null;
+  let myUploadsStale = true;
   let activeGalleryRequest = null;
   let nextGalleryCursor = null;
   let lightboxTrigger = null;
   const renderedGalleryIds = new Set();
+  const renderedMyUploadIds = new Set();
+  const activeMyUploadImageRequests = new Map();
+  const myUploadObjectUrls = new Map();
 
   const syncTheme = () => {
     const night = rootEl.classList.contains('night');
@@ -111,8 +135,15 @@
     authPanel.dataset.authState = state;
     authPanel.setAttribute('aria-busy', String(state === 'checking'));
     if (uploadOpenButton) uploadOpenButton.disabled = state !== 'logged-in' || !uploaderReady;
+    if (myUploadsOpenButton) {
+      myUploadsOpenButton.hidden = state !== 'logged-in' || !myUploadsReady;
+      myUploadsOpenButton.disabled = state !== 'logged-in' || !myUploadsReady;
+    }
     if (state !== 'logged-in' && adminPanelLink) adminPanelLink.hidden = true;
-    if (state !== 'logged-in') closeUploaderForAuthChange();
+    if (state !== 'logged-in') {
+      closeUploaderForAuthChange();
+      closeMyUploadsForAuthChange();
+    }
     if (authNote) authNote.textContent = state === 'logged-out' ? message : '';
     if (liveRegion) liveRegion.textContent = message;
   };
@@ -380,6 +411,428 @@
     const imageUrl = getSafeGalleryImageUrl(value.imageUrl, id);
     if (!uploader || caption === null || !date || !imageUrl) return null;
     return { id, uploader, caption, date, imageUrl };
+  };
+
+  const myUploadStatusDetails = {
+    pending: {
+      label: 'Pending Review',
+      message: 'Your screenshot is waiting for approval.'
+    },
+    approved: {
+      label: 'Published',
+      message: 'This screenshot is visible in the Community Archive.'
+    },
+    rejected: {
+      label: 'Not Approved',
+      message: 'This submission was not added to the Community Archive.'
+    },
+    removed: {
+      label: 'Removed from Archive',
+      message: 'This screenshot is no longer published in the Community Archive.'
+    },
+    unknown: {
+      label: 'Unavailable',
+      message: 'The current status of this submission is unavailable.'
+    }
+  };
+
+  const getSafeMyUploadImageUrl = (value, id) => {
+    if (typeof value !== 'string' || value.length > 1000) return null;
+    try {
+      const url = new URL(value);
+      const expectedPath = `/api/my/uploads/${id}/image`;
+      if (
+        url.protocol !== 'https:'
+        || url.origin !== ARCHIVE_API
+        || url.pathname !== expectedPath
+        || url.username
+        || url.password
+        || url.search
+        || url.hash
+      ) return null;
+      return url.href;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const normalizeMyUpload = (value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const id = Number(value.id);
+    if (!Number.isSafeInteger(id) || id <= 0) return null;
+    const caption = reasonableGalleryText(value.caption, 240, { optional: true });
+    if (caption === null) return null;
+    const rawStatus = reasonableGalleryText(value.status, 30, { optional: true });
+    const status = rawStatus && Object.prototype.hasOwnProperty.call(myUploadStatusDetails, rawStatus)
+      ? rawStatus
+      : 'unknown';
+    const fileSizeValue = Number(value.fileSize);
+    const fileSize = Number.isFinite(fileSizeValue) && fileSizeValue >= 0 ? fileSizeValue : null;
+    const imageUrl = getSafeMyUploadImageUrl(value.imageUrl, id);
+    const canLoadImage = value.hasImage === true
+      && (status === 'pending' || status === 'approved')
+      && Boolean(imageUrl);
+    return {
+      id,
+      caption,
+      status,
+      mimeType: reasonableGalleryText(value.mimeType, 80, { optional: true }) || '',
+      fileSize,
+      uploadedAt: parseGalleryDate(value.uploadedAt),
+      reviewedAt: parseGalleryDate(value.reviewedAt),
+      removedAt: parseGalleryDate(value.removedAt),
+      imageUrl,
+      canLoadImage
+    };
+  };
+
+  const friendlyMyUploadType = (mimeType) => {
+    if (mimeType === 'image/png') return 'PNG';
+    if (mimeType === 'image/jpeg') return 'JPEG';
+    if (mimeType === 'image/webp') return 'WebP';
+    return 'Image';
+  };
+
+  const createMyUploadsTextElement = (tagName, className, text) => {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  };
+
+  const setMyUploadsStatus = (message = '', state = '') => {
+    if (!myUploadsStatus) return;
+    myUploadsStatus.textContent = message;
+    if (state) myUploadsStatus.dataset.state = state;
+    else delete myUploadsStatus.dataset.state;
+  };
+
+  const revokeMyUploadObjectUrl = (id) => {
+    const objectUrl = myUploadObjectUrls.get(id);
+    if (!objectUrl) return;
+    URL.revokeObjectURL(objectUrl);
+    myUploadObjectUrls.delete(id);
+  };
+
+  const abortMyUploadImageRequest = (id) => {
+    const request = activeMyUploadImageRequests.get(id);
+    if (!request) return;
+    window.clearTimeout(request.timeout);
+    request.controller.abort();
+    activeMyUploadImageRequests.delete(id);
+  };
+
+  const clearMyUploadImages = () => {
+    Array.from(activeMyUploadImageRequests.keys()).forEach(abortMyUploadImageRequest);
+    myUploadObjectUrls.forEach((objectUrl) => URL.revokeObjectURL(objectUrl));
+    myUploadObjectUrls.clear();
+  };
+
+  const abortMyUploadsListRequest = () => {
+    if (!activeMyUploadsRequest) return;
+    window.clearTimeout(activeMyUploadsRequest.timeout);
+    activeMyUploadsRequest.controller.abort();
+    activeMyUploadsRequest = null;
+  };
+
+  const setMyUploadsRequestState = (loading, { append = false } = {}) => {
+    if (myUploadsRefreshButton) myUploadsRefreshButton.disabled = loading;
+    if (myUploadsRefreshLabel) myUploadsRefreshLabel.textContent = loading && !append ? 'Refreshing…' : 'Refresh';
+    if (myUploadsMoreButton) myUploadsMoreButton.disabled = loading;
+    if (myUploadsGrid) myUploadsGrid.setAttribute('aria-busy', String(loading));
+  };
+
+  const resetMyUploadsState = ({ abortList = true, markStale = true } = {}) => {
+    if (abortList) abortMyUploadsListRequest();
+    clearMyUploadImages();
+    renderedMyUploadIds.clear();
+    nextMyUploadsCursor = null;
+    if (myUploadsGrid) myUploadsGrid.replaceChildren();
+    if (myUploadsLoading) myUploadsLoading.hidden = true;
+    if (myUploadsError) myUploadsError.hidden = true;
+    if (myUploadsEmpty) myUploadsEmpty.hidden = true;
+    if (myUploadsMoreButton) myUploadsMoreButton.hidden = true;
+    setMyUploadsRequestState(false);
+    setMyUploadsStatus();
+    if (markStale) myUploadsStale = true;
+  };
+
+  const showMyUploadImageUnavailable = (card) => {
+    const loading = card.querySelector('[data-my-upload-image-loading]');
+    const image = card.querySelector('[data-my-upload-image]');
+    const unavailable = card.querySelector('[data-my-upload-image-unavailable]');
+    if (loading) loading.hidden = true;
+    if (image) {
+      image.hidden = true;
+      image.removeAttribute('src');
+    }
+    if (unavailable) unavailable.hidden = false;
+  };
+
+  const loadMyUploadImage = async (upload, card) => {
+    if (!upload.canLoadImage || activeMyUploadImageRequests.has(upload.id)) return;
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+
+    const controller = new AbortController();
+    const request = {
+      controller,
+      timeout: window.setTimeout(() => controller.abort(), 12000)
+    };
+    activeMyUploadImageRequests.set(upload.id, request);
+
+    try {
+      const response = await fetch(upload.imageUrl, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (activeMyUploadImageRequests.get(upload.id) !== request || !card.isConnected) return;
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      if (!response.ok) {
+        showMyUploadImageUnavailable(card);
+        return;
+      }
+
+      const blob = await response.blob();
+      if (activeMyUploadImageRequests.get(upload.id) !== request || !card.isConnected) return;
+      if (!blob.size) {
+        showMyUploadImageUnavailable(card);
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      myUploadObjectUrls.set(upload.id, objectUrl);
+      const image = card.querySelector('[data-my-upload-image]');
+      const loading = card.querySelector('[data-my-upload-image-loading]');
+      const unavailable = card.querySelector('[data-my-upload-image-unavailable]');
+      image.addEventListener('load', () => {
+        if (loading) loading.hidden = true;
+        if (unavailable) unavailable.hidden = true;
+        image.hidden = false;
+      }, { once: true });
+      image.addEventListener('error', () => {
+        revokeMyUploadObjectUrl(upload.id);
+        showMyUploadImageUnavailable(card);
+      }, { once: true });
+      image.src = objectUrl;
+    } catch (error) {
+      if (activeMyUploadImageRequests.get(upload.id) === request && error.name !== 'AbortError') {
+        showMyUploadImageUnavailable(card);
+      }
+    } finally {
+      window.clearTimeout(request.timeout);
+      if (activeMyUploadImageRequests.get(upload.id) === request) activeMyUploadImageRequests.delete(upload.id);
+    }
+  };
+
+  const appendMyUploadDate = (container, label, date) => {
+    if (!date) return;
+    const row = document.createElement('p');
+    const time = document.createElement('time');
+    time.dateTime = date.iso;
+    time.textContent = `${label} ${date.display}`;
+    row.append(time);
+    container.append(row);
+  };
+
+  const createMyUploadCard = (upload) => {
+    const details = myUploadStatusDetails[upload.status];
+    const card = document.createElement('article');
+    card.className = `archive-my-upload-card status-${upload.status}${upload.caption ? '' : ' has-no-caption'}`;
+    card.dataset.myUploadId = String(upload.id);
+
+    const media = document.createElement('div');
+    media.className = 'archive-my-upload-media';
+    const image = document.createElement('img');
+    image.dataset.myUploadImage = '';
+    image.alt = upload.caption
+      ? `${upload.caption} — your Community Archive screenshot`
+      : 'Your Community Archive screenshot';
+    image.hidden = true;
+    const loading = createMyUploadsTextElement('span', 'archive-my-upload-image-loading', 'Loading screenshot…');
+    loading.dataset.myUploadImageLoading = '';
+    const unavailable = createMyUploadsTextElement(
+      'span',
+      'archive-my-upload-image-unavailable',
+      upload.status === 'rejected' || upload.status === 'removed'
+        ? 'Screenshot image no longer available.'
+        : 'Screenshot preview unavailable.'
+    );
+    unavailable.dataset.myUploadImageUnavailable = '';
+    unavailable.setAttribute('role', 'img');
+    unavailable.setAttribute('aria-label', unavailable.textContent);
+    unavailable.hidden = upload.canLoadImage;
+    loading.hidden = !upload.canLoadImage;
+    media.append(image, loading, unavailable);
+
+    const content = document.createElement('div');
+    content.className = 'archive-my-upload-content';
+    if (upload.caption) content.append(createMyUploadsTextElement('h3', '', upload.caption));
+    const badge = createMyUploadsTextElement('span', `archive-my-upload-status status-${upload.status}`, details.label);
+    const message = createMyUploadsTextElement('p', 'archive-my-upload-message', details.message);
+    const metadata = document.createElement('div');
+    metadata.className = 'archive-my-upload-meta';
+    appendMyUploadDate(metadata, 'Submitted', upload.uploadedAt);
+    if (upload.status === 'approved') appendMyUploadDate(metadata, 'Published', upload.reviewedAt);
+    if (upload.status === 'removed') appendMyUploadDate(metadata, 'Removed', upload.removedAt);
+    if (upload.fileSize !== null || upload.mimeType) {
+      const fileDetails = upload.fileSize !== null
+        ? `${formatFileSize(upload.fileSize)} · ${friendlyMyUploadType(upload.mimeType)}`
+        : friendlyMyUploadType(upload.mimeType);
+      metadata.append(createMyUploadsTextElement('p', '', fileDetails));
+    }
+    content.append(badge, message, metadata);
+    card.append(media, content);
+    return card;
+  };
+
+  const appendMyUploads = (values) => {
+    if (!myUploadsGrid) return 0;
+    const fragment = document.createDocumentFragment();
+    const added = [];
+    values.forEach((value) => {
+      const upload = normalizeMyUpload(value);
+      if (!upload || renderedMyUploadIds.has(upload.id)) return;
+      renderedMyUploadIds.add(upload.id);
+      const card = createMyUploadCard(upload);
+      fragment.append(card);
+      added.push({ upload, card });
+    });
+    myUploadsGrid.append(fragment);
+    added.forEach(({ upload, card }) => loadMyUploadImage(upload, card));
+    return added.length;
+  };
+
+  const getNextMyUploadsCursor = (payload, requestedCursor) => {
+    if (!payload || payload.hasMore !== true) return null;
+    if (typeof payload.nextCursor !== 'string' && typeof payload.nextCursor !== 'number') return null;
+    const cursor = String(payload.nextCursor).trim();
+    if (!cursor || cursor.length > 500 || cursor === requestedCursor) return null;
+    return cursor;
+  };
+
+  const showMyUploadsListError = ({ append = false } = {}) => {
+    if (myUploadsLoading) myUploadsLoading.hidden = true;
+    if (append) {
+      if (myUploadsMoreButton) myUploadsMoreButton.hidden = false;
+      setMyUploadsStatus('More uploads could not be loaded. Please try again.', 'error');
+      return;
+    }
+    if (myUploadsError) myUploadsError.hidden = false;
+    if (myUploadsEmpty) myUploadsEmpty.hidden = true;
+    setMyUploadsStatus("Your uploads couldn't be loaded right now.", 'error');
+  };
+
+  const loadMyUploads = async ({ append = false } = {}) => {
+    if (!myUploadsReady || activeMyUploadsRequest) return;
+    if (append && !nextMyUploadsCursor) return;
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+
+    const requestedCursor = append ? nextMyUploadsCursor : null;
+    if (!append) {
+      resetMyUploadsState({ abortList: false, markStale: true });
+      if (myUploadsLoading) myUploadsLoading.hidden = false;
+    }
+
+    const requestUrl = new URL(myUploadsEndpoint);
+    requestUrl.searchParams.set('limit', '30');
+    if (requestedCursor) requestUrl.searchParams.set('before', requestedCursor);
+    const controller = new AbortController();
+    const request = {
+      controller,
+      append,
+      timeout: window.setTimeout(() => controller.abort(), 10000)
+    };
+    activeMyUploadsRequest = request;
+    setMyUploadsRequestState(true, { append });
+    setMyUploadsStatus(append ? 'Loading more uploads…' : 'Loading your uploads…');
+
+    try {
+      const response = await fetch(requestUrl.href, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      const payload = await safeResponseJson(response);
+      if (activeMyUploadsRequest !== request) return;
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      if (response.status === 403) {
+        showMyUploadsListError({ append });
+        return;
+      }
+      if (!response.ok || !payload || payload.ok !== true || !Array.isArray(payload.uploads)) {
+        showMyUploadsListError({ append });
+        return;
+      }
+
+      const appended = appendMyUploads(payload.uploads);
+      nextMyUploadsCursor = getNextMyUploadsCursor(payload, requestedCursor);
+      myUploadsStale = false;
+      if (myUploadsLoading) myUploadsLoading.hidden = true;
+      if (myUploadsError) myUploadsError.hidden = true;
+      if (myUploadsEmpty) myUploadsEmpty.hidden = renderedMyUploadIds.size !== 0;
+      if (myUploadsMoreButton) myUploadsMoreButton.hidden = nextMyUploadsCursor === null;
+      if (renderedMyUploadIds.size === 0) {
+        setMyUploadsStatus('No uploads yet.');
+      } else if (append) {
+        setMyUploadsStatus(appended
+          ? `${appended} more ${appended === 1 ? 'upload' : 'uploads'} added.`
+          : 'Your uploads are up to date.');
+      } else {
+        setMyUploadsStatus(`${renderedMyUploadIds.size} ${renderedMyUploadIds.size === 1 ? 'upload' : 'uploads'} loaded.`);
+      }
+    } catch (error) {
+      if (activeMyUploadsRequest !== request || error.name === 'AbortError') return;
+      showMyUploadsListError({ append });
+    } finally {
+      window.clearTimeout(request.timeout);
+      if (activeMyUploadsRequest === request) {
+        activeMyUploadsRequest = null;
+        setMyUploadsRequestState(false);
+      }
+    }
+  };
+
+  const refreshMyUploads = () => {
+    abortMyUploadsListRequest();
+    resetMyUploadsState({ abortList: false, markStale: true });
+    loadMyUploads();
+  };
+
+  const closeMyUploadsDialog = ({ restoreFocus = true } = {}) => {
+    restoreMyUploadsFocus = restoreFocus;
+    resetMyUploadsState({ abortList: true, markStale: true });
+    if (myUploadsDialog && myUploadsDialog.open) myUploadsDialog.close();
+  };
+
+  closeMyUploadsForAuthChange = () => {
+    closeMyUploadsDialog({ restoreFocus: false });
+  };
+
+  const markMyUploadsStale = () => {
+    myUploadsStale = true;
+    if (myUploadsDialog && myUploadsDialog.open && !activeMyUploadsRequest) refreshMyUploads();
   };
 
   const createGallerySkeletons = () => {
@@ -683,6 +1136,7 @@
     updateCaptionCounter();
     setUploadStatus();
     setUploadView('success');
+    markMyUploadsStale();
     if (uploadDoneButton) uploadDoneButton.focus();
   };
 
@@ -853,6 +1307,72 @@
     });
   }
 
+  const myUploadsElements = [
+    myUploadsDialog,
+    myUploadsOpenButton,
+    myUploadsCloseButton,
+    myUploadsRefreshButton,
+    myUploadsRefreshLabel,
+    myUploadsRetryButton,
+    myUploadsEmptyUploadButton,
+    myUploadsStatus,
+    myUploadsLoading,
+    myUploadsError,
+    myUploadsEmpty,
+    myUploadsGrid,
+    myUploadsMoreButton
+  ];
+
+  if (myUploadsElements.every(Boolean) && typeof myUploadsDialog.showModal === 'function') {
+    myUploadsReady = true;
+
+    myUploadsOpenButton.addEventListener('click', () => {
+      if (myUploadsOpenButton.disabled || authPanel.dataset.authState !== 'logged-in' || myUploadsDialog.open) return;
+      restoreMyUploadsFocus = true;
+      resetMyUploadsState({ abortList: true, markStale: true });
+      rootEl.classList.add('modal-open');
+      myUploadsDialog.showModal();
+      window.requestAnimationFrame(() => myUploadsCloseButton.focus());
+      if (myUploadsStale) loadMyUploads();
+    });
+
+    myUploadsRefreshButton.addEventListener('click', refreshMyUploads);
+    myUploadsRetryButton.addEventListener('click', refreshMyUploads);
+    myUploadsMoreButton.addEventListener('click', () => loadMyUploads({ append: true }));
+    myUploadsCloseButton.addEventListener('click', () => closeMyUploadsDialog());
+    myUploadsEmptyUploadButton.addEventListener('click', () => {
+      closeMyUploadsDialog({ restoreFocus: false });
+      window.requestAnimationFrame(() => {
+        if (authPanel.dataset.authState === 'logged-in' && uploadOpenButton && !uploadOpenButton.disabled) {
+          uploadOpenButton.click();
+        }
+      });
+    });
+
+    myUploadsDialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeMyUploadsDialog();
+    });
+    myUploadsDialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      closeMyUploadsDialog();
+    });
+    myUploadsDialog.addEventListener('click', (event) => {
+      if (event.target === myUploadsDialog) closeMyUploadsDialog();
+    });
+    myUploadsDialog.addEventListener('close', () => {
+      rootEl.classList.remove('modal-open');
+      resetMyUploadsState({ abortList: true, markStale: true });
+      if (
+        restoreMyUploadsFocus
+        && authPanel.dataset.authState === 'logged-in'
+        && !myUploadsOpenButton.hidden
+        && !myUploadsOpenButton.disabled
+      ) myUploadsOpenButton.focus();
+    });
+  }
+
   if (
     lightboxDialog
     && lightboxCloseButton
@@ -905,6 +1425,7 @@
   if (retryButton) retryButton.addEventListener('click', verifyStoredSession);
 
   window.addEventListener('pagehide', () => {
+    resetMyUploadsState({ abortList: true, markStale: true });
     if (activeGalleryRequest) {
       window.clearTimeout(activeGalleryRequest.timeout);
       activeGalleryRequest.controller.abort();

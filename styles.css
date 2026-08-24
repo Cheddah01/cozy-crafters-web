@@ -1258,12 +1258,20 @@ html.night .archive-auth-note {
 
 .archive-auth-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.7rem;
 }
 
 .archive-auth-actions .button {
   min-width: 0;
+}
+
+.archive-auth-actions .archive-logout-button {
+  grid-column: 1 / -1;
+}
+
+.archive-auth-actions [hidden] {
+  display: none;
 }
 
 .archive-auth-actions .button:disabled {
@@ -1871,6 +1879,433 @@ html.night .archive-gallery-status[data-state="error"] {
   color: #d77b24;
   font-size: 2rem;
   text-shadow: 0 3px 12px rgba(215, 123, 36, 0.28);
+}
+
+/* ---------- Archive: My Uploads ---------- */
+
+.archive-my-uploads-dialog {
+  width: min(1040px, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  border: 1px solid var(--card-line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(3, 12, 28, 0.5);
+}
+
+.archive-my-uploads-dialog[open] {
+  animation: archive-modal-in 0.2s ease-out;
+}
+
+.archive-my-uploads-dialog::backdrop {
+  background: rgba(7, 17, 36, 0.74);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.archive-my-uploads-modal {
+  display: flex;
+  max-height: calc(100dvh - 2rem);
+  flex-direction: column;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.archive-my-uploads-header,
+.archive-my-uploads-heading,
+.archive-my-uploads-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.archive-my-uploads-header {
+  flex: 0 0 auto;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.archive-my-uploads-heading {
+  min-width: 0;
+  gap: 0.9rem;
+}
+
+.archive-my-uploads-heading .eyebrow {
+  margin-bottom: 0.2rem;
+  font-size: 0.7rem;
+}
+
+.archive-my-uploads-heading h2 {
+  margin: 0;
+  font-size: clamp(1.55rem, 5vw, 2.2rem);
+}
+
+.archive-my-uploads-icon {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(98, 189, 71, 0.46);
+  border-radius: 0.75rem;
+  background: var(--chip-bg);
+  color: var(--accent);
+  font-size: 1.55rem;
+  font-weight: 900;
+  box-shadow: inset 0 -4px 0 rgba(62, 138, 46, 0.1);
+}
+
+.archive-my-uploads-header-actions {
+  flex: 0 0 auto;
+  gap: 0.55rem;
+}
+
+.archive-my-uploads-refresh {
+  display: inline-flex;
+  min-height: 2.65rem;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--chip-bg);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.archive-my-uploads-refresh:hover,
+.archive-my-uploads-refresh:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.archive-my-uploads-refresh:disabled,
+.archive-my-uploads-controls .button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.archive-my-uploads-intro {
+  flex: 0 0 auto;
+  margin: 1rem 0 0.35rem;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.archive-my-uploads-status {
+  min-height: 1.4rem;
+  flex: 0 0 auto;
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.archive-my-uploads-status[data-state="error"] {
+  color: #a44416;
+}
+
+html.night .archive-my-uploads-status[data-state="error"] {
+  color: #ffbd8c;
+}
+
+.archive-my-uploads-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.archive-my-uploads-loading {
+  display: grid;
+  min-height: 20rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-content: center;
+  align-items: center;
+  max-width: 31rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.archive-my-uploads-loading strong {
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 1.15rem;
+}
+
+.archive-my-uploads-loading p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+}
+
+.archive-my-uploads-error,
+.archive-my-uploads-empty {
+  display: grid;
+  min-height: 22rem;
+  gap: 0.55rem;
+  align-content: center;
+  justify-items: center;
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
+  text-align: center;
+}
+
+.archive-my-uploads-error > span,
+.archive-my-uploads-empty-mark {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 0.5rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--chip-bg);
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: 5px 5px 0 rgba(38, 84, 128, 0.1);
+}
+
+.archive-my-uploads-error h3,
+.archive-my-uploads-error p,
+.archive-my-uploads-empty .eyebrow,
+.archive-my-uploads-empty h3,
+.archive-my-uploads-empty p {
+  margin-bottom: 0;
+}
+
+.archive-my-uploads-error p,
+.archive-my-uploads-empty p:not(.eyebrow) {
+  color: var(--muted);
+}
+
+.archive-my-uploads-error .button,
+.archive-my-uploads-empty .button {
+  margin-top: 0.75rem;
+}
+
+.archive-my-uploads-loading[hidden],
+.archive-my-uploads-error[hidden],
+.archive-my-uploads-empty[hidden],
+.archive-my-uploads-controls button[hidden],
+.archive-my-upload-image-loading[hidden],
+.archive-my-upload-image-unavailable[hidden],
+.archive-my-upload-media img[hidden] {
+  display: none;
+}
+
+.archive-my-uploads-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.archive-my-upload-card {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(9rem, 0.42fr) minmax(0, 0.58fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  box-shadow: 0 8px 22px rgba(38, 84, 128, 0.12);
+}
+
+.archive-my-upload-media {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 11rem;
+  place-items: center;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+  background:
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    linear-gradient(45deg, rgba(79, 107, 130, 0.07) 25%, transparent 25% 75%, rgba(79, 107, 130, 0.07) 75%),
+    var(--chip-bg);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+}
+
+.archive-my-upload-media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.archive-my-upload-image-loading,
+.archive-my-upload-image-unavailable {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: center;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.archive-my-upload-image-loading::before {
+  content: "";
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: archive-loader-spin 0.85s linear infinite;
+}
+
+.archive-my-upload-image-unavailable::before {
+  content: "▧";
+  color: var(--accent);
+  font-size: 2rem;
+}
+
+.archive-my-upload-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.archive-my-upload-content h3 {
+  margin-bottom: 0.7rem;
+  overflow-wrap: anywhere;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.archive-my-upload-status {
+  display: inline-flex;
+  min-height: 1.8rem;
+  padding: 0.3rem 0.6rem;
+  align-items: center;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.archive-my-upload-status.status-pending {
+  border-color: rgba(180, 124, 18, 0.48);
+  background: rgba(245, 184, 55, 0.16);
+  color: #8a5700;
+}
+
+.archive-my-upload-status.status-approved {
+  border-color: rgba(62, 138, 46, 0.48);
+  background: rgba(98, 189, 71, 0.14);
+  color: var(--accent);
+}
+
+.archive-my-upload-status.status-rejected {
+  border-color: rgba(157, 60, 48, 0.42);
+  background: rgba(174, 67, 54, 0.11);
+  color: #9d3c30;
+}
+
+.archive-my-upload-status.status-removed,
+.archive-my-upload-status.status-unknown {
+  border-color: var(--line);
+  background: var(--chip-bg);
+  color: var(--muted);
+}
+
+html.night .archive-my-upload-status.status-pending {
+  color: #ffd273;
+}
+
+html.night .archive-my-upload-status.status-rejected {
+  color: #ffac9f;
+}
+
+.archive-my-upload-message {
+  margin: 0.7rem 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.archive-my-upload-meta {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.archive-my-upload-meta p {
+  margin: 0;
+}
+
+.archive-my-uploads-controls {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.archive-my-uploads-controls .button {
+  min-width: 10rem;
+}
+
+@media (max-width: 900px) {
+  .archive-my-uploads-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .archive-my-uploads-dialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .archive-my-uploads-modal {
+    max-height: calc(100dvh - 1rem);
+    padding: 1rem;
+  }
+
+  .archive-my-uploads-icon {
+    display: none;
+  }
+
+  .archive-my-uploads-header {
+    align-items: flex-start;
+  }
+
+  .archive-my-uploads-refresh {
+    min-width: 2.65rem;
+    padding-inline: 0.7rem;
+  }
+
+  .archive-my-upload-card {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-my-upload-media {
+    min-height: 13rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .archive-my-uploads-loading {
+    min-height: 17rem;
+    padding-inline: 0.5rem;
+  }
 }
 
 /* ---------- Archive uploader ---------- */
@@ -3200,7 +3635,12 @@ html.night .archive-remove-warning {
   }
 
   .archive-lightbox[open],
+  .archive-my-uploads-dialog[open],
   .archive-reject-dialog[open] {
+    animation: none;
+  }
+
+  .archive-my-upload-image-loading::before {
     animation: none;
   }
 }

@@ -128,6 +128,7 @@
               <p class="archive-signed-in" role="status">Signed in as <strong data-archive-display-name></strong></p>
               <div class="archive-auth-actions">
                 <button class="button button-primary" type="button" data-archive-upload-open aria-haspopup="dialog" aria-controls="archive-upload-dialog" disabled>Upload Screenshot</button>
+                <button class="button button-secondary" type="button" data-my-uploads-open aria-haspopup="dialog" aria-controls="archive-my-uploads-dialog" hidden>My Uploads</button>
                 <button class="archive-logout-button" type="button" data-archive-logout>Log out</button>
               </div>
               <a class="archive-admin-link" href="./archive-admin.html" data-archive-admin-link hidden>
@@ -214,6 +215,61 @@
               <h3 data-lightbox-caption hidden></h3>
               <p>Shared by <strong data-lightbox-uploader></strong></p>
               <time data-lightbox-date></time>
+            </div>
+          </div>
+        </dialog>
+
+        <dialog class="archive-my-uploads-dialog" id="archive-my-uploads-dialog" aria-labelledby="archive-my-uploads-title" aria-describedby="archive-my-uploads-intro">
+          <div class="archive-my-uploads-modal">
+            <header class="archive-my-uploads-header">
+              <div class="archive-my-uploads-heading">
+                <span class="archive-my-uploads-icon" aria-hidden="true">▧</span>
+                <div>
+                  <p class="eyebrow">Community Archive</p>
+                  <h2 id="archive-my-uploads-title">My Uploads</h2>
+                </div>
+              </div>
+              <div class="archive-my-uploads-header-actions">
+                <button class="archive-my-uploads-refresh" type="button" data-my-uploads-refresh>
+                  <span aria-hidden="true">↻</span>
+                  <span data-my-uploads-refresh-label>Refresh</span>
+                </button>
+                <button class="archive-upload-close" type="button" data-my-uploads-close aria-label="Close My Uploads">×</button>
+              </div>
+            </header>
+
+            <p class="archive-my-uploads-intro" id="archive-my-uploads-intro">Keep track of screenshots you've submitted to the Community Archive.</p>
+            <p class="archive-my-uploads-status" data-my-uploads-status role="status" aria-live="polite" aria-atomic="true"></p>
+
+            <div class="archive-my-uploads-body">
+              <div class="archive-my-uploads-loading" data-my-uploads-loading role="status">
+                <span class="archive-loader" aria-hidden="true"></span>
+                <div>
+                  <strong>Gathering your screenshots…</strong>
+                  <p>Checking the latest Archive status.</p>
+                </div>
+              </div>
+
+              <div class="archive-my-uploads-error" data-my-uploads-error hidden>
+                <span aria-hidden="true">🌧️</span>
+                <h3>Your uploads couldn't be loaded right now.</h3>
+                <p>Your Archive session has been kept.</p>
+                <button class="button button-secondary" type="button" data-my-uploads-retry>Retry</button>
+              </div>
+
+              <div class="archive-my-uploads-empty" data-my-uploads-empty hidden>
+                <span class="archive-my-uploads-empty-mark" aria-hidden="true">＋</span>
+                <p class="eyebrow">Your scrapbook</p>
+                <h3>No uploads yet.</h3>
+                <p>Screenshots you submit to the Community Archive will appear here.</p>
+                <button class="button button-primary" type="button" data-my-uploads-empty-upload>Upload a Screenshot</button>
+              </div>
+
+              <div class="archive-my-uploads-grid" data-my-uploads-grid aria-busy="false"></div>
+
+              <div class="archive-my-uploads-controls">
+                <button class="button button-secondary" type="button" data-my-uploads-more hidden>Load More</button>
+              </div>
             </div>
           </div>
         </dialog>
