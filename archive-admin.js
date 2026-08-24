@@ -24,15 +24,34 @@
   const rejectContext = document.querySelector('[data-reject-context]');
   const rejectCancelButton = document.querySelector('[data-reject-cancel]');
   const rejectConfirmButton = document.querySelector('[data-reject-confirm]');
+  const tabList = document.querySelector('[data-admin-tabs]');
+  const tabButtons = Array.from(document.querySelectorAll('[data-admin-tab]'));
+  const tabPanels = Array.from(document.querySelectorAll('[data-admin-panel]'));
+  const approvedCount = document.querySelector('[data-approved-count]');
+  const approvedQueue = document.querySelector('[data-approved-queue]');
+  const approvedEmpty = document.querySelector('[data-approved-empty]');
+  const approvedMoreButton = document.querySelector('[data-approved-more]');
+  const approvedStatus = document.querySelector('[data-approved-status]');
+  const removeDialog = document.querySelector('#archive-remove-dialog');
+  const removeContext = document.querySelector('[data-remove-context]');
+  const removeCancelButton = document.querySelector('[data-remove-cancel]');
+  const removeConfirmButton = document.querySelector('[data-remove-confirm]');
 
   let activeAuthRequest = null;
   let activeQueueRequest = null;
   const activeImageRequests = new Map();
   const activeModerationRequests = new Map();
+  const activeRemovalRequests = new Map();
   const imageObjectUrls = new Map();
   const pendingUploads = new Map();
+  const approvedUploads = new Map();
   let currentUser = null;
   let rejectingUploadId = null;
+  let removingUploadId = null;
+  let activeApprovedRequest = null;
+  let approvedLoaded = false;
+  let approvedNextCursor = null;
+  let activeTab = 'pending';
 
   const syncTheme = () => {
     const night = rootEl.classList.contains('night');
@@ -101,10 +120,24 @@
     else delete dashboardStatus.dataset.state;
   };
 
-  const setRefreshBusy = (busy) => {
-    if (refreshButton) refreshButton.disabled = busy || activeModerationRequests.size > 0;
-    if (refreshLabel) refreshLabel.textContent = busy ? 'Refreshing…' : 'Refresh';
-    queue.setAttribute('aria-busy', String(busy));
+  const setApprovedStatus = (message = '', state = '') => {
+    if (!approvedStatus) return;
+    approvedStatus.textContent = message;
+    if (state) approvedStatus.dataset.state = state;
+    else delete approvedStatus.dataset.state;
+  };
+
+  const setRefreshBusy = () => {
+    const loading = activeTab === 'pending'
+      ? Boolean(activeQueueRequest)
+      : Boolean(activeApprovedRequest);
+    const actionBusy = activeTab === 'pending'
+      ? activeModerationRequests.size > 0
+      : activeRemovalRequests.size > 0;
+    if (refreshButton) refreshButton.disabled = loading || actionBusy;
+    if (refreshLabel) refreshLabel.textContent = loading ? 'Refreshing…' : 'Refresh';
+    queue.setAttribute('aria-busy', String(Boolean(activeQueueRequest)));
+    if (approvedQueue) approvedQueue.setAttribute('aria-busy', String(Boolean(activeApprovedRequest)));
   };
 
   const revokeImageUrl = (id) => {
@@ -146,10 +179,42 @@
     imageObjectUrls.clear();
     pendingUploads.clear();
     queue.replaceChildren();
-    if (pendingCount) pendingCount.textContent = 'Pending: 0';
+    if (pendingCount) pendingCount.textContent = '0';
     if (emptyState) emptyState.hidden = true;
     if (moreNote) moreNote.hidden = true;
-    setRefreshBusy(false);
+    setRefreshBusy();
+  };
+
+  const updateApprovedSummary = () => {
+    const count = approvedUploads.size;
+    if (approvedCount) approvedCount.textContent = String(count);
+    if (approvedEmpty) approvedEmpty.hidden = count !== 0;
+  };
+
+  const abortAllRemovals = () => {
+    activeRemovalRequests.forEach((request) => {
+      window.clearTimeout(request.timeout);
+      request.controller.abort();
+    });
+    activeRemovalRequests.clear();
+  };
+
+  const clearApproved = ({ abortRemovals = true } = {}) => {
+    if (activeApprovedRequest) {
+      window.clearTimeout(activeApprovedRequest.timeout);
+      activeApprovedRequest.controller.abort();
+      activeApprovedRequest = null;
+    }
+    if (abortRemovals) abortAllRemovals();
+    approvedUploads.clear();
+    if (approvedQueue) approvedQueue.replaceChildren();
+    if (approvedCount) approvedCount.textContent = '0';
+    if (approvedEmpty) approvedEmpty.hidden = true;
+    if (approvedMoreButton) approvedMoreButton.hidden = true;
+    approvedLoaded = false;
+    approvedNextCursor = null;
+    setApprovedStatus();
+    setRefreshBusy();
   };
 
   const closeRejectDialog = () => {
@@ -158,9 +223,32 @@
     if (rejectDialog && rejectDialog.open) rejectDialog.close();
   };
 
+  const closeRemoveDialog = () => {
+    removingUploadId = null;
+    if (removeContext) removeContext.textContent = '';
+    if (removeDialog && removeDialog.open) removeDialog.close();
+  };
+
+  const resetTabs = () => {
+    activeTab = 'pending';
+    tabButtons.forEach((button) => {
+      const selected = button.dataset.adminTab === 'pending';
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      button.classList.toggle('is-active', selected);
+    });
+    tabPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.adminPanel !== 'pending';
+    });
+    setRefreshBusy();
+  };
+
   const leaveDashboard = () => {
     closeRejectDialog();
+    closeRemoveDialog();
     clearQueue();
+    clearApproved();
+    resetTabs();
     currentUser = null;
     if (displayName) displayName.textContent = '';
     setDashboardStatus();
@@ -232,6 +320,38 @@
     };
   };
 
+  const approvedImageUrl = (value, id) => {
+    const source = reasonableText(value, 500);
+    if (!source) return '';
+    try {
+      const url = new URL(source);
+      if (url.protocol !== 'https:' || url.origin !== ARCHIVE_API) return '';
+      if (url.username || url.password || url.search || url.hash) return '';
+      if (url.pathname !== `/api/gallery/uploads/${id}/image`) return '';
+      const match = url.pathname.match(/^\/api\/gallery\/uploads\/(\d+)\/image$/);
+      if (!match || Number(match[1]) !== id) return '';
+      return url.href;
+    } catch (error) {
+      return '';
+    }
+  };
+
+  const normalizeApprovedUpload = (value) => {
+    if (!value || typeof value !== 'object') return null;
+    const id = Number(value.id);
+    if (!Number.isSafeInteger(id) || id <= 0) return null;
+    return {
+      id,
+      uploader: reasonableText(value.uploader, 80) || 'Unknown member',
+      caption: reasonableText(value.caption, 240),
+      mimeType: reasonableText(value.mimeType, 80),
+      fileSize: value.fileSize,
+      uploadedAt: value.uploadedAt,
+      approvedAt: value.approvedAt,
+      imageUrl: approvedImageUrl(value.imageUrl, id)
+    };
+  };
+
   const createTextElement = (tagName, className, text) => {
     const element = document.createElement(tagName);
     if (className) element.className = className;
@@ -241,7 +361,7 @@
 
   const updateQueueSummary = () => {
     const count = pendingUploads.size;
-    if (pendingCount) pendingCount.textContent = `Pending: ${count}`;
+    if (pendingCount) pendingCount.textContent = String(count);
     if (emptyState) emptyState.hidden = count !== 0;
   };
 
@@ -379,7 +499,7 @@
     };
     activeModerationRequests.set(id, request);
     setCardBusy(card, action);
-    setRefreshBusy(false);
+    setRefreshBusy();
     setDashboardStatus();
 
     try {
@@ -438,7 +558,7 @@
     } finally {
       window.clearTimeout(request.timeout);
       if (activeModerationRequests.get(id) === request) activeModerationRequests.delete(id);
-      setRefreshBusy(Boolean(activeQueueRequest));
+      setRefreshBusy();
     }
   };
 
@@ -537,6 +657,302 @@
     });
   };
 
+  const showPublishedImageUnavailable = (card) => {
+    const image = card.querySelector('[data-approved-image]');
+    const unavailable = card.querySelector('[data-approved-image-unavailable]');
+    if (image) {
+      image.hidden = true;
+      image.removeAttribute('src');
+    }
+    if (unavailable) unavailable.hidden = false;
+  };
+
+  const setPublishedCardBusy = (card, busy) => {
+    const button = card.querySelector('[data-remove-approved]');
+    const status = card.querySelector('[data-published-card-status]');
+    card.setAttribute('aria-busy', String(busy));
+    if (button) {
+      button.disabled = busy;
+      button.textContent = busy ? 'Removing…' : 'Remove from Archive';
+    }
+    if (status) status.textContent = busy ? 'Removing screenshot from the Archive…' : '';
+  };
+
+  const openRemoveConfirmation = (upload) => {
+    if (!removeDialog || typeof removeDialog.showModal !== 'function') return;
+    if (activeRemovalRequests.has(upload.id)) return;
+    removingUploadId = upload.id;
+    if (removeContext) {
+      removeContext.textContent = upload.caption
+        ? `“${upload.caption}” — published by ${upload.uploader}`
+        : `Published by ${upload.uploader}`;
+    }
+    removeDialog.dataset.restoreUploadId = String(upload.id);
+    rootEl.classList.add('modal-open');
+    removeDialog.showModal();
+    window.requestAnimationFrame(() => removeCancelButton && removeCancelButton.focus());
+  };
+
+  const createApprovedCard = (upload) => {
+    const card = document.createElement('article');
+    card.className = 'archive-moderation-card archive-published-card section-card';
+    card.dataset.approvedId = String(upload.id);
+
+    const media = document.createElement('div');
+    media.className = 'archive-moderation-media archive-published-media';
+    const image = document.createElement('img');
+    image.dataset.approvedImage = '';
+    image.alt = upload.caption
+      ? `${upload.caption} — screenshot published by ${upload.uploader}`
+      : `Screenshot published by ${upload.uploader}`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.referrerPolicy = 'no-referrer';
+    image.hidden = !upload.imageUrl;
+    const unavailable = createTextElement('div', 'archive-image-unavailable', 'Published screenshot unavailable.');
+    unavailable.dataset.approvedImageUnavailable = '';
+    unavailable.hidden = Boolean(upload.imageUrl);
+    if (upload.imageUrl) {
+      image.addEventListener('error', () => showPublishedImageUnavailable(card), { once: true });
+      image.src = upload.imageUrl;
+    }
+    media.append(image, unavailable);
+
+    const content = document.createElement('div');
+    content.className = 'archive-moderation-content';
+    content.append(createTextElement('p', 'eyebrow', 'Published'));
+    content.append(createTextElement(
+      'h3',
+      upload.caption ? 'archive-moderation-caption' : 'archive-moderation-caption is-empty',
+      upload.caption || 'No caption provided.'
+    ));
+    content.append(createTextElement('p', 'archive-moderation-uploader', `Uploaded by ${upload.uploader}`));
+
+    const metadata = document.createElement('dl');
+    metadata.className = 'archive-moderation-meta archive-published-meta';
+    const addMeta = (label, value) => {
+      const group = document.createElement('div');
+      group.append(createTextElement('dt', '', label), createTextElement('dd', '', value));
+      metadata.append(group);
+    };
+    addMeta('Uploaded', formatUploadDate(upload.uploadedAt));
+    addMeta('Published', formatUploadDate(upload.approvedAt));
+    addMeta('Image', `${formatFileSize(upload.fileSize)} · ${friendlyMimeType(upload.mimeType)}`);
+
+    const cardStatus = createTextElement('p', 'archive-card-status', '');
+    cardStatus.dataset.publishedCardStatus = '';
+    cardStatus.setAttribute('role', 'status');
+    cardStatus.setAttribute('aria-live', 'polite');
+
+    const actions = document.createElement('div');
+    actions.className = 'archive-moderation-actions archive-published-actions';
+    const removeButton = createTextElement('button', 'archive-reject-button archive-remove-button', 'Remove from Archive');
+    removeButton.type = 'button';
+    removeButton.dataset.removeApproved = '';
+    removeButton.addEventListener('click', () => openRemoveConfirmation(upload));
+    actions.append(removeButton);
+
+    content.append(metadata, cardStatus, actions);
+    card.append(media, content);
+    return card;
+  };
+
+  const renderApprovedUploads = (uploads, { append = false } = {}) => {
+    if (!approvedQueue) return;
+    if (!append) {
+      approvedUploads.clear();
+      approvedQueue.replaceChildren();
+    }
+    const fragment = document.createDocumentFragment();
+    uploads.forEach((upload) => {
+      if (approvedUploads.has(upload.id)) return;
+      approvedUploads.set(upload.id, upload);
+      fragment.append(createApprovedCard(upload));
+    });
+    approvedQueue.append(fragment);
+    updateApprovedSummary();
+  };
+
+  const removeApprovedCard = (id, message, state = 'success') => {
+    const card = approvedQueue && approvedQueue.querySelector(`[data-approved-id="${id}"]`);
+    let focusTarget = null;
+    if (card) {
+      const buttons = Array.from(approvedQueue.querySelectorAll('[data-remove-approved]:not([disabled])'));
+      const currentIndex = buttons.findIndex((button) => card.contains(button));
+      focusTarget = buttons[currentIndex + 1] || buttons[currentIndex - 1]
+        || tabButtons.find((button) => button.dataset.adminTab === 'published')
+        || refreshButton;
+    }
+    if (card) card.remove();
+    approvedUploads.delete(id);
+    updateApprovedSummary();
+    setApprovedStatus(message, state);
+    if (focusTarget && activeTab === 'published') focusTarget.focus();
+  };
+
+  const removalErrorMessage = (status, payload) => {
+    const provided = backendError(payload);
+    if (provided) return provided;
+    if (status === 500 || status === 503) return 'Archive management is temporarily unavailable. Please try again.';
+    return 'The screenshot could not be removed right now. Please try again.';
+  };
+
+  const removeApprovedUpload = async (id) => {
+    if (activeRemovalRequests.has(id)) return;
+    const upload = approvedUploads.get(id);
+    const card = approvedQueue && approvedQueue.querySelector(`[data-approved-id="${id}"]`);
+    if (!upload || !card) return;
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+
+    const controller = new AbortController();
+    const request = { controller, timeout: window.setTimeout(() => controller.abort(), 15000) };
+    activeRemovalRequests.set(id, request);
+    setPublishedCardBusy(card, true);
+    setApprovedStatus();
+    setRefreshBusy();
+
+    try {
+      const response = await fetch(`${ARCHIVE_API}/api/admin/uploads/${id}/remove`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        signal: controller.signal
+      });
+      const payload = await safeJson(response);
+      if (activeRemovalRequests.get(id) !== request) return;
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      if (response.status === 403) {
+        denyAccess();
+        return;
+      }
+      if (response.status === 404) {
+        removeApprovedCard(id, 'This screenshot is no longer available.', 'notice');
+        return;
+      }
+      if (response.status === 409) {
+        removeApprovedCard(id, 'This screenshot was already removed. The Published list was updated.', 'notice');
+        return;
+      }
+      if (response.ok && payload && payload.ok === true) {
+        removeApprovedCard(id, 'Screenshot removed from the Community Archive.');
+        return;
+      }
+
+      setPublishedCardBusy(card, false);
+      const message = removalErrorMessage(response.status, payload);
+      const cardStatus = card.querySelector('[data-published-card-status]');
+      if (cardStatus) cardStatus.textContent = message;
+      setApprovedStatus(message, 'error');
+    } catch (error) {
+      if (activeRemovalRequests.get(id) !== request) return;
+      setPublishedCardBusy(card, false);
+      if (error.name !== 'AbortError') {
+        const message = 'The screenshot could not be removed right now. Please try again.';
+        const cardStatus = card.querySelector('[data-published-card-status]');
+        if (cardStatus) cardStatus.textContent = message;
+        setApprovedStatus(message, 'error');
+      }
+    } finally {
+      window.clearTimeout(request.timeout);
+      if (activeRemovalRequests.get(id) === request) activeRemovalRequests.delete(id);
+      setRefreshBusy();
+    }
+  };
+
+  const loadApprovedUploads = async ({ append = false } = {}) => {
+    if (activeApprovedRequest || activeRemovalRequests.size > 0 || !currentUser || currentUser.isAdmin !== true) return;
+    if (append && !approvedNextCursor) return;
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+
+    const controller = new AbortController();
+    const request = {
+      controller,
+      timeout: window.setTimeout(() => controller.abort(), 10000),
+      append
+    };
+    activeApprovedRequest = request;
+    if (approvedMoreButton) approvedMoreButton.disabled = true;
+    setRefreshBusy();
+    setApprovedStatus(append ? 'Loading more published screenshots…' : 'Loading published screenshots…');
+
+    const cursor = append ? `&before=${encodeURIComponent(approvedNextCursor)}` : '';
+    try {
+      const response = await fetch(`${ARCHIVE_API}/api/admin/approved?limit=30${cursor}`, {
+        method: 'GET',
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      const payload = await safeJson(response);
+      if (activeApprovedRequest !== request) return;
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      if (response.status === 403) {
+        denyAccess();
+        return;
+      }
+      if (!response.ok || !payload || payload.ok !== true || !Array.isArray(payload.uploads)) {
+        setApprovedStatus(
+          backendError(payload) || 'The published screenshots could not be loaded. Please try again.',
+          'error'
+        );
+        return;
+      }
+
+      const uploads = payload.uploads.map(normalizeApprovedUpload).filter(Boolean);
+      renderApprovedUploads(uploads, { append });
+      approvedLoaded = true;
+      const nextCursor = reasonableText(payload.nextCursor, 500);
+      approvedNextCursor = payload.hasMore === true && nextCursor ? nextCursor : null;
+      if (approvedMoreButton) approvedMoreButton.hidden = !approvedNextCursor;
+      const count = approvedUploads.size;
+      setApprovedStatus(count
+        ? `${count} published screenshot${count === 1 ? '' : 's'} loaded.`
+        : 'No screenshots are currently published.');
+    } catch (error) {
+      if (activeApprovedRequest !== request) return;
+      if (error.name !== 'AbortError') {
+        setApprovedStatus('The published screenshots could not be loaded. Please try again.', 'error');
+      }
+    } finally {
+      window.clearTimeout(request.timeout);
+      if (activeApprovedRequest === request) activeApprovedRequest = null;
+      if (approvedMoreButton) approvedMoreButton.disabled = false;
+      setRefreshBusy();
+    }
+  };
+
+  const setActiveTab = (tabName, { focus = false, load = true } = {}) => {
+    if (tabName !== 'pending' && tabName !== 'published') return;
+    activeTab = tabName;
+    tabButtons.forEach((button) => {
+      const selected = button.dataset.adminTab === tabName;
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      button.classList.toggle('is-active', selected);
+      if (selected && focus) button.focus();
+    });
+    tabPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.adminPanel !== tabName;
+    });
+    setRefreshBusy();
+    if (load && tabName === 'published' && !approvedLoaded && !activeApprovedRequest) loadApprovedUploads();
+  };
+
   const loadPendingQueue = async () => {
     if (activeQueueRequest || activeModerationRequests.size > 0 || !currentUser || currentUser.isAdmin !== true) return;
     const token = readSession();
@@ -551,7 +967,7 @@
       timeout: window.setTimeout(() => controller.abort(), 10000)
     };
     activeQueueRequest = request;
-    setRefreshBusy(true);
+    setRefreshBusy();
     setDashboardStatus('Loading pending screenshots…');
 
     try {
@@ -595,7 +1011,7 @@
     } finally {
       window.clearTimeout(request.timeout);
       if (activeQueueRequest === request) activeQueueRequest = null;
-      setRefreshBusy(false);
+      setRefreshBusy();
     }
   };
 
@@ -658,6 +1074,7 @@
 
       currentUser = user;
       if (displayName) displayName.textContent = user.displayName;
+      setActiveTab('pending', { load: false });
       setAuthState('authorized', `Authorized as ${user.displayName}.`);
       loadPendingQueue();
     } catch (error) {
@@ -682,7 +1099,33 @@
 
   logoutButtons.forEach((button) => button.addEventListener('click', logout));
   if (authRetryButton) authRetryButton.addEventListener('click', verifySession);
-  if (refreshButton) refreshButton.addEventListener('click', loadPendingQueue);
+  if (refreshButton) {
+    refreshButton.addEventListener('click', () => {
+      if (activeTab === 'published') loadApprovedUploads();
+      else loadPendingQueue();
+    });
+  }
+  if (approvedMoreButton) {
+    approvedMoreButton.addEventListener('click', () => loadApprovedUploads({ append: true }));
+  }
+
+  tabButtons.forEach((button) => {
+    button.addEventListener('click', () => setActiveTab(button.dataset.adminTab));
+  });
+  if (tabList) {
+    tabList.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const currentIndex = Math.max(0, tabButtons.indexOf(document.activeElement));
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabButtons.length;
+      if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabButtons.length) % tabButtons.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = tabButtons.length - 1;
+      const nextButton = tabButtons[nextIndex];
+      if (nextButton) setActiveTab(nextButton.dataset.adminTab, { focus: true });
+    });
+  }
 
   if (rejectDialog && rejectCancelButton && rejectConfirmButton) {
     rejectCancelButton.addEventListener('click', closeRejectDialog);
@@ -712,12 +1155,41 @@
     });
   }
 
+  if (removeDialog && removeCancelButton && removeConfirmButton) {
+    removeCancelButton.addEventListener('click', closeRemoveDialog);
+    removeConfirmButton.addEventListener('click', () => {
+      const id = removingUploadId;
+      closeRemoveDialog();
+      if (id !== null) removeApprovedUpload(id);
+    });
+    removeDialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeRemoveDialog();
+    });
+    removeDialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      closeRemoveDialog();
+    });
+    removeDialog.addEventListener('click', (event) => {
+      if (event.target === removeDialog) closeRemoveDialog();
+    });
+    removeDialog.addEventListener('close', () => {
+      rootEl.classList.remove('modal-open');
+      const id = Number(removeDialog.dataset.restoreUploadId);
+      delete removeDialog.dataset.restoreUploadId;
+      const button = approvedQueue && approvedQueue.querySelector(`[data-approved-id="${id}"] [data-remove-approved]`);
+      if (button && !button.disabled) button.focus();
+    });
+  }
+
   window.addEventListener('pagehide', () => {
     if (activeAuthRequest) {
       window.clearTimeout(activeAuthRequest.timeout);
       activeAuthRequest.controller.abort();
     }
     clearQueue();
+    clearApproved();
   }, { once: true });
 
   verifySession();

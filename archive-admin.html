@@ -124,15 +124,14 @@
           <p class="archive-admin-live" data-admin-auth-live role="status" aria-live="polite" aria-atomic="true"></p>
         </section>
 
-        <section class="archive-admin-dashboard" data-admin-dashboard aria-labelledby="pending-screenshots-title" hidden>
+        <section class="archive-admin-dashboard" data-admin-dashboard aria-labelledby="archive-management-title" hidden>
           <div class="archive-admin-toolbar section-card">
             <div class="archive-admin-toolbar-copy">
-              <p class="eyebrow">Review queue</p>
-              <h2 id="pending-screenshots-title">Pending screenshots</h2>
+              <p class="eyebrow">Community Archive</p>
+              <h2 id="archive-management-title">Archive management</h2>
               <p class="archive-admin-identity">Signed in as <strong data-admin-display-name></strong></p>
             </div>
             <div class="archive-admin-toolbar-controls">
-              <span class="archive-pending-count" data-admin-count>Pending: 0</span>
               <button class="button button-secondary archive-admin-refresh" type="button" data-admin-refresh>
                 <span aria-hidden="true">↻</span>
                 <span data-admin-refresh-label>Refresh</span>
@@ -141,17 +140,77 @@
             </div>
           </div>
 
-          <p class="archive-admin-status" data-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
-          <p class="archive-admin-more-note" data-admin-more hidden>Showing the first 50 pending screenshots.</p>
-
-          <div class="archive-admin-queue" data-admin-queue aria-busy="false"></div>
-
-          <div class="archive-admin-empty section-card" data-admin-empty hidden>
-            <div class="archive-admin-empty-mark" aria-hidden="true">✓</div>
-            <p class="eyebrow">Review desk clear</p>
-            <h3>No screenshots are waiting for review.</h3>
-            <p>You're all caught up.</p>
+          <div class="archive-admin-tabs section-card" role="tablist" aria-label="Archive management views" data-admin-tabs>
+            <button
+              class="archive-admin-tab is-active"
+              id="archive-tab-pending"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="archive-panel-pending"
+              data-admin-tab="pending"
+            >
+              <span>Pending Review</span>
+              <span class="archive-admin-tab-count" data-admin-count>0</span>
+            </button>
+            <button
+              class="archive-admin-tab"
+              id="archive-tab-published"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="archive-panel-published"
+              tabindex="-1"
+              data-admin-tab="published"
+            >
+              <span>Published</span>
+              <span class="archive-admin-tab-count" data-approved-count>0</span>
+            </button>
           </div>
+
+          <section
+            class="archive-admin-tab-panel"
+            id="archive-panel-pending"
+            role="tabpanel"
+            aria-labelledby="archive-tab-pending"
+            data-admin-panel="pending"
+          >
+            <p class="archive-admin-status" data-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
+            <p class="archive-admin-more-note" data-admin-more hidden>Showing the first 50 pending screenshots.</p>
+
+            <div class="archive-admin-queue" data-admin-queue aria-busy="false"></div>
+
+            <div class="archive-admin-empty section-card" data-admin-empty hidden>
+              <div class="archive-admin-empty-mark" aria-hidden="true">✓</div>
+              <p class="eyebrow">Review desk clear</p>
+              <h3>No screenshots are waiting for review.</h3>
+              <p>You're all caught up.</p>
+            </div>
+          </section>
+
+          <section
+            class="archive-admin-tab-panel"
+            id="archive-panel-published"
+            role="tabpanel"
+            aria-labelledby="archive-tab-published"
+            data-admin-panel="published"
+            hidden
+          >
+            <p class="archive-admin-status" data-approved-status role="status" aria-live="polite" aria-atomic="true"></p>
+
+            <div class="archive-admin-queue" data-approved-queue aria-busy="false"></div>
+
+            <div class="archive-admin-empty section-card archive-approved-empty" data-approved-empty hidden>
+              <div class="archive-admin-empty-mark" aria-hidden="true">▧</div>
+              <p class="eyebrow">Public gallery</p>
+              <h3>No screenshots are currently published.</h3>
+              <p>Approved screenshots will appear here once they are added to the Community Archive.</p>
+            </div>
+
+            <div class="archive-approved-controls">
+              <button class="button button-secondary" type="button" data-approved-more hidden>Load More Published</button>
+            </div>
+          </section>
         </section>
 
         <dialog class="archive-reject-dialog" id="archive-reject-dialog" aria-labelledby="archive-reject-title" aria-describedby="archive-reject-copy">
@@ -164,6 +223,21 @@
             <div class="archive-reject-actions">
               <button class="button button-secondary" type="button" data-reject-cancel>Cancel</button>
               <button class="archive-reject-confirm" type="button" data-reject-confirm>Reject Screenshot</button>
+            </div>
+          </div>
+        </dialog>
+
+        <dialog class="archive-reject-dialog archive-remove-dialog" id="archive-remove-dialog" aria-labelledby="archive-remove-title" aria-describedby="archive-remove-copy">
+          <div class="archive-reject-modal">
+            <div class="archive-reject-icon" aria-hidden="true">🗑️</div>
+            <p class="eyebrow">Permanent Archive removal</p>
+            <h2 id="archive-remove-title">Remove this screenshot from the Archive?</h2>
+            <p id="archive-remove-copy">It will immediately disappear from the public Community Archive and its image will be deleted from storage.</p>
+            <p class="archive-remove-warning">This cannot be undone.</p>
+            <p class="archive-reject-context" data-remove-context></p>
+            <div class="archive-reject-actions">
+              <button class="button button-secondary" type="button" data-remove-cancel>Cancel</button>
+              <button class="archive-reject-confirm" type="button" data-remove-confirm>Remove Screenshot</button>
             </div>
           </div>
         </dialog>

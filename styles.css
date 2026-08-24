@@ -2430,8 +2430,10 @@ html.night .archive-upload-status[data-state="error"] {
 .archive-admin-access[hidden],
 .archive-admin-dashboard[hidden],
 .archive-admin-auth-view[hidden],
+.archive-admin-tab-panel[hidden],
 .archive-admin-empty[hidden],
 .archive-admin-more-note[hidden],
+.archive-approved-controls button[hidden],
 .archive-image-loading[hidden],
 .archive-image-unavailable[hidden],
 .archive-moderation-media img[hidden] {
@@ -2522,6 +2524,69 @@ html.night .archive-upload-status[data-state="error"] {
   gap: 1rem;
 }
 
+.archive-admin-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  padding: 0.6rem;
+}
+
+.archive-admin-tab {
+  display: flex;
+  min-width: 0;
+  min-height: 3.4rem;
+  padding: 0.7rem 0.85rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.archive-admin-tab:hover {
+  color: var(--ink);
+  background: var(--chip-bg);
+}
+
+.archive-admin-tab.is-active {
+  border-color: rgba(98, 189, 71, 0.44);
+  background: linear-gradient(180deg, rgba(98, 189, 71, 0.18), rgba(98, 189, 71, 0.1));
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 rgba(53, 133, 63, 0.26);
+}
+
+.archive-admin-tab:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.archive-admin-tab-count {
+  display: inline-grid;
+  min-width: 1.8rem;
+  min-height: 1.8rem;
+  padding: 0.15rem 0.45rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-top);
+  color: var(--accent);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.archive-admin-tab-panel {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+}
+
 .archive-admin-toolbar {
   display: flex;
   gap: 1.5rem;
@@ -2590,6 +2655,10 @@ html.night .archive-upload-status[data-state="error"] {
 
 .archive-admin-status[data-state="success"] {
   color: var(--accent);
+}
+
+.archive-admin-status[data-state="notice"] {
+  color: var(--muted);
 }
 
 .archive-admin-status[data-state="error"] {
@@ -2763,6 +2832,24 @@ html.night .archive-admin-status[data-state="error"] {
   min-width: 0;
 }
 
+.archive-published-actions {
+  grid-template-columns: 1fr;
+}
+
+.archive-remove-button {
+  width: 100%;
+}
+
+.archive-approved-controls {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.25rem;
+}
+
+.archive-approved-controls .button {
+  min-width: min(100%, 14rem);
+}
+
 .archive-reject-button,
 .archive-reject-confirm {
   min-height: 3rem;
@@ -2891,6 +2978,15 @@ html.night .archive-admin-status[data-state="error"] {
   overflow-wrap: anywhere;
 }
 
+.archive-remove-warning {
+  color: #9d3c30 !important;
+  font-weight: 900;
+}
+
+html.night .archive-remove-warning {
+  color: #ffbd8c !important;
+}
+
 .archive-reject-actions {
   display: grid;
   width: 100%;
@@ -2944,6 +3040,20 @@ html.night .archive-admin-status[data-state="error"] {
 
   .archive-admin-toolbar {
     align-items: stretch;
+  }
+
+  .archive-admin-tab {
+    min-height: 3.25rem;
+    padding-inline: 0.55rem;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+  }
+
+  .archive-admin-tab-count {
+    min-width: 1.6rem;
+    min-height: 1.6rem;
+    padding-inline: 0.35rem;
+    font-size: 0.75rem;
   }
 
   .archive-pending-count {
