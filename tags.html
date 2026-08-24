@@ -1273,7 +1273,7 @@
       </div>
 
       <div class="hint" style="margin-top:14px;">
-        Bulk inherits the current Designer settings as shared defaults (font, frame, decorations, padding, and effects). Each row keeps its own text and gradient.
+        Each bulk entry keeps a snapshot of its complete design, so later Designer changes won't alter tags already in the list.
       </div>
     </div>
   </section>
@@ -1894,6 +1894,9 @@ const state = {
   glyphPerm: false,
 };
 const STATE_FIELDS = new Set(Object.keys(state));
+const BULK_DESIGN_FIELDS = new Set(
+  [...STATE_FIELDS].filter(key => !['text', 'colors', 'ign', 'glyphStart', 'glyphFolder', 'glyphPerm'].includes(key))
+);
 
 let bulkTags = [];
 
@@ -1916,7 +1919,7 @@ function loadState() {
       Object.entries(s).filter(([key]) => STATE_FIELDS.has(key))
     ));
     const b = JSON.parse(localStorage.getItem(BULK_KEY) || '[]');
-    if (Array.isArray(b)) bulkTags = b;
+    if (Array.isArray(b)) bulkTags = b.map(normalizeBulkTag).filter(Boolean);
   } catch (e) { /* ignore */ }
 }
 
@@ -2202,17 +2205,39 @@ $('dl-scaled').addEventListener('click', () => {
 /* ==============================================================
    BULK MODE
    ============================================================== */
+function designFromState(source = state) {
+  return Object.fromEntries(
+    Object.entries(source).filter(([key]) => BULK_DESIGN_FIELDS.has(key))
+  );
+}
+
+function normalizeBulkTag(tag) {
+  if (!tag || typeof tag.text !== 'string' || !Array.isArray(tag.colors)) return null;
+  const colors = tag.colors.map(normHex).filter(Boolean);
+  if (!colors.length) return null;
+  const savedDesign = {
+    ...designFromState(),
+    ...(tag.design && typeof tag.design === 'object' ? designFromState(tag.design) : {}),
+  };
+  return {
+    text: String(tag.text).slice(0, 20),
+    colors,
+    design: savedDesign,
+  };
+}
+
 function tagFromState(text, colors) {
   return {
-    text: text || state.text,
-    colors: colors || [...state.colors],
+    text: text ?? state.text,
+    colors: colors ? [...colors] : [...state.colors],
+    design: designFromState(),
   };
 }
 
 function mergedConfig(tag) {
-  // Each bulk tag carries only text + colors. Everything else comes from current state defaults.
   return {
     ...state,
+    ...(tag.design || {}),
     text: tag.text,
     colors: tag.colors,
   };
@@ -2275,6 +2300,7 @@ function renderBulkTable() {
       saveState();
     });
     editBtn.addEventListener('click', () => {
+      Object.assign(state, bulkTags[idx].design || {});
       state.text = bulkTags[idx].text;
       state.colors = [...bulkTags[idx].colors];
       syncUIFromState();
@@ -2413,7 +2439,7 @@ function openModal(mode) {
   } else {
     modalTxt.value = '';
     modalTxt.readOnly = false;
-    modalTxt.placeholder = 'Paste JSON array of { "text": "...", "colors": ["#...", "#..."] }';
+    modalTxt.placeholder = 'Paste a previously exported tag list, or an array of { "text": "...", "colors": ["#...", "#..."] }';
   }
   modalBg.classList.add('show');
 }
@@ -2431,13 +2457,7 @@ $('modal-ok').addEventListener('click', () => {
     try {
       const parsed = JSON.parse(modalTxt.value);
       if (!Array.isArray(parsed)) throw new Error('not an array');
-      const valid = parsed
-        .filter(t => t && typeof t.text === 'string' && Array.isArray(t.colors))
-        .map(t => ({
-          text: String(t.text).slice(0, 20),
-          colors: t.colors.map(normHex).filter(Boolean),
-        }))
-        .filter(t => t.colors.length > 0);
+      const valid = parsed.map(normalizeBulkTag).filter(Boolean);
       if (!valid.length) throw new Error('no valid entries (check that colors are 6-digit hex)');
       bulkTags = valid;
       renderBulkTable();
