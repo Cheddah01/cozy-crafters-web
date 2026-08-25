@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Support Cozy Crafters SMP with a 30-day Supporter or Patron rank purchase." />
+    <meta name="description" content="Support Cozy Crafters SMP with a 30-day or 90-day Supporter or Patron rank purchase." />
     <meta name="robots" content="index,follow" />
     <link rel="canonical" href="https://cozycrafters.net/store.html" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cozy Crafters SMP" />
     <meta property="og:title" content="Support the Server | Cozy Crafters SMP" />
-    <meta property="og:description" content="Support Cozy Crafters SMP with a 30-day Supporter or Patron rank purchase." />
+    <meta property="og:description" content="Support Cozy Crafters SMP with a 30-day or 90-day Supporter or Patron rank purchase." />
     <meta property="og:url" content="https://cozycrafters.net/store.html" />
     <meta name="theme-color" content="#7cc4f5" />
     <script>
@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-centered-perk-icons" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-duration-selector" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
   </head>
@@ -79,12 +79,12 @@
           <div>
             <p class="eyebrow">Cozy Crafters Store</p>
             <h1 id="store-title">Support the Server</h1>
-            <p class="lede">Choose a rank and help keep Cozy Crafters growing. Each rank is a one-time purchase that lasts exactly 30 days and does not automatically renew.</p>
+            <p class="lede">Choose a rank and help keep Cozy Crafters growing. Select 30 or 90 days with one simple purchase and no automatic renewal.</p>
           </div>
           <aside class="store-assurance" aria-label="Purchase information">
             <div class="assurance-item">
               <span class="assurance-icon" aria-hidden="true">🧡</span>
-              <span>Each purchase lasts 30 days</span>
+              <span>Choose 30 or 90 days</span>
             </div>
             <div class="assurance-item">
               <span class="assurance-icon" aria-hidden="true">🔒</span>
@@ -127,42 +127,72 @@
             <p data-store-notice-text>Checking store availability…</p>
           </aside>
 
+          <fieldset class="duration-card section-card">
+            <legend>
+              <span class="eyebrow">Step two</span>
+              <span class="duration-card-title">Choose your duration</span>
+            </legend>
+            <p class="duration-card-description">Choose once for either rank. Your selection updates the prices below.</p>
+            <div class="duration-options">
+              <label class="duration-option">
+                <input type="radio" name="duration" value="30" data-duration-days="30" checked disabled />
+                <span class="duration-option-content">
+                  <span class="duration-option-icon" aria-hidden="true">🌱</span>
+                  <span>
+                    <strong>30 days</strong>
+                    <small>Standard access</small>
+                  </span>
+                </span>
+              </label>
+              <label class="duration-option">
+                <input type="radio" name="duration" value="90" data-duration-days="90" disabled />
+                <span class="duration-option-content">
+                  <span class="duration-option-icon" aria-hidden="true">🌳</span>
+                  <span>
+                    <strong>90 days</strong>
+                    <small>Three months of access</small>
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
           <div class="rank-grid" aria-label="Available ranks">
             <article class="rank-card rank-supporter" data-rank-card="supporter">
-              <span class="rank-price-badge"><strong>$8</strong> <small>USD</small></span>
+              <span class="rank-price-badge"><strong data-rank-price="supporter">$8</strong> <small>USD</small></span>
               <div class="rank-heading">
                 <span class="rank-emblem" aria-hidden="true">🧡</span>
                 <div>
-                  <p class="rank-kicker">30-day rank</p>
+                  <p class="rank-kicker" data-rank-duration="supporter">30-day rank</p>
                   <h2>Supporter</h2>
                 </div>
               </div>
               <p class="rank-description">A simple way to support the Cozy Crafters server and community.</p>
               <button class="rank-perks-trigger" type="button" data-perks-rank="supporter" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
               <p class="rank-availability" data-rank-availability="supporter" hidden>Unavailable</p>
-              <button class="button button-secondary" type="submit" data-rank="supporter" data-default-label="Purchase Supporter" disabled>Purchase Supporter</button>
+              <button class="button button-secondary" type="submit" data-rank="supporter" data-default-label="Purchase Supporter — 30 days" disabled>Purchase Supporter — 30 days</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
 
             <article class="rank-card rank-patron" data-rank-card="patron">
-              <span class="rank-price-badge"><strong>$16</strong> <small>USD</small></span>
+              <span class="rank-price-badge"><strong data-rank-price="patron">$16</strong> <small>USD</small></span>
               <div class="rank-heading">
                 <span class="rank-emblem" aria-hidden="true">👑</span>
                 <div>
-                  <p class="rank-kicker">30-day rank</p>
+                  <p class="rank-kicker" data-rank-duration="patron">30-day rank</p>
                   <h2>Patron</h2>
                 </div>
               </div>
               <p class="rank-description">An extra-generous way to help support the Cozy Crafters server and community.</p>
               <button class="rank-perks-trigger" type="button" data-perks-rank="patron" aria-haspopup="dialog" aria-controls="rank-perks-dialog">View perks</button>
               <p class="rank-availability" data-rank-availability="patron" hidden>Unavailable</p>
-              <button class="button button-store" type="submit" data-rank="patron" data-default-label="Purchase Patron" disabled>Purchase Patron</button>
+              <button class="button button-store" type="submit" data-rank="patron" data-default-label="Purchase Patron — 30 days" disabled>Purchase Patron — 30 days</button>
               <p class="stripe-redirect-note">Opens with <span class="stripe-wordmark">stripe</span></p>
             </article>
           </div>
 
           <p class="checkout-status" id="checkout-status" role="alert" aria-live="polite"></p>
-          <p class="stripe-note">Ranks do not renew automatically. You’ll need to purchase your rank again after 30 days to keep it active. Payments are securely processed by Stripe.</p>
+          <p class="stripe-note">Ranks do not renew automatically. Purchase another 30 or 90 days whenever you want to continue your access. Payments are securely processed by Stripe.</p>
           <p class="store-tax-note">Applicable taxes may be added at checkout where required.</p>
         </form>
 
@@ -231,13 +261,34 @@
 
         syncTheme();
 
+        const purchaseOptions = {
+          30: {
+            label: '30 days',
+            adjective: '30-day',
+            checkoutReady: true,
+            prices: {
+              supporter: { display: '$8', full: '$8 USD' },
+              patron: { display: '$16', full: '$16 USD' }
+            }
+          },
+          90: {
+            label: '90 days',
+            adjective: '90-day',
+            checkoutReady: false,
+            prices: {
+              supporter: { display: '$24', full: '$24 USD' },
+              patron: { display: '$48', full: '$48 USD' }
+            }
+          }
+        };
+        let selectedDurationDays = 30;
+
         const perkContent = {
           supporter: {
             icon: '🧡',
             kicker: 'Supporter rank',
             title: 'Supporter perks',
-            intro: 'Your 30-day Supporter rank unlocks:',
-            price: '$8 USD',
+            rankName: 'Supporter',
             sections: [
               {
                 title: 'Cosmetics',
@@ -263,8 +314,7 @@
             icon: '👑',
             kicker: 'Patron rank',
             title: 'Patron perks',
-            intro: 'Your 30-day Patron rank unlocks:',
-            price: '$16 USD',
+            rankName: 'Patron',
             sections: [
               {
                 title: 'Cosmetics',
@@ -306,13 +356,15 @@
 
         perksTriggers.forEach((trigger) => {
           trigger.addEventListener('click', () => {
-            const content = perkContent[trigger.dataset.perksRank];
+            const rank = trigger.dataset.perksRank;
+            const content = perkContent[rank];
+            const purchaseOption = purchaseOptions[selectedDurationDays];
             if (!content || !perksDialog) return;
 
             perksIcon.textContent = content.icon;
             perksKicker.textContent = content.kicker;
             perksTitle.textContent = content.title;
-            perksIntro.textContent = content.intro;
+            perksIntro.textContent = `Your ${purchaseOption.adjective} ${content.rankName} rank unlocks:`;
             perksGroups.replaceChildren(...content.sections.map((section) => {
               const group = document.createElement('section');
               group.className = 'rank-perks-group';
@@ -348,9 +400,9 @@
             }));
 
             const price = document.createElement('strong');
-            price.textContent = content.price;
+            price.textContent = purchaseOption.prices[rank].full;
             const term = document.createElement('span');
-            term.textContent = '30-day access · One-time purchase';
+            term.textContent = `${purchaseOption.adjective} access · One-time purchase`;
             perksTerm.replaceChildren(price, term);
 
             if (content.note) {
@@ -381,7 +433,14 @@
         const storeNotice = document.querySelector('[data-store-notice]');
         const storeNoticeLabel = document.querySelector('[data-store-notice-label]');
         const storeNoticeText = document.querySelector('[data-store-notice-text]');
+        const durationInputs = Array.from(document.querySelectorAll('[data-duration-days]'));
         const purchaseButtons = Array.from(document.querySelectorAll('[data-rank]'));
+        const rankPriceElements = Object.fromEntries(
+          Array.from(document.querySelectorAll('[data-rank-price]')).map((price) => [price.dataset.rankPrice, price])
+        );
+        const rankDurationLabels = Object.fromEntries(
+          Array.from(document.querySelectorAll('[data-rank-duration]')).map((label) => [label.dataset.rankDuration, label])
+        );
         const rankCards = Object.fromEntries(
           Array.from(document.querySelectorAll('[data-rank-card]')).map((card) => [card.dataset.rankCard, card])
         );
@@ -417,11 +476,15 @@
         const syncStoreControls = (activeButton = null) => {
           const settingsLoading = !storeSettingsResolved;
           const controlsLocked = settingsLoading || checkoutPending || !storeEnabled;
+          const durationCheckoutReady = purchaseOptions[selectedDurationDays].checkoutReady;
 
           form.dataset.storeState = settingsLoading ? 'loading' : storeEnabled ? 'ready' : 'unavailable';
           form.setAttribute('aria-busy', String(settingsLoading || checkoutPending));
           usernameInput.disabled = controlsLocked;
           if (usernameCard) usernameCard.setAttribute('aria-busy', String(settingsLoading));
+          durationInputs.forEach((input) => {
+            input.disabled = controlsLocked;
+          });
 
           purchaseButtons.forEach((button) => {
             const rank = button.dataset.rank;
@@ -430,18 +493,41 @@
             const defaultLabel = button.dataset.defaultLabel || `Purchase ${rankName}`;
             const unavailable = storeSettingsResolved && !rankEnabled;
 
-            button.disabled = settingsLoading || checkoutPending || !rankEnabled;
+            button.disabled = settingsLoading || checkoutPending || !rankEnabled || !durationCheckoutReady;
             button.textContent = checkoutPending && button === activeButton
               ? 'Opening checkout…'
               : settingsLoading
                 ? 'Checking availability…'
                 : unavailable
                   ? `${rankName} unavailable`
-                  : defaultLabel;
+                  : !durationCheckoutReady
+                    ? '90-day checkout coming soon'
+                    : defaultLabel;
 
             if (rankCards[rank]) rankCards[rank].classList.toggle('is-unavailable', unavailable);
             if (rankAvailabilityLabels[rank]) rankAvailabilityLabels[rank].hidden = !unavailable;
           });
+        };
+
+        const syncDurationDisplay = () => {
+          const purchaseOption = purchaseOptions[selectedDurationDays];
+
+          allowedRanks.forEach((rank) => {
+            const rankName = rank === 'patron' ? 'Patron' : 'Supporter';
+            if (rankPriceElements[rank]) {
+              rankPriceElements[rank].textContent = purchaseOption.prices[rank].display;
+            }
+            if (rankDurationLabels[rank]) {
+              rankDurationLabels[rank].textContent = `${purchaseOption.adjective} rank`;
+            }
+
+            const purchaseButton = purchaseButtons.find((button) => button.dataset.rank === rank);
+            if (purchaseButton) {
+              purchaseButton.dataset.defaultLabel = `Purchase ${rankName} — ${purchaseOption.label}`;
+            }
+          });
+
+          syncStoreControls();
         };
 
         const applyPublicSettings = (settings) => {
@@ -484,6 +570,22 @@
         } else {
           applyPublicSettings(null);
         }
+
+        durationInputs.forEach((input) => {
+          input.addEventListener('change', () => {
+            if (!input.checked) return;
+            const durationDays = Number(input.value);
+            if (!purchaseOptions[durationDays]) return;
+
+            selectedDurationDays = durationDays;
+            syncDurationDisplay();
+            showStatus(durationDays === 90
+              ? '90-day checkout is being prepared. Choose 30 days to purchase now.'
+              : '');
+          });
+        });
+
+        syncDurationDisplay();
 
         usernameInput.addEventListener('input', () => {
           usernameInput.removeAttribute('aria-invalid');
