@@ -6954,7 +6954,7 @@ html.night .pc-export-status.error {
 
 .timeline-explorer {
   position: relative;
-  padding: 1.7rem 0 1.15rem;
+  padding: 1rem 0 1.15rem;
 }
 
 .timeline-explorer::before,
@@ -7003,7 +7003,7 @@ html.night .pc-export-status.error {
   position: relative;
   display: inline-flex;
   min-width: 100%;
-  padding: 0 max(2.5rem, calc((100vw - 24rem) / 2)) 0;
+  padding: 0.7rem max(2.5rem, calc((100vw - 24rem) / 2)) 0;
 }
 
 .timeline-track::after {
