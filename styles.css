@@ -5199,7 +5199,7 @@ html.modal-open {
 
 .rank-perk-icon {
   position: absolute;
-  top: 0.6rem;
+  top: 50%;
   left: 0.65rem;
   display: grid;
   width: 1.25rem;
@@ -5209,6 +5209,7 @@ html.modal-open {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   font-size: 0.9rem;
   line-height: 1;
+  transform: translateY(-50%);
 }
 
 .rank-perk-title,

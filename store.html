@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-perk-icons" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-centered-perk-icons" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
   </head>
@@ -245,7 +245,7 @@
                 perks: [
                   { title: 'Supporter chat tag', icon: '🏷️' },
                   { title: 'Discord role', icon: '💬' },
-                  { title: 'Exclusive profile badge', icon: '🏅' },
+                  { title: 'Exclusive profile badge', command: '/profile badges', icon: '🏅' },
                   { title: 'Customizable Supporter tag', icon: '🎨' },
                   { title: 'Name on the Supporter Wall', icon: '🧱' }
                 ]
@@ -271,8 +271,8 @@
                 icon: '✨',
                 perks: [
                   { title: 'Patron chat tag and Discord role', icon: '💬' },
-                  { title: 'Exclusive profile badge', icon: '🏅' },
-                  { title: 'Premium profile frame and sounds', command: '/profile', icon: '🖼️' },
+                  { title: 'Exclusive profile badge', command: '/profile badges', icon: '🏅' },
+                  { title: 'Premium profile frame and sounds', command: '/profile edit', icon: '🖼️' },
                   { title: 'Join message cosmetics', command: '/joinmessage', icon: '🎉' },
                   { title: 'Access to the skins wardrobe', command: '/skins', icon: '👕' },
                   { title: 'Disguise as mobs and players', command: '/dis', icon: '🎭' },
