@@ -23,11 +23,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-periods" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
     <script src="./archive-admin.js" defer></script>
     <script src="./timeline-admin.js" defer></script>
+    <script src="./timeline-period-admin.js" defer></script>
   </head>
   <body>
     <div class="sky" aria-hidden="true">
@@ -244,6 +245,26 @@
               <button class="button button-primary" type="button" data-timeline-admin-add>＋ Add Event</button>
             </div>
 
+            <section class="timeline-period-admin section-card" aria-labelledby="timeline-period-admin-title">
+              <div class="timeline-period-admin-heading">
+                <div>
+                  <p class="eyebrow">Timeline ages</p>
+                  <h3 id="timeline-period-admin-title">Periods</h3>
+                  <p>Add named spans such as Season 1, rebuilding, or periods of inactivity.</p>
+                </div>
+                <button class="button button-secondary" type="button" data-timeline-period-add>＋ Add Period</button>
+              </div>
+              <p class="timeline-period-admin-status" data-timeline-period-status role="status" aria-live="polite" aria-atomic="true"></p>
+              <div class="timeline-period-admin-list" data-timeline-period-list aria-busy="false"></div>
+              <div class="timeline-period-admin-empty" data-timeline-period-empty hidden>
+                <span aria-hidden="true">▰</span>
+                <div>
+                  <strong>No periods added yet.</strong>
+                  <p>Events still work normally until you add the first age.</p>
+                </div>
+              </div>
+            </section>
+
             <p class="archive-admin-status" data-timeline-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
 
             <div class="timeline-admin-layout">
@@ -382,6 +403,67 @@
             <div class="archive-reject-actions">
               <button class="button button-secondary" type="button" data-timeline-delete-cancel>Cancel</button>
               <button class="archive-reject-confirm" type="button" data-timeline-delete-confirm>Delete Event</button>
+            </div>
+          </div>
+        </dialog>
+
+        <dialog class="archive-reject-dialog timeline-period-dialog" id="timeline-period-dialog" aria-labelledby="timeline-period-dialog-title">
+          <form class="timeline-period-form" data-timeline-period-form novalidate>
+            <div class="timeline-admin-editor-heading">
+              <div>
+                <p class="eyebrow">Timeline age</p>
+                <h2 id="timeline-period-dialog-title" data-timeline-period-dialog-title>Add period</h2>
+              </div>
+              <button class="timeline-admin-editor-close" type="button" data-timeline-period-close aria-label="Close period editor">×</button>
+            </div>
+
+            <label class="timeline-admin-field" for="timeline-period-label">
+              <span>Name <strong aria-hidden="true">*</strong></span>
+              <input class="tool-input" id="timeline-period-label" name="label" type="text" maxlength="50" autocomplete="off" required data-timeline-period-label />
+              <small>Examples: Season 1, Quiet Era, Rebuilding</small>
+            </label>
+
+            <div class="timeline-period-date-grid">
+              <label class="timeline-admin-field" for="timeline-period-start">
+                <span>Start date <strong aria-hidden="true">*</strong></span>
+                <input class="tool-input" id="timeline-period-start" name="startDate" type="date" required data-timeline-period-start />
+              </label>
+              <label class="timeline-admin-field" for="timeline-period-end">
+                <span>End date <strong aria-hidden="true">*</strong></span>
+                <input class="tool-input" id="timeline-period-end" name="endDate" type="date" required data-timeline-period-end />
+              </label>
+            </div>
+
+            <label class="timeline-admin-field timeline-period-color-field" for="timeline-period-color">
+              <span>Band color</span>
+              <span class="timeline-period-color-control">
+                <input id="timeline-period-color" name="color" type="color" value="#62bd47" data-timeline-period-color />
+                <output data-timeline-period-color-value>#62bd47</output>
+              </span>
+            </label>
+
+            <div class="timeline-period-preview" data-timeline-period-preview>
+              <span data-timeline-period-preview-label>Period name</span>
+            </div>
+
+            <p class="timeline-admin-form-status" data-timeline-period-form-status role="status" aria-live="polite" aria-atomic="true"></p>
+            <div class="timeline-admin-form-actions">
+              <button class="button button-secondary" type="button" data-timeline-period-cancel>Cancel</button>
+              <button class="button button-primary" type="submit" data-timeline-period-save>Publish Period</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog class="archive-reject-dialog timeline-period-delete-dialog" id="timeline-period-delete-dialog" aria-labelledby="timeline-period-delete-title">
+          <div class="archive-reject-modal">
+            <div class="archive-reject-icon" aria-hidden="true">🗑️</div>
+            <p class="eyebrow">Permanent timeline removal</p>
+            <h2 id="timeline-period-delete-title">Delete this period?</h2>
+            <p>The events inside it will remain; only the labeled band will disappear.</p>
+            <p class="archive-reject-context" data-timeline-period-delete-context></p>
+            <div class="archive-reject-actions">
+              <button class="button button-secondary" type="button" data-timeline-period-delete-cancel>Cancel</button>
+              <button class="archive-reject-confirm" type="button" data-timeline-period-delete-confirm>Delete Period</button>
             </div>
           </div>
         </dialog>

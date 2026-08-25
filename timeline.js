@@ -20,6 +20,7 @@
 
   let activeRequest = null;
   let events = [];
+  let periods = [];
   let currentIndex = 0;
   let scrollFrame = null;
   let dragging = false;
@@ -88,6 +89,20 @@
       eventDate,
       imageUrl: safeImageUrl(value.imageUrl, id)
     });
+  };
+
+  const normalizePeriod = (value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const id = Number(value.id);
+    const label = reasonableText(value.label, 50);
+    const startDate = value.startDate;
+    const endDate = value.endDate;
+    const color = typeof value.color === 'string' && /^#[0-9a-f]{6}$/i.test(value.color)
+      ? value.color.toLowerCase()
+      : '';
+    if (!Number.isSafeInteger(id) || id <= 0 || !label || !validDate(startDate)
+      || !validDate(endDate) || startDate > endDate || !color) return null;
+    return Object.freeze({ id, label, startDate, endDate, color });
   };
 
   const dateParts = (value) => {
@@ -165,6 +180,88 @@
 
   const eventElements = () => Array.from(track.querySelectorAll('.timeline-event'));
 
+  const dateValue = (value) => {
+    const [year, month, day] = value.split('-').map(Number);
+    return Date.UTC(year, month - 1, day);
+  };
+
+  const renderPeriodBands = () => {
+    const previousLayer = track.querySelector('.timeline-period-layer');
+    if (previousLayer) previousLayer.remove();
+    track.classList.toggle('has-periods', Boolean(periods.length && events.length));
+    if (!periods.length || !events.length) return;
+
+    const elements = eventElements();
+    if (!elements.length) return;
+
+    const groupedAnchors = [];
+    elements.forEach((element, index) => {
+      const timestamp = dateValue(events[index].eventDate);
+      const center = element.offsetLeft + element.offsetWidth / 2;
+      const existing = groupedAnchors[groupedAnchors.length - 1];
+      if (existing && existing.timestamp === timestamp) {
+        existing.total += center;
+        existing.count += 1;
+        existing.center = existing.total / existing.count;
+      } else {
+        groupedAnchors.push({ timestamp, center, total: center, count: 1 });
+      }
+    });
+
+    const firstElement = elements[0];
+    const lastElement = elements[elements.length - 1];
+    const leftEdge = firstElement.offsetLeft;
+    const rightEdge = lastElement.offsetLeft + lastElement.offsetWidth;
+
+    const coordinateForDate = (value) => {
+      const timestamp = dateValue(value);
+      if (groupedAnchors.length === 1) {
+        const only = groupedAnchors[0];
+        if (timestamp < only.timestamp) return leftEdge;
+        if (timestamp > only.timestamp) return rightEdge;
+        return only.center;
+      }
+      const first = groupedAnchors[0];
+      const last = groupedAnchors[groupedAnchors.length - 1];
+      if (timestamp < first.timestamp) return leftEdge;
+      if (timestamp > last.timestamp) return rightEdge;
+      if (timestamp === first.timestamp) return first.center;
+      if (timestamp === last.timestamp) return last.center;
+
+      for (let index = 1; index < groupedAnchors.length; index += 1) {
+        const right = groupedAnchors[index];
+        if (timestamp > right.timestamp) continue;
+        const left = groupedAnchors[index - 1];
+        const dateSpan = right.timestamp - left.timestamp;
+        if (dateSpan <= 0) return left.center;
+        const progress = (timestamp - left.timestamp) / dateSpan;
+        return left.center + (right.center - left.center) * progress;
+      }
+      return rightEdge;
+    };
+
+    const layer = document.createElement('div');
+    layer.className = 'timeline-period-layer';
+    layer.setAttribute('aria-label', 'Timeline periods');
+
+    periods.forEach((period) => {
+      const band = document.createElement('div');
+      const start = coordinateForDate(period.startDate);
+      const end = coordinateForDate(period.endDate);
+      const left = Math.min(start, end);
+      const width = Math.max(18, Math.abs(end - start));
+      band.className = 'timeline-period-band';
+      band.style.left = `${left}px`;
+      band.style.width = `${width}px`;
+      band.style.setProperty('--timeline-period-color', period.color);
+      band.textContent = period.label;
+      band.title = `${period.label}: ${dateParts(period.startDate).long} – ${dateParts(period.endDate).long}`;
+      layer.append(band);
+    });
+
+    track.append(layer);
+  };
+
   const updateCurrentEvent = () => {
     const elements = eventElements();
     if (!elements.length) return;
@@ -221,6 +318,7 @@
       setStatus('No timeline events have been published yet.');
       return;
     }
+    renderPeriodBands();
     const label = `${events.length} timeline ${events.length === 1 ? 'event' : 'events'} loaded.`;
     setStatus(label);
     const showNewest = () => {
@@ -268,10 +366,22 @@
           return true;
         })
         .sort((a, b) => a.eventDate.localeCompare(b.eventDate) || a.id - b.id);
+      const normalizedPeriods = Array.isArray(payload.periods)
+        ? payload.periods.map(normalizePeriod).filter(Boolean)
+        : [];
+      const seenPeriodIds = new Set();
+      periods = normalizedPeriods
+        .filter((period) => {
+          if (seenPeriodIds.has(period.id)) return false;
+          seenPeriodIds.add(period.id);
+          return true;
+        })
+        .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id - b.id);
       renderEvents();
     } catch (error) {
       if (controller.signal.aborted && activeRequest && activeRequest.controller !== controller) return;
       events = [];
+      periods = [];
       track.replaceChildren();
       setView('error');
       setStatus('The timeline could not be loaded.');
@@ -313,7 +423,10 @@
   scroller.addEventListener('pointerup', stopDragging);
   scroller.addEventListener('pointercancel', stopDragging);
   scroller.addEventListener('scroll', scheduleCurrentEventUpdate, { passive: true });
-  window.addEventListener('resize', scheduleCurrentEventUpdate, { passive: true });
+  window.addEventListener('resize', () => {
+    renderPeriodBands();
+    scheduleCurrentEventUpdate();
+  }, { passive: true });
   window.addEventListener('pagehide', () => {
     if (!activeRequest) return;
     window.clearTimeout(activeRequest.timeout);

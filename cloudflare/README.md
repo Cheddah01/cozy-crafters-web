@@ -16,6 +16,9 @@ Timeline routes:
 - `POST /api/admin/timeline`
 - `PUT /api/admin/timeline/:id`
 - `DELETE /api/admin/timeline/:id`
+- `POST /api/admin/timeline/periods`
+- `PUT /api/admin/timeline/periods/:id`
+- `DELETE /api/admin/timeline/periods/:id`
 
-Apply `migrations/0001_timeline_events.sql` to the bound D1 database before
-deploying timeline support.
+Apply the numbered files in `migrations/` to the bound D1 database in order
+before deploying the matching timeline features.

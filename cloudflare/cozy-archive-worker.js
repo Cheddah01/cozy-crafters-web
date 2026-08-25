@@ -52,6 +52,8 @@ const MAX_MY_UPLOADS_LIMIT =
 const MAX_TIMELINE_TITLE_LENGTH = 80;
 const MAX_TIMELINE_DESCRIPTION_LENGTH = 280;
 const MAX_TIMELINE_RESULTS = 500;
+const MAX_TIMELINE_PERIOD_LABEL_LENGTH = 50;
+const MAX_TIMELINE_PERIOD_RESULTS = 100;
 
 const ALLOWED_ORIGINS =
   new Set([
@@ -298,6 +300,40 @@ export default {
       url.pathname === "/api/admin/timeline"
     ) {
       return handleAdminTimelineCreate(request, env);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/api/admin/timeline/periods"
+    ) {
+      return handleAdminTimelinePeriodCreate(request, env);
+    }
+
+    const adminTimelinePeriodMatch =
+      url.pathname.match(
+        /^\/api\/admin\/timeline\/periods\/([1-9]\d*)$/
+      );
+
+    if (
+      request.method === "PUT" &&
+      adminTimelinePeriodMatch
+    ) {
+      return handleAdminTimelinePeriodUpdate(
+        request,
+        env,
+        Number(adminTimelinePeriodMatch[1])
+      );
+    }
+
+    if (
+      request.method === "DELETE" &&
+      adminTimelinePeriodMatch
+    ) {
+      return handleAdminTimelinePeriodDelete(
+        request,
+        env,
+        Number(adminTimelinePeriodMatch[1])
+      );
     }
 
     const adminTimelineMatch =
@@ -902,6 +938,7 @@ async function handlePublicTimeline(request, env) {
        ORDER BY event_date ASC, id ASC
        LIMIT ?`
     ).bind(MAX_TIMELINE_RESULTS).all();
+    const periodResult = await getTimelinePeriods(env);
     const origin = new URL(request.url).origin;
     const headers = new Headers(cors.headers || undefined);
     headers.set(
@@ -914,6 +951,7 @@ async function handlePublicTimeline(request, env) {
         events: (result?.results || []).map(
           (row) => timelineEventJson(row, origin)
         ),
+        periods: (periodResult?.results || []).map(timelinePeriodJson),
       },
       200,
       headers
@@ -991,6 +1029,7 @@ async function handleAdminTimeline(request, env) {
        ORDER BY event_date ASC, id ASC
        LIMIT ?`
     ).bind(MAX_TIMELINE_RESULTS).all();
+    const periodResult = await getTimelinePeriods(env);
     const origin = new URL(request.url).origin;
     return apiJson(
       {
@@ -998,6 +1037,7 @@ async function handleAdminTimeline(request, env) {
         events: (result?.results || []).map(
           (row) => timelineEventJson(row, origin)
         ),
+        periods: (periodResult?.results || []).map(timelinePeriodJson),
       },
       200,
       access.corsHeaders
@@ -1262,6 +1302,307 @@ async function handleAdminTimelineDelete(request, env, eventId) {
       access.corsHeaders
     );
   }
+}
+
+async function handleAdminTimelinePeriodCreate(request, env) {
+  const access = await requireAdmin(request, env);
+  if (access.response) return access.response;
+  if (!env.DB) {
+    return apiJson(
+      { error: "The timeline database is temporarily unavailable." },
+      503,
+      access.corsHeaders
+    );
+  }
+
+  const input = await parseTimelinePeriodJson(request, access.corsHeaders);
+  if (input.error) return input.error;
+
+  try {
+    const overlap = await findOverlappingTimelinePeriod(
+      env,
+      input.startDate,
+      input.endDate,
+      null
+    );
+    if (overlap) {
+      return apiJson(
+        { error: `This date range overlaps “${String(overlap.label || "another period")}”.` },
+        409,
+        access.corsHeaders
+      );
+    }
+
+    const result = await env.DB.prepare(
+      `INSERT INTO timeline_periods
+       (label, start_date, end_date, color, created_by_discord_id)
+       VALUES (?, ?, ?, ?, ?)`
+    ).bind(
+      input.label,
+      input.startDate,
+      input.endDate,
+      input.color,
+      access.session.discordId
+    ).run();
+    const id = Number(result?.meta?.last_row_id || 0);
+    return apiJson(
+      {
+        ok: true,
+        period: timelinePeriodJson({
+          id,
+          label: input.label,
+          start_date: input.startDate,
+          end_date: input.endDate,
+          color: input.color,
+        }),
+      },
+      201,
+      access.corsHeaders
+    );
+  } catch (error) {
+    console.error("Timeline period insert failed:", error);
+    return apiJson(
+      { error: "The timeline period could not be created." },
+      500,
+      access.corsHeaders
+    );
+  }
+}
+
+async function handleAdminTimelinePeriodUpdate(request, env, periodId) {
+  const access = await requireAdmin(request, env);
+  if (access.response) return access.response;
+  if (!env.DB) {
+    return apiJson(
+      { error: "The timeline database is temporarily unavailable." },
+      503,
+      access.corsHeaders
+    );
+  }
+
+  const input = await parseTimelinePeriodJson(request, access.corsHeaders);
+  if (input.error) return input.error;
+
+  try {
+    const existing = await getTimelinePeriod(env, periodId);
+    if (!existing) {
+      return apiJson(
+        { error: "Timeline period not found." },
+        404,
+        access.corsHeaders
+      );
+    }
+
+    const overlap = await findOverlappingTimelinePeriod(
+      env,
+      input.startDate,
+      input.endDate,
+      periodId
+    );
+    if (overlap) {
+      return apiJson(
+        { error: `This date range overlaps “${String(overlap.label || "another period")}”.` },
+        409,
+        access.corsHeaders
+      );
+    }
+
+    const result = await env.DB.prepare(
+      `UPDATE timeline_periods
+       SET label = ?, start_date = ?, end_date = ?, color = ?,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`
+    ).bind(
+      input.label,
+      input.startDate,
+      input.endDate,
+      input.color,
+      periodId
+    ).run();
+    if (Number(result?.meta?.changes || 0) !== 1) {
+      return apiJson(
+        { error: "Timeline period not found." },
+        404,
+        access.corsHeaders
+      );
+    }
+
+    return apiJson(
+      {
+        ok: true,
+        period: timelinePeriodJson({
+          id: periodId,
+          label: input.label,
+          start_date: input.startDate,
+          end_date: input.endDate,
+          color: input.color,
+        }),
+      },
+      200,
+      access.corsHeaders
+    );
+  } catch (error) {
+    console.error("Timeline period update failed:", error);
+    return apiJson(
+      { error: "The timeline period could not be updated." },
+      500,
+      access.corsHeaders
+    );
+  }
+}
+
+async function handleAdminTimelinePeriodDelete(request, env, periodId) {
+  const access = await requireAdmin(request, env);
+  if (access.response) return access.response;
+  if (!env.DB) {
+    return apiJson(
+      { error: "The timeline database is temporarily unavailable." },
+      503,
+      access.corsHeaders
+    );
+  }
+
+  try {
+    const result = await env.DB.prepare(
+      "DELETE FROM timeline_periods WHERE id = ?"
+    ).bind(periodId).run();
+    if (Number(result?.meta?.changes || 0) !== 1) {
+      return apiJson(
+        { error: "Timeline period not found." },
+        404,
+        access.corsHeaders
+      );
+    }
+    return apiJson({ ok: true }, 200, access.corsHeaders);
+  } catch (error) {
+    console.error("Timeline period delete failed:", error);
+    return apiJson(
+      { error: "The timeline period could not be deleted." },
+      500,
+      access.corsHeaders
+    );
+  }
+}
+
+async function parseTimelinePeriodJson(request, corsHeaders) {
+  const contentLength = Number(request.headers.get("Content-Length") || 0);
+  if (Number.isFinite(contentLength) && contentLength > 4096) {
+    return {
+      error: apiJson(
+        { error: "The timeline period request is too large." },
+        413,
+        corsHeaders
+      ),
+    };
+  }
+  const contentType = String(request.headers.get("Content-Type") || "")
+    .toLowerCase();
+  if (!contentType.startsWith("application/json")) {
+    return {
+      error: apiJson(
+        { error: "Timeline periods must use JSON." },
+        415,
+        corsHeaders
+      ),
+    };
+  }
+
+  let data;
+  try {
+    data = await request.json();
+  } catch {
+    return {
+      error: apiJson(
+        { error: "The timeline period request could not be read." },
+        400,
+        corsHeaders
+      ),
+    };
+  }
+
+  const label = normalizeText(
+    data?.label,
+    MAX_TIMELINE_PERIOD_LABEL_LENGTH + 1
+  );
+  const startDate = String(data?.startDate || "").trim();
+  const endDate = String(data?.endDate || "").trim();
+  const color = String(data?.color || "").trim().toLowerCase();
+
+  if (!label || label.length > MAX_TIMELINE_PERIOD_LABEL_LENGTH) {
+    return {
+      error: apiJson(
+        { error: "Enter a period name of 50 characters or fewer." },
+        400,
+        corsHeaders
+      ),
+    };
+  }
+  if (!isValidTimelineDate(startDate) || !isValidTimelineDate(endDate)
+    || startDate > endDate) {
+    return {
+      error: apiJson(
+        { error: "Choose a valid period start and end date." },
+        400,
+        corsHeaders
+      ),
+    };
+  }
+  if (!/^#[0-9a-f]{6}$/.test(color)) {
+    return {
+      error: apiJson(
+        { error: "Choose a valid six-digit period color." },
+        400,
+        corsHeaders
+      ),
+    };
+  }
+
+  return { error: null, label, startDate, endDate, color };
+}
+
+function getTimelinePeriods(env) {
+  return env.DB.prepare(
+    `SELECT id, label, start_date, end_date, color
+     FROM timeline_periods
+     ORDER BY start_date ASC, id ASC
+     LIMIT ?`
+  ).bind(MAX_TIMELINE_PERIOD_RESULTS).all();
+}
+
+function getTimelinePeriod(env, periodId) {
+  return env.DB.prepare(
+    `SELECT id, label, start_date, end_date, color
+     FROM timeline_periods
+     WHERE id = ?
+     LIMIT 1`
+  ).bind(periodId).first();
+}
+
+function findOverlappingTimelinePeriod(env, startDate, endDate, excludeId) {
+  if (excludeId === null) {
+    return env.DB.prepare(
+      `SELECT id, label
+       FROM timeline_periods
+       WHERE start_date <= ? AND end_date >= ?
+       LIMIT 1`
+    ).bind(endDate, startDate).first();
+  }
+  return env.DB.prepare(
+    `SELECT id, label
+     FROM timeline_periods
+     WHERE start_date <= ? AND end_date >= ? AND id <> ?
+     LIMIT 1`
+  ).bind(endDate, startDate, excludeId).first();
+}
+
+function timelinePeriodJson(row) {
+  return {
+    id: Number(row.id),
+    label: String(row.label || ""),
+    startDate: String(row.start_date || ""),
+    endDate: String(row.end_date || ""),
+    color: String(row.color || "").toLowerCase(),
+  };
 }
 
 async function parseTimelineForm(request, corsHeaders) {

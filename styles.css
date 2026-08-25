@@ -3407,6 +3407,257 @@ html.night .archive-admin-status[data-state="error"] {
   flex: 0 0 auto;
 }
 
+.timeline-period-admin {
+  padding: 0;
+  overflow: hidden;
+}
+
+.timeline-period-admin-heading {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.timeline-period-admin-heading .eyebrow,
+.timeline-period-admin-heading h3,
+.timeline-period-admin-heading p {
+  margin: 0;
+}
+
+.timeline-period-admin-heading p:not(.eyebrow) {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.timeline-period-admin-status {
+  min-height: 0;
+  margin: 0;
+  padding: 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.timeline-period-admin-status:not(:empty) {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.timeline-period-admin-status[data-state="error"] {
+  color: #a44416;
+}
+
+html.night .timeline-period-admin-status[data-state="error"] {
+  color: #ffbd8c;
+}
+
+.timeline-period-admin-list {
+  display: grid;
+}
+
+.timeline-period-admin-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.timeline-period-admin-row:last-child {
+  border-bottom: 0;
+}
+
+.timeline-period-admin-swatch {
+  width: 2.6rem;
+  height: 1.2rem;
+  border: 2px solid color-mix(in srgb, var(--timeline-period-color), #173452 28%);
+  border-radius: 999px;
+  background: var(--timeline-period-color);
+  box-shadow: 0 0.2rem 0 color-mix(in srgb, var(--timeline-period-color), #173452 18%);
+}
+
+.timeline-period-admin-copy {
+  min-width: 0;
+}
+
+.timeline-period-admin-copy strong,
+.timeline-period-admin-copy span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.timeline-period-admin-copy strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.timeline-period-admin-copy span {
+  margin-top: 0.16rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.timeline-period-admin-color-value {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.timeline-period-admin-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.timeline-period-admin-actions button {
+  min-height: 2.2rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.55rem;
+  background: var(--chip-bg);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.timeline-period-admin-edit {
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.timeline-period-admin-delete {
+  border: 1px solid rgba(174, 67, 54, 0.46);
+  color: #9d3c30;
+}
+
+html.night .timeline-period-admin-delete {
+  color: #ffbd8c;
+}
+
+.timeline-period-admin-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timeline-period-admin-empty {
+  display: flex;
+  min-height: 7rem;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+.timeline-period-admin-empty > span {
+  color: var(--accent);
+  font-size: 1.7rem;
+}
+
+.timeline-period-admin-empty strong,
+.timeline-period-admin-empty p {
+  margin: 0;
+}
+
+.timeline-period-admin-empty strong {
+  color: var(--ink);
+}
+
+.timeline-period-admin-empty p {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.timeline-period-dialog {
+  width: min(620px, calc(100% - 2rem));
+}
+
+.timeline-period-form {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 5vw, 2rem);
+}
+
+.timeline-period-form .timeline-admin-editor-heading {
+  margin-bottom: 0;
+}
+
+.timeline-period-date-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.timeline-period-color-control {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.timeline-period-color-control input {
+  width: 3.2rem;
+  height: 2.6rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--chip-bg);
+  cursor: pointer;
+}
+
+.timeline-period-color-control output {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.timeline-period-preview {
+  display: grid;
+  min-height: 4.2rem;
+  padding: 0.8rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--chip-bg);
+}
+
+.timeline-period-preview span {
+  display: flex;
+  width: min(100%, 22rem);
+  min-height: 2rem;
+  padding: 0 0.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid color-mix(in srgb, var(--timeline-period-color, #62bd47), #173452 30%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--timeline-period-color, #62bd47), white 18%);
+  box-shadow: 0 0.25rem 0 color-mix(in srgb, var(--timeline-period-color, #62bd47), #173452 20%);
+  color: #102a42;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+html.night .timeline-period-preview span {
+  color: #ffffff;
+}
+
+.timeline-period-admin-empty[hidden] {
+  display: none;
+}
+
 .timeline-admin-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -4173,6 +4424,35 @@ html.night .archive-remove-warning {
 
   .timeline-admin-heading .button {
     width: 100%;
+  }
+
+  .timeline-period-admin-heading {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .timeline-period-admin-heading .button {
+    width: 100%;
+  }
+
+  .timeline-period-admin-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .timeline-period-admin-color-value {
+    grid-column: 2;
+  }
+
+  .timeline-period-admin-actions {
+    grid-column: 1 / -1;
+  }
+
+  .timeline-period-admin-actions button {
+    flex: 1;
+  }
+
+  .timeline-period-date-grid {
+    grid-template-columns: 1fr;
   }
 
   .timeline-admin-event-row {
@@ -7042,6 +7322,14 @@ html.night .pc-export-status.error {
   box-shadow: 0 0.25rem 0 rgba(47, 107, 34, 0.16);
 }
 
+.timeline-track.has-periods {
+  padding-bottom: 3.5rem;
+}
+
+.timeline-track.has-periods::after {
+  bottom: 5.2rem;
+}
+
 .timeline-event {
   position: relative;
   z-index: 1;
@@ -7166,6 +7454,46 @@ html.night .timeline-event-date {
   box-shadow:
     0 0 0 0.2rem var(--grass-dark),
     0 0 0 0.5rem rgba(255, 210, 91, 0.24);
+}
+
+.timeline-period-layer {
+  position: absolute;
+  right: 0;
+  bottom: 0.55rem;
+  left: 0;
+  z-index: 2;
+  height: 2.25rem;
+  pointer-events: none;
+}
+
+.timeline-period-band {
+  position: absolute;
+  top: 0;
+  display: flex;
+  height: 2rem;
+  min-width: 1.1rem;
+  padding: 0 0.7rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--timeline-period-color), #173452 30%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--timeline-period-color), white 18%);
+  box-shadow: 0 0.25rem 0 color-mix(in srgb, var(--timeline-period-color), #173452 20%);
+  color: #102a42;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.night .timeline-period-band {
+  border-color: color-mix(in srgb, var(--timeline-period-color), white 18%);
+  background: color-mix(in srgb, var(--timeline-period-color), #142c52 38%);
+  box-shadow: 0 0.25rem 0 color-mix(in srgb, var(--timeline-period-color), black 25%);
+  color: #ffffff;
 }
 
 .timeline-hint,
