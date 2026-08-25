@@ -44,9 +44,19 @@
           } catch (error) {}
         }
 
+        let returnToTimeline = false;
+        try {
+          returnToTimeline = sessionStorage.getItem('cozyTimelineLoginReturn') === '1';
+          sessionStorage.removeItem('cozyTimelineLoginReturn');
+        } catch (error) {}
+
         try {
           window.history.replaceState(window.history.state, '', window.location.pathname);
         } catch (error) {}
+
+        if (isReasonableToken && returnToTimeline) {
+          window.location.replace('./timeline.html');
+        }
       })();
     </script>
     <title>Community Archive | Cozy Crafters SMP</title>

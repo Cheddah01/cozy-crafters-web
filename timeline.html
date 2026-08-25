@@ -31,10 +31,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-periods" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-submissions" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
-    <script src="./timeline.js?v=20260825-timeline-periods" defer></script>
+    <script src="./timeline.js?v=20260825-timeline-submissions" defer></script>
   </head>
   <body>
     <div class="sky" aria-hidden="true">
@@ -81,6 +81,46 @@
             <span>⌛</span>
             <small>History in the making</small>
           </aside>
+        </section>
+
+        <section class="timeline-contribute section-card" data-timeline-auth data-auth-state="checking" aria-labelledby="timeline-contribute-title" aria-busy="true">
+          <div class="timeline-contribute-copy">
+            <span class="timeline-contribute-icon" aria-hidden="true">✍️</span>
+            <div>
+              <p class="eyebrow">Help write our history</p>
+              <h2 id="timeline-contribute-title">Remember a moment we missed?</h2>
+              <p>Suggest an event from the server's past. Once approved, it will become part of the official Cozy Timeline.</p>
+            </div>
+          </div>
+
+          <div class="timeline-auth-view timeline-auth-checking" data-timeline-auth-view="checking">
+            <span class="timeline-loader" aria-hidden="true"></span>
+            <span>Checking your Discord session…</span>
+          </div>
+
+          <div class="timeline-auth-view timeline-auth-logged-out" data-timeline-auth-view="logged-out" hidden>
+            <a class="button archive-discord-button" href="https://cozy-archive.colbysthickey.workers.dev/auth/discord" data-timeline-login>
+              <span class="archive-discord-mark" aria-hidden="true">✦</span>
+              Login with Discord
+            </a>
+            <small>Discord login keeps suggestions connected to real community members.</small>
+          </div>
+
+          <div class="timeline-auth-view timeline-auth-logged-in" data-timeline-auth-view="logged-in" hidden>
+            <p>Signed in as <strong data-timeline-display-name></strong></p>
+            <div class="timeline-contribute-actions">
+              <button class="button button-primary" type="button" data-timeline-suggest-open aria-haspopup="dialog" aria-controls="timeline-suggestion-dialog">Suggest an Event</button>
+              <button class="button button-secondary" type="button" data-timeline-mine-open aria-haspopup="dialog" aria-controls="timeline-my-suggestions-dialog">My Suggestions</button>
+              <button class="timeline-auth-logout" type="button" data-timeline-logout>Log out</button>
+            </div>
+          </div>
+
+          <div class="timeline-auth-view timeline-auth-unavailable" data-timeline-auth-view="unavailable" hidden>
+            <span>Discord login status is temporarily unavailable.</span>
+            <button class="button button-secondary" type="button" data-timeline-auth-retry>Try Again</button>
+          </div>
+
+          <p class="timeline-auth-status" data-timeline-auth-status role="status" aria-live="polite"></p>
         </section>
 
         <section class="timeline-section" aria-labelledby="timeline-events-title">
@@ -139,6 +179,100 @@
 
           <p class="timeline-status" data-timeline-status role="status" aria-live="polite" aria-atomic="true"></p>
         </section>
+
+        <dialog class="timeline-suggestion-dialog" id="timeline-suggestion-dialog" aria-labelledby="timeline-suggestion-title">
+          <div class="timeline-suggestion-modal">
+            <header class="timeline-suggestion-header">
+              <div>
+                <p class="eyebrow">Community suggestion</p>
+                <h2 id="timeline-suggestion-title">Add a Moment to Our Story</h2>
+              </div>
+              <button type="button" data-timeline-suggest-close aria-label="Close event suggestion form">×</button>
+            </header>
+
+            <div data-timeline-suggestion-view="form">
+              <p class="timeline-suggestion-intro">Tell us what happened and when. You can include one screenshot if it helps tell the story.</p>
+              <form class="timeline-suggestion-form" data-timeline-suggestion-form novalidate>
+                <label class="timeline-suggestion-field">
+                  <span>Event title</span>
+                  <input class="tool-input" type="text" name="title" maxlength="80" autocomplete="off" required data-timeline-suggestion-title />
+                  <small><span data-timeline-title-count>0</span> / 80 characters</small>
+                </label>
+
+                <label class="timeline-suggestion-field">
+                  <span>When did it happen?</span>
+                  <input class="tool-input" type="date" name="eventDate" required data-timeline-suggestion-date />
+                </label>
+
+                <label class="timeline-suggestion-field">
+                  <span>Description <em>Optional</em></span>
+                  <textarea class="tool-input" name="description" rows="4" maxlength="280" data-timeline-suggestion-description></textarea>
+                  <small><span data-timeline-description-count>0</span> / 280 characters</small>
+                </label>
+
+                <div class="timeline-suggestion-field">
+                  <span>Screenshot <em>Optional</em></span>
+                  <input class="timeline-suggestion-file-input" id="timeline-suggestion-image" type="file" name="image" accept="image/png,image/jpeg,image/webp" data-timeline-suggestion-image />
+                  <label class="timeline-suggestion-image-picker" for="timeline-suggestion-image" data-timeline-image-picker>
+                    <span aria-hidden="true">🖼️</span>
+                    <strong>Choose a screenshot</strong>
+                    <small>PNG, JPEG or WebP · Max 8 MB</small>
+                  </label>
+                  <div class="timeline-suggestion-image-preview" data-timeline-image-preview hidden>
+                    <img data-timeline-image-preview-img alt="Selected timeline screenshot preview" />
+                    <div>
+                      <strong data-timeline-image-name></strong>
+                      <span data-timeline-image-size></span>
+                      <button type="button" data-timeline-image-remove>Remove image</button>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="timeline-suggestion-status" data-timeline-suggestion-status role="status" aria-live="polite"></p>
+                <div class="timeline-suggestion-actions">
+                  <button class="button button-secondary" type="button" data-timeline-suggest-cancel>Cancel</button>
+                  <button class="button button-primary" type="submit" data-timeline-suggest-submit>
+                    <span data-timeline-suggest-submit-label>Submit for Review</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="timeline-suggestion-success" data-timeline-suggestion-view="success" role="status" hidden>
+              <span aria-hidden="true">✓</span>
+              <h3>Your moment was sent!</h3>
+              <p>It will stay private while the team reviews it. You can track it under My Suggestions.</p>
+              <button class="button button-primary" type="button" data-timeline-suggest-done>Done</button>
+            </div>
+          </div>
+        </dialog>
+
+        <dialog class="timeline-my-dialog" id="timeline-my-suggestions-dialog" aria-labelledby="timeline-my-title">
+          <div class="timeline-my-modal">
+            <header class="timeline-suggestion-header">
+              <div>
+                <p class="eyebrow">Your contributions</p>
+                <h2 id="timeline-my-title">My Suggestions</h2>
+              </div>
+              <button type="button" data-timeline-mine-close aria-label="Close My Suggestions">×</button>
+            </header>
+            <p class="timeline-my-status" data-timeline-mine-status role="status" aria-live="polite"></p>
+            <div class="timeline-my-loading" data-timeline-mine-loading>
+              <span class="timeline-loader" aria-hidden="true"></span>
+              <span>Checking your suggestions…</span>
+            </div>
+            <div class="timeline-my-empty" data-timeline-mine-empty hidden>
+              <span aria-hidden="true">📖</span>
+              <h3>No suggestions yet</h3>
+              <p>When you remember a Cozy moment, you can submit it for the Timeline.</p>
+            </div>
+            <div class="timeline-my-list" data-timeline-mine-list hidden></div>
+            <div class="timeline-my-error" data-timeline-mine-error hidden>
+              <p>Your suggestions could not be loaded right now.</p>
+              <button class="button button-secondary" type="button" data-timeline-mine-retry>Try Again</button>
+            </div>
+          </div>
+        </dialog>
       </main>
 
       <footer class="site-footer">

@@ -23,11 +23,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-periods" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-submissions" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
     <script src="./archive-admin.js" defer></script>
     <script src="./timeline-admin.js" defer></script>
+    <script src="./timeline-submission-admin.js?v=20260825" defer></script>
     <script src="./timeline-period-admin.js" defer></script>
   </head>
   <body>
@@ -245,6 +246,33 @@
               <button class="button button-primary" type="button" data-timeline-admin-add>＋ Add Event</button>
             </div>
 
+            <section class="timeline-submission-review section-card" aria-labelledby="timeline-submission-review-title">
+              <div class="timeline-period-admin-heading">
+                <div>
+                  <p class="eyebrow">Community contributions</p>
+                  <h3 id="timeline-submission-review-title">Suggestions waiting for review</h3>
+                  <p>Edit the details if needed, then approve the moment to publish it on the Timeline.</p>
+                </div>
+                <div class="timeline-submission-review-actions">
+                  <span data-timeline-submission-count>0 pending</span>
+                  <button class="button button-secondary" type="button" data-timeline-submission-refresh>Refresh</button>
+                </div>
+              </div>
+              <p class="timeline-period-admin-status" data-timeline-submission-status role="status" aria-live="polite" aria-atomic="true"></p>
+              <div class="timeline-submission-review-loading" data-timeline-submission-loading hidden>
+                <span class="archive-loader" aria-hidden="true"></span>
+                <span>Loading community suggestions…</span>
+              </div>
+              <div class="timeline-submission-review-list" data-timeline-submission-list aria-busy="false"></div>
+              <div class="timeline-period-admin-empty" data-timeline-submission-empty hidden>
+                <span aria-hidden="true">✓</span>
+                <div>
+                  <strong>No suggestions are waiting.</strong>
+                  <p>You're all caught up.</p>
+                </div>
+              </div>
+            </section>
+
             <section class="timeline-period-admin section-card" aria-labelledby="timeline-period-admin-title">
               <div class="timeline-period-admin-heading">
                 <div>
@@ -375,6 +403,63 @@
               <button class="archive-reject-confirm" type="button" data-reject-confirm>Reject Screenshot</button>
             </div>
           </div>
+        </dialog>
+
+        <dialog class="timeline-submission-review-dialog" id="timeline-submission-review-dialog" aria-labelledby="timeline-submission-dialog-title">
+          <form class="timeline-admin-form timeline-submission-review-form" data-timeline-submission-form novalidate>
+            <div class="timeline-admin-editor-heading">
+              <div>
+                <p class="eyebrow">Review suggestion</p>
+                <h2 id="timeline-submission-dialog-title">Publish community moment</h2>
+              </div>
+              <button class="timeline-admin-editor-close" type="button" data-timeline-submission-close aria-label="Close suggestion review">×</button>
+            </div>
+
+            <p class="timeline-submission-byline">Suggested by <strong data-timeline-submission-author></strong></p>
+
+            <label class="timeline-admin-field" for="timeline-submission-title">
+              <span>Title <strong aria-hidden="true">*</strong></span>
+              <input class="tool-input" id="timeline-submission-title" name="title" type="text" maxlength="80" required data-timeline-submission-title />
+            </label>
+
+            <label class="timeline-admin-field" for="timeline-submission-date">
+              <span>Event date <strong aria-hidden="true">*</strong></span>
+              <input class="tool-input" id="timeline-submission-date" name="eventDate" type="date" required data-timeline-submission-date />
+            </label>
+
+            <label class="timeline-admin-field" for="timeline-submission-description">
+              <span>Description <em>Optional</em></span>
+              <textarea class="tool-input" id="timeline-submission-description" name="description" maxlength="280" rows="5" data-timeline-submission-description></textarea>
+            </label>
+
+            <div class="timeline-admin-image-field">
+              <div class="timeline-admin-field-label">
+                <span>Image <em>Optional</em></span>
+                <small>The submitted image is kept unless you replace or remove it.</small>
+              </div>
+              <div class="timeline-submission-original-image" data-timeline-submission-original-image hidden>
+                <img data-timeline-submission-image-preview alt="Submitted timeline image" />
+                <span>Submitted image</span>
+              </div>
+              <input class="timeline-admin-file-input" id="timeline-submission-replacement" type="file" accept="image/png,image/jpeg,image/webp" data-timeline-submission-replacement />
+              <label class="timeline-admin-image-picker" for="timeline-submission-replacement">
+                <span aria-hidden="true">▧</span>
+                <strong data-timeline-submission-replacement-label>Choose a replacement image</strong>
+              </label>
+              <label class="timeline-admin-remove-image" data-timeline-submission-remove-row hidden>
+                <input type="checkbox" data-timeline-submission-remove-image />
+                <span>Publish this event without an image</span>
+              </label>
+            </div>
+
+            <p class="timeline-admin-form-status" data-timeline-submission-form-status role="status" aria-live="polite"></p>
+            <div class="timeline-admin-form-actions timeline-submission-dialog-actions">
+              <button class="archive-reject-confirm" type="button" data-timeline-submission-reject>Reject Suggestion</button>
+              <span></span>
+              <button class="button button-secondary" type="button" data-timeline-submission-cancel>Cancel</button>
+              <button class="button button-primary" type="submit" data-timeline-submission-approve>Approve &amp; Publish</button>
+            </div>
+          </form>
         </dialog>
 
         <dialog class="archive-reject-dialog archive-remove-dialog" id="archive-remove-dialog" aria-labelledby="archive-remove-title" aria-describedby="archive-remove-copy">

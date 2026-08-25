@@ -435,3 +435,504 @@
 
   loadTimeline();
 })();
+
+(() => {
+  'use strict';
+
+  const API_ROOT = 'https://cozy-archive.colbysthickey.workers.dev';
+  const SESSION_KEY = 'cozyArchiveSession';
+  const LOGIN_RETURN_KEY = 'cozyTimelineLoginReturn';
+  const MAXIMUM_FILE_SIZE = 8 * 1024 * 1024;
+  const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+
+  const authPanel = document.querySelector('[data-timeline-auth]');
+  const authViews = document.querySelectorAll('[data-timeline-auth-view]');
+  const authStatus = document.querySelector('[data-timeline-auth-status]');
+  const displayName = document.querySelector('[data-timeline-display-name]');
+  const loginLink = document.querySelector('[data-timeline-login]');
+  const logoutButton = document.querySelector('[data-timeline-logout]');
+  const authRetryButton = document.querySelector('[data-timeline-auth-retry]');
+  const suggestOpenButton = document.querySelector('[data-timeline-suggest-open]');
+  const mineOpenButton = document.querySelector('[data-timeline-mine-open]');
+
+  const suggestionDialog = document.querySelector('#timeline-suggestion-dialog');
+  const suggestionForm = document.querySelector('[data-timeline-suggestion-form]');
+  const suggestionViews = document.querySelectorAll('[data-timeline-suggestion-view]');
+  const suggestionCloseButton = document.querySelector('[data-timeline-suggest-close]');
+  const suggestionCancelButton = document.querySelector('[data-timeline-suggest-cancel]');
+  const suggestionDoneButton = document.querySelector('[data-timeline-suggest-done]');
+  const titleInput = document.querySelector('[data-timeline-suggestion-title]');
+  const titleCount = document.querySelector('[data-timeline-title-count]');
+  const dateInput = document.querySelector('[data-timeline-suggestion-date]');
+  const descriptionInput = document.querySelector('[data-timeline-suggestion-description]');
+  const descriptionCount = document.querySelector('[data-timeline-description-count]');
+  const imageInput = document.querySelector('[data-timeline-suggestion-image]');
+  const imagePicker = document.querySelector('[data-timeline-image-picker]');
+  const imagePreview = document.querySelector('[data-timeline-image-preview]');
+  const imagePreviewElement = document.querySelector('[data-timeline-image-preview-img]');
+  const imageName = document.querySelector('[data-timeline-image-name]');
+  const imageSize = document.querySelector('[data-timeline-image-size]');
+  const imageRemoveButton = document.querySelector('[data-timeline-image-remove]');
+  const suggestionStatus = document.querySelector('[data-timeline-suggestion-status]');
+  const suggestionSubmitButton = document.querySelector('[data-timeline-suggest-submit]');
+  const suggestionSubmitLabel = document.querySelector('[data-timeline-suggest-submit-label]');
+
+  const mineDialog = document.querySelector('#timeline-my-suggestions-dialog');
+  const mineCloseButton = document.querySelector('[data-timeline-mine-close]');
+  const mineRetryButton = document.querySelector('[data-timeline-mine-retry]');
+  const mineStatus = document.querySelector('[data-timeline-mine-status]');
+  const mineLoading = document.querySelector('[data-timeline-mine-loading]');
+  const mineEmpty = document.querySelector('[data-timeline-mine-empty]');
+  const mineList = document.querySelector('[data-timeline-mine-list]');
+  const mineError = document.querySelector('[data-timeline-mine-error]');
+
+  if (!authPanel) return;
+
+  let activeAuthRequest = null;
+  let activeSubmissionRequest = null;
+  let activeMineRequest = null;
+  let previewUrl = null;
+  let selectedImage = null;
+
+  const readSession = () => {
+    try {
+      return sessionStorage.getItem(SESSION_KEY);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const removeSession = () => {
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch (error) {}
+  };
+
+  const safeResponseJson = async (response) => {
+    try {
+      return await response.json();
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const setAuthState = (state, message = '') => {
+    authViews.forEach((view) => {
+      view.hidden = view.dataset.timelineAuthView !== state;
+    });
+    authPanel.dataset.authState = state;
+    authPanel.setAttribute('aria-busy', String(state === 'checking'));
+    if (suggestOpenButton) suggestOpenButton.disabled = state !== 'logged-in';
+    if (mineOpenButton) mineOpenButton.disabled = state !== 'logged-in';
+    if (authStatus) authStatus.textContent = message;
+    if (state !== 'logged-in') {
+      if (suggestionDialog?.open) suggestionDialog.close();
+      if (mineDialog?.open) mineDialog.close();
+    }
+  };
+
+  const expireSession = () => {
+    removeSession();
+    if (displayName) displayName.textContent = '';
+    setAuthState('logged-out', 'Your Discord session expired. Please sign in again.');
+  };
+
+  const verifySession = async () => {
+    const token = readSession();
+    if (!token) {
+      setAuthState('logged-out');
+      return;
+    }
+
+    if (activeAuthRequest) activeAuthRequest.abort();
+    const controller = new AbortController();
+    activeAuthRequest = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 7000);
+    setAuthState('checking', 'Checking your Discord session…');
+
+    try {
+      const response = await fetch(`${API_ROOT}/api/me`, {
+        method: 'GET',
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (activeAuthRequest !== controller) return;
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      const payload = await safeResponseJson(response);
+      const rawName = payload?.user?.displayName || payload?.user?.username;
+      const safeName = typeof rawName === 'string' ? rawName.trim().slice(0, 80) : '';
+      if (!response.ok || payload?.authenticated !== true || !safeName) {
+        setAuthState('unavailable', 'Discord login status could not be checked.');
+        return;
+      }
+      if (displayName) displayName.textContent = safeName;
+      setAuthState('logged-in', `Signed in as ${safeName}.`);
+    } catch (error) {
+      if (activeAuthRequest !== controller) return;
+      setAuthState('unavailable', 'Discord login status could not be checked.');
+    } finally {
+      window.clearTimeout(timeout);
+      if (activeAuthRequest === controller) activeAuthRequest = null;
+    }
+  };
+
+  const setSuggestionView = (view) => {
+    suggestionViews.forEach((element) => {
+      element.hidden = element.dataset.timelineSuggestionView !== view;
+    });
+  };
+
+  const setSuggestionStatus = (message = '', state = '') => {
+    if (!suggestionStatus) return;
+    suggestionStatus.textContent = message;
+    if (state) suggestionStatus.dataset.state = state;
+    else delete suggestionStatus.dataset.state;
+  };
+
+  const formatFileSize = (bytes) => bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+  const revokePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+  };
+
+  const clearSelectedImage = () => {
+    selectedImage = null;
+    revokePreview();
+    if (imageInput) imageInput.value = '';
+    if (imagePreviewElement) imagePreviewElement.removeAttribute('src');
+    if (imagePreview) imagePreview.hidden = true;
+    if (imagePicker) imagePicker.hidden = false;
+  };
+
+  const chooseImage = (file) => {
+    if (!file) {
+      clearSelectedImage();
+      return;
+    }
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      clearSelectedImage();
+      setSuggestionStatus('Choose a PNG, JPEG, or WebP image.', 'error');
+      return;
+    }
+    if (!Number.isFinite(file.size) || file.size <= 0 || file.size > MAXIMUM_FILE_SIZE) {
+      clearSelectedImage();
+      setSuggestionStatus('Screenshots must be 8 MB or smaller.', 'error');
+      return;
+    }
+    clearSelectedImage();
+    selectedImage = file;
+    previewUrl = URL.createObjectURL(file);
+    if (imagePreviewElement) imagePreviewElement.src = previewUrl;
+    if (imageName) imageName.textContent = file.name.slice(0, 120);
+    if (imageSize) imageSize.textContent = formatFileSize(file.size);
+    if (imagePicker) imagePicker.hidden = true;
+    if (imagePreview) imagePreview.hidden = false;
+    setSuggestionStatus();
+  };
+
+  const resetSuggestionForm = () => {
+    if (activeSubmissionRequest) {
+      activeSubmissionRequest.abort();
+      activeSubmissionRequest = null;
+    }
+    suggestionForm?.reset();
+    clearSelectedImage();
+    if (titleCount) titleCount.textContent = '0';
+    if (descriptionCount) descriptionCount.textContent = '0';
+    if (dateInput) {
+      const today = new Date().toISOString().slice(0, 10);
+      dateInput.max = today;
+    }
+    if (suggestionSubmitButton) suggestionSubmitButton.disabled = false;
+    if (suggestionSubmitLabel) suggestionSubmitLabel.textContent = 'Submit for Review';
+    setSuggestionStatus();
+    setSuggestionView('form');
+  };
+
+  const closeSuggestionDialog = () => {
+    if (suggestionDialog?.open) suggestionDialog.close();
+  };
+
+  const validDate = (value) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === year
+      && date.getUTCMonth() === month - 1
+      && date.getUTCDate() === day;
+  };
+
+  const submissionErrorMessage = (status, payload) => {
+    if (payload && typeof payload.error === 'string' && payload.error.trim()) {
+      return payload.error.trim().slice(0, 240);
+    }
+    if (status === 401) return 'Your Discord session expired. Please sign in again.';
+    if (status === 413) return 'Screenshots must be 8 MB or smaller.';
+    if (status === 415) return 'Choose a PNG, JPEG, or WebP image.';
+    if (status === 429) return 'You have reached the suggestion limit for now. Please try again later.';
+    return 'Your suggestion could not be sent. Please try again.';
+  };
+
+  const submitSuggestion = async (event) => {
+    event.preventDefault();
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+    const title = titleInput?.value.trim() || '';
+    const eventDate = dateInput?.value || '';
+    const description = descriptionInput?.value.trim() || '';
+    const today = new Date().toISOString().slice(0, 10);
+    if (!title || title.length > 80) {
+      setSuggestionStatus('Enter an event title of 80 characters or fewer.', 'error');
+      titleInput?.focus();
+      return;
+    }
+    if (!validDate(eventDate) || eventDate > today) {
+      setSuggestionStatus('Choose a valid date that is not in the future.', 'error');
+      dateInput?.focus();
+      return;
+    }
+    if (description.length > 280) {
+      setSuggestionStatus('Keep the description to 280 characters or fewer.', 'error');
+      descriptionInput?.focus();
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('eventDate', eventDate);
+    formData.append('description', description);
+    if (selectedImage) formData.append('image', selectedImage, selectedImage.name);
+
+    if (activeSubmissionRequest) activeSubmissionRequest.abort();
+    const controller = new AbortController();
+    activeSubmissionRequest = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 20000);
+    if (suggestionSubmitButton) suggestionSubmitButton.disabled = true;
+    if (suggestionSubmitLabel) suggestionSubmitLabel.textContent = 'Sending…';
+    setSuggestionStatus('Sending your suggestion…');
+
+    try {
+      const response = await fetch(`${API_ROOT}/api/timeline/submissions`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        body: formData,
+        signal: controller.signal
+      });
+      const payload = await safeResponseJson(response);
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      if (!response.ok || payload?.ok !== true) {
+        setSuggestionStatus(submissionErrorMessage(response.status, payload), 'error');
+        return;
+      }
+      clearSelectedImage();
+      setSuggestionView('success');
+    } catch (error) {
+      if (controller.signal.aborted && activeSubmissionRequest !== controller) return;
+      setSuggestionStatus(
+        controller.signal.aborted
+          ? 'The request took too long. Please try again.'
+          : 'Your suggestion could not be sent. Please check your connection and try again.',
+        'error'
+      );
+    } finally {
+      window.clearTimeout(timeout);
+      if (activeSubmissionRequest === controller) activeSubmissionRequest = null;
+      if (suggestionSubmitButton) suggestionSubmitButton.disabled = false;
+      if (suggestionSubmitLabel) suggestionSubmitLabel.textContent = 'Submit for Review';
+    }
+  };
+
+  const formatSubmissionDate = (value) => {
+    if (!validDate(value)) return 'Unknown date';
+    const [year, month, day] = value.split('-').map(Number);
+    return new Intl.DateTimeFormat('en', {
+      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
+    }).format(new Date(Date.UTC(year, month - 1, day)));
+  };
+
+  const normalizeSubmission = (value) => {
+    if (!value || typeof value !== 'object') return null;
+    const id = Number(value.id);
+    const title = typeof value.title === 'string' ? value.title.trim().slice(0, 80) : '';
+    const status = ['pending', 'approved', 'rejected'].includes(value.status) ? value.status : '';
+    if (!Number.isSafeInteger(id) || id <= 0 || !title || !status || !validDate(value.eventDate)) return null;
+    return { id, title, status, eventDate: value.eventDate };
+  };
+
+  const renderMine = (submissions) => {
+    if (!mineList) return;
+    mineList.replaceChildren();
+    submissions.forEach((submission) => {
+      const article = document.createElement('article');
+      const copy = document.createElement('div');
+      const title = document.createElement('h3');
+      const date = document.createElement('time');
+      const badge = document.createElement('span');
+      const statusLabels = { pending: 'Waiting for review', approved: 'Approved', rejected: 'Not approved' };
+      article.className = `timeline-my-item status-${submission.status}`;
+      title.textContent = submission.title;
+      date.dateTime = submission.eventDate;
+      date.textContent = formatSubmissionDate(submission.eventDate);
+      badge.className = 'timeline-my-badge';
+      badge.textContent = statusLabels[submission.status];
+      copy.append(title, date);
+      article.append(copy, badge);
+      mineList.append(article);
+    });
+  };
+
+  const setMineView = (view) => {
+    if (mineLoading) mineLoading.hidden = view !== 'loading';
+    if (mineEmpty) mineEmpty.hidden = view !== 'empty';
+    if (mineList) mineList.hidden = view !== 'list';
+    if (mineError) mineError.hidden = view !== 'error';
+  };
+
+  const loadMine = async () => {
+    const token = readSession();
+    if (!token) {
+      expireSession();
+      return;
+    }
+    if (activeMineRequest) activeMineRequest.abort();
+    const controller = new AbortController();
+    activeMineRequest = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 8000);
+    setMineView('loading');
+    if (mineStatus) mineStatus.textContent = 'Loading your suggestions…';
+
+    try {
+      const response = await fetch(`${API_ROOT}/api/my/timeline-submissions`, {
+        method: 'GET',
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      const payload = await safeResponseJson(response);
+      if (!response.ok || payload?.ok !== true || !Array.isArray(payload.submissions)) {
+        throw new Error('Invalid suggestions response');
+      }
+      const submissions = payload.submissions.map(normalizeSubmission).filter(Boolean);
+      renderMine(submissions);
+      setMineView(submissions.length ? 'list' : 'empty');
+      if (mineStatus) {
+        mineStatus.textContent = submissions.length
+          ? `${submissions.length} ${submissions.length === 1 ? 'suggestion' : 'suggestions'} found.`
+          : 'You have not submitted any timeline suggestions yet.';
+      }
+    } catch (error) {
+      if (activeMineRequest !== controller) return;
+      setMineView('error');
+      if (mineStatus) mineStatus.textContent = 'Your suggestions could not be loaded.';
+    } finally {
+      window.clearTimeout(timeout);
+      if (activeMineRequest === controller) activeMineRequest = null;
+    }
+  };
+
+  if (loginLink) {
+    loginLink.addEventListener('click', () => {
+      try {
+        sessionStorage.setItem(LOGIN_RETURN_KEY, '1');
+      } catch (error) {}
+    });
+  }
+  logoutButton?.addEventListener('click', () => {
+    removeSession();
+    if (displayName) displayName.textContent = '';
+    setAuthState('logged-out', 'You have been logged out.');
+  });
+  authRetryButton?.addEventListener('click', verifySession);
+
+  titleInput?.addEventListener('input', () => {
+    if (titleInput.value.length > 80) titleInput.value = titleInput.value.slice(0, 80);
+    if (titleCount) titleCount.textContent = String(titleInput.value.length);
+  });
+  descriptionInput?.addEventListener('input', () => {
+    if (descriptionInput.value.length > 280) descriptionInput.value = descriptionInput.value.slice(0, 280);
+    if (descriptionCount) descriptionCount.textContent = String(descriptionInput.value.length);
+  });
+  imageInput?.addEventListener('change', () => chooseImage(imageInput.files?.[0] || null));
+  imageRemoveButton?.addEventListener('click', clearSelectedImage);
+  suggestionForm?.addEventListener('submit', submitSuggestion);
+
+  suggestOpenButton?.addEventListener('click', () => {
+    if (authPanel.dataset.authState !== 'logged-in' || !suggestionDialog?.showModal) return;
+    resetSuggestionForm();
+    suggestionDialog.showModal();
+    document.documentElement.classList.add('modal-open');
+    window.setTimeout(() => titleInput?.focus(), 0);
+  });
+  suggestionCloseButton?.addEventListener('click', closeSuggestionDialog);
+  suggestionCancelButton?.addEventListener('click', closeSuggestionDialog);
+  suggestionDoneButton?.addEventListener('click', closeSuggestionDialog);
+  suggestionDialog?.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeSuggestionDialog();
+  });
+  suggestionDialog?.addEventListener('click', (event) => {
+    if (event.target === suggestionDialog) closeSuggestionDialog();
+  });
+  suggestionDialog?.addEventListener('close', () => {
+    document.documentElement.classList.remove('modal-open');
+    resetSuggestionForm();
+    suggestOpenButton?.focus();
+  });
+
+  mineOpenButton?.addEventListener('click', () => {
+    if (authPanel.dataset.authState !== 'logged-in' || !mineDialog?.showModal) return;
+    mineDialog.showModal();
+    document.documentElement.classList.add('modal-open');
+    loadMine();
+  });
+  const closeMineDialog = () => {
+    if (mineDialog?.open) mineDialog.close();
+  };
+  mineCloseButton?.addEventListener('click', closeMineDialog);
+  mineRetryButton?.addEventListener('click', loadMine);
+  mineDialog?.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeMineDialog();
+  });
+  mineDialog?.addEventListener('click', (event) => {
+    if (event.target === mineDialog) closeMineDialog();
+  });
+  mineDialog?.addEventListener('close', () => {
+    document.documentElement.classList.remove('modal-open');
+    if (activeMineRequest) {
+      activeMineRequest.abort();
+      activeMineRequest = null;
+    }
+    mineOpenButton?.focus();
+  });
+
+  window.addEventListener('pagehide', () => {
+    activeAuthRequest?.abort();
+    activeSubmissionRequest?.abort();
+    activeMineRequest?.abort();
+    revokePreview();
+  }, { once: true });
+
+  resetSuggestionForm();
+  verifySession();
+})();
