@@ -102,6 +102,10 @@
 
   const backendError = (payload) => reasonableText(payload && payload.error);
 
+  const announceAdminEvent = (name, detail = {}) => {
+    document.dispatchEvent(new CustomEvent(name, { detail }));
+  };
+
   const setAuthState = (state, message = '') => {
     authViews.forEach((view) => {
       view.hidden = view.dataset.adminAuthView !== state;
@@ -252,6 +256,7 @@
     currentUser = null;
     if (displayName) displayName.textContent = '';
     setDashboardStatus();
+    announceAdminEvent('cozy-admin-leave');
   };
 
   const expireSession = () => {
@@ -937,7 +942,7 @@
   };
 
   const setActiveTab = (tabName, { focus = false, load = true } = {}) => {
-    if (tabName !== 'pending' && tabName !== 'published') return;
+    if (!['pending', 'published', 'timeline'].includes(tabName)) return;
     activeTab = tabName;
     tabButtons.forEach((button) => {
       const selected = button.dataset.adminTab === tabName;
@@ -951,6 +956,7 @@
     });
     setRefreshBusy();
     if (load && tabName === 'published' && !approvedLoaded && !activeApprovedRequest) loadApprovedUploads();
+    announceAdminEvent('cozy-admin-tab-change', { tabName, load });
   };
 
   const loadPendingQueue = async () => {
@@ -1101,7 +1107,8 @@
   if (authRetryButton) authRetryButton.addEventListener('click', verifySession);
   if (refreshButton) {
     refreshButton.addEventListener('click', () => {
-      if (activeTab === 'published') loadApprovedUploads();
+      if (activeTab === 'timeline') announceAdminEvent('cozy-admin-timeline-refresh');
+      else if (activeTab === 'published') loadApprovedUploads();
       else loadPendingQueue();
     });
   }
@@ -1182,6 +1189,9 @@
       if (button && !button.disabled) button.focus();
     });
   }
+
+  document.addEventListener('cozy-admin-session-expired', expireSession);
+  document.addEventListener('cozy-admin-access-denied', () => denyAccess());
 
   window.addEventListener('pagehide', () => {
     if (activeAuthRequest) {

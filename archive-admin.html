@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Authorized moderation for the Cozy Crafters Community Archive." />
+    <meta name="description" content="Authorized site and community-content management for Cozy Crafters SMP." />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="canonical" href="https://cozycrafters.net/archive-admin.html" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -19,7 +19,7 @@
         }
       } catch (error) {}
     </script>
-    <title>Archive Moderation | Cozy Crafters SMP</title>
+    <title>Site Administration | Cozy Crafters SMP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,6 +27,7 @@
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
     <script src="./archive-admin.js" defer></script>
+    <script src="./timeline-admin.js" defer></script>
   </head>
   <body>
     <div class="sky" aria-hidden="true">
@@ -53,6 +54,7 @@
           <a href="./store.html">Store</a>
           <a href="./tools.html">Tools</a>
           <a href="./archive.html" aria-current="page">Archive</a>
+          <a href="./timeline.html">Timeline</a>
           <a href="./index.html#join">Join</a>
         </nav>
         <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
@@ -64,13 +66,13 @@
       <main class="archive-admin-main">
         <section class="archive-admin-hero section-card" aria-labelledby="archive-admin-title">
           <div>
-            <p class="eyebrow">Community Archive</p>
-            <h1 id="archive-admin-title">Moderation</h1>
-            <p class="lede">Review screenshots submitted by the Cozy Crafters community.</p>
+            <p class="eyebrow">Cozy Crafters Admin</p>
+            <h1 id="archive-admin-title">Site management</h1>
+            <p class="lede">Manage community content and the history of the Cozy Crafters world.</p>
           </div>
           <div class="archive-admin-hero-mark" aria-hidden="true">
             <span>🛡️</span>
-            <small>Review desk</small>
+            <small>Admin desk</small>
           </div>
         </section>
 
@@ -127,8 +129,8 @@
         <section class="archive-admin-dashboard" data-admin-dashboard aria-labelledby="archive-management-title" hidden>
           <div class="archive-admin-toolbar section-card">
             <div class="archive-admin-toolbar-copy">
-              <p class="eyebrow">Community Archive</p>
-              <h2 id="archive-management-title">Archive management</h2>
+              <p class="eyebrow">Authorized access</p>
+              <h2 id="archive-management-title">Site management</h2>
               <p class="archive-admin-identity">Signed in as <strong data-admin-display-name></strong></p>
             </div>
             <div class="archive-admin-toolbar-controls">
@@ -140,7 +142,7 @@
             </div>
           </div>
 
-          <div class="archive-admin-tabs section-card" role="tablist" aria-label="Archive management views" data-admin-tabs>
+          <div class="archive-admin-tabs section-card" role="tablist" aria-label="Site management views" data-admin-tabs>
             <button
               class="archive-admin-tab is-active"
               id="archive-tab-pending"
@@ -165,6 +167,19 @@
             >
               <span>Published</span>
               <span class="archive-admin-tab-count" data-approved-count>0</span>
+            </button>
+            <button
+              class="archive-admin-tab"
+              id="archive-tab-timeline"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="archive-panel-timeline"
+              tabindex="-1"
+              data-admin-tab="timeline"
+            >
+              <span>Timeline</span>
+              <span class="archive-admin-tab-count" data-timeline-admin-count>0</span>
             </button>
           </div>
 
@@ -211,6 +226,120 @@
               <button class="button button-secondary" type="button" data-approved-more hidden>Load More Published</button>
             </div>
           </section>
+
+          <section
+            class="archive-admin-tab-panel timeline-admin-panel"
+            id="archive-panel-timeline"
+            role="tabpanel"
+            aria-labelledby="archive-tab-timeline"
+            data-admin-panel="timeline"
+            hidden
+          >
+            <div class="timeline-admin-heading section-card">
+              <div>
+                <p class="eyebrow">Server history</p>
+                <h2>Timeline events</h2>
+                <p>Events publish immediately and appear oldest-to-newest on the public timeline.</p>
+              </div>
+              <button class="button button-primary" type="button" data-timeline-admin-add>＋ Add Event</button>
+            </div>
+
+            <p class="archive-admin-status" data-timeline-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
+
+            <div class="timeline-admin-layout">
+              <section class="timeline-admin-list section-card" aria-labelledby="timeline-admin-list-title">
+                <div class="timeline-admin-list-heading">
+                  <div>
+                    <h3 id="timeline-admin-list-title">All events</h3>
+                    <p>Oldest to newest</p>
+                  </div>
+                  <span data-timeline-admin-total>0 events</span>
+                </div>
+
+                <div class="timeline-admin-loading" data-timeline-admin-loading hidden>
+                  <span class="archive-loader" aria-hidden="true"></span>
+                  <p>Loading timeline events…</p>
+                </div>
+
+                <div class="timeline-admin-events" data-timeline-admin-events aria-busy="false"></div>
+
+                <div class="timeline-admin-empty" data-timeline-admin-empty hidden>
+                  <span aria-hidden="true">📖</span>
+                  <h3>No timeline events yet.</h3>
+                  <p>Add the first moment from Cozy Crafters history.</p>
+                  <button class="button button-primary" type="button" data-timeline-admin-empty-add>Add First Event</button>
+                </div>
+              </section>
+
+              <aside class="timeline-admin-editor section-card" data-timeline-admin-editor hidden aria-labelledby="timeline-editor-title">
+                <div class="timeline-admin-editor-heading">
+                  <div>
+                    <p class="eyebrow">Timeline event</p>
+                    <h2 id="timeline-editor-title" data-timeline-editor-title>Add event</h2>
+                  </div>
+                  <button class="timeline-admin-editor-close" type="button" data-timeline-editor-close aria-label="Close event editor">×</button>
+                </div>
+
+                <form class="timeline-admin-form" data-timeline-admin-form novalidate>
+                  <label class="timeline-admin-field" for="timeline-event-title">
+                    <span>Title <strong aria-hidden="true">*</strong></span>
+                    <input class="tool-input" id="timeline-event-title" name="title" type="text" maxlength="80" autocomplete="off" required data-timeline-event-title />
+                    <small><span data-timeline-title-count>0</span> / 80</small>
+                  </label>
+
+                  <label class="timeline-admin-field" for="timeline-event-date">
+                    <span>Event date <strong aria-hidden="true">*</strong></span>
+                    <input class="tool-input" id="timeline-event-date" name="eventDate" type="date" required data-timeline-event-date />
+                    <small>This date determines the event's position.</small>
+                  </label>
+
+                  <label class="timeline-admin-field" for="timeline-event-description">
+                    <span>Description <em>Optional</em></span>
+                    <textarea class="tool-input" id="timeline-event-description" name="description" maxlength="280" rows="5" data-timeline-event-description></textarea>
+                    <small><span data-timeline-description-count>0</span> / 280</small>
+                  </label>
+
+                  <div class="timeline-admin-image-field">
+                    <div class="timeline-admin-field-label">
+                      <span>Image <em>Optional</em></span>
+                      <small>PNG, JPEG, or WebP · Maximum 8 MB</small>
+                    </div>
+                    <input class="timeline-admin-file-input" id="timeline-event-image" name="image" type="file" accept="image/png,image/jpeg,image/webp" data-timeline-event-image />
+                    <label class="timeline-admin-image-picker" for="timeline-event-image" data-timeline-image-picker>
+                      <span aria-hidden="true">▧</span>
+                      <strong data-timeline-image-picker-label>Choose an image</strong>
+                    </label>
+                    <div class="timeline-admin-selected-image" data-timeline-selected-image hidden>
+                      <img data-timeline-image-preview alt="Selected timeline image preview" />
+                      <div>
+                        <strong data-timeline-image-name></strong>
+                        <span data-timeline-image-size></span>
+                        <button type="button" data-timeline-image-clear>Remove selected image</button>
+                      </div>
+                    </div>
+                    <label class="timeline-admin-remove-image" data-timeline-remove-image-row hidden>
+                      <input type="checkbox" data-timeline-remove-image />
+                      <span>Remove the current published image</span>
+                    </label>
+                  </div>
+
+                  <div class="timeline-admin-preview" aria-label="Live event preview">
+                    <p class="eyebrow">Live card preview</p>
+                    <span data-timeline-preview-year>Year</span>
+                    <h3 data-timeline-preview-title>Untitled event</h3>
+                    <time data-timeline-preview-date>Choose an event date</time>
+                    <p data-timeline-preview-description>A moment from the Cozy Crafters story.</p>
+                  </div>
+
+                  <p class="timeline-admin-form-status" data-timeline-form-status role="status" aria-live="polite" aria-atomic="true"></p>
+                  <div class="timeline-admin-form-actions">
+                    <button class="button button-secondary" type="button" data-timeline-editor-cancel>Cancel</button>
+                    <button class="button button-primary" type="submit" data-timeline-event-save>Publish Event</button>
+                  </div>
+                </form>
+              </aside>
+            </div>
+          </section>
         </section>
 
         <dialog class="archive-reject-dialog" id="archive-reject-dialog" aria-labelledby="archive-reject-title" aria-describedby="archive-reject-copy">
@@ -238,6 +367,21 @@
             <div class="archive-reject-actions">
               <button class="button button-secondary" type="button" data-remove-cancel>Cancel</button>
               <button class="archive-reject-confirm" type="button" data-remove-confirm>Remove Screenshot</button>
+            </div>
+          </div>
+        </dialog>
+
+        <dialog class="archive-reject-dialog timeline-delete-dialog" id="timeline-delete-dialog" aria-labelledby="timeline-delete-title" aria-describedby="timeline-delete-copy">
+          <div class="archive-reject-modal">
+            <div class="archive-reject-icon" aria-hidden="true">🗑️</div>
+            <p class="eyebrow">Permanent timeline removal</p>
+            <h2 id="timeline-delete-title">Delete this event?</h2>
+            <p id="timeline-delete-copy">It will immediately disappear from the public timeline, including its image.</p>
+            <p class="archive-remove-warning">This cannot be undone.</p>
+            <p class="archive-reject-context" data-timeline-delete-context></p>
+            <div class="archive-reject-actions">
+              <button class="button button-secondary" type="button" data-timeline-delete-cancel>Cancel</button>
+              <button class="archive-reject-confirm" type="button" data-timeline-delete-confirm>Delete Event</button>
             </div>
           </div>
         </dialog>

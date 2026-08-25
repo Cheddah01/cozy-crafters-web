@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explore the launches, landmarks, events, and memories that shaped the Cozy Crafters SMP community." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://cozycrafters.net/timeline.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cozy Crafters SMP" />
+    <meta property="og:title" content="Server Timeline | Cozy Crafters SMP" />
+    <meta property="og:description" content="Follow the launches, landmarks, events, and memories that shaped the Cozy Crafters world." />
+    <meta property="og:url" content="https://cozycrafters.net/timeline.html" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Server Timeline | Cozy Crafters SMP" />
+    <meta name="twitter:description" content="Follow the history of the Cozy Crafters world." />
+    <meta name="theme-color" content="#7cc4f5" />
+    <script>
+      try {
+        if (localStorage.getItem('cc-theme') === 'night') {
+          document.documentElement.classList.add('night');
+        }
+      } catch (error) {}
+    </script>
+    <title>Server Timeline | Cozy Crafters SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./site-settings.js"></script>
+    <script src="./server-status.js" defer></script>
+    <script src="./timeline.js" defer></script>
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-veil"></div>
+      <div class="stars"><i class="sf sf1"></i><i class="sf sf2"></i></div>
+      <div class="mc-sun"></div>
+      <div class="mc-moon"></div>
+      <div class="mc-cloud c1"></div><div class="mc-cloud c2"></div><div class="mc-cloud c3"></div>
+      <div class="mc-cloud c4"></div><div class="mc-cloud c5"></div><div class="mc-cloud c6"></div><div class="mc-cloud c7"></div>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header site-header-status" aria-label="Site header">
+        <a class="brand" href="./index.html" aria-label="Cozy Crafters SMP home">
+          <span class="brand-mark">🍄</span>
+          <span>Cozy Crafters</span>
+        </a>
+        <div class="server-status" data-server-status data-state="loading" role="status" aria-live="polite">
+          <span class="server-status-dot" aria-hidden="true"></span>
+          <span data-server-status-text>Checking server…</span>
+        </div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./store.html">Store</a>
+          <a href="./tools.html">Tools</a>
+          <a href="./archive.html">Archive</a>
+          <a href="./timeline.html" aria-current="page">Timeline</a>
+          <a href="./index.html#join">Join</a>
+        </nav>
+        <button class="mode-toggle" type="button" aria-label="Toggle night mode" aria-pressed="false">
+          <span class="icon-moon" aria-hidden="true">🌙</span>
+          <span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </header>
+
+      <main class="timeline-main">
+        <section class="timeline-hero section-card" aria-labelledby="timeline-title">
+          <div>
+            <p class="eyebrow">Our server history</p>
+            <h1 id="timeline-title">The Cozy Timeline</h1>
+            <p class="lede">Every launch, landmark, mishap, and memory—one world at a time.</p>
+          </div>
+          <aside class="timeline-hero-mark" aria-hidden="true">
+            <span>⌛</span>
+            <small>History in the making</small>
+          </aside>
+        </section>
+
+        <section class="timeline-section" aria-labelledby="timeline-events-title">
+          <div class="section-heading timeline-section-heading">
+            <div>
+              <p class="eyebrow">Then to now</p>
+              <h2 id="timeline-events-title">Explore our story</h2>
+            </div>
+            <div class="timeline-controls" data-timeline-controls hidden>
+              <button class="timeline-arrow" type="button" data-timeline-previous aria-label="Show previous event">
+                <span aria-hidden="true">←</span>
+              </button>
+              <button class="timeline-arrow" type="button" data-timeline-next aria-label="Show next event">
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="timeline-board section-card" data-timeline-board aria-busy="true">
+            <div class="timeline-loading" data-timeline-loading role="status">
+              <span class="timeline-loader" aria-hidden="true"></span>
+              <div>
+                <strong>Opening the history book…</strong>
+                <p>Gathering moments from across the Cozy Crafters world.</p>
+              </div>
+            </div>
+
+            <div class="timeline-empty" data-timeline-empty hidden>
+              <span aria-hidden="true">📖</span>
+              <p class="eyebrow">A fresh page</p>
+              <h3>Our timeline is ready for its first event.</h3>
+              <p>Server history will appear here as it is added.</p>
+            </div>
+
+            <div class="timeline-error" data-timeline-error hidden>
+              <span aria-hidden="true">🌧️</span>
+              <div>
+                <h3>The timeline couldn't be loaded right now.</h3>
+                <p>Please try opening the history book again.</p>
+              </div>
+              <button class="button button-secondary" type="button" data-timeline-retry>Try Again</button>
+            </div>
+
+            <div class="timeline-explorer" data-timeline-explorer hidden>
+              <div
+                class="timeline-scroller"
+                data-timeline-scroller
+                tabindex="0"
+                aria-label="Scrollable server timeline. Use the left and right arrow keys to explore events."
+              >
+                <div class="timeline-track" data-timeline-track></div>
+              </div>
+              <p class="timeline-hint"><span aria-hidden="true">↔</span> Drag, swipe, or use the arrows to explore</p>
+            </div>
+          </div>
+
+          <p class="timeline-status" data-timeline-status role="status" aria-live="polite" aria-atomic="true"></p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
+      </footer>
+    </div>
+  </body>
+</html>
