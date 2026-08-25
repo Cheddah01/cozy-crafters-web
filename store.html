@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-footer-admin" />
+    <link rel="stylesheet" href="./styles.css?v=20260825-perk-icons" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
   </head>
@@ -185,7 +185,7 @@
             </div>
             <div class="rank-perks-modal-content">
               <p class="rank-perks-intro" id="rank-perks-intro">Your 30-day Supporter rank unlocks:</p>
-              <ul class="rank-perks-list" id="rank-perks-list"></ul>
+              <div class="rank-perks-groups" id="rank-perks-groups"></div>
               <div class="rank-perks-term" id="rank-perks-term">
                 <strong>$8 USD</strong>
                 <span>30-day access · One-time purchase</span>
@@ -238,13 +238,25 @@
             title: 'Supporter perks',
             intro: 'Your 30-day Supporter rank unlocks:',
             price: '$8 USD',
-            perks: [
-              'Supporter chat tag',
-              'Discord role and private channel',
-              'Exclusive profile badge',
-              'Customizable Supporter tag',
-              'Name on the Supporter Wall',
-              { title: '2× home limit (20 sethomes)', command: '/homes' }
+            sections: [
+              {
+                title: 'Cosmetics',
+                icon: '✨',
+                perks: [
+                  { title: 'Supporter chat tag', icon: '🏷️' },
+                  { title: 'Discord role', icon: '💬' },
+                  { title: 'Exclusive profile badge', icon: '🏅' },
+                  { title: 'Customizable Supporter tag', icon: '🎨' },
+                  { title: 'Name on the Supporter Wall', icon: '🧱' }
+                ]
+              },
+              {
+                title: 'Gameplay perks',
+                icon: '🏡',
+                perks: [
+                  { title: '2× home limit (20 sethomes)', command: '/homes', icon: '🏠' }
+                ]
+              }
             ]
           },
           patron: {
@@ -253,19 +265,28 @@
             title: 'Patron perks',
             intro: 'Your 30-day Patron rank unlocks:',
             price: '$16 USD',
-            perks: [
-              'Patron chat tag and Discord role',
-              'Private supporter channel',
-              'Exclusive profile badge',
-              'Customizable Patron tag',
-              { title: 'Premium profile frame and sounds', command: '/profile' },
-              { title: 'Custom profile quote formatting', command: '/profile' },
-              { title: 'Join message cosmetics', command: '/joinmessage' },
-              { title: 'Access to the skins wardrobe', command: '/skins' },
-              { title: 'Disguise as mobs and players', command: '/dis' },
-              'Name on the Patron Wall',
-              { title: '4× home limit (40 sethomes)', command: '/homes' },
-              'All ranked cosmetics to Netherite V'
+            sections: [
+              {
+                title: 'Cosmetics',
+                icon: '✨',
+                perks: [
+                  { title: 'Patron chat tag and Discord role', icon: '💬' },
+                  { title: 'Exclusive profile badge', icon: '🏅' },
+                  { title: 'Premium profile frame and sounds', command: '/profile', icon: '🖼️' },
+                  { title: 'Join message cosmetics', command: '/joinmessage', icon: '🎉' },
+                  { title: 'Access to the skins wardrobe', command: '/skins', icon: '👕' },
+                  { title: 'Disguise as mobs and players', command: '/dis', icon: '🎭' },
+                  { title: 'Name on the Patron Wall', detail: 'Visit at /warp support', icon: '🧱' },
+                  { title: 'All ranked cosmetics to Netherite V', icon: '💎' }
+                ]
+              },
+              {
+                title: 'Gameplay perks',
+                icon: '🏡',
+                perks: [
+                  { title: '4× home limit (40 sethomes)', command: '/homes', icon: '🏠' }
+                ]
+              }
             ],
             note: 'Cosmetics only — no Netherite gameplay perks.'
           }
@@ -275,7 +296,7 @@
         const perksKicker = document.querySelector('#rank-perks-kicker');
         const perksTitle = document.querySelector('#rank-perks-title');
         const perksIntro = document.querySelector('#rank-perks-intro');
-        const perksList = document.querySelector('#rank-perks-list');
+        const perksGroups = document.querySelector('#rank-perks-groups');
         const perksTerm = document.querySelector('#rank-perks-term');
         const perksClose = document.querySelector('.rank-perks-modal-close');
         const perksTriggers = document.querySelectorAll('[data-perks-rank]');
@@ -289,20 +310,38 @@
             perksKicker.textContent = content.kicker;
             perksTitle.textContent = content.title;
             perksIntro.textContent = content.intro;
-            perksList.replaceChildren(...content.perks.map((perk) => {
-              const item = document.createElement('li');
-              const title = document.createElement('span');
-              title.className = 'rank-perk-title';
-              title.textContent = typeof perk === 'string' ? perk : perk.title;
-              item.append(title);
+            perksGroups.replaceChildren(...content.sections.map((section) => {
+              const group = document.createElement('section');
+              group.className = 'rank-perks-group';
 
-              if (typeof perk !== 'string' && perk.command) {
-                const command = document.createElement('small');
-                command.className = 'rank-perk-command';
-                command.textContent = `command: ${perk.command}`;
-                item.append(command);
-              }
-              return item;
+              const heading = document.createElement('h3');
+              heading.className = 'rank-perks-group-title';
+              heading.textContent = `${section.icon} ${section.title}`;
+
+              const list = document.createElement('ul');
+              list.className = 'rank-perks-list';
+              list.append(...section.perks.map((perk) => {
+                const item = document.createElement('li');
+                const icon = document.createElement('span');
+                icon.className = 'rank-perk-icon';
+                icon.setAttribute('aria-hidden', 'true');
+                icon.textContent = typeof perk === 'string' ? '✓' : (perk.icon || '✓');
+                const title = document.createElement('span');
+                title.className = 'rank-perk-title';
+                title.textContent = typeof perk === 'string' ? perk : perk.title;
+                item.append(icon, title);
+
+                if (typeof perk !== 'string' && (perk.command || perk.detail)) {
+                  const detail = document.createElement('small');
+                  detail.className = 'rank-perk-detail';
+                  detail.textContent = perk.detail || `command: ${perk.command}`;
+                  item.append(detail);
+                }
+                return item;
+              }));
+
+              group.append(heading, list);
+              return group;
             }));
 
             const price = document.createElement('strong');
