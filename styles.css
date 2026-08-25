@@ -747,6 +747,43 @@ html.night .join-card::before {
   letter-spacing: -0.02em;
 }
 
+.about-owner-photo {
+  position: relative;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #15233a;
+}
+
+.about-owner-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 440px;
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.about-owner-photo figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 5rem 1.4rem 1.35rem;
+  background: linear-gradient(180deg, transparent, rgba(7, 15, 29, 0.92));
+  color: #ffffff;
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.about-owner-photo figcaption span {
+  display: block;
+  margin-top: 0.35rem;
+  color: #d9eaff;
+  font-size: 0.85em;
+}
+
 .features {
   padding: clamp(1.5rem, 4vw, 3rem) 0;
 }
