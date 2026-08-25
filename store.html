@@ -274,7 +274,7 @@
           90: {
             label: '90 days',
             adjective: '90-day',
-            checkoutReady: false,
+            checkoutReady: true,
             prices: {
               supporter: { display: '$24', full: '$24 USD' },
               patron: { display: '$48', full: '$48 USD' }
@@ -579,9 +579,7 @@
 
             selectedDurationDays = durationDays;
             syncDurationDisplay();
-            showStatus(durationDays === 90
-              ? '90-day checkout is being prepared. Choose 30 days to purchase now.'
-              : '');
+            showStatus('');
           });
         });
 
@@ -637,7 +635,7 @@
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ username, rank })
+              body: JSON.stringify({ username, rank, durationDays: selectedDurationDays })
             });
 
             let result = null;
