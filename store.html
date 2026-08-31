@@ -325,6 +325,7 @@
                   { title: 'Exclusive profile badge', command: '/profile badges', icon: '🏅' },
                   { title: 'Premium profile frame and sounds', command: '/profile edit', icon: '🖼️' },
                   { title: 'Join message cosmetics', command: '/joinmessage', icon: '🎉' },
+                  { title: 'Companions', command: '/cosmetics', detail: 'A small personal pet that follows you around the server', icon: '🐾', isNew: true },
                   { title: 'Access to the skins wardrobe', command: '/skins', icon: '👕' },
                   { title: 'Disguise as mobs and players', command: '/dis', icon: '🎭' },
                   { title: 'Premium Scales', detail: 'Additional player sizes!', icon: '📏' },
@@ -400,7 +401,9 @@
                 if (typeof perk !== 'string' && (perk.command || perk.detail)) {
                   const detail = document.createElement('small');
                   detail.className = 'rank-perk-detail';
-                  detail.textContent = perk.detail || `command: ${perk.command}`;
+                  detail.textContent = perk.command && perk.detail
+                    ? `command: ${perk.command} · ${perk.detail}`
+                    : (perk.detail || `command: ${perk.command}`);
                   item.append(detail);
                 }
                 return item;
