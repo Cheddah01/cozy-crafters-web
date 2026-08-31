@@ -5349,6 +5349,26 @@ html.modal-open {
   line-height: 1.35;
 }
 
+.rank-perks-list li.rank-perk-is-new {
+  padding-right: 3.75rem;
+}
+
+.rank-perk-new-badge {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  padding: 0.18rem 0.38rem;
+  border: 1px solid rgba(126, 71, 8, 0.18);
+  border-radius: 999px;
+  background: #f3a72d;
+  color: #402506;
+  box-shadow: 0 2px 6px rgba(126, 71, 8, 0.18);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
 .rank-perk-icon {
   position: absolute;
   top: 50%;
