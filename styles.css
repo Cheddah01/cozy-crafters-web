@@ -641,6 +641,11 @@ h3 {
   border-color: var(--dirt-dark);
 }
 
+.button-discord {
+  background: linear-gradient(180deg, #7289ff, #5865f2);
+  border-color: #3d49b7;
+}
+
 .button-store {
   background: linear-gradient(180deg, #ffcf4a, #f0a52c);
   border-color: #b9740f;
