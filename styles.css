@@ -600,6 +600,19 @@ h3 {
   margin-top: 2rem;
 }
 
+.hero .actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.hero .actions .button {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 0.75rem;
+  white-space: nowrap;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -6412,6 +6425,10 @@ html.night .checkout-result-cancelled .checkout-result-mark {
 
   .hero {
     min-height: auto;
+  }
+
+  .hero .actions {
+    grid-template-columns: 1fr;
   }
 
   .faq-grid {
