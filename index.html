@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Cozy Crafters SMP is a small Java survival server focused on towns, trading, building, and community." />
+    <meta name="description" content="Join Cozy Crafters, a cozy Java Minecraft survival SMP with player towns, shops, land claims, community events, and no pay-to-win." />
     <meta name="robots" content="index,follow" />
     <link rel="canonical" href="https://cozycrafters.net/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -13,12 +13,18 @@
     <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cozy Crafters SMP" />
-    <meta property="og:title" content="Cozy Crafters SMP" />
-    <meta property="og:description" content="A small Java survival server where builds are cozy, towns matter, and the players are somehow worse than the mobs." />
+    <meta property="og:title" content="Cozy Crafters SMP | Cozy Minecraft Survival Server" />
+    <meta property="og:description" content="A cozy Java Minecraft survival SMP with player towns, shops, protected builds, community events, and no pay-to-win." />
     <meta property="og:url" content="https://cozycrafters.net/" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Cozy Crafters SMP" />
-    <meta name="twitter:description" content="A small Java survival server where builds are cozy, towns matter, and the players are somehow worse than the mobs." />
+    <meta property="og:image" content="https://cozycrafters.net/images/cozy-crafters-social-preview.png" />
+    <meta property="og:image:width" content="1870" />
+    <meta property="og:image:height" content="676" />
+    <meta property="og:image:alt" content="Cozy Crafters SMP banner with a cozy house, tree, crafting table, lanterns, and pickaxe" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cozy Crafters SMP | Cozy Minecraft Survival Server" />
+    <meta name="twitter:description" content="A cozy Java Minecraft survival SMP with player towns, shops, protected builds, community events, and no pay-to-win." />
+    <meta name="twitter:image" content="https://cozycrafters.net/images/cozy-crafters-social-preview.png" />
+    <meta name="twitter:image:alt" content="Cozy Crafters SMP banner with a cozy house, tree, crafting table, lanterns, and pickaxe" />
     <meta name="theme-color" content="#7cc4f5" />
     <script>
       try {
@@ -30,17 +36,52 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Cozy Crafters SMP",
-        "url": "https://cozycrafters.net/",
-        "description": "A small Java survival server focused on towns, trading, building, and community."
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://cozycrafters.net/#website",
+            "name": "Cozy Crafters SMP",
+            "alternateName": ["Cozy Crafters", "Cozy Crafters Minecraft Server"],
+            "url": "https://cozycrafters.net/",
+            "description": "The official website for Cozy Crafters, a cozy Java Minecraft survival SMP."
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://cozycrafters.net/#webpage",
+            "url": "https://cozycrafters.net/",
+            "name": "Cozy Minecraft Server | Cozy Crafters Java Survival SMP",
+            "description": "A cozy Java Minecraft survival SMP with player towns, shops, protected builds, community events, and no pay-to-win.",
+            "isPartOf": { "@id": "https://cozycrafters.net/#website" },
+            "mainEntity": { "@id": "https://cozycrafters.net/#gameserver" }
+          },
+          {
+            "@type": "GameServer",
+            "@id": "https://cozycrafters.net/#gameserver",
+            "name": "Cozy Crafters SMP",
+            "alternateName": "Cozy Crafters",
+            "url": "https://cozycrafters.net/",
+            "image": "https://cozycrafters.net/images/cozy-crafters-social-preview.png",
+            "description": "A community-focused Java Minecraft survival server with towns, player shops, land claims, events, and custom quality-of-life features.",
+            "identifier": {
+              "@type": "PropertyValue",
+              "propertyID": "Minecraft server address",
+              "value": "play.cozycrafters.net"
+            },
+            "game": {
+              "@type": "VideoGame",
+              "name": "Minecraft",
+              "playMode": "https://schema.org/MultiPlayer",
+              "gamePlatform": "Java Edition"
+            }
+          }
+        ]
       }
     </script>
-    <title>Cozy Crafters SMP | Java Survival Server</title>
+    <title>Cozy Minecraft Server | Cozy Crafters Java Survival SMP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-footer-admin" />
+    <link rel="stylesheet" href="./styles.css?v=20260831-seo-phase-one" />
     <script src="./site-settings.js"></script>
     <script src="./server-status.js" defer></script>
   </head>
@@ -73,6 +114,7 @@
           <span data-server-status-text>Checking server…</span>
         </div>
         <nav class="nav-links" aria-label="Main navigation">
+          <a href="./join.html">Join</a>
           <a href="./about.html">About</a>
           <a href="./store.html">Store</a>
           <a href="./tools.html">Tools</a>
@@ -88,13 +130,13 @@
       <main id="top">
         <section class="hero section-card" aria-labelledby="site-title">
           <div class="hero-copy">
-            <p class="eyebrow">Java Survival SMP</p>
-            <h1 id="site-title">A small Minecraft world, warmly built.</h1>
-            <p class="lede">Cozy Crafters SMP is a community survival server focused on towns, trading, building, and the kind of player drama that somehow becomes server history.</p>
+            <p class="eyebrow">Cozy Java Minecraft Server</p>
+            <h1 id="site-title">A cozy Minecraft survival server, warmly built.</h1>
+            <p class="lede">Cozy Crafters SMP is a small Java survival server for players who want to build, trade, found towns, and become part of a community that remembers its own stories.</p>
             <div class="actions" aria-label="Primary actions">
               <button class="button button-primary" type="button" data-copy-ip>Join Server</button>
+              <a class="button button-secondary" href="./join.html">How to Join</a>
               <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Join Discord</a>
-              <a class="button button-store" href="./store.html">Support Us</a>
             </div>
           </div>
 
@@ -112,12 +154,28 @@
         <section id="about" class="intro-grid">
           <article class="section-card story-card">
             <p class="eyebrow">What is this?</p>
-            <h2>A cozy SMP with an actual memory.</h2>
-            <p>We are not a giant network, and that is the point. Players build towns, run shops, make questionable decisions, and gradually turn the world into a place with history.</p>
+            <h2>A small community SMP with an actual memory.</h2>
+            <p>We are not a giant Minecraft network, and that is the point. Players recognize one another, build towns, run shops, make questionable decisions, and gradually turn the survival world into a place with history.</p>
           </article>
           <article class="section-card quote-card">
             <p>“Someone is probably starting political drama in The End.”</p>
           </article>
+        </section>
+
+        <section class="server-fit section-card" aria-labelledby="server-fit-title">
+          <div class="server-fit-copy">
+            <p class="eyebrow">A different kind of survival server</p>
+            <h2 id="server-fit-title">Made for builders, traders, and players who want somewhere to settle.</h2>
+            <p>Cozy Crafters keeps the familiar rhythm of Minecraft survival while adding thoughtful reasons to care about the world around you. Claim a home, help a town grow, open a player shop, work toward server goals, or simply explore what the community has built.</p>
+            <p>The server is welcoming to players who prefer cooperation, creativity, and long-term projects over constant resets or pay-to-win competition. Custom menus and quality-of-life features make everyday play smoother without replacing the survival experience.</p>
+            <a class="text-link" href="./about.html">Learn more about the Cozy Crafters community <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="server-fit-list" aria-label="Server highlights">
+            <li><strong>Java survival</strong><span>A familiar SMP experience with custom polish.</span></li>
+            <li><strong>Player-led world</strong><span>Towns, shops, builds, and stories shaped by the community.</span></li>
+            <li><strong>Protected progress</strong><span>Land claims help keep homes and projects safe.</span></li>
+            <li><strong>Fair support</strong><span>No pay-to-win advantages or pressure to grind all day.</span></li>
+          </ul>
         </section>
 
         <section id="features" class="features" aria-labelledby="features-title">
@@ -153,19 +211,51 @@
           <div>
             <p class="eyebrow">Ready?</p>
             <h2 id="join-title">Join the world.</h2>
-            <p>Hop in on Java Edition, then join the Discord to meet the community and see what is currently happening.</p>
+            <p>Add <strong>play.cozycrafters.net</strong> to the Java Edition multiplayer server list, then join the Discord to meet the community and see what is happening.</p>
           </div>
           <div class="join-actions">
             <p class="server-ip large">play.cozycrafters.net</p>
             <button class="button button-primary" type="button" data-copy-ip>Add Server</button>
-            <a class="button button-secondary" href="https://discord.gg/rREVP4YhqC">Discord</a>
+            <a class="button button-secondary" href="./join.html">Joining Guide</a>
+          </div>
+        </section>
+
+        <section class="faq-section section-card" aria-labelledby="faq-title">
+          <div class="section-heading">
+            <p class="eyebrow">Quick answers</p>
+            <h2 id="faq-title">Cozy Crafters server FAQ</h2>
+            <p>Everything you need to know before joining the world.</p>
+          </div>
+          <div class="faq-grid">
+            <article>
+              <h3>Is Cozy Crafters a Java or Bedrock server?</h3>
+              <p>Cozy Crafters is a Java Edition Minecraft server. Connect using <strong>play.cozycrafters.net</strong>.</p>
+            </article>
+            <article>
+              <h3>What kind of Minecraft server is it?</h3>
+              <p>It is a community survival SMP focused on building, player towns, trading, shops, land claims, events, and long-term server history.</p>
+            </article>
+            <article>
+              <h3>Is the server pay-to-win?</h3>
+              <p>No. Supporter ranks help fund the server, but they do not replace fair survival progression with paid power.</p>
+            </article>
+            <article>
+              <h3>How do I join?</h3>
+              <p>Open Minecraft: Java Edition, choose Multiplayer, add the server address, and connect. Our <a href="./join.html">step-by-step joining guide</a> has the full instructions.</p>
+            </article>
           </div>
         </section>
       </main>
 
       <footer class="site-footer">
         <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
-        <a class="footer-admin-link" href="./archive-admin.html">Admin Login</a>
+        <nav class="legal-links" aria-label="Footer navigation">
+          <a href="./join.html">How to Join</a>
+          <a href="./about.html">About</a>
+          <a href="./terms.html">Terms</a>
+          <a href="./privacy.html">Privacy</a>
+          <a href="./contact.html">Contact</a>
+        </nav>
       </footer>
     </div>
 

@@ -843,6 +843,166 @@ html.night .features h2 {
   margin-top: 0;
 }
 
+/* ---------- Search-friendly server and joining content ---------- */
+
+.server-fit {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  padding: clamp(1.6rem, 4vw, 3rem);
+}
+
+.server-fit-copy > p:not(.eyebrow),
+.faq-section .section-heading > p:not(.eyebrow),
+.join-steps p,
+.join-info-grid p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.text-link {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--accent);
+  font-weight: 900;
+  text-underline-offset: 0.2em;
+}
+
+.server-fit-list,
+.check-list,
+.join-steps-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.server-fit-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.server-fit-list li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--chip-bg);
+}
+
+.server-fit-list strong {
+  color: var(--ink);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 1.05rem;
+}
+
+.server-fit-list span {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.faq-section {
+  padding: clamp(1.6rem, 4vw, 3rem);
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.faq-grid article {
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--chip-bg);
+}
+
+.faq-grid article p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.faq-grid article a {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.join-guide-main {
+  gap: 1.75rem;
+}
+
+.join-steps {
+  padding: clamp(1rem, 3vw, 2rem) 0;
+}
+
+.join-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  counter-reset: join-step;
+}
+
+.join-steps-grid li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.25rem;
+}
+
+.join-steps-grid p {
+  margin-bottom: 0;
+}
+
+.step-number {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border: 2px solid var(--grass-deep);
+  border-radius: 0.65rem;
+  background: linear-gradient(180deg, var(--grass), var(--grass-dark));
+  color: #ffffff;
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.14);
+}
+
+.join-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.check-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+
+.check-list li {
+  position: relative;
+  padding: 0.75rem 0.9rem 0.75rem 2.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--chip-bg);
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.check-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.85rem;
+  color: var(--accent);
+  font-weight: 900;
+}
+
 /* ---------- Tool pages ---------- */
 
 .tools-directory-main {
@@ -6117,6 +6277,8 @@ html.night .checkout-result-cancelled .checkout-result-mark {
   .hero,
   .intro-grid,
   .join-section,
+  .server-fit,
+  .join-info-grid,
   .archive-hero,
   .store-hero,
   .username-card,
@@ -6181,6 +6343,10 @@ html.night .checkout-result-cancelled .checkout-result-mark {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .join-steps-grid {
+    grid-template-columns: 1fr;
+  }
+
   h1 {
     max-width: 12ch;
   }
@@ -6241,6 +6407,10 @@ html.night .checkout-result-cancelled .checkout-result-mark {
 
   .hero {
     min-height: auto;
+  }
+
+  .faq-grid {
+    grid-template-columns: 1fr;
   }
 
   .archive-hero {
