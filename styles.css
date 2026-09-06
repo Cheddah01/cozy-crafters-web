@@ -836,6 +836,25 @@ h3 {
   color: #4a2e05;
 }
 
+.button-kofi {
+  gap: 0.6rem;
+  background: linear-gradient(180deg, #ff7957, #ff6433);
+  border-color: #c13e20;
+  color: #ffffff;
+}
+
+.button-kofi img {
+  display: block;
+  width: 1.7rem;
+  height: auto;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.about-owner-actions {
+  align-items: stretch;
+}
+
 /* ---------- Join card ---------- */
 
 .join-card {
