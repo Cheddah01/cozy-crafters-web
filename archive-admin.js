@@ -942,7 +942,7 @@
   };
 
   const setActiveTab = (tabName, { focus = false, load = true } = {}) => {
-    if (!['pending', 'published', 'timeline'].includes(tabName)) return;
+    if (!['pending', 'published', 'timeline', 'funding'].includes(tabName)) return;
     activeTab = tabName;
     tabButtons.forEach((button) => {
       const selected = button.dataset.adminTab === tabName;
@@ -1108,6 +1108,7 @@
   if (refreshButton) {
     refreshButton.addEventListener('click', () => {
       if (activeTab === 'timeline') announceAdminEvent('cozy-admin-timeline-refresh');
+      else if (activeTab === 'funding') announceAdminEvent('cozy-admin-funding-refresh');
       else if (activeTab === 'published') loadApprovedUploads();
       else loadPendingQueue();
     });

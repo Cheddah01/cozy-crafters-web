@@ -81,8 +81,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260831-home-actions-row" />
-    <script src="./site-settings.js"></script>
+    <link rel="stylesheet" href="./styles.css?v=20260906-community-funding" />
+    <script src="./site-settings.js?v=20260906-community-funding"></script>
     <script src="./server-status.js" defer></script>
   </head>
   <body>
@@ -161,6 +161,28 @@
           <article class="section-card quote-card">
             <p>“Someone is probably starting political drama in The End.”</p>
           </article>
+        </section>
+
+        <section class="community-funding section-card" data-funding-home aria-labelledby="community-funding-title" hidden>
+          <div class="community-funding-copy">
+            <p class="eyebrow">Keep Cozy Crafters running</p>
+            <h2 id="community-funding-title" data-funding-title>Community server fund</h2>
+            <p data-funding-description>Help cover hosting, backups, and the tools that keep Cozy Crafters running.</p>
+            <a class="button button-store" href="./store.html" data-funding-link>Support the server</a>
+          </div>
+          <div class="community-funding-meter" aria-label="Funding summary">
+            <div class="community-funding-total">
+              <span class="community-funding-current" data-funding-current>$0</span>
+              <span data-funding-target>of $100</span>
+            </div>
+            <div class="community-funding-progress" data-funding-progress>
+              <span data-funding-progress-fill></span>
+            </div>
+            <div class="community-funding-status">
+              <strong data-funding-percentage>0% funded</strong>
+              <span>Every contribution helps.</span>
+            </div>
+          </div>
         </section>
 
         <section class="server-fit section-card" aria-labelledby="server-fit-title">

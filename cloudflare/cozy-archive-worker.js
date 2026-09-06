@@ -54,6 +54,11 @@ const MAX_TIMELINE_DESCRIPTION_LENGTH = 280;
 const MAX_TIMELINE_RESULTS = 500;
 const MAX_TIMELINE_PERIOD_LABEL_LENGTH = 50;
 const MAX_TIMELINE_PERIOD_RESULTS = 100;
+const MAX_FUNDING_TITLE_LENGTH = 80;
+const MAX_FUNDING_DESCRIPTION_LENGTH = 240;
+const MAX_FUNDING_URL_LENGTH = 500;
+const MAX_FUNDING_CENTS = 100000000;
+const FUNDING_CURRENCIES = new Set(["USD", "CAD", "EUR", "GBP", "AUD", "NZD"]);
 
 const ALLOWED_ORIGINS =
   new Set([
@@ -163,6 +168,13 @@ export default {
       url.pathname === "/api/timeline"
     ) {
       return handlePublicTimeline(request, env);
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/api/funding-goal"
+    ) {
+      return handlePublicFundingGoal(request, env);
     }
 
     const publicTimelineImageMatch =
@@ -286,6 +298,20 @@ export default {
         request,
         env
       );
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/api/admin/funding-goal"
+    ) {
+      return handleAdminFundingGoal(request, env);
+    }
+
+    if (
+      request.method === "PUT" &&
+      url.pathname === "/api/admin/funding-goal"
+    ) {
+      return handleAdminFundingGoalUpdate(request, env);
     }
 
     if (
@@ -911,6 +937,255 @@ async function handlePublicGalleryImage(
       headers,
     }
   );
+}
+
+
+// ==================================================
+// COMMUNITY FUNDING GOAL
+// ==================================================
+
+async function handlePublicFundingGoal(request, env) {
+  const cors = getCorsResult(request);
+  if (!cors.allowed) {
+    return apiJson({ error: "Origin not allowed." }, 403);
+  }
+  if (!env.DB) {
+    return apiJson(
+      { error: "The community funding goal is temporarily unavailable." },
+      503,
+      cors.headers
+    );
+  }
+
+  try {
+    const row = await getFundingGoal(env);
+    if (!row) {
+      return apiJson(
+        { error: "The community funding goal has not been configured." },
+        404,
+        cors.headers
+      );
+    }
+    const headers = new Headers(cors.headers || undefined);
+    headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=60");
+    return apiJsonWithHeaders(
+      { ok: true, goal: fundingGoalJson(row) },
+      200,
+      headers
+    );
+  } catch (error) {
+    console.error("Public funding goal query failed:", error);
+    return apiJson(
+      { error: "The community funding goal could not be loaded." },
+      500,
+      cors.headers
+    );
+  }
+}
+
+async function handleAdminFundingGoal(request, env) {
+  const access = await requireAdmin(request, env);
+  if (access.response) return access.response;
+  if (!env.DB) {
+    return apiJson(
+      { error: "The community funding goal database is temporarily unavailable." },
+      503,
+      access.corsHeaders
+    );
+  }
+
+  try {
+    const row = await getFundingGoal(env);
+    if (!row) {
+      return apiJson(
+        { error: "The community funding goal has not been configured." },
+        404,
+        access.corsHeaders
+      );
+    }
+    return apiJson(
+      { ok: true, goal: fundingGoalJson(row) },
+      200,
+      access.corsHeaders
+    );
+  } catch (error) {
+    console.error("Admin funding goal query failed:", error);
+    return apiJson(
+      { error: "The community funding goal could not be loaded." },
+      500,
+      access.corsHeaders
+    );
+  }
+}
+
+async function handleAdminFundingGoalUpdate(request, env) {
+  const access = await requireAdmin(request, env);
+  if (access.response) return access.response;
+  if (!env.DB) {
+    return apiJson(
+      { error: "The community funding goal database is temporarily unavailable." },
+      503,
+      access.corsHeaders
+    );
+  }
+
+  const parsed = await parseFundingGoalJson(request, access.corsHeaders);
+  if (parsed.error) return parsed.error;
+
+  try {
+    await env.DB.prepare(
+      `INSERT INTO community_funding_goal
+       (id, enabled, title, description, current_cents, target_cents,
+        currency, contribution_url, updated_by_discord_id, updated_at)
+       VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(id) DO UPDATE SET
+         enabled = excluded.enabled,
+         title = excluded.title,
+         description = excluded.description,
+         current_cents = excluded.current_cents,
+         target_cents = excluded.target_cents,
+         currency = excluded.currency,
+         contribution_url = excluded.contribution_url,
+         updated_by_discord_id = excluded.updated_by_discord_id,
+         updated_at = CURRENT_TIMESTAMP`
+    ).bind(
+      parsed.enabled ? 1 : 0,
+      parsed.title,
+      parsed.description,
+      parsed.currentCents,
+      parsed.targetCents,
+      parsed.currency,
+      parsed.contributionUrl,
+      access.session.discordId
+    ).run();
+
+    const row = await getFundingGoal(env);
+    return apiJson(
+      { ok: true, goal: fundingGoalJson(row) },
+      200,
+      access.corsHeaders
+    );
+  } catch (error) {
+    console.error("Funding goal update failed:", error);
+    return apiJson(
+      { error: "The community funding goal could not be saved." },
+      500,
+      access.corsHeaders
+    );
+  }
+}
+
+async function parseFundingGoalJson(request, corsHeaders) {
+  const contentLength = Number(request.headers.get("Content-Length") || 0);
+  if (Number.isFinite(contentLength) && contentLength > 4096) {
+    return {
+      error: apiJson({ error: "The funding goal request is too large." }, 413, corsHeaders),
+    };
+  }
+
+  const contentType = String(request.headers.get("Content-Type") || "").toLowerCase();
+  if (!contentType.startsWith("application/json")) {
+    return {
+      error: apiJson({ error: "Funding goal changes must use JSON." }, 415, corsHeaders),
+    };
+  }
+
+  let data;
+  try {
+    data = await request.json();
+  } catch {
+    return {
+      error: apiJson({ error: "The funding goal request could not be read." }, 400, corsHeaders),
+    };
+  }
+
+  const title = normalizeText(data?.title, MAX_FUNDING_TITLE_LENGTH + 1);
+  const description = normalizeText(
+    data?.description,
+    MAX_FUNDING_DESCRIPTION_LENGTH + 1
+  );
+  const currency = String(data?.currency || "").trim().toUpperCase();
+  const contributionUrl = normalizeFundingUrl(data?.contributionUrl);
+  const currentCents = fundingAmountToCents(data?.currentAmount, true);
+  const targetCents = fundingAmountToCents(data?.targetAmount, false);
+
+  if (typeof data?.enabled !== "boolean") {
+    return { error: apiJson({ error: "Choose whether the funding goal is visible." }, 400, corsHeaders) };
+  }
+  if (!title || title.length > MAX_FUNDING_TITLE_LENGTH) {
+    return { error: apiJson({ error: "Enter a goal title of 80 characters or fewer." }, 400, corsHeaders) };
+  }
+  if (!description || description.length > MAX_FUNDING_DESCRIPTION_LENGTH) {
+    return { error: apiJson({ error: "Enter a goal description of 240 characters or fewer." }, 400, corsHeaders) };
+  }
+  if (currentCents === null) {
+    return { error: apiJson({ error: "Enter a valid amount raised." }, 400, corsHeaders) };
+  }
+  if (targetCents === null) {
+    return { error: apiJson({ error: "Enter a valid target amount greater than zero." }, 400, corsHeaders) };
+  }
+  if (!FUNDING_CURRENCIES.has(currency)) {
+    return { error: apiJson({ error: "Choose a supported currency." }, 400, corsHeaders) };
+  }
+  if (!contributionUrl) {
+    return { error: apiJson({ error: "Enter a valid HTTPS or site-relative support link." }, 400, corsHeaders) };
+  }
+
+  return {
+    error: null,
+    enabled: data.enabled,
+    title,
+    description,
+    currentCents,
+    targetCents,
+    currency,
+    contributionUrl,
+  };
+}
+
+function fundingAmountToCents(value, allowZero) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || amount < 0) return null;
+  const cents = Math.round(amount * 100);
+  if ((!allowZero && cents === 0) || cents > MAX_FUNDING_CENTS) return null;
+  if (Math.abs((cents / 100) - amount) > 0.000001) return null;
+  return cents;
+}
+
+function normalizeFundingUrl(value) {
+  const source = normalizeText(value, MAX_FUNDING_URL_LENGTH + 1);
+  if (!source || source.length > MAX_FUNDING_URL_LENGTH || /[\\\s]/.test(source)) return "";
+  if (source.startsWith("/") && !source.startsWith("//")) return source;
+  try {
+    const url = new URL(source);
+    if (url.protocol !== "https:" || url.username || url.password) return "";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function getFundingGoal(env) {
+  return env.DB.prepare(
+    `SELECT enabled, title, description, current_cents, target_cents,
+            currency, contribution_url, updated_at
+     FROM community_funding_goal
+     WHERE id = 1
+     LIMIT 1`
+  ).first();
+}
+
+function fundingGoalJson(row) {
+  return {
+    enabled: Number(row?.enabled) === 1,
+    title: String(row?.title || ""),
+    description: String(row?.description || ""),
+    currentAmount: Number(row?.current_cents || 0) / 100,
+    targetAmount: Number(row?.target_cents || 0) / 100,
+    currency: String(row?.currency || "USD"),
+    contributionUrl: String(row?.contribution_url || "/store.html"),
+    updatedAt: String(row?.updated_at || ""),
+  };
 }
 
 

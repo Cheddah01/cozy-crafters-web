@@ -23,13 +23,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260825-timeline-submissions" />
-    <script src="./site-settings.js"></script>
+    <link rel="stylesheet" href="./styles.css?v=20260906-community-funding" />
+    <script src="./site-settings.js?v=20260906-community-funding"></script>
     <script src="./server-status.js" defer></script>
     <script src="./archive-admin.js" defer></script>
     <script src="./timeline-admin.js" defer></script>
     <script src="./timeline-submission-admin.js?v=20260825" defer></script>
     <script src="./timeline-period-admin.js" defer></script>
+    <script src="./funding-admin.js?v=20260906-community-funding" defer></script>
   </head>
   <body>
     <div class="sky" aria-hidden="true">
@@ -182,6 +183,18 @@
             >
               <span>Timeline</span>
               <span class="archive-admin-tab-count" data-timeline-admin-count>0</span>
+            </button>
+            <button
+              class="archive-admin-tab"
+              id="archive-tab-funding"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="archive-panel-funding"
+              tabindex="-1"
+              data-admin-tab="funding"
+            >
+              <span>Funding Goal</span>
             </button>
           </div>
 
@@ -387,6 +400,81 @@
                   </div>
                 </form>
               </aside>
+            </div>
+          </section>
+
+          <section
+            class="archive-admin-tab-panel funding-admin-panel"
+            id="archive-panel-funding"
+            role="tabpanel"
+            aria-labelledby="archive-tab-funding"
+            data-admin-panel="funding"
+            hidden
+          >
+            <div class="funding-admin-card section-card">
+              <div class="funding-admin-heading">
+                <div>
+                  <p class="eyebrow">Community support</p>
+                  <h2>Funding goal</h2>
+                  <p>Changes update the homepage and the compact goal shown across the site.</p>
+                </div>
+                <span class="funding-admin-mark" aria-hidden="true">🌱</span>
+              </div>
+
+              <form class="funding-admin-form" data-funding-admin-form novalidate aria-busy="false">
+                <label class="funding-admin-toggle" for="funding-enabled">
+                  <span>
+                    <strong>Show funding goal</strong>
+                    <small>Turn this off to hide both versions without deleting your numbers.</small>
+                  </span>
+                  <input id="funding-enabled" name="enabled" type="checkbox" data-funding-enabled />
+                </label>
+
+                <label class="timeline-admin-field" for="funding-title">
+                  <span>Goal title <strong aria-hidden="true">*</strong></span>
+                  <input class="tool-input" id="funding-title" name="title" type="text" maxlength="80" autocomplete="off" required data-funding-title-input />
+                  <small>For example: September server costs</small>
+                </label>
+
+                <label class="timeline-admin-field" for="funding-description">
+                  <span>Description <strong aria-hidden="true">*</strong></span>
+                  <textarea class="tool-input" id="funding-description" name="description" maxlength="240" rows="4" required data-funding-description-input></textarea>
+                  <small>Briefly explain what the community is helping fund.</small>
+                </label>
+
+                <div class="funding-admin-amount-grid">
+                  <label class="timeline-admin-field" for="funding-current">
+                    <span>Amount raised <strong aria-hidden="true">*</strong></span>
+                    <input class="tool-input" id="funding-current" name="currentAmount" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" required data-funding-current-input />
+                  </label>
+                  <label class="timeline-admin-field" for="funding-target">
+                    <span>Goal amount <strong aria-hidden="true">*</strong></span>
+                    <input class="tool-input" id="funding-target" name="targetAmount" type="number" min="0.01" max="1000000" step="0.01" inputmode="decimal" required data-funding-target-input />
+                  </label>
+                  <label class="timeline-admin-field" for="funding-currency">
+                    <span>Currency <strong aria-hidden="true">*</strong></span>
+                    <select class="tool-input" id="funding-currency" name="currency" required data-funding-currency-input>
+                      <option value="USD">USD</option>
+                      <option value="CAD">CAD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="AUD">AUD</option>
+                      <option value="NZD">NZD</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label class="timeline-admin-field" for="funding-url">
+                  <span>Support link <strong aria-hidden="true">*</strong></span>
+                  <input class="tool-input" id="funding-url" name="contributionUrl" type="text" maxlength="500" spellcheck="false" required data-funding-url-input />
+                  <small>Use a site page such as /store.html or a full HTTPS link.</small>
+                </label>
+
+                <p class="timeline-admin-form-status funding-admin-status" data-funding-admin-status role="status" aria-live="polite" aria-atomic="true"></p>
+                <div class="funding-admin-actions">
+                  <button class="button button-primary" type="submit" data-funding-save>Save Funding Goal</button>
+                </div>
+              </form>
             </div>
           </section>
         </section>
