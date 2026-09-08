@@ -473,6 +473,7 @@ html.night .nav-links a[aria-current] {
 }
 
 .site-funding-compact {
+  position: relative;
   margin: -0.35rem 0 1.25rem;
   overflow: hidden;
   border: 1px solid rgba(62, 138, 46, 0.42);
@@ -9111,4 +9112,24 @@ html.night .timeline-submission-review-meta {
   .timeline-event-card {
     transition: none;
   }
+}
+
+
+/* A little celebration for a fully funded community goal. */
+.site-funding-compact.is-goal-reached,
+.community-funding.is-goal-reached {
+  border-color: #d6ab3e;
+  background: linear-gradient(110deg, rgba(255, 212, 92, 0.24), rgba(117, 214, 91, 0.12) 55%, transparent), var(--panel);
+  box-shadow: 0 0 0 2px rgba(255, 212, 92, 0.12), 0 8px 24px rgba(38, 84, 128, 0.13);
+}
+
+.is-goal-reached .site-funding-label {
+  border-color: #d6ab3e;
+  background: #ffe7a0;
+  color: #65430b;
+}
+
+.is-goal-reached .site-funding-fill,
+.is-goal-reached .community-funding-progress span {
+  background: linear-gradient(180deg, #ffe796, #e7ad2e);
 }

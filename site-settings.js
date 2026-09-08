@@ -148,7 +148,8 @@
       current: formatMoney(goal.currentAmount, goal.currency),
       target: formatMoney(goal.targetAmount, goal.currency),
       percentage,
-      percentageLabel: `${Math.round(percentage)}% funded`,
+      reached: goal.currentAmount >= goal.targetAmount,
+      percentageLabel: `${goal.currentAmount >= goal.targetAmount ? 100 : Math.floor(percentage)}% funded`,
       contributionUrl: safeContributionUrl(goal.contributionUrl)
     };
   };
@@ -179,6 +180,11 @@
     const percentage = section.querySelector('[data-funding-percentage]');
     const link = section.querySelector('[data-funding-link]');
 
+    section.classList.toggle('is-goal-reached', view.reached);
+    const eyebrow = section.querySelector('.eyebrow');
+    const thanks = section.querySelector('.community-funding-status > span');
+    if (eyebrow) eyebrow.textContent = view.reached ? '🎉 Goal reached!' : 'Keep Cozy Crafters running';
+    if (thanks) thanks.textContent = view.reached ? 'You made it happen. Thank you, Cozy Crafters!' : 'Every contribution helps.';
     if (title) title.textContent = goal.title;
     if (description) description.textContent = goal.description;
     if (current) current.textContent = view.current;
@@ -217,18 +223,18 @@
     const track = document.createElement('div');
     const fill = document.createElement('div');
 
-    wrapper.className = 'site-funding-compact';
+    wrapper.className = `site-funding-compact${view.reached ? ' is-goal-reached' : ''}`;
     wrapper.dataset.siteFunding = '';
     wrapper.setAttribute('aria-label', 'Community funding goal');
     link.className = 'site-funding-link';
     if (view.contributionUrl) link.href = view.contributionUrl;
     heading.className = 'site-funding-heading';
     eyebrow.className = 'site-funding-label';
-    eyebrow.textContent = 'Community goal';
+    eyebrow.textContent = view.reached ? '🎉 Goal reached!' : 'Community goal';
     title.textContent = goal.title;
     meta.className = 'site-funding-meta';
     amount.textContent = `${view.current} of ${view.target}`;
-    percentage.textContent = view.percentageLabel;
+    percentage.textContent = view.reached ? '100% funded · Thank you!' : view.percentageLabel;
     track.className = 'site-funding-track';
     track.setAttribute('role', 'progressbar');
     track.setAttribute('aria-label', `${goal.title} funding progress`);
@@ -256,6 +262,40 @@
     document.body.prepend(wrapper);
   };
 
+  let celebratedGoal = null;
+  const celebrateFunding = (goal, view) => {
+    if (!goal.enabled || !view.reached) {
+      celebratedGoal = null;
+      return;
+    }
+    const key = JSON.stringify([goal.title, goal.targetAmount, goal.currency]);
+    if (celebratedGoal === key) return;
+    celebratedGoal = key;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const wrapper = document.querySelector('[data-site-funding]');
+    if (!wrapper || typeof wrapper.animate !== 'function') return;
+
+    const confetti = document.createElement('div');
+    confetti.setAttribute('aria-hidden', 'true');
+    confetti.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:inherit;';
+    const colors = ['#ffd45c', '#75d65b', '#ff8fa3', '#8d88ff', '#65d8ee'];
+    for (let i = 0; i < 44; i += 1) {
+      const pixel = document.createElement('span');
+      pixel.style.cssText = `position:absolute;left:${Math.random() * 100}%;top:-12px;width:7px;height:${i % 3 === 0 ? 11 : 7}px;background:${colors[i % colors.length]};`;
+      confetti.append(pixel);
+    }
+    wrapper.append(confetti);
+    const distance = wrapper.offsetHeight + 30;
+    Array.from(confetti.children).forEach((pixel) => {
+      pixel.animate([
+        { transform: 'translate(0, -12px) rotate(0deg)', opacity: 0 },
+        { opacity: 0.9, offset: 0.12 },
+        { transform: `translate(${Math.random() * 70 - 35}px, ${distance}px) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }
+      ], { duration: 2200 + Math.random() * 800, delay: Math.random() * 800, easing: 'ease-out', fill: 'both' });
+    });
+    window.setTimeout(() => confetti.remove(), 4000);
+  };
+
   const renderFunding = (goal) => {
     if (!goal) return;
     const existingCompact = document.querySelector('[data-site-funding]');
@@ -263,6 +303,7 @@
     const view = fundingView(goal);
     renderCompactFunding(goal, view);
     renderHomepageFunding(goal, view);
+    celebrateFunding(goal, view);
   };
 
   window.cozyPublicSettingsReady = fetchJson(settingsEndpoint, normalizeSettings);
