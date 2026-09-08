@@ -14,26 +14,30 @@
   const colors = ['#ff91aa', '#ffd56b', '#aa9cff', '#83dca6', '#79d8f0'];
   let remaining = [];
   let timer;
-  let cleanup;
-  let activeRider;
+  const activeRiders = new Map();
+  const pendingRiders = new Set();
   let rightSide = Math.random() > 0.5;
 
   const stop = () => {
     window.clearTimeout(timer);
-    window.clearTimeout(cleanup);
-    if (activeRider) activeRider.remove();
-    activeRider = null;
+    pendingRiders.forEach((pending) => window.clearTimeout(pending));
+    pendingRiders.clear();
+    activeRiders.forEach((cleanup, rider) => {
+      window.clearTimeout(cleanup);
+      rider.remove();
+    });
+    activeRiders.clear();
   };
 
   const schedule = (delay) => {
     window.clearTimeout(timer);
     if (!document.hidden && !reducedMotion.matches) {
-      timer = window.setTimeout(launch, delay);
+      timer = window.setTimeout(launchGroup, delay);
     }
   };
 
   const launch = () => {
-    if (document.hidden || reducedMotion.matches) return;
+    if (document.hidden || reducedMotion.matches || activeRiders.size >= 3) return;
     if (!remaining.length) remaining = [...riders];
     const filename = remaining.splice(Math.floor(Math.random() * remaining.length), 1)[0];
     const duration = 28000 + Math.random() * 6000;
@@ -60,13 +64,28 @@
     rig.append(balloon, string, character);
     rider.append(rig);
     sky.append(rider);
-    activeRider = rider;
-    cleanup = window.setTimeout(() => {
+    const cleanup = window.setTimeout(() => {
       rider.remove();
-      if (activeRider === rider) activeRider = null;
+      activeRiders.delete(rider);
     }, duration + 100);
-    // One passenger at a time, with a quiet gap between visits.
-    schedule(duration + 18000 + Math.random() * 22000);
+    activeRiders.set(rider, cleanup);
+  };
+
+  const launchGroup = () => {
+    if (document.hidden || reducedMotion.matches) return;
+    const roll = Math.random();
+    const count = roll < 0.5 ? 1 : roll < 0.85 ? 2 : 3;
+    launch();
+    // Stagger friends so they share the sky without sitting on top of each other.
+    for (let i = 1; i < count; i += 1) {
+      const pending = window.setTimeout(() => {
+        pendingRiders.delete(pending);
+        launch();
+      }, i * 6000);
+      pendingRiders.add(pending);
+    }
+    // Wait for the last rider to finish, then leave a shorter quiet gap.
+    schedule(34000 + (count - 1) * 6000 + 8000 + Math.random() * 8000);
   };
 
   const restart = () => {
