@@ -9133,3 +9133,76 @@ html.night .timeline-submission-review-meta {
 .is-goal-reached .community-funding-progress span {
   background: linear-gradient(180deg, #ffe796, #e7ad2e);
 }
+
+/* Little community members taking an occasional balloon ride through the sky. */
+.balloon-rider {
+  position: absolute;
+  bottom: -200px;
+  left: max(-22px, calc((100vw - 1180px) / 4 - 48px));
+  width: 96px;
+  height: 190px;
+  pointer-events: none;
+  animation: balloon-ride var(--ride-duration, 30s) linear both;
+}
+
+.balloon-rider-right {
+  left: auto;
+  right: max(-22px, calc((100vw - 1180px) / 4 - 48px));
+}
+
+.balloon-rider-rig {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  transform-origin: 50% 30px;
+  animation: balloon-sway 5s ease-in-out infinite alternate;
+}
+
+.rider-balloon {
+  position: relative;
+  width: 46px;
+  height: 58px;
+  background: var(--balloon-color);
+  clip-path: polygon(25% 0, 75% 0, 75% 7%, 90% 7%, 90% 18%, 100% 18%, 100% 65%, 90% 65%, 90% 78%, 65% 78%, 65% 88%, 56% 88%, 62% 100%, 38% 100%, 44% 88%, 35% 88%, 35% 78%, 10% 78%, 10% 65%, 0 65%, 0 18%, 10% 18%, 10% 7%, 25% 7%);
+  box-shadow: inset -8px -9px 0 rgba(42, 45, 80, 0.18);
+}
+
+.rider-balloon::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 7px;
+  height: 17px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.rider-string {
+  width: 2px;
+  height: 35px;
+  background: #f9f0d6;
+  box-shadow: 1px 0 rgba(74, 61, 47, 0.3);
+}
+
+.balloon-rider img {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin-top: -15px;
+  image-rendering: pixelated;
+}
+
+@keyframes balloon-ride {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100vh - 220px)); }
+}
+
+@keyframes balloon-sway {
+  from { transform: translateX(-7px) rotate(-5deg); }
+  to { transform: translateX(7px) rotate(5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balloon-rider { display: none; animation: none; }
+  .balloon-rider-rig { animation: none; }
+}
