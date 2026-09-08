@@ -3,6 +3,9 @@
 
   const sky = document.querySelector('.sky');
   if (!sky) return;
+  const riderSky = document.createElement('div');
+  riderSky.className = 'sky balloon-sky';
+  document.body.append(riderSky);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const riders = [
     'Alyis202-drops-256.png', 'Cheddah01-drops-512.png',
@@ -51,7 +54,6 @@
     const duration = 28000 + Math.random() * 6000;
     const rider = document.createElement('div');
     rider.className = 'balloon-rider';
-    rider.setAttribute('aria-hidden', 'true');
     rider.style.setProperty('--ride-duration', `${duration}ms`);
     rider.style.setProperty('--balloon-color', colors[Math.floor(Math.random() * colors.length)]);
     rightSide = !rightSide;
@@ -59,8 +61,10 @@
 
     const rig = document.createElement('div');
     rig.className = 'balloon-rider-rig';
-    const balloon = document.createElement('span');
+    const balloon = document.createElement('button');
     balloon.className = 'rider-balloon';
+    balloon.type = 'button';
+    balloon.setAttribute('aria-label', `Pop ${filename.split('-drops-')[0]}'s balloon`);
     const string = document.createElement('span');
     string.className = 'rider-string';
     const character = document.createElement('img');
@@ -71,12 +75,34 @@
     character.draggable = false;
     rig.append(balloon, string, character);
     rider.append(rig);
-    sky.append(rider);
+    riderSky.append(rider);
     const cleanup = window.setTimeout(() => {
       rider.remove();
       activeRiders.delete(rider);
     }, duration + 100);
     activeRiders.set(rider, cleanup);
+    balloon.addEventListener('click', () => {
+      if (balloon.disabled) return;
+      balloon.disabled = true;
+      window.clearTimeout(activeRiders.get(rider));
+      rider.style.animationPlayState = 'paused';
+      rig.style.animationPlayState = 'paused';
+      rider.classList.add('is-popped');
+
+      const pop = document.createElement('span');
+      pop.className = 'rider-pop';
+      pop.setAttribute('aria-hidden', 'true');
+      rig.append(pop);
+      const fallDistance = window.innerHeight - character.getBoundingClientRect().top + 160;
+      character.animate([
+        { transform: 'translateY(0) rotate(0deg)' },
+        { transform: `translateY(${fallDistance}px) rotate(${rider.classList.contains('balloon-rider-right') ? 100 : -100}deg)` }
+      ], { duration: 1200, easing: 'cubic-bezier(0.55, 0, 1, 0.45)', fill: 'forwards' });
+      activeRiders.set(rider, window.setTimeout(() => {
+        rider.remove();
+        activeRiders.delete(rider);
+      }, 1300));
+    });
   };
 
   const launchGroup = () => {

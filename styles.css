@@ -9159,6 +9159,13 @@ html.night .timeline-submission-review-meta {
 }
 
 .rider-balloon {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  flex: 0 0 auto;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
   position: relative;
   width: 46px;
   height: 58px;
@@ -9205,4 +9212,37 @@ html.night .timeline-submission-review-meta {
 @media (prefers-reduced-motion: reduce) {
   .balloon-rider { display: none; animation: none; }
   .balloon-rider-rig { animation: none; }
+}
+
+
+.rider-balloon:hover,
+.rider-balloon:focus-visible {
+  filter: brightness(1.2);
+}
+
+.balloon-rider:focus-within,
+.balloon-rider:focus-within .balloon-rider-rig {
+  animation-play-state: paused;
+}
+
+.is-popped .rider-balloon,
+.is-popped .rider-string {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.rider-pop {
+  position: absolute;
+  top: 0;
+  left: 19px;
+  width: 58px;
+  height: 58px;
+  background: var(--balloon-color);
+  clip-path: polygon(50% 0, 59% 32%, 85% 10%, 68% 40%, 100% 50%, 68% 59%, 88% 90%, 59% 68%, 50% 100%, 40% 68%, 10% 88%, 32% 59%, 0 50%, 32% 40%, 10% 10%, 40% 32%);
+  animation: rider-pop 300ms ease-out forwards;
+}
+
+@keyframes rider-pop {
+  from { transform: scale(0.6); opacity: 1; }
+  to { transform: scale(1.5); opacity: 0; }
 }
