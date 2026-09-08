@@ -854,6 +854,7 @@
     loginLink.addEventListener('click', () => {
       try {
         sessionStorage.setItem(LOGIN_RETURN_KEY, '1');
+        sessionStorage.removeItem('cozyAdminLoginReturn');
       } catch (error) {}
     });
   }

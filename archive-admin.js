@@ -80,6 +80,30 @@
     }
   };
 
+  let autoLogin = new URLSearchParams(window.location.search).get('login') === 'discord';
+  if (autoLogin) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('login');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+  }
+
+  const rememberAdminLogin = () => {
+    try {
+      sessionStorage.setItem('cozyAdminLoginReturn', '1');
+      sessionStorage.removeItem('cozyTimelineLoginReturn');
+    } catch (error) {}
+  };
+
+  const startAdminLogin = () => {
+    autoLogin = false;
+    rememberAdminLogin();
+    window.location.replace(`${ARCHIVE_API}/auth/discord`);
+  };
+
+  document.querySelectorAll('.archive-discord-button').forEach((link) => {
+    link.addEventListener('click', rememberAdminLogin);
+  });
+
   const removeSession = () => {
     try {
       sessionStorage.removeItem(sessionKey);
@@ -1024,6 +1048,10 @@
   const verifySession = async () => {
     const token = readSession();
     if (!token) {
+      if (autoLogin) {
+        startAdminLogin();
+        return;
+      }
       leaveDashboard();
       setAuthState('signed-out');
       return;
@@ -1057,6 +1085,7 @@
 
       if (response.status === 401) {
         expireSession();
+        if (autoLogin) startAdminLogin();
         return;
       }
       if (response.status === 403) {
@@ -1078,6 +1107,7 @@
         return;
       }
 
+      autoLogin = false;
       currentUser = user;
       if (displayName) displayName.textContent = user.displayName;
       setActiveTab('pending', { load: false });

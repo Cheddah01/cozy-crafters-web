@@ -26,8 +26,17 @@
 
       (() => {
         const sessionKey = 'cozyArchiveSession';
+        let returnToAdmin = false;
+        try {
+          returnToAdmin = sessionStorage.getItem('cozyAdminLoginReturn') === '1';
+          sessionStorage.removeItem('cozyAdminLoginReturn');
+        } catch (error) {}
+
         const hash = window.location.hash;
-        if (!hash) return;
+        if (!hash) {
+          if (returnToAdmin) window.location.replace('./archive-admin.html');
+          return;
+        }
 
         const parameters = new URLSearchParams(hash.slice(1));
         if (!parameters.has('session')) return;
@@ -54,7 +63,9 @@
           window.history.replaceState(window.history.state, '', window.location.pathname);
         } catch (error) {}
 
-        if (isReasonableToken && returnToTimeline) {
+        if (returnToAdmin) {
+          window.location.replace('./archive-admin.html');
+        } else if (isReasonableToken && returnToTimeline) {
           window.location.replace('./timeline.html');
         }
       })();
@@ -376,7 +387,7 @@
 
       <footer class="site-footer">
         <p>Cozy Crafters SMP · Java Edition · play.cozycrafters.net</p>
-        <a class="footer-admin-link" href="./archive-admin.html">Admin Login</a>
+        <a class="footer-admin-link" href="./archive-admin.html?login=discord">Admin Login</a>
       </footer>
     </div>
   </body>
