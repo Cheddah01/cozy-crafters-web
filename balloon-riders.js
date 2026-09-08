@@ -9,7 +9,15 @@
     'ItsCook21-drops-256.png', 'Krill73-drops-256.png',
     'ZeroVR0-drops-256.png', 'Puzzle4770-drops-512.png',
     'SirSquared-drops-512.png', 'TheRealAwire96-drops-512.png',
-    'JxstMxrcel-drops-512.png'
+    'JxstMxrcel-drops-512.png',
+    'ttyl3802-drops-512.png',
+    'DiddeFjidde-drops-512.png',
+    'P31242-drops-512.png',
+    'A_sterrr-drops-512.png',
+    'Behrd-drops-512.png',
+    'Cheddah02-drops-512.png',
+    'Ethanlion5555-drops-512.png',
+    'MISTERTACO8770-drops-512.png'
   ];
   const colors = ['#ff91aa', '#ffd56b', '#aa9cff', '#83dca6', '#79d8f0'];
   let remaining = [];
