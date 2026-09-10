@@ -6126,6 +6126,7 @@ html.night .checkout-status.error {
 }
 
 .button-paypal {
+  gap: 0.5rem;
   width: 100%;
   border: 2px solid #c99516;
   background: linear-gradient(180deg, #ffe58b, #ffc439);
@@ -6135,6 +6136,13 @@ html.night .checkout-status.error {
 
 .button-paypal:hover {
   background: #ffda6b;
+}
+
+.paypal-button-logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 @media (max-width: 700px) {
