@@ -6083,6 +6083,66 @@ html.night .checkout-status.error {
   text-align: center;
 }
 
+.server-donation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.45fr);
+  align-items: center;
+  gap: 1.5rem 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+  box-shadow: 0 12px 30px rgba(38, 84, 128, 0.18);
+}
+
+.server-donation h2 {
+  margin: 0.45rem 0 0.8rem;
+  font-family: "Fredoka", sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.server-donation p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.server-donation .server-donation-details {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.server-donation-action {
+  display: grid;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.server-donation-action p {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.button-paypal {
+  width: 100%;
+  border: 2px solid #c99516;
+  background: linear-gradient(180deg, #ffe58b, #ffc439);
+  color: #003087;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5), 0 3px 0 #b98410;
+}
+
+.button-paypal:hover {
+  background: #ffda6b;
+}
+
+@media (max-width: 700px) {
+  .server-donation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .minecraft-disclaimer {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
