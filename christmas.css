@@ -1,0 +1,196 @@
+/* ==========================================================================
+   Christmas theme — layered on top of styles.css when <html> has .xmas.
+   Turned on by christmas.js (preview: add ?theme=christmas to the URL).
+   ========================================================================== */
+
+html.xmas {
+  --sky-top: #7fa9d6;
+  --sky-mid: #b4cfea;
+  --sky-low: #e4eef8;
+  --cloud: #f4f7fb;
+  --cloud-shade: #d3dde9;
+  --xmas-red: #c8323b;
+  --xmas-red-dark: #8f1f27;
+  --xmas-red-deep: #6e161d;
+  --xmas-gold: #f4c25b;
+  --snow: #ffffff;
+  --snow-shade: #dbe7f3;
+}
+
+html.xmas.night body,
+html.xmas .night-veil {
+  background: linear-gradient(180deg, #0b1630 0%, #18294d 50%, #2d4470 100%);
+}
+
+/* ---------- Falling pixel snow ---------- */
+
+.xmas-snow {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.xmas-snow i {
+  position: absolute;
+  top: -10vh;
+  left: 0;
+  display: block;
+  width: 5px;
+  height: 5px;
+  opacity: 0.85;
+  background: transparent;
+  filter: drop-shadow(0 0 1px rgba(90, 120, 160, 0.45));
+  box-shadow:
+    4vw 2vh #fff, 11vw 18vh #fff, 19vw 7vh #fff, 27vw 26vh #fff,
+    34vw 12vh #fff, 42vw 31vh #fff, 49vw 4vh #fff, 57vw 21vh #fff,
+    64vw 9vh #fff, 71vw 28vh #fff, 79vw 15vh #fff, 86vw 3vh #fff,
+    93vw 24vh #fff, 8vw 38vh #fff, 23vw 45vh #fff, 38vw 52vh #fff,
+    53vw 41vh #fff, 68vw 49vh #fff, 83vw 39vh #fff, 97vw 55vh #fff,
+    15vw 63vh #fff, 31vw 71vh #fff, 46vw 66vh #fff, 61vw 78vh #fff,
+    76vw 68vh #fff, 90vw 81vh #fff, 3vw 86vh #fff, 36vw 92vh #fff,
+    58vw 95vh #fff, 81vw 97vh #fff;
+  animation: xmas-fall 22s linear infinite;
+}
+
+.xmas-snow i:nth-child(2) {
+  width: 3px;
+  height: 3px;
+  opacity: 0.75;
+  transform: translateX(3vw);
+  animation-duration: 34s;
+  animation-delay: -12s;
+}
+
+.xmas-snow i:nth-child(3) {
+  width: 7px;
+  height: 7px;
+  opacity: 0.9;
+  animation-duration: 16s;
+  animation-delay: -5s;
+}
+
+@keyframes xmas-fall {
+  from { transform: translate(0, -100vh); }
+  50%  { transform: translate(2vw, 5vh); }
+  to   { transform: translate(-1vw, 110vh); }
+}
+
+/* Duplicate field so the sky is never empty while a layer loops */
+.xmas-snow i::after {
+  content: "";
+  position: absolute;
+  top: -100vh;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  box-shadow: inherit;
+}
+
+/* ---------- Snow-capped clouds ---------- */
+
+html.xmas .mc-cloud {
+  box-shadow:
+    inset 0 calc(var(--u) * 0.35) 0 var(--snow),
+    inset 0 calc(var(--u) * -0.6) 0 var(--cloud-shade);
+}
+
+/* ---------- Header: string of blocky lights ---------- */
+
+html.xmas .site-header {
+  border-color: rgba(200, 50, 59, 0.35);
+}
+
+html.xmas .site-header::after {
+  content: "";
+  position: absolute;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: -13px;
+  height: 20px;
+  background-size: 168px 20px !important;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='14'%3E%3Cpath d='M0 2 Q30 7 60 2 T120 2' stroke='%23365a2b' stroke-width='1.5' fill='none'/%3E%3Crect x='12' y='4' width='3' height='2' fill='%23365a2b'/%3E%3Crect x='11' y='6' width='5' height='7' fill='%23e8414b'/%3E%3Crect x='42' y='5' width='3' height='2' fill='%23365a2b'/%3E%3Crect x='41' y='7' width='5' height='7' fill='%23f4c25b'/%3E%3Crect x='72' y='4' width='3' height='2' fill='%23365a2b'/%3E%3Crect x='71' y='6' width='5' height='7' fill='%234fbf5a'/%3E%3Crect x='102' y='5' width='3' height='2' fill='%23365a2b'/%3E%3Crect x='101' y='7' width='5' height='7' fill='%234aa3ff'/%3E%3C/svg%3E") repeat-x;
+  filter: drop-shadow(0 0 3px rgba(255, 220, 140, 0.55));
+  animation: xmas-twinkle 1.8s steps(2, jump-none) infinite alternate;
+}
+
+html.xmas.night .site-header::after {
+  filter: drop-shadow(0 0 5px rgba(255, 220, 140, 0.9));
+}
+
+@keyframes xmas-twinkle {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}
+
+html.xmas .brand-mark {
+  border-color: var(--xmas-red-dark);
+  background: linear-gradient(180deg, #fff6f6, #ffe1e1);
+  box-shadow: inset 0 -4px 0 rgba(200, 50, 59, 0.16);
+}
+
+/* ---------- Hero: snow drift on the top edge ---------- */
+
+html.xmas .hero.section-card {
+  position: relative;
+}
+
+html.xmas .hero.section-card::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 1rem;
+  right: 1rem;
+  height: 18px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='18'%3E%3Crect width='48' height='8' fill='%23ffffff'/%3E%3Crect y='8' width='8' height='4' fill='%23ffffff'/%3E%3Crect x='14' y='8' width='12' height='6' fill='%23ffffff'/%3E%3Crect x='18' y='14' width='4' height='4' fill='%23ffffff'/%3E%3Crect x='34' y='8' width='6' height='4' fill='%23ffffff'/%3E%3Crect x='8' y='8' width='6' height='2' fill='%23c9d9ea'/%3E%3Crect y='12' width='8' height='2' fill='%23c9d9ea'/%3E%3Crect x='26' y='8' width='8' height='2' fill='%23c9d9ea'/%3E%3Crect x='14' y='14' width='4' height='2' fill='%23c9d9ea'/%3E%3Crect x='22' y='14' width='4' height='2' fill='%23c9d9ea'/%3E%3Crect x='18' y='18' width='4' height='0' fill='%23c9d9ea'/%3E%3Crect x='34' y='12' width='6' height='2' fill='%23c9d9ea'/%3E%3Crect x='40' y='8' width='8' height='2' fill='%23c9d9ea'/%3E%3C/svg%3E") repeat-x;
+  filter: drop-shadow(0 2px 3px rgba(60, 90, 130, 0.22));
+}
+
+html.xmas .eyebrow {
+  color: var(--xmas-red-dark);
+}
+
+html.xmas.night .eyebrow {
+  color: #ff8a8f;
+}
+
+/* ---------- Buttons: snowy grass blocks + a candy red primary ---------- */
+
+html.xmas .button {
+  position: relative;
+}
+
+html.xmas .button-primary {
+  background: linear-gradient(180deg, #df4a52, var(--xmas-red-dark));
+  border-color: var(--xmas-red-deep);
+}
+
+html.xmas .button-primary::before,
+html.xmas .button-secondary::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  height: 8px;
+  pointer-events: none;
+  border-radius: 0.65rem 0.65rem 0 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8'%3E%3Crect width='24' height='4' fill='%23ffffff'/%3E%3Crect y='4' width='6' height='3' fill='%23ffffff'/%3E%3Crect x='10' y='4' width='4' height='4' fill='%23ffffff'/%3E%3Crect x='18' y='4' width='4' height='2' fill='%23ffffff'/%3E%3C/svg%3E") repeat-x;
+}
+
+/* ---------- Footer: snowy grass block ---------- */
+
+html.xmas .site-footer::before {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Crect width='40' height='8' fill='%23ffffff'/%3E%3Crect width='8' height='4' fill='%23eef4fb'/%3E%3Crect x='16' width='12' height='4' fill='%23eef4fb'/%3E%3Crect x='8' y='4' width='4' height='4' fill='%23dbe7f3'/%3E%3Crect x='28' y='4' width='8' height='4' fill='%23dbe7f3'/%3E%3Crect y='8' width='4' height='8' fill='%23ffffff'/%3E%3Crect x='8' y='8' width='8' height='4' fill='%23dbe7f3'/%3E%3Crect x='20' y='8' width='4' height='8' fill='%23eef4fb'/%3E%3Crect x='32' y='8' width='8' height='4' fill='%23ffffff'/%3E%3C/svg%3E") repeat-x;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmas-snow i,
+  html.xmas .site-header::after {
+    animation: none;
+  }
+}
